@@ -111,6 +111,11 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	volatile int ckey = -1;
 	png_color_16 *transv;
 
+	if ( !src ) {
+		/* The error message has been set in SDL_RWFromFile */
+		return NULL;
+	}
+
 	/* Initialize the data we will clean up when we're done */
 	png_ptr = NULL; info_ptr = NULL; row_pointers = NULL; surface = NULL;
 

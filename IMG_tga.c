@@ -107,6 +107,11 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
     Uint32 pixel;
     int count, rep;
 
+    if ( !src ) {
+        /* The error message has been set in SDL_RWFromFile */
+        return NULL;
+    }
+
     if(!SDL_RWread(src, &hdr, sizeof(hdr), 1))
 	goto error;
     ncols = LE16(hdr.cmap_len);

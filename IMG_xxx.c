@@ -43,6 +43,10 @@ int IMG_isXXX(SDL_RWops *src)
 /* Load a XXX type image from an SDL datasource */
 SDL_Surface *IMG_LoadXXX_RW(SDL_RWops *src)
 {
+	if ( !src ) {
+		/* The error message has been set in SDL_RWFromFile */
+		return NULL;
+	}
 	return(NULL);
 }
 

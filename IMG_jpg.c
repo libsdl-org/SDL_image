@@ -197,6 +197,11 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 	SDL_Surface *volatile surface = NULL;
 	struct my_error_mgr jerr;
 
+	if ( !src ) {
+		/* The error message has been set in SDL_RWFromFile */
+		return NULL;
+	}
+
 	/* Create a decompression structure and load the JPEG header */
 	cinfo.err = jpeg_std_error(&jerr.errmgr);
 	jerr.errmgr.error_exit = my_error_exit;

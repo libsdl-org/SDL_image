@@ -456,6 +456,10 @@ done:
 /* Load a XPM type image from an RWops datasource */
 SDL_Surface *IMG_LoadXPM_RW(SDL_RWops *src)
 {
+	if ( !src ) {
+		/* The error message has been set in SDL_RWFromFile */
+		return NULL;
+	}
 	return load_xpm(NULL, src);
 }
 

@@ -108,6 +108,11 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 
 #define ERROR(s) do { error = (s); goto done; } while(0)
 
+	if ( !src ) {
+		/* The error message has been set in SDL_RWFromFile */
+		return NULL;
+	}
+
 	SDL_RWread(src, magic, 2, 1);
 	kind = magic[1] - '1';
 	ascii = 1;

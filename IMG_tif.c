@@ -110,6 +110,10 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 	Uint32 x, y;
 	Uint32 half;
 
+	if ( !src ) {
+		/* The error message has been set in SDL_RWFromFile */
+		return NULL;
+	}
 
 	/* turn off memory mapped access with the m flag */
 	tiff = TIFFClientOpen("SDL_image", "rm", (thandle_t)src, 

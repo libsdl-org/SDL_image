@@ -678,6 +678,11 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src) {
 
   unsigned char * (* load_tile) (SDL_RWops *, Uint32, int, int, int);
 
+  if ( !src ) {
+    /* The error message has been set in SDL_RWFromFile */
+    return NULL;
+  }
+
   /* Initialize the data we will clean up when we're done */
   surface = NULL;
   read_error = 0;
