@@ -35,7 +35,7 @@ libSDL_image_la_LDFLAGS = 		\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
 libSDL_image_la_LIBADD = @IMG_LIBS@
 
-bin_PROGRAMS = showimage
+noinst_PROGRAMS = showimage
 
 showimage_LDADD = libSDL_image.la
 
