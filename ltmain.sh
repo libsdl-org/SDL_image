@@ -951,6 +951,11 @@ compiler."
 	  prev=
 	  continue
 	  ;;
+	framework)
+	  linkopts="$linkopts -framework $arg"
+	  prev=
+	  continue
+	  ;;
 	release)
 	  release="-$arg"
 	  prev=
@@ -1034,6 +1039,11 @@ compiler."
 	else
 	  prev=expsyms_regex
 	fi
+	continue
+	;;
+
+      -framework)
+	prev=framework
 	continue
 	;;
 
@@ -1768,6 +1778,16 @@ compiler."
 	  versuffix="-$major-$age-$revision"
 	  ;;
 
+	darwin)
+	  # Like Linux, but with the current version available in
+	  # verstring for coding it into the library header
+	  major=.`expr $current - $age`
+	  versuffix="$major.$age.$revision"
+	  # Darwin ld doesn't like 0 for these options...
+	  minor_current=`expr $current + 1`
+	  verstring="-compatibility_version $minor_current -current_version $minor_current.$revision"
+	  ;;
+
 	*)
 	  $echo "$modename: unknown library version type \`$version_type'" 1>&2
 	  echo "Fatal configuration error.  See the $PACKAGE docs for more information." 1>&2
@@ -1778,7 +1798,16 @@ compiler."
 	# Clear the version info if we defaulted, and they specified a release.
 	if test -z "$vinfo" && test -n "$release"; then
 	  major=
+	  case "$version_type" in
+	  darwin)
+	    # we can't check for "0.0" in archive_cmds due to quoting
+	    # problems, so we reset it completely
+	    verstring=""
+	    ;;
+	  *)
 	  verstring="0.0"
+	    ;;
+	  esac
 	  if test "$need_version" = no; then
 	    versuffix=
 	  else

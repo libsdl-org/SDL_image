@@ -1,5 +1,7 @@
 
 1.2.3:
+Sam Lantinga - Sun Oct 20 20:55:46 PDT 2002
+ * Added shared library support for MacOS X
 Pete Shinners - Thu Jun 20 10:05:54 PDT 2002
  * The JPEG loader can now load EXIF format JPEG images
 Dag-Erling Smorgrav - Thu May  2 19:09:48 PDT 2002

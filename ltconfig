@@ -186,7 +186,7 @@ enable_shared=yes
 enable_static=yes
 enable_fast_install=yes
 enable_dlopen=unknown
-enable_win32_dll=no
+enable_win32_dll=yes
 ltmain=
 silent=
 srcdir=
@@ -684,6 +684,11 @@ if test "$with_gcc" = yes; then
     ;;
   cygwin* | mingw* | os2*)
     # We can build DLLs from non-PIC.
+    ;;
+  darwin* | rhapsody*)
+    # PIC is the default on this platform
+    # Common symbols not allowed in MH_DYLIB files
+    pic_flag='-fno-common'
     ;;
   amigaos*)
     # FIXME: we need at least 68020 code to build shared libraries, but
@@ -1414,6 +1419,23 @@ else
     hardcode_shlibpath_var=no
     ;;
 
+  darwin* | rhapsody*)
+    case "$host_os" in
+    rhapsody* | darwin1.[012])
+      allow_undefined_flag='-undefined suppress'
+      ;;
+    *) # Darwin 1.3 on
+      allow_undefined_flag='-undefined error'
+      ;;
+    esac
+    archive_cmds='$nonopt $(test .$module = .yes && echo -bundle || echo -dynamiclib) $allow_undefined_flag -o $lib $libobjs $deplibs $linkopts -install_name $rpath/$soname $verstring'
+    # We need to add '_' to the symbols in $export_symbols first
+    #archive_expsym_cmds="$archive_cmds"' && strip -s $export_symbols $lib'
+    hardcode_direct=yes
+    hardcode_shlibpath_var=no
+    whole_archive_flag_spec='-all_load $convenience'
+    ;;
+
   hpux9* | hpux10* | hpux11*)
     case "$host_os" in
     hpux9*) archive_cmds='$rm $objdir/$soname~$LD -b +b $install_libdir -o $objdir/$soname $libobjs $deplibs $linkopts~test $objdir/$soname = $lib || mv $objdir/$soname $lib' ;;
@@ -1500,12 +1522,6 @@ else
     fi
     hardcode_libdir_flag_spec='${wl}-rpath ${wl}$libdir'
     hardcode_libdir_separator=:
-    ;;
-  rhapsody*)
-    archive_cmds='$CC -bundle -undefined suppress -o $lib $libobjs $deplibs $linkopts'
-    hardcode_libdir_flags_spec='-L$libdir'
-    hardcode_direct=yes
-    hardcode_shlibpath_var=no
     ;;
                                        
   sco3.2v5*)
@@ -1984,6 +2000,27 @@ freebsd*)
   esac
   ;;
 
+darwin* | rhapsody*)
+  dynamic_linker="$host_os dyld"
+  version_type=darwin
+  need_lib_prefix=no
+  need_version=no
+  deplibs_check_method='file_magic Mach-O dynamically linked shared library'
+  file_magic_cmd='/usr/bin/file -L'
+  case "$host_os" in
+  rhapsody* | darwin1.[012])
+    file_magic_test_file='/System/Library/Frameworks/System.framework/System'
+    ;;
+  *) # Darwin 1.3 on
+    file_magic_test_file='/usr/lib/libSystem.dylib'
+    ;;
+  esac
+  library_names_spec='${libname}${release}${versuffix}.$(test .$module = .yes && echo so || echo dylib) ${libname}${release}${major}.$(test .$module = .yes && echo so || echo dylib) ${libname}.$(test .$module = .yes && echo so || echo dylib)'
+  soname_spec='${libname}${release}${major}.$(test .$module = .yes && echo so || echo dylib)'
+  shlibpath_overrides_runpath=yes
+  shlibpath_var=DYLD_LIBRARY_PATH
+  ;;
+
 gnu*)
   version_type=linux
   need_lib_prefix=no
@@ -2139,14 +2176,6 @@ osf3* | osf4* | osf5*)
   deplibs_check_method='pass_all'
   sys_lib_search_path_spec="/usr/shlib /usr/ccs/lib /usr/lib/cmplrs/cc /usr/lib /usr/local/lib /var/shlib"
   sys_lib_dlsearch_path_spec="$sys_lib_search_path_spec"
-  ;;
-
-rhapsody*)
-  version_type=sunos
-  library_names_spec='${libname}.so'
-  soname_spec='${libname}.so'
-  shlibpath_var=DYLD_LIBRARY_PATH
-  deplibs_check_method=pass_all
   ;;
 
 sco3.2v5*)
