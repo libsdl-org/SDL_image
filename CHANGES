@@ -1,5 +1,7 @@
 
 1.2.3:
+Marc Le Douarain - Sun, 22 Dec 2002 22:59:51 +0100
+ * Added 24-bit support to the ILBM format loader
 Sam Lantinga - Sun Oct 20 20:55:46 PDT 2002
  * Added shared library support for MacOS X
 Pete Shinners - Thu Jun 20 10:05:54 PDT 2002

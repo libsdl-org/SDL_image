@@ -21,10 +21,12 @@
 */
 
 /* $Id$ */
- 
+
 /* This is a ILBM image file loading framework
    Load IFF pictures, PBM & ILBM packing methods, with or without stencil
-   Written by Daniel Morais ( Daniel@Morais.com ) in September 2001
+   Written by Daniel Morais ( Daniel@Morais.com ) in September 2001.
+   24 bits ILBM files support added by Marc Le Douarain (mavati@club-internet.fr)
+   in December 2002.
 */
 
 #include <stdio.h>
@@ -62,11 +64,11 @@ int IMG_isLBM( SDL_RWops *src )
 	Uint8 magic[4+4+4];
 
 	is_LBM = 0;
-	if ( SDL_RWread( src, magic, 4+4+4, 1 ) ) 
+	if ( SDL_RWread( src, magic, 4+4+4, 1 ) )
 	{
-		if ( !memcmp( magic, "FORM", 4 ) && 
-			( !memcmp( magic + 8, "PBM ", 4 ) || 
-			  !memcmp( magic + 8, "ILBM", 4 ) ) ) 
+		if ( !memcmp( magic, "FORM", 4 ) &&
+			( !memcmp( magic + 8, "PBM ", 4 ) ||
+			  !memcmp( magic + 8, "ILBM", 4 ) ) )
 		{
 			is_LBM = 1;
 		}
@@ -78,7 +80,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 {
 	SDL_Surface *Image;
 	Uint8       id[4], pbm, colormap[MAXCOLORS*3], *MiniBuf, *ptr, count, color, msk;
-   Uint32      size, bytesloaded, nbcolors;
+	Uint32      size, bytesloaded, nbcolors;
 	Uint32      i, j, bytesperline, nbplanes, plane, h;
 	Uint32      remainingbytes;
 	int         width;
@@ -93,28 +95,28 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
 	if ( !SDL_RWread( src, id, 4, 1 ) ) 
 	{
-	   error="error reading IFF chunk";
+		error="error reading IFF chunk";
 		goto done;
 	}
 
 	/* Should be the size of the file minus 4+4 ( 'FORM'+size ) */
 	if ( !SDL_RWread( src, &size, 4, 1 ) )
 	{
-	   error="error reading IFF chunk size";
+		error="error reading IFF chunk size";
 		goto done;
 	}
 
 	/* As size is not used here, no need to swap it */
-	
-	if ( memcmp( id, "FORM", 4 ) != 0 ) 
+
+	if ( memcmp( id, "FORM", 4 ) != 0 )
 	{
-	   error="not a IFF file";
+		error="not a IFF file";
 		goto done;
 	}
 
-	if ( !SDL_RWread( src, id, 4, 1 ) ) 
+	if ( !SDL_RWread( src, id, 4, 1 ) )
 	{
-	   error="error reading IFF chunk";
+		error="error reading IFF chunk";
 		goto done;
 	}
 
@@ -124,7 +126,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 	if ( !memcmp( id, "PBM ", 4 ) ) pbm = 1;
 	else if ( memcmp( id, "ILBM", 4 ) )
 	{
-	   error="not a IFF picture";
+		error="not a IFF picture";
 		goto done;
 	}
 
@@ -132,29 +134,29 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
 	memset( &bmhd, 0, sizeof( BMHD ) );
 
-	while ( memcmp( id, "BODY", 4 ) != 0 ) 
+	while ( memcmp( id, "BODY", 4 ) != 0 )
 	{
 		if ( !SDL_RWread( src, id, 4, 1 ) ) 
 		{
-	      error="error reading IFF chunk";
+			error="error reading IFF chunk";
 			goto done;
 		}
 
-		if ( !SDL_RWread( src, &size, 4, 1 ) ) 
+		if ( !SDL_RWread( src, &size, 4, 1 ) )
 		{
-	      error="error reading IFF chunk size";
+			error="error reading IFF chunk size";
 			goto done;
 		}
 
 		bytesloaded = 0;
 
 		size = SDL_SwapBE32( size );
-		
+
 		if ( !memcmp( id, "BMHD", 4 ) ) /* Bitmap header */
 		{
 			if ( !SDL_RWread( src, &bmhd, sizeof( BMHD ), 1 ) )
 			{
-			   error="error reading BMHD chunk";
+				error="error reading BMHD chunk";
 				goto done;
 			}
 
@@ -173,7 +175,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 		{
 			if ( !SDL_RWread( src, &colormap, size, 1 ) )
 			{
-			   error="error reading CMAP chunk";
+				error="error reading CMAP chunk";
 				goto done;
 			}
 
@@ -183,7 +185,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
 		if ( memcmp( id, "BODY", 4 ) )
 		{
-		    if ( size & 1 )	++size;  	/* padding ! */
+			if ( size & 1 )	++size;  	/* padding ! */
 			size -= bytesloaded;
 			/* skip the remaining bytes of this chunk */
 			if ( size )	SDL_RWseek( src, size, SEEK_CUR );
@@ -200,7 +202,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
 	if ( pbm )                         /* File format : 'Packed Bitmap' */
 	{
-	   bytesperline *= 8;
+		bytesperline *= 8;
 		nbplanes = 1;
 	}
 
@@ -211,53 +213,57 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
 	if ( ( MiniBuf = (void *)malloc( bytesperline * nbplanes ) ) == NULL )
 	{
-	   error="no enough memory for temporary buffer";
+		error="no enough memory for temporary buffer";
 		goto done;
 	}
 
-	if ( ( Image = SDL_CreateRGBSurface( SDL_SWSURFACE, width, bmhd.h, 8, 0, 0, 0, 0 ) ) == NULL )
+	if ( ( Image = SDL_CreateRGBSurface( SDL_SWSURFACE, width, bmhd.h, bmhd.planes==24?24:8, 0, 0, 0, 0 ) ) == NULL )
 	   goto done;
 
 	/* Update palette informations */
 
-	Image->format->palette->ncolors = nbcolors;
-
-	ptr = &colormap[0];
-
-	for ( i=0; i<nbcolors; i++ )
+	/* There is no palette in 24 bits ILBM file */
+	if ( nbcolors>0 )
 	{
-	   Image->format->palette->colors[i].r = *ptr++;
-	   Image->format->palette->colors[i].g = *ptr++;
-	   Image->format->palette->colors[i].b = *ptr++;
+		Image->format->palette->ncolors = nbcolors;
+
+		ptr = &colormap[0];
+
+		for ( i=0; i<nbcolors; i++ )
+		{
+			Image->format->palette->colors[i].r = *ptr++;
+			Image->format->palette->colors[i].g = *ptr++;
+			Image->format->palette->colors[i].b = *ptr++;
+		}
 	}
 
 	/* Get the bitmap */
 
 	for ( h=0; h < bmhd.h; h++ )
 	{
-	    /* uncompress the datas of each planes */
-			  
-	   for ( plane=0; plane < nbplanes; plane++ )
+		/* uncompress the datas of each planes */
+
+		for ( plane=0; plane < nbplanes; plane++ )
 		{
-		   ptr = MiniBuf + ( plane * bytesperline );
-	
+			ptr = MiniBuf + ( plane * bytesperline );
+
 			remainingbytes = bytesperline;
-	
+
 			if ( bmhd.tcomp == 1 )	    /* Datas are compressed */
 			{
-			   do
+				do
 				{
-				   if ( !SDL_RWread( src, &count, 1, 1 ) )
+					if ( !SDL_RWread( src, &count, 1, 1 ) )
 					{
-					   error="error reading BODY chunk";
+						error="error reading BODY chunk";
 						goto done;
 					}
-	
+
 					if ( count & 0x80 )
 					{
-					   count ^= 0xFF;
-					   count += 2; /* now it */
-						
+						count ^= 0xFF;
+						count += 2; /* now it */
+
 						if ( !SDL_RWread( src, &color, 1, 1 ) )
 						{
 						   error="error reading BODY chunk";
@@ -267,7 +273,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 					}
 					else
 					{
-					   ++count;
+						++count;
 
 						if ( !SDL_RWread( src, ptr, count, 1 ) )
 						{
@@ -275,53 +281,95 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 							goto done;
 						}
 					}
-	
+
 					ptr += count;
 					remainingbytes -= count;
-	
+
 				} while ( remainingbytes > 0 );
 			}
-			else	
+			else
 			{
-			   if ( !SDL_RWread( src, ptr, bytesperline, 1 ) )
+				if ( !SDL_RWread( src, ptr, bytesperline, 1 ) )
 				{
-				   error="error reading BODY chunk";
+					error="error reading BODY chunk";
 					goto done;
 				}
 			}
 		}
-	
-	   /* One line has been read, store it ! */
+
+		/* One line has been read, store it ! */
 
 		ptr = Image->pixels;
-		ptr += h * width;
-	
+		if ( nbplanes==24 )
+			ptr += h * width * 3;
+		else
+			ptr += h * width;
+
 		if ( pbm )                 /* File format : 'Packed Bitmap' */
 		{
 		   memcpy( ptr, MiniBuf, width );
 		}
 		else		/* We have to un-interlace the bits ! */
 		{
-		   size = ( width + 7 ) / 8;
-	
-			for ( i=0; i < size; i++ )
+			if ( nbplanes!=24 )
 			{
-			   memset( ptr, 0, 8 );
-	
-				for ( plane=0; plane < nbplanes; plane++ )
+				size = ( width + 7 ) / 8;
+
+				for ( i=0; i < size; i++ )
 				{
-				   color = *( MiniBuf + i + ( plane * bytesperline ) );
-					msk = 0x80;
-	
+					memset( ptr, 0, 8 );
+
+					for ( plane=0; plane < nbplanes; plane++ )
+					{
+						color = *( MiniBuf + i + ( plane * bytesperline ) );
+						msk = 0x80;
+
+						for ( j=0; j<8; j++ )
+						{
+							if ( ( plane + j ) <= 7 ) ptr[j] |= (Uint8)( color & msk ) >> ( 7 - plane - j );
+							else 	                    ptr[j] |= (Uint8)( color & msk ) << ( plane + j - 7 );
+
+							msk >>= 1;
+						}
+					}
+					ptr += 8;
+				}
+			}
+			else
+			{
+				size = ( width + 7 ) / 8;
+				/* 24 bitplanes ILBM : R0...R7,G0...G7,B0...B7 */
+				for ( i=0; i<width; i=i+8 )
+				{
+					Uint8 maskBit = 0x80;
 					for ( j=0; j<8; j++ )
 					{
-					   if ( ( plane + j ) <= 7 ) ptr[j] |= (Uint8)( color & msk ) >> ( 7 - plane - j );
-						else 	                    ptr[j] |= (Uint8)( color & msk ) << ( plane + j - 7 );
-	
-						msk >>= 1;
+						Uint32 color24 = 0;
+						Uint32 maskColor24 = 1;
+						Uint8 dataBody;
+						for ( plane=0; plane < nbplanes; plane++ )
+						{
+							dataBody = MiniBuf[ plane*size+i/8 ];
+							if ( dataBody&maskBit )
+								color24 = color24 | maskColor24;
+							maskColor24 = maskColor24<<1;
+						}
+						if ( SDL_BYTEORDER == SDL_LIL_ENDIAN )
+						{
+							*ptr++ = color24>>16;
+							*ptr++ = color24>>8;
+							*ptr++ = color24;
+						}
+						else
+						{
+							*ptr++ = color24;
+							*ptr++ = color24>>8;
+							*ptr++ = color24>>16;
+						}
+
+						maskBit = maskBit>>1;
 					}
 				}
-				ptr += 8;
 			}
 		}
 	}
@@ -330,10 +378,10 @@ done:
 
 	if ( MiniBuf ) free( MiniBuf );
 
-	if ( error ) 
+	if ( error )
 	{
 		IMG_SetError( error );
-	   SDL_FreeSurface( Image );
+		SDL_FreeSurface( Image );
 		Image = NULL;
 	}
 
