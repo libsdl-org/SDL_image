@@ -2,6 +2,8 @@
 1.2.1:
 Mattias Engdegård - Sat Apr 28 11:30:22 PDT 2001
  * Added support for loading XPM image data directly
+Paul Jenner - Sat, 14 Apr 2001 09:20:38 -0700 (PDT)
+ * Added support for building RPM directly from tar archive
 
 1.2.0:
 Sam Lantinga - Wed Apr  4 12:42:20 PDT 2001

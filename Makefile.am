@@ -24,10 +24,12 @@ EXTRA_DIST =			\
 	VisualC.zip		\
 	MPWmake.sea.bin		\
 	IMG_xxx.c		\
+	SDL_image.spec		\
+	SDL_image.spec.in	\
 	autogen.sh
 
 libSDL_image_la_LDFLAGS = 		\
-        -release $(LT_RELEASE)	\
+	-release $(LT_RELEASE)	\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
 libSDL_image_la_LIBADD = @IMG_LIBS@
 
@@ -36,10 +38,9 @@ bin_PROGRAMS = showimage
 showimage_LDADD = libSDL_image.la
 
 # Rule to build tar-gzipped distribution package
-$(PACKAGE)-$(VERSION).tar.gz: dist
+$(PACKAGE)-$(VERSION).tar.gz: distcheck
 
 # Rule to build RPM distribution package
 rpm: $(PACKAGE)-$(VERSION).tar.gz
-	cp $(PACKAGE)-$(VERSION).tar.gz /usr/src/redhat/SOURCES
-	rpm -ba --nodeps $(PACKAGE).spec
+	rpm -ta $(PACKAGE)-$(VERSION).tar.gz
 
