@@ -42,6 +42,7 @@ AC_CANONICAL_TARGET
 
 dnl Setup for automake
 AM_INIT_AUTOMAKE(SDL_image, $VERSION)
+AM_MAINTAINER_MODE
 
 dnl Check for tools
 
