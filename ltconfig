@@ -1433,7 +1433,7 @@ else
     #archive_expsym_cmds="$archive_cmds"' && strip -s $export_symbols $lib'
     hardcode_direct=yes
     hardcode_shlibpath_var=no
-    whole_archive_flag_spec='-all_load $convenience'
+    whole_archive_flag_spec='$convenience'
     ;;
 
   hpux9* | hpux10* | hpux11*)
