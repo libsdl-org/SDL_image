@@ -59,17 +59,6 @@ dnl Now check if the installed SDL is sufficiently new. (Also sanity
 dnl checks the results of sdl-config to some extent
 dnl
       rm -f conf.sdltest
-      case "$target" in
-          *-*-darwin*)
-            cp -r `$SDL_CONFIG --nib` .
-            dnl create an Info.plist file, unless one exists
-            if test -f Info.plist ; then
-             :
-            else
-             cp `$SDL_CONFIG --plist` .
-            fi
-              ;;
-      esac
       AC_TRY_RUN([
 #include <stdio.h>
 #include <stdlib.h>
