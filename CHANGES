@@ -1,4 +1,8 @@
 
+1.2.0:
+Sam Lantinga - Wed Apr  4 12:42:20 PDT 2001
+ * Synchronized release version with SDL 1.2.0
+
 1.1.1:
 Berni - Wed Mar  7 09:18:02 PST 2001
  * Added initial GIMP XCF support (disabled by default)
