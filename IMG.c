@@ -102,28 +102,32 @@ SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, char *type)
 	start = SDL_RWtell(src);
 	image = NULL;
 	for ( i=0; i < ARRAYSIZE(supported); ++i ) {
-	        if( (supported[i].is
-		     && (SDL_RWseek(src, start, SEEK_SET),
-			 supported[i].is(src)))
-		    || (type && IMG_string_equals(type, supported[i].type))) {
-#ifdef DEBUG_IMGLIB
-			fprintf(stderr, "IMGLIB: Loading image as %s\n",
-							supported[i].type);
-#endif
+		if(supported[i].is) {
 			SDL_RWseek(src, start, SEEK_SET);
-			image = supported[i].load(src);
-			break;
+			if(!supported[i].is(src))
+				continue;
+		} else {
+			/* magicless format */
+			if(!type
+			   || !IMG_string_equals(type, supported[i].type))
+				continue;
 		}
+#ifdef DEBUG_IMGLIB
+		fprintf(stderr, "IMGLIB: Loading image as %s\n",
+			supported[i].type);
+#endif
+		SDL_RWseek(src, start, SEEK_SET);
+		image = supported[i].load(src);
+		if(freesrc)
+			SDL_RWclose(src);
+		return image;
 	}
 
-	/* Clean up, check for errors, and return */
 	if ( freesrc ) {
 		SDL_RWclose(src);
 	}
-	if ( i == ARRAYSIZE(supported) ) {
-		IMG_SetError("Unsupported image format");
-	}
-	return(image);
+	IMG_SetError("Unsupported image format");
+	return NULL;
 }
 
 /* Invert the alpha of a surface for use with OpenGL
