@@ -123,7 +123,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
 					  NULL,NULL,NULL);
 	if (png_ptr == NULL){
-		IMG_SetError("Couldn't allocate memory for PNG file");
+		IMG_SetError("Couldn't allocate memory for PNG file or incompatible PNG dll");
 		goto done;
 	}
 
@@ -249,8 +249,13 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	/* Read the entire image in one go */
 	png_read_image(png_ptr, row_pointers);
 
-	/* read rest of file, get additional chunks in info_ptr - REQUIRED */
+	/* and we're done!  (png_read_end() can be omitted if no processing of
+	 * post-IDAT text/time/etc. is desired)
+	 * In some cases it can't read PNG's created by some popular programs (ACDSEE),
+	 * we do not want to process comments, so we omit png_read_end
+
 	png_read_end(png_ptr, info_ptr);
+	*/
 
 	/* Load the palette, if any */
 	palette = surface->format->palette;
