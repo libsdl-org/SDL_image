@@ -52,11 +52,11 @@ rm -rf $RPM_BUILD_ROOT
 %doc README CHANGES COPYING
 %{prefix}/bin/showimage
 %{prefix}/lib/lib*.so.*
-%{prefix}/lib/lib*.so
 
 %files devel
 %defattr(-,root,root)
-%{prefix}/lib/*a
+%{prefix}/lib/lib*.a
+%{prefix}/lib/lib*.so
 %{prefix}/include/SDL/
 
 %changelog
