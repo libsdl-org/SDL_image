@@ -12,9 +12,9 @@ Group: System Environment/Libraries
 BuildRoot: /var/tmp/%{name}-buildroot
 Prefix: %{_prefix}
 Packager: Hakan Tandogan <hakan@iconsult.com>
-BuildRequires: SDL-devel
-BuildRequires: libjpeg-devel
-BuildRequires: libpng-devel
+#BuildRequires: SDL-devel
+#BuildRequires: libjpeg-devel
+#BuildRequires: libpng-devel
 #BuildRequires: libtiff-devel
 
 %description
