@@ -175,6 +175,9 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 					Uint8 byte = *src++;
 					for(j = 7; j >= 0; j--) {
 						unsigned bit = (byte >> j) & 1;
+						/* skip padding bits */
+						if (i * 8 + j >= width)
+							continue;
 						row[x++] |= bit << plane;
 					}
 				}

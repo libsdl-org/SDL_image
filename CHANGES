@@ -1,4 +1,6 @@
 1.2.4:
+Holger Schemel - Mon, 04 Aug 2003 21:50:52 +0200
+ * Fixed crash loading certain PCX images
 Kyle Davenport - Sat, 19 Apr 2003 17:13:31 -0500
  * Added .la files to the development RPM, fixing RPM build on RedHat 8
 
