@@ -24,12 +24,12 @@
 
 /* This is a ILBM image file loading framework
    Load IFF pictures, PBM & ILBM packing methods, with or without stencil
-   Written by Daniel Morais ( Daniel@Morais.com ) in September 2001.
-   24 bits ILBM files support added by Marc Le Douarain (mavati AT club-internet
-   POINT fr) in December 2002.
+   Written by Daniel Morais ( Daniel AT Morais DOT com ) in September 2001.
+   24 bits ILBM files support added by Marc Le Douarain (http://www.multimania.com/mavati)
+   in December 2002.
    EHB and HAM (specific Amiga graphic chip modes) support added by Marc Le Douarain
-   (mavati AT club-internet POINT fr) in December 2003.
-   Stencil and colorkey fixes by David Raulo (david.raulo@free.fr) in February 2004.
+   (http://www.multimania.com/mavati) in December 2003.
+   Stencil and colorkey fixes by David Raulo (david.raulo AT free DOT fr) in February 2004.
 */
 
 #include <stdio.h>
@@ -253,6 +253,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 	/* There is no palette in 24 bits ILBM file */
 	if ( nbcolors>0 && flagHAM==0 )
 	{
+		int nbrcolorsfinal = 1 << nbplanes;
 		ptr = &colormap[0];
 
 		for ( i=0; i<nbcolors; i++ )
@@ -281,14 +282,16 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
 		/* If nbcolors < 2^nbplanes, repeat the colormap */
 		/* This happens when pictures have a stencil mask */
-		for ( i=nbcolors; i < (1 << nbplanes); i++ )
+		if ( nbrcolorsfinal > (1<<bmhd.planes) ) {
+			nbrcolorsfinal = (1<<bmhd.planes);
+		}
+		for ( i=nbcolors; i < nbrcolorsfinal; i++ )
 		{
 			Image->format->palette->colors[i].r = Image->format->palette->colors[i%nbcolors].r;
 			Image->format->palette->colors[i].g = Image->format->palette->colors[i%nbcolors].g;
 			Image->format->palette->colors[i].b = Image->format->palette->colors[i%nbcolors].b;
 		}
-
-		Image->format->palette->ncolors = 1 << nbplanes;
+		Image->format->palette->ncolors = nbrcolorsfinal;
 	}
 
 	/* Get the bitmap */
