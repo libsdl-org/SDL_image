@@ -1079,7 +1079,18 @@ compiler."
 	    # These systems don't actually have c library (as such)
 	    continue
 	    ;;
+          *-*-openbsd*)
+            # Do not include libc due to us having libc/libc_r.
+            continue
+            ;;
 	  esac
+        elif test "$arg" = "-lc_r"; then
+          case "$host" in
+          *-*-openbsd*)
+            # Do not include libc_r directly, use -pthread flag.
+            continue
+            ;;
+          esac
 	elif test "$arg" = "-lm"; then
 	  case "$host" in
 	  *-*-cygwin* | *-*-beos*)
@@ -1090,6 +1101,10 @@ compiler."
 	fi
 	deplibs="$deplibs $arg"
 	;;
+
+      -?thread)
+        deplibs="$deplibs $arg"
+        ;;
 
       -module)
 	module=yes
@@ -1798,6 +1813,9 @@ compiler."
         *-*-rhapsody*)
 	  # rhapsody is a little odd...
 	  deplibs="$deplibs -framework System"
+	  ;;
+	*-*-openbsd*)
+	  # do not include libc due to us having libc/libc_r.
 	  ;;
 	*)
 	  # Add libc to deplibs on all other systems.

@@ -1105,6 +1105,9 @@ cygwin* | mingw*)
     with_gnu_ld=no
   fi
   ;;
+openbsd*)
+  with_gnu_ld=no
+  ;;
 
 esac
 
@@ -1155,6 +1158,12 @@ EOF
     ;;
 
   cygwin* | mingw*)
+    # Special flag that tells Cygwin to use the native MSVC runtime
+    case "$host_os" in
+    cygwin*)
+      cygwin_use_msvcrt=true
+      ;;
+    esac
     # hardcode_libdir_flag_spec is actually meaningless, as there is
     # no search path for DLLs.
     hardcode_libdir_flag_spec='-L$libdir'
@@ -1165,13 +1174,40 @@ EOF
     # then regenerate the def file from the symbol export list, so that
     # the compiled dll only exports the symbol export list.
     # Be careful not to strip the DATA tag left by newer dlltools.
-    export_symbols_cmds='test -f $objdir/$soname-ltdll.c || sed -e "/^# \/\* ltdll\.c starts here \*\//,/^# \/\* ltdll.c ends here \*\// { s/^# //; p; }" -e d < $0 > $objdir/$soname-ltdll.c~
+    if [ "$cygwin_use_msvcrt" = "true" ]; then
+      export_symbols_cmds='test -f $objdir/$soname-ltdll.c || sed -e "/^# \/\* ltdll\.c starts here \*\//,/^# \/\* ltdll.c ends here \*\// { s/^# //; p; }" -e d < $0 > $objdir/$soname-ltdll.c~
+      test -f $objdir/$soname-ltdll.$objext || (cd $objdir && $CC -U__CYGWIN__ -U__CYGWIN32__ -c $soname-ltdll.c)~
+      $DLLTOOL --exclude-symbols _DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --output-def $objdir/$soname-def  $objdir/$soname-ltdll.$objext $libobjs $convenience~
+      sed -e "1,/EXPORTS/d" -e "s/ @ [0-9]*//" -e "s/ *;.*$//" < $objdir/$soname-def > $export_symbols'
+    else
+      export_symbols_cmds='test -f $objdir/$soname-ltdll.c || sed -e "/^# \/\* ltdll\.c starts here \*\//,/^# \/\* ltdll.c ends here \*\// { s/^# //; p; }" -e d < $0 > $objdir/$soname-ltdll.c~
       test -f $objdir/$soname-ltdll.$objext || (cd $objdir && $CC -c $soname-ltdll.c)~
       $DLLTOOL --exclude-symbols _DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --output-def $objdir/$soname-def  $objdir/$soname-ltdll.$objext $libobjs $convenience~
       sed -e "1,/EXPORTS/d" -e "s/ @ [0-9]*//" -e "s/ *;.*$//" < $objdir/$soname-def > $export_symbols'
+    fi
 
     # If DATA tags from a recent dlltool are present, honour them!
-    archive_expsym_cmds='echo EXPORTS > $objdir/$soname-def~
+    if [ "$cygwin_use_msvcrt" = "true" ]; then
+      archive_expsym_cmds='echo EXPORTS > $objdir/$soname-def~
+      _lt_hint=1;
+      cat $export_symbols | while read symbol; do
+        set dummy \$symbol;
+        case \$# in
+          2) echo "	\$2 @ \$_lt_hint ; " >> $objdir/$soname-def;;
+          *) echo "     \$2 @ \$_lt_hint \$3 ; " >> $objdir/$soname-def;;
+        esac;
+	_lt_hint=`expr 1 + \$_lt_hint`;
+      done~
+      test -f $objdir/$soname-ltdll.c || sed -e "/^# \/\* ltdll\.c starts here \*\//,/^# \/\* ltdll.c ends here \*\// { s/^# //; p; }" -e d < $0 > $objdir/$soname-ltdll.c~
+      test -f $objdir/$soname-ltdll.$objext || (cd $objdir && $CC -U__CYGWIN__ -U__CYGWIN32__ -c $soname-ltdll.c)~
+      $CC -Wl,--base-file,$objdir/$soname-base -Wl,--dll -nostartfiles -Wl,-e,_DllMain@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs $linkopts -L/usr/lib/mingw -mno-cygwin~
+      $DLLTOOL --as=$AS --dllname $soname --exclude-symbols _DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
+      $CC -Wl,--base-file,$objdir/$soname-base $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,_DllMain@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs $linkopts -L/usr/lib/mingw -mno-cygwin~
+      $DLLTOOL --as=$AS --dllname $soname --exclude-symbols _DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
+      $CC $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,_DllMain@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs $linkopts -L/usr/lib/mingw -mno-cygwin~
+      : strip_is_broken_with_dlls_on_win95B - strip $lib'
+    else
+      archive_expsym_cmds='echo EXPORTS > $objdir/$soname-def~
       _lt_hint=1;
       cat $export_symbols | while read symbol; do
         set dummy \$symbol;
@@ -1189,8 +1225,8 @@ EOF
       $DLLTOOL --as=$AS --dllname $soname --exclude-symbols _DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
       $CC $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,_DllMain@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs $linkopts~
       : strip_is_broken_with_dlls_on_win95B - strip $lib'
-
-      old_archive_from_new_cmds='$DLLTOOL --as=$AS --dllname $soname --def $objdir/$soname-def --output-lib $objdir/$libname.a'
+    fi
+    old_archive_from_new_cmds='$DLLTOOL --as=$AS --dllname $soname --def $objdir/$soname-def --output-lib $objdir/$libname.a'
     ;;
 
   netbsd*)
@@ -1403,10 +1439,21 @@ else
     ;;
 
   openbsd*)
-    archive_cmds='$LD -Bshareable -o $lib $libobjs $deplibs $linkopts'
-    hardcode_libdir_flag_spec='-R$libdir'
     hardcode_direct=yes
     hardcode_shlibpath_var=no
+    case "$host_os" in
+      openbsd[01].* | openbsd2.[0-7] | openbsd2.[0-7].*)
+	archive_cmds='$LD -Bshareable -o $lib $libobjs $deplibs $linkopts'
+	hardcode_libdir_flag_spec='-R$libdir'
+      ;;
+      *)
+	archive_cmds='$CC -shared $pic_flag -o $lib $libobjs $deplibs $linkopts'
+	hardcode_libdir_flag_spec='${wl}-rpath,$libdir'
+	 if [ "`/usr/bin/file /usr/lib/libc.so.* | grep ELF`" != "" ]; then
+	   export_dynamic_flag_spec='${wl}-E'
+	 fi
+      ;;
+    esac
     ;;
 
   os2*)
@@ -1883,7 +1930,7 @@ cygwin* | mingw*)
     # See where the system libraries really are - /usr/lib won't cut it
     libuser32=`$CC --print-file-name=libuser32.a`
     win32libs=`expr $libuser32 : '\(.*\)/.*'`
-    sys_lib_search_path_spec="$sys_lib_search_path $win32libs"
+    sys_lib_search_path_spec="$sys_lib_search_path_spec /usr/lib/w32api $win32libs"
   fi
   lt_cv_dlopen="LoadLibrary"
   lt_cv_dlopen_libs=
@@ -1948,7 +1995,8 @@ hpux9* | hpux10* | hpux11*)
   case "$host_os" in
   hpux10.20*)
     # TODO:  Does this work for hpux-11 too?
-    deplibs_check_method='file_magic (s[0-9][0-9][0-9]|PA-RISC[0-9].[0-9]) shared library'
+  #  deplibs_check_method='file_magic (s[0-9][0-9][0-9]|PA-RISC[0-9].[0-9]) shared library'
+    deplibs_check_method="unknown"
     file_magic_cmd=/usr/bin/file
     file_magic_test_file=/usr/lib/libc.sl
     ;;
@@ -2029,13 +2077,10 @@ netbsd*)
 
 openbsd*)
   version_type=sunos
-  if test "$with_gnu_ld" = yes; then
-    need_lib_prefix=no
-    need_version=no
-  fi
   library_names_spec='${libname}${release}.so$versuffix ${libname}.so$versuffix'
   finish_cmds='PATH="\$PATH:/sbin" ldconfig -m $libdir'
   shlibpath_var=LD_LIBRARY_PATH
+  deplibs_check_method='pass_all'
   ;;
 
 os2*)
