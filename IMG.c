@@ -43,6 +43,7 @@ static struct {
 	{ "BMP", IMG_isBMP, IMG_LoadBMP_RW },
 	{ "PNM", IMG_isPNM, IMG_LoadPNM_RW }, /* P[BGP]M share code */
 	{ "XPM", IMG_isXPM, IMG_LoadXPM_RW },
+	{ "XCF", IMG_isXCF, IMG_LoadXCF_RW },
 	{ "PCX", IMG_isPCX, IMG_LoadPCX_RW },
 	{ "GIF", IMG_isGIF, IMG_LoadGIF_RW },
 	{ "JPG", IMG_isJPG, IMG_LoadJPG_RW },
