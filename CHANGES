@@ -1,5 +1,7 @@
 
 1.1.1:
+Sam Lantinga - Mon Dec 18 02:49:29 PST 2000
+ * Added a Visual C++ project including JPEG and PNG loading support
 Mattias Engdegård - Wed Dec  6 10:00:07 PST 2000
  * Improved the XPM loading code
 
