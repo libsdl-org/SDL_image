@@ -118,7 +118,7 @@ if test x$enable_png = xyes; then
     AC_CHECK_LIB(png, png_create_read_struct, have_libpng=yes, , -lz)
     if test x$have_libpng != xyes; then
         AC_MSG_WARN([
-*** Unable to find PNG library (http://www.cdrom.com/pub/png/)
+*** Unable to find PNG library (http://www.libpng.org/pub/png/libpng.html)
 ])
     fi
     AC_CHECK_LIB(z, uncompress, have_libz=yes)

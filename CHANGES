@@ -1,5 +1,7 @@
 
 1.2.1:
+Sam Lantinga - Sun Aug 19 01:51:44 PDT 2001
+ * Added Project Builder projects for building MacOS X framework
 Mattias Engdegård - Tue Jul 31 04:32:29 PDT 2001
  * Fixed transparency in 8-bit PNG files
 Mattias Engdegård - Sat Apr 28 11:30:22 PDT 2001
