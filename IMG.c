@@ -95,6 +95,8 @@ SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, char *type)
 	/* See whether or not this data source can handle seeking */
 	if ( SDL_RWseek(src, 0, SEEK_CUR) < 0 ) {
 		IMG_SetError("Can't seek in this data source");
+		if(freesrc)
+			SDL_RWclose(src);
 		return(NULL);
 	}
 
