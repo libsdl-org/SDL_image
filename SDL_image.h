@@ -24,16 +24,39 @@
 
 /* A simple library to load images of various formats as SDL surfaces */
 
-#ifndef _IMG_h
-#define _IMG_h
+#ifndef _SDL_image_h
+#define _SDL_image_h
 
 #include "SDL.h"
+#include "SDL_version.h"
 #include "begin_code.h"
 
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/* Printable format: "%d.%d.%d", MAJOR, MINOR, PATCHLEVEL
+*/
+#define SDL_IMAGE_MAJOR_VERSION	1
+#define SDL_IMAGE_MINOR_VERSION	2
+#define SDL_IMAGE_PATCHLEVEL	4
+
+/* This macro can be used to fill a version structure with the compile-time
+ * version of the SDL_image library.
+ */
+#define SDL_IMAGE_VERSION(X)						\
+{									\
+	(X)->major = SDL_IMAGE_MAJOR_VERSION;				\
+	(X)->minor = SDL_IMAGE_MINOR_VERSION;				\
+	(X)->patch = SDL_IMAGE_PATCHLEVEL;				\
+}
+
+/* This function gets the version of the dynamically linked SDL_image library.
+   it should NOT be used to fill a version structure, instead you should
+   use the SDL_IMAGE_VERSION() macro.
+ */
+extern DECLSPEC const SDL_version * SDLCALL IMG_Linked_Version(void);
 
 /* Load an image from an SDL data source.
    The 'type' may be one of: "BMP", "GIF", "PNG", etc.
@@ -90,4 +113,4 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArray(char **xpm);
 #endif
 #include "close_code.h"
 
-#endif /* _IMG_h */
+#endif /* _SDL_image_h */

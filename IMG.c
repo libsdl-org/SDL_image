@@ -52,6 +52,13 @@ static struct {
 	{ "PNG", IMG_isPNG, IMG_LoadPNG_RW }
 };
 
+const SDL_version *IMG_Linked_Version(void)
+{
+	static SDL_version linked_version;
+	SDL_IMAGE_VERSION(&linked_version);
+	return(&linked_version);
+}
+
 /* Load an image from a file */
 SDL_Surface *IMG_Load(const char *file)
 {
