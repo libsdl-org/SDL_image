@@ -1,5 +1,11 @@
 configure
+config.log
+config.status
+config.cache
 aclocal.m4
+autom4te.cache
+libtool
+depcomp
 Makefile.in
 Makefile
 .libs
@@ -7,3 +13,5 @@ Makefile
 *.o
 *.lo
 *.la
+*.spec
+showimage
