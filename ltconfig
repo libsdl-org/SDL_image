@@ -1213,9 +1213,9 @@ EOF
       test -f $objdir/$soname-ltdll.c || sed -e "/^# \/\* ltdll\.c starts here \*\//,/^# \/\* ltdll.c ends here \*\// { s/^# //; p; }" -e d < $0 > $objdir/$soname-ltdll.c~
       test -f $objdir/$soname-ltdll.$objext || (cd $objdir && $CC -U__CYGWIN__ -U__CYGWIN32__ -c $soname-ltdll.c)~
       $CC -Wl,--base-file,$objdir/$soname-base -Wl,--dll -nostartfiles -Wl,-e,_DllMain@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs $linkopts -L/usr/lib/mingw -mno-cygwin~
-      $DLLTOOL --as=$AS --dllname $soname --exclude-symbols _DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
+      $DLLTOOL --dllname $soname --exclude-symbols _DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
       $CC -Wl,--base-file,$objdir/$soname-base $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,_DllMain@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs $linkopts -L/usr/lib/mingw -mno-cygwin~
-      $DLLTOOL --as=$AS --dllname $soname --exclude-symbols _DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
+      $DLLTOOL --dllname $soname --exclude-symbols _DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
       $CC $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,_DllMain@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs $linkopts -L/usr/lib/mingw -mno-cygwin~
       : strip_is_broken_with_dlls_on_win95B - strip $lib'
     else
@@ -1232,13 +1232,13 @@ EOF
       test -f $objdir/$soname-ltdll.c || sed -e "/^# \/\* ltdll\.c starts here \*\//,/^# \/\* ltdll.c ends here \*\// { s/^# //; p; }" -e d < $0 > $objdir/$soname-ltdll.c~
       test -f $objdir/$soname-ltdll.$objext || (cd $objdir && $CC -c $soname-ltdll.c)~
       $CC -Wl,--base-file,$objdir/$soname-base -Wl,--dll -nostartfiles -Wl,-e,_DllMain@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs $linkopts~
-      $DLLTOOL --as=$AS --dllname $soname --exclude-symbols _DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
+      $DLLTOOL --dllname $soname --exclude-symbols _DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
       $CC -Wl,--base-file,$objdir/$soname-base $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,_DllMain@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs $linkopts~
-      $DLLTOOL --as=$AS --dllname $soname --exclude-symbols _DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
+      $DLLTOOL --dllname $soname --exclude-symbols _DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
       $CC $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,_DllMain@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs $linkopts~
       : strip_is_broken_with_dlls_on_win95B - strip $lib'
     fi
-    old_archive_from_new_cmds='$DLLTOOL --as=$AS --dllname $soname --def $objdir/$soname-def --output-lib $objdir/$libname.a'
+    old_archive_from_new_cmds='$DLLTOOL --dllname $soname --def $objdir/$soname-def --output-lib $objdir/$libname.a'
     ;;
 
   netbsd*)
