@@ -84,7 +84,7 @@ extern DECLSPEC int IMG_string_equals(const char *str1, const char *str2);
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
-};
+}
 #endif
 #include "close_code.h"
 
