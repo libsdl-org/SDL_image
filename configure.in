@@ -136,7 +136,7 @@ if test x$enable_png = xyes; then
     AC_CHECK_LIB(z, uncompress, have_libz=yes)
     if test x$have_libz != xyes; then
         AC_MSG_WARN([
-*** Unable to find Zlib library (http://www.cdrom.com/pub/infozip/zlib/)
+*** Unable to find Zlib library (http://www.gzip.org/zlib/)
 ])
     fi
     if test x$have_libpng = xyes -a x$have_libz = xyes; then
