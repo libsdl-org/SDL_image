@@ -2005,7 +2005,8 @@ darwin* | rhapsody*)
   version_type=darwin
   need_lib_prefix=no
   need_version=no
-  deplibs_check_method='file_magic Mach-O dynamically linked shared library'
+  #deplibs_check_method='file_magic Mach-O dynamically linked shared library'
+  deplibs_check_method='pass_all'
   file_magic_cmd='/usr/bin/file -L'
   case "$host_os" in
   rhapsody* | darwin1.[012])

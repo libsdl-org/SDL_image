@@ -953,6 +953,7 @@ compiler."
 	  ;;
 	framework)
 	  linkopts="$linkopts -framework $arg"
+	  compile_command="$compile_command -framework $arg"
 	  prev=
 	  continue
 	  ;;
