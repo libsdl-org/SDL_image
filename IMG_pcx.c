@@ -29,6 +29,8 @@
  *  8 bits/pixel in single-planar format (8 bits/plane/pixel)
  *  24 bits/pixel in 3-plane format (8 bits/plane/pixel)
  *
+ * (The <8bpp formats are expanded to 8bpp surfaces)
+ *
  * Doesn't support:
  *  single-planar packed-pixel formats other than 8bpp
  *  4-plane 32bpp format with a fourth "intensity" plane

@@ -23,31 +23,38 @@
 */
 
 /*
- * PPM (portable pixmap) image loader:
+ * PNM (portable anymap) image loader:
  *
- * Supports: ASCII (P3) and binary (P6) formats
+ * Supports: PBM, PGM and PPM, ASCII and binary formats
+ * (PBM and PGM are loaded as 8bpp surfaces)
  * Does not support: maximum component value > 255
- *
- * TODO: add PGM (greyscale) and PBM (monochrome bitmap) support.
- *       Should be easy since almost all code is already in place
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 
 #include "SDL_image.h"
 
-#ifdef LOAD_PPM
+#ifdef LOAD_PNM
 
 /* See if an image is contained in a data source */
-int IMG_isPPM(SDL_RWops *src)
+int IMG_isPNM(SDL_RWops *src)
 {
 	char magic[2];
 
-	/* "P3" is the ASCII PPM format, "P6" the binary PPM format */
+	/*
+	 * PNM magic signatures:
+	 * P1	PBM, ascii format
+	 * P2	PGM, ascii format
+	 * P3	PPM, ascii format
+	 * P4	PBM, binary format
+	 * P5	PGM, binary format
+	 * P6	PPM, binary format
+	 */
 	return (SDL_RWread(src, magic, 2, 1)
-		&& magic[0] == 'P' && (magic[1] == '3' || magic[1] == '6'));
+		&& magic[0] == 'P' && magic[1] >= '1' && magic[1] <= '6');
 }
 
 /* read a non-negative integer from the source. return -1 upon error */
@@ -87,70 +94,117 @@ static int ReadNumber(SDL_RWops *src)
 	return(number);
 }
 
-SDL_Surface *IMG_LoadPPM_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 {
 	SDL_Surface *surface = NULL;
 	int width, height;
 	int maxval, y, bpl;
 	Uint8 *row;
+	Uint8 *buf = NULL;
 	char *error = NULL;
 	Uint8 magic[2];
 	int ascii;
+	enum { PBM, PGM, PPM } kind;
 
-	if ( ! src ) {
-		goto done;
-	}
+#define ERROR(s) do { error = (s); goto done; } while(0)
+
+	if(!src)
+		return NULL;
 
 	SDL_RWread(src, magic, 2, 1);
-	ascii = (magic[1] == '3');
+	kind = magic[1] - '1';
+	ascii = 1;
+	if(kind >= 3) {
+		ascii = 0;
+		kind -= 3;
+	}
 
 	width = ReadNumber(src);
 	height = ReadNumber(src);
-	if(width <= 0 || height <= 0) {
-		error = "Unable to read image width and height";
-		goto done;
-	}
+	if(width <= 0 || height <= 0)
+		ERROR("Unable to read image width and height");
 
-	maxval = ReadNumber(src);
-	if(maxval <= 0 || maxval > 255) {
-		error = "unsupported ppm format";
-		goto done;
-	}
-	/* binary PPM allows just a single character of whitespace after
-	   the maxval, and we've already consumed it */
+	if(kind != PBM) {
+		maxval = ReadNumber(src);
+		if(maxval <= 0 || maxval > 255)
+			ERROR("unsupported PNM format");
+	} else
+		maxval = 255;	/* never scale PBMs */
 
-	/* 24-bit surface in R,G,B byte order */
-	surface = SDL_AllocSurface(SDL_SWSURFACE, width, height, 24,
+	/* binary PNM allows just a single character of whitespace after
+	   the last parameter, and we've already consumed it */
+
+	if(kind == PPM) {
+		/* 24-bit surface in R,G,B byte order */
+		surface = SDL_AllocSurface(SDL_SWSURFACE, width, height, 24,
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
-				   0x000000ff, 0x0000ff00, 0x00ff0000,
+					   0x000000ff, 0x0000ff00, 0x00ff0000,
 #else
-				   0x00ff0000, 0x0000ff00, 0x000000ff,
+					   0x00ff0000, 0x0000ff00, 0x000000ff,
 #endif
-				   0);
-	if ( surface == NULL ) {
-		error = "Out of memory";
-		goto done;
+					   0);
+	} else {
+		/* load PBM/PGM as 8-bit indexed images */
+		surface = SDL_AllocSurface(SDL_SWSURFACE, width, height, 8,
+					   0, 0, 0, 0);
+	}
+	if ( surface == NULL )
+		ERROR("Out of memory");
+	bpl = width * surface->format->BytesPerPixel;
+	if(kind == PGM) {
+		SDL_Color *c = surface->format->palette->colors;
+		int i;
+		for(i = 0; i < 256; i++)
+			c[i].r = c[i].g = c[i].b = i;
+		surface->format->palette->ncolors = 256;
+	} else if(kind == PBM) {
+		/* for some reason PBM has 1=black, 0=white */
+		SDL_Color *c = surface->format->palette->colors;
+		c[0].r = c[0].g = c[0].b = 255;
+		c[1].r = c[1].g = c[1].b = 0;
+		surface->format->palette->ncolors = 2;
+		bpl = (width + 7) >> 3;
+		buf = malloc(bpl);
+		if(buf == NULL)
+			ERROR("Out of memory");
 	}
 
 	/* Read the image into the surface */
 	row = surface->pixels;
-	bpl = width * 3;
 	for(y = 0; y < height; y++) {
 		if(ascii) {
 			int i;
-			for(i = 0; i < bpl; i++) {
-				int c;
-				c = ReadNumber(src);
-				if(c < 0) {
-					error = "file truncated";
-					goto done;
+			if(kind == PBM) {
+				for(i = 0; i < width; i++) {
+					Uint8 ch;
+					do {
+						if(!SDL_RWread(src, &ch,
+							       1, 1))
+						       ERROR("file truncated");
+						ch -= '0';
+					} while(ch > 1);
+					row[i] = ch;
 				}
-				row[i] = c;
+			} else {
+				for(i = 0; i < bpl; i++) {
+					int c;
+					c = ReadNumber(src);
+					if(c < 0)
+						ERROR("file truncated");
+					row[i] = c;
+				}
 			}
 		} else {
-			if(!SDL_RWread(src, row, bpl, 1)) {
-				error = "file truncated";
-				goto done;
+			Uint8 *dst = (kind == PBM) ? buf : row;
+			if(!SDL_RWread(src, dst, bpl, 1))
+				ERROR("file truncated");
+			if(kind == PBM) {
+				/* expand bitmap to 8bpp */
+				int i;
+				for(i = 0; i < width; i++) {
+					int bit = 7 - (i & 7);
+					row[i] = (buf[i >> 3] >> bit) & 1;
+				}
 			}
 		}
 		if(maxval < 255) {
@@ -162,6 +216,7 @@ SDL_Surface *IMG_LoadPPM_RW(SDL_RWops *src)
 		row += surface->pitch;
 	}
 done:
+	free(buf);
 	if(error) {
 		SDL_FreeSurface(surface);
 		IMG_SetError(error);
@@ -173,15 +228,15 @@ done:
 #else
 
 /* See if an image is contained in a data source */
-int IMG_isPPM(SDL_RWops *src)
+int IMG_isPNM(SDL_RWops *src)
 {
 	return(0);
 }
 
-/* Load a PPM type image from an SDL datasource */
-SDL_Surface *IMG_LoadPPM_RW(SDL_RWops *src)
+/* Load a PNM type image from an SDL datasource */
+SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 {
 	return(NULL);
 }
 
-#endif /* LOAD_PPM */
+#endif /* LOAD_PNM */

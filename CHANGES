@@ -1,5 +1,7 @@
 
 1.1.1:
+Mattias Engdegård - Wed Mar  7 09:01:49 PST 2001
+ * Added general PNM (PPM/PGM/PBM) support
 Mattias Engdegård - Sun Mar  4 14:23:42 PST 2001
  * Fixed bugs in PPM support, added ASCII PPM support
 Mattias Engdegård - Fri Mar  2 14:48:09 PST 2001

@@ -5,7 +5,8 @@ The latest version of this library is available from:
 http://www.devolution.com/~slouken/SDL/projects/SDL_image/
 
 This is a simple library to load images of various formats as SDL surfaces.
-This library supports BMP, PPM, XPM, PCX, GIF, JPEG, PNG, TGA, and TIFF formats.
+This library supports BMP, PNM (PPM/PGM/PBM), XPM, PCX, GIF, JPEG, PNG,
+TGA, and TIFF formats.
 
 API:
 #include "SDL_image.h"

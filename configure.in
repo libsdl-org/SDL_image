@@ -131,11 +131,11 @@ if test x$enable_png = xyes; then
         AC_MSG_WARN([PNG image loading disabled])
     fi
 fi
-AC_ARG_ENABLE(ppm,
-[  --enable-ppm            support loading PPM images [default=yes]],
-              , enable_ppm=yes)
-if test x$enable_ppm = xyes; then
-    CFLAGS="$CFLAGS -DLOAD_PPM"
+AC_ARG_ENABLE(pnm,
+[  --enable-pnm            support loading PNM images [default=yes]],
+              , enable_pnm=yes)
+if test x$enable_pnm = xyes; then
+    CFLAGS="$CFLAGS -DLOAD_PNM"
 fi
 AC_ARG_ENABLE(tga,
 [  --enable-tga            support loading TGA images [default=yes]],

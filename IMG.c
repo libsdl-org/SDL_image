@@ -38,10 +38,10 @@ static struct {
 	int (*is)(SDL_RWops *src);
 	SDL_Surface *(*load)(SDL_RWops *src);
 } supported[] = {
-        /* keep magicless formats first (denoted by is==NULL) */
-	{ "TGA", NULL,      IMG_LoadTGA_RW },
+	/* keep magicless formats first */
+	{ "TGA", 0,         IMG_LoadTGA_RW },
 	{ "BMP", IMG_isBMP, IMG_LoadBMP_RW },
-	{ "PPM", IMG_isPPM, IMG_LoadPPM_RW },
+	{ "PNM", IMG_isPNM, IMG_LoadPNM_RW }, /* P[BGP]M share code */
 	{ "XPM", IMG_isXPM, IMG_LoadXPM_RW },
 	{ "PCX", IMG_isPCX, IMG_LoadPCX_RW },
 	{ "GIF", IMG_isGIF, IMG_LoadGIF_RW },
