@@ -117,7 +117,7 @@ int IMG_isGIF(SDL_RWops *src)
 
 #define LM_to_uint(a,b)			(((b)<<8)|(a))
 
-struct {
+static struct {
     unsigned int Width;
     unsigned int Height;
     unsigned char ColorMap[3][MAXCOLORMAPSIZE];

@@ -67,7 +67,7 @@ typedef struct {
  * Initialize source --- called by jpeg_read_header
  * before any data is actually read.
  */
-void _init_source (j_decompress_ptr cinfo)
+static void init_source (j_decompress_ptr cinfo)
 {
 	/* We don't actually need to do anything */
 	return;
@@ -76,7 +76,7 @@ void _init_source (j_decompress_ptr cinfo)
 /*
  * Fill the input buffer --- called whenever buffer is emptied.
  */
-int _fill_input_buffer (j_decompress_ptr cinfo)
+static int fill_input_buffer (j_decompress_ptr cinfo)
 {
 	my_source_mgr * src = (my_source_mgr *) cinfo->src;
 	int nbytes;
@@ -106,7 +106,7 @@ int _fill_input_buffer (j_decompress_ptr cinfo)
  * Arranging for additional bytes to be discarded before reloading the input
  * buffer is the application writer's problem.
  */
-void _skip_input_data (j_decompress_ptr cinfo, long num_bytes)
+static void skip_input_data (j_decompress_ptr cinfo, long num_bytes)
 {
 	my_source_mgr * src = (my_source_mgr *) cinfo->src;
 
@@ -131,7 +131,7 @@ void _skip_input_data (j_decompress_ptr cinfo, long num_bytes)
  * Terminate source --- called by jpeg_finish_decompress
  * after all data has been read.
  */
-void _term_source (j_decompress_ptr cinfo)
+static void term_source (j_decompress_ptr cinfo)
 {
 	/* We don't actually need to do anything */
 	return;
@@ -142,7 +142,7 @@ void _term_source (j_decompress_ptr cinfo)
  * The caller must have already opened the stream, and is responsible
  * for closing it after finishing decompression.
  */
-void jpeg_SDL_RW_src (j_decompress_ptr cinfo, SDL_RWops *ctx)
+static void jpeg_SDL_RW_src (j_decompress_ptr cinfo, SDL_RWops *ctx)
 {
   my_source_mgr *src;
 
@@ -161,11 +161,11 @@ void jpeg_SDL_RW_src (j_decompress_ptr cinfo, SDL_RWops *ctx)
   }
 
   src = (my_source_mgr *) cinfo->src;
-  src->pub.init_source = _init_source;
-  src->pub.fill_input_buffer = _fill_input_buffer;
-  src->pub.skip_input_data = _skip_input_data;
+  src->pub.init_source = init_source;
+  src->pub.fill_input_buffer = fill_input_buffer;
+  src->pub.skip_input_data = skip_input_data;
   src->pub.resync_to_restart = jpeg_resync_to_restart; /* use default method */
-  src->pub.term_source = _term_source;
+  src->pub.term_source = term_source;
   src->ctx = ctx;
   src->pub.bytes_in_buffer = 0; /* forces fill_input_buffer on first read */
   src->pub.next_input_byte = NULL; /* until buffer loaded */
