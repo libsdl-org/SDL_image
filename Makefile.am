@@ -1,0 +1,43 @@
+# Makefile.am for the SDL sample image loading library and viewer
+
+lib_LTLIBRARIES = libSDL_image.la
+
+libSDL_imageincludedir = $(includedir)/SDL
+libSDL_imageinclude_HEADERS =	\
+	SDL_image.h
+
+libSDL_image_la_SOURCES =		\
+	IMG.c			\
+	IMG_bmp.c		\
+	IMG_gif.c		\
+	IMG_jpg.c		\
+	IMG_pcx.c		\
+	IMG_png.c		\
+	IMG_ppm.c		\
+	IMG_tga.c		\
+	IMG_tif.c
+
+EXTRA_DIST =			\
+	CHANGES			\
+	VisualC.zip		\
+	MPWmake.sea.hqx		\
+	IMG_xxx.c		\
+	autogen.sh
+
+libSDL_image_la_LDFLAGS = 		\
+        -release $(LT_RELEASE)	\
+	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
+libSDL_image_la_LIBADD = @IMG_LIBS@
+
+bin_PROGRAMS = showimage
+
+showimage_LDADD = libSDL_image.la
+
+# Rule to build tar-gzipped distribution package
+$(PACKAGE)-$(VERSION).tar.gz: dist
+
+# Rule to build RPM distribution package
+rpm: $(PACKAGE)-$(VERSION).tar.gz
+	cp $(PACKAGE)-$(VERSION).tar.gz /usr/src/redhat/SOURCES
+	rpm -ba $(PACKAGE).spec
+

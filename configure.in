@@ -1,0 +1,156 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(README)
+
+dnl Set various version strings - taken gratefully from the GTk sources
+
+# Making releases:
+#   MICRO_VERSION += 1;
+#   INTERFACE_AGE += 1;
+#   BINARY_AGE += 1;
+# if any functions have been added, set INTERFACE_AGE to 0.
+# if backwards compatibility has been broken,
+# set BINARY_AGE and INTERFACE_AGE to 0.
+
+MAJOR_VERSION=1
+MINOR_VERSION=0
+MICRO_VERSION=9
+INTERFACE_AGE=0
+BINARY_AGE=9
+VERSION=$MAJOR_VERSION.$MINOR_VERSION.$MICRO_VERSION
+
+AC_SUBST(MAJOR_VERSION)
+AC_SUBST(MINOR_VERSION)
+AC_SUBST(MICRO_VERSION)
+AC_SUBST(INTERFACE_AGE)
+AC_SUBST(BINARY_AGE)
+AC_SUBST(VERSION)
+
+# libtool versioning
+LT_RELEASE=$MAJOR_VERSION.$MINOR_VERSION
+LT_CURRENT=`expr $MICRO_VERSION - $INTERFACE_AGE`
+LT_REVISION=$INTERFACE_AGE
+LT_AGE=`expr $BINARY_AGE - $INTERFACE_AGE`
+
+AC_SUBST(LT_RELEASE)
+AC_SUBST(LT_CURRENT)
+AC_SUBST(LT_REVISION)
+AC_SUBST(LT_AGE)
+
+dnl Setup for automake
+AM_INIT_AUTOMAKE(SDL_image, $VERSION)
+
+dnl Check for tools
+
+AC_PROG_MAKE_SET
+AC_PROG_CC
+AM_PROG_LIBTOOL
+AC_PROG_INSTALL
+
+dnl The alpha architecture needs special flags for binary portability
+AC_CANONICAL_TARGET
+case "$target" in
+    alpha*-*-linux*)
+        CFLAGS="$CFLAGS -mcpu=ev4 -Wa,-mall"
+        ;;
+esac
+
+dnl Check for SDL
+SDL_VERSION=1.1.3
+AM_PATH_SDL($SDL_VERSION,
+            :,
+	    AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
+)
+CFLAGS="$CFLAGS $SDL_CFLAGS"
+IMG_LIBS="$IMG_LIBS $SDL_LIBS"
+
+dnl Check command-line options
+AC_ARG_ENABLE(bmp,
+[  --enable-bmp            support loading BMP images [default=yes]],
+              , enable_bmp=yes)
+if test x$enable_bmp = xyes; then
+    CFLAGS="$CFLAGS -DLOAD_BMP"
+fi
+AC_ARG_ENABLE(gif,
+[  --enable-gif            support loading GIF images [default=yes]],
+              , enable_gif=yes)
+if test x$enable_gif = xyes; then
+    CFLAGS="$CFLAGS -DLOAD_GIF"
+fi
+AC_ARG_ENABLE(jpg,
+[  --enable-jpg            support loading JPG images [default=yes]],
+              , enable_jpg=yes)
+if test x$enable_jpg = xyes; then
+    AC_CHECK_LIB(jpeg, jpeg_CreateDecompress, have_libjpeg=yes)
+    if test x$have_libjpeg = xyes; then
+        CFLAGS="$CFLAGS -DLOAD_JPG"
+        IMG_LIBS="$IMG_LIBS -ljpeg"
+    else
+        AC_MSG_WARN(
+*** Unable to find JPEG library (http://www.ijg.org/)
+])
+        AC_MSG_WARN([JPG image loading disabled])
+    fi
+fi
+AC_ARG_ENABLE(pcx,
+[  --enable-pcx            support loading PCX images [default=yes]],
+              , enable_pcx=yes)
+if test x$enable_pcx = xyes; then
+    CFLAGS="$CFLAGS -DLOAD_PCX"
+fi
+AC_ARG_ENABLE(png,
+[  --enable-png            support loading PNG images [default=yes]],
+              , enable_png=yes)
+if test x$enable_png = xyes; then
+    AC_CHECK_LIB(png, png_create_read_struct, have_libpng=yes, , -lz)
+    if test x$have_libpng != xyes; then
+        AC_MSG_WARN([
+*** Unable to find PNG library (http://www.cdrom.com/pub/png/)
+])
+    fi
+    AC_CHECK_LIB(z, uncompress, have_libz=yes)
+    if test x$have_libz != xyes; then
+        AC_MSG_WARN([
+*** Unable to find Zlib library (http://www.cdrom.com/pub/infozip/zlib/)
+])
+    fi
+    if test x$have_libpng = xyes -a x$have_libz = xyes; then
+        CFLAGS="$CFLAGS -DLOAD_PNG"
+        IMG_LIBS="$IMG_LIBS -lpng -lz"
+    else
+        AC_MSG_WARN([PNG image loading disabled])
+    fi
+fi
+AC_ARG_ENABLE(ppm,
+[  --enable-ppm            support loading PPM images [default=yes]],
+              , enable_ppm=yes)
+if test x$enable_ppm = xyes; then
+    CFLAGS="$CFLAGS -DLOAD_PPM"
+fi
+AC_ARG_ENABLE(tga,
+[  --enable-tga            support loading TGA images [default=yes]],
+              , enable_tga=yes)
+if test x$enable_tga = xyes; then
+    CFLAGS="$CFLAGS -DLOAD_TGA"
+fi
+AC_ARG_ENABLE(tif,
+[  --enable-tif            support loading TIF images [default=yes]],
+              , enable_tif=yes)
+if test x$enable_tif = xyes; then
+    AC_CHECK_LIB(tiff, TIFFClientOpen, have_libtiff=yes)
+    if test x$have_libtiff = xyes; then
+        CFLAGS="$CFLAGS -DLOAD_TIF"
+        IMG_LIBS="$IMG_LIBS -ltiff"
+    else
+        AC_MSG_WARN(
+*** Unable to find Tiff library (ftp://ftp.sgi.com/graphics/tiff/)
+])
+        AC_MSG_WARN([TIF image loading disabled])
+    fi
+fi
+AC_SUBST(IMG_LIBS)
+
+# Finally create all the generated files
+AC_OUTPUT([
+Makefile
+SDL_image.spec
+])

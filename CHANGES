@@ -1,0 +1,41 @@
+
+1.0.9:
+Mattias Engdegård - Sat Jul  1 17:57:37 PDT 2000
+ * PNG loader properly sets the colorkey on 8-bit transparent images
+Mattias Engdegård - Sat Jul  1 13:24:47 PDT 2000
+ * Fixed a bug in PCX detection
+ * Added support for TGA files
+ * showimage shows a checker background for transparent images
+
+1.0.8:
+Mark Baker - Tue May 30 12:20:00 PDT 2000
+ * Added TIFF format loading support
+
+1.0.7:
+Mattias Engdegård - Sat May 27 14:18:33 PDT 2000
+ * Added fixes for loading images on big-endian systems
+
+1.0.6:
+Sam Lantinga - Sat Apr 29 10:18:32 PDT 2000
+ * showimage puts the name of the image in the title bar caption
+Sam Lantinga - Sat Apr 29 10:05:58 PDT 2000
+ * Removed pitch check, since PNG already loads to a list of row pointers
+
+1.0.5:
+Sam Lantinga - Sun Apr 23 14:41:32 PDT 2000
+ * Added support for GIF transparency
+Sam Lantinga - Wed Apr 12 14:39:20 PDT 2000
+ * Fixed memory heap crash on NT using PNG images
+Matt Campbell - Thu, 13 Apr 2000 13:29:17 -0700
+ * Fixed PNG detection on some Linux systems
+
+1.0.4:
+Sam Lantinga - Tue Feb  1 13:33:53 PST 2000
+ * Cleaned up for Visual C++
+ * Added Visual C++ project file
+
+1.0.3:
+Sam Lantinga - Wed Jan 19 22:10:52 PST 2000
+ * Added CHANGES
+ * Added rpm spec file contributed by Hakan Tandogan
+ * Changed the name of the example program from "show" to "showimage"
