@@ -30,7 +30,8 @@ EXTRA_DIST =			\
 	SDL_image.spec.in	\
 	autogen.sh
 
-libSDL_image_la_LDFLAGS = 		\
+libSDL_image_la_LDFLAGS = 	\
+	-no-undefined		\
 	-release $(LT_RELEASE)	\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
 libSDL_image_la_LIBADD = @IMG_LIBS@

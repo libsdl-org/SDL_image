@@ -1,4 +1,6 @@
 1.2.4:
+Sam Lantinga - Wed Nov 19 00:23:44 PST 2003
+ * Updated libtool support for new mingw32 DLL build process
 Holger Schemel - Mon, 04 Aug 2003 21:50:52 +0200
  * Fixed crash loading certain PCX images
 Kyle Davenport - Sat, 19 Apr 2003 17:13:31 -0500
