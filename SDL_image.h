@@ -24,8 +24,8 @@
 
 /* A simple library to load images of various formats as SDL surfaces */
 
-#ifndef _SDL_image_h
-#define _SDL_image_h
+#ifndef _SDL_IMAGE_H
+#define _SDL_IMAGE_H
 
 #include "SDL.h"
 #include "SDL_version.h"
@@ -113,4 +113,4 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArray(char **xpm);
 #endif
 #include "close_code.h"
 
-#endif /* _SDL_image_h */
+#endif /* _SDL_IMAGE_H */
