@@ -1,5 +1,7 @@
 
 1.1.1:
+Mattias Engdegård - Fri Mar  2 14:48:09 PST 2001
+ * Cleaned up some compiler warnings
 Mattias Engdegård - Tue Feb 27 12:44:43 PST 2001
  * Improved the PCX loading code
  * Modified showimage to set hardware palette for 8-bit displays

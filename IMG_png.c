@@ -76,7 +76,7 @@
 /* See if an image is contained in a data source */
 int IMG_isPNG(SDL_RWops *src)
 {
-   char buf[PNG_BYTES_TO_CHECK];
+   unsigned char buf[PNG_BYTES_TO_CHECK];
 
    /* Read in the signature bytes */
    if (SDL_RWread(src, buf, 1, PNG_BYTES_TO_CHECK) != PNG_BYTES_TO_CHECK)

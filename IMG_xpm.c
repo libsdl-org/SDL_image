@@ -143,7 +143,7 @@ static int add_colorhash(struct color_hash *hash,
 }
 
 /* fast lookup that works if cpp == 1 */
-#define QUICK_COLORHASH(hash, key) ((hash)->table[*(key)]->color)
+#define QUICK_COLORHASH(hash, key) ((hash)->table[*(Uint8 *)(key)]->color)
 
 static Uint32 get_colorhash(struct color_hash *hash, const char *key, int cpp)
 {
@@ -388,7 +388,7 @@ SDL_Surface *IMG_LoadXPM_RW(SDL_RWops *src)
 	}
 	dst = image->pixels;
 	for (y = 0; y < h; ) {
-		Uint8 *s;
+		char *s;
 		char c;
 		do {
 			if(SDL_RWread(src, &c, 1, 1) <= 0) {
