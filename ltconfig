@@ -1188,7 +1188,7 @@ EOF
       $CC -Wl,--base-file,$objdir/$soname-base $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,_DllMain@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs $linkopts~
       $DLLTOOL --as=$AS --dllname $soname --exclude-symbols _DllMain@12,_cygwin_dll_entry@12,_cygwin_noncygwin_dll_entry@12 --def $objdir/$soname-def --base-file $objdir/$soname-base --output-exp $objdir/$soname-exp~
       $CC $objdir/$soname-exp -Wl,--dll -nostartfiles -Wl,-e,_DllMain@12 -o $lib $objdir/$soname-ltdll.$objext $libobjs $deplibs $linkopts~
-      strip $lib'
+      : strip_is_broken_with_dlls_on_win95B - strip $lib'
 
       old_archive_from_new_cmds='$DLLTOOL --as=$AS --dllname $soname --def $objdir/$soname-def --output-lib $objdir/$libname.a'
     ;;
@@ -1879,6 +1879,12 @@ cygwin* | mingw*)
   file_magic_cmd='${OBJDUMP} -f'
   # FIXME: first we should search . and the directory the executable is in
   shlibpath_var=PATH
+  if test "$with_gcc" = yes; then
+    # See where the system libraries really are - /usr/lib won't cut it
+    libuser32=`$CC --print-file-name=libuser32.a`
+    win32libs=`expr $libuser32 : '\(.*\)/.*'`
+    sys_lib_search_path_spec="$sys_lib_search_path $win32libs"
+  fi
   lt_cv_dlopen="LoadLibrary"
   lt_cv_dlopen_libs=
   ;;
