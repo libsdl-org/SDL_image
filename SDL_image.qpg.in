@@ -37,6 +37,7 @@
       </QPG:Files>
       <QPG:PackageFilter>
          <QPM:PackageManifest>
+
             <QPM:PackageDescription>
                <QPM:PackageType>Library</QPM:PackageType>
                <QPM:PackageName>SDL_image</QPM:PackageName>
@@ -44,6 +45,7 @@
                <QPM:PackageRepository>http://qnx.org.ru/repository</QPM:PackageRepository>
                <QPM:FileVersion>2.0</QPM:FileVersion>
             </QPM:PackageDescription>
+
             <QPM:ProductDescription>
                <QPM:ProductName>SDL_image</QPM:ProductName>
                <QPM:ProductIdentifier>SDL_image</QPM:ProductIdentifier>
@@ -61,9 +63,10 @@
                <QPM:ProductIconLarge/>
                <QPM:ProductDescriptionShort>This is a simple library to load images of various formats as SDL surfaces. This library supports BMP, PPM, PCX, GIF, JPEG, PNG, and TIFF formats.</QPM:ProductDescriptionShort>
                <QPM:ProductDescriptionLong>This is a simple library to load images of various formats as SDL surfaces. This library supports BMP, PPM, PCX, GIF, JPEG, PNG, and TIFF formats.</QPM:ProductDescriptionLong>
-               <QPM:ProductDescriptionURL>http://www.libsdl.org</QPM:ProductDescriptionURL>
+               <QPM:ProductDescriptionURL>http://www.libsdl.org/projects/SDL_image</QPM:ProductDescriptionURL>
                <QPM:ProductDescriptionEmbedURL/>
             </QPM:ProductDescription>
+
             <QPM:ReleaseDescription>
                <QPM:ReleaseVersion>@VERSION@</QPM:ReleaseVersion>
                <QPM:ReleaseUrgency>High</QPM:ReleaseUrgency>
@@ -74,23 +77,52 @@
                <QPM:CountryExclude/>
                <QPM:ReleaseCopyright>GNU General Public License</QPM:ReleaseCopyright>
             </QPM:ReleaseDescription>
+
             <QPM:ContentDescription>
-               <QPM:ContentTopic>Software Development/Libraries and Extensions/C Libraries</QPM:ContentTopic>
+               <QPM:ContentTopic xmlmultiple="true">Software Development/Libraries and Extensions/C Libraries</QPM:ContentTopic>
                <QPM:ContentKeyword>SDL, graphics, images, BMP, PPM, PCX, GIF, JPEG, PNG, TIFF</QPM:ContentKeyword>
-               <QPM:Processor/>
-               <QPM:TargetProcessor/>
                <QPM:TargetOS>qnx6</QPM:TargetOS>
-               <QPM:HostOS>qnx6</QPM:HostOS>
-               <QPM:DisplayEnvironment>Photon</QPM:DisplayEnvironment>
-               <QPM:TargetAudience>Developer</QPM:TargetAudience>
-               <QPM:TargetAudience>User</QPM:TargetAudience>
+               <QPM:HostOS>none</QPM:HostOS>
+               <QPM:DisplayEnvironment xmlmultiple="true">Photon</QPM:DisplayEnvironment>
+               <QPM:DisplayEnvironment xmlmultiple="true">Console</QPM:DisplayEnvironment>
+               <QPM:TargetAudience xmlmultiple="true">Developer</QPM:TargetAudience>
+               <QPM:TargetAudience xmlmultiple="true">User</QPM:TargetAudience>
             </QPM:ContentDescription>
             <QPM:LicenseUrl>repdata://LicenseUrl/COPYING</QPM:LicenseUrl>
+         </QPM:PackageManifest>
+      </QPG:PackageFilter>
+
+      <QPG:PackageFilter proc="none" target="none">
+         <QPM:PackageManifest>
             <QPM:ProductInstallationDependencies>
-               <QPM:ProductRequirements/>
+               <QPM:ProductRequirements></QPM:ProductRequirements>
             </QPM:ProductInstallationDependencies>
          </QPM:PackageManifest>
       </QPG:PackageFilter>
+
+      <QPG:PackageFilter proc="x86" target="none">
+         <QPM:PackageManifest>
+            <QPM:ProductInstallationDependencies>
+               <QPM:ProductRequirements></QPM:ProductRequirements>
+            </QPM:ProductInstallationDependencies>
+         </QPM:PackageManifest>
+      </QPG:PackageFilter>
+
+      <QPG:PackageFilter proc="none" target="x86">
+         <QPM:PackageManifest>
+            <QPM:ProductInstallationDependencies>
+               <QPM:ProductRequirements></QPM:ProductRequirements>
+            </QPM:ProductInstallationDependencies>
+         </QPM:PackageManifest>
+      </QPG:PackageFilter>
+
+      <QPG:PackageFilter proc="x86" target="x86">
+         <QPM:PackageManifest>
+            <QPM:ProductInstallationDependencies>
+               <QPM:ProductRequirements></QPM:ProductRequirements>
+            </QPM:ProductInstallationDependencies>
+         </QPM:PackageManifest>
+      </QPG:PackageFilter>
+
    </QPG:Values>
 </QPG:Generation>
-

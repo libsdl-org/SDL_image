@@ -91,8 +91,6 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 	error   = NULL;
 	MiniBuf = NULL;
 
-	if ( src == NULL ) goto done;
-
 	if ( !SDL_RWread( src, id, 4, 1 ) ) 
 	{
 		error="error reading IFF chunk";

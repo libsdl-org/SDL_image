@@ -114,11 +114,6 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	/* Initialize the data we will clean up when we're done */
 	png_ptr = NULL; info_ptr = NULL; row_pointers = NULL; surface = NULL;
 
-	/* Check to make sure we have something to do */
-	if ( ! src ) {
-		goto done;
-	}
-
 	/* Create the PNG loading context structure */
 	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
 					  NULL,NULL,NULL);

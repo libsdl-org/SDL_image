@@ -96,10 +96,6 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 	char *error = NULL;
 	int bits, src_bits;
 
-	if ( ! src ) {
-		goto done;
-	}
-
 	if ( ! SDL_RWread(src, &pcxh, sizeof(pcxh), 1) ) {
 		error = "file truncated";
 		goto done;
