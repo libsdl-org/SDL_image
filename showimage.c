@@ -1,5 +1,5 @@
 /*
-    SDL_image:  An example image loading library for use with SDL
+    showimage:  A test application for the SDL image loading library.
     Copyright (C) 1999, 2000, 2001  Sam Lantinga
 
     This library is free software; you can redistribute it and/or
