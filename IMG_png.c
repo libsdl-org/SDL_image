@@ -164,18 +164,30 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 		png_set_expand(png_ptr);
 
 	/* For images with a single "transparent colour", set colour key;
-	   if more than one index has transparency, use full alpha channel */
+	   if more than one index has transparency, or if partially transparent
+	   entries exist, use full alpha channel */
 	if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) {
 	        int num_trans;
 		Uint8 *trans;
 		png_get_tRNS(png_ptr, info_ptr, &trans, &num_trans,
 			     &transv);
 		if(color_type == PNG_COLOR_TYPE_PALETTE) {
-		    if(num_trans == 1) {
-			/* exactly one transparent value: set colour key */
-			ckey = trans[0];
-		    } else
+		    /* Check if all tRNS entries are opaque except one */
+		    int i, t = -1;
+		    for(i = 0; i < num_trans; i++)
+			if(trans[i] == 0) {
+			    if(t >= 0)
+				break;
+			    t = i;
+			} else if(trans[i] != 255)
+			    break;
+		    if(i == num_trans) {
+			/* exactly one transparent index */
+			ckey = t;
+		    } else {
+			/* more than one transparent index, or translucency */
 			png_set_expand(png_ptr);
+		    }
 		} else
 		    ckey = 0; /* actual value will be set later */
 	}

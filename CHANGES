@@ -1,5 +1,7 @@
 
 1.2.1:
+Mattias Engdegård - Tue Jul 31 04:32:29 PDT 2001
+ * Fixed transparency in 8-bit PNG files
 Mattias Engdegård - Sat Apr 28 11:30:22 PDT 2001
  * Added support for loading XPM image data directly
 Paul Jenner - Sat, 14 Apr 2001 09:20:38 -0700 (PDT)
