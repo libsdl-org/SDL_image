@@ -1,3 +1,7 @@
+1.2.5:
+Gautier Portet - Fri, 19 Mar 2004 17:35:12 +0100
+ * Added support for 32-bit BMP files with alpha
+
 1.2.4:
 Pierre G. Richard - Fri, 30 Jul 2004 11:13:11 +0000 (UTC)
  * Added support for RLE encoded BMP files

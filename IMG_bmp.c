@@ -148,6 +148,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 	Uint32 Rmask;
 	Uint32 Gmask;
 	Uint32 Bmask;
+	Uint32 Amask;
 	SDL_Palette *palette;
 	Uint8 *bits;
 	int ExpandBMP;
@@ -243,7 +244,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 	}
 
 	/* RLE4 and RLE8 BMP compression is supported */
-	Rmask = Gmask = Bmask = 0;
+	Rmask = Gmask = Bmask = Amask = 0;
 	switch (biCompression) {
 		case BI_RGB:
 			/* If there are no masks, use the defaults */
@@ -261,9 +262,14 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 					        Rmask = 0x000000FF;
 					        Gmask = 0x0000FF00;
 					        Bmask = 0x00FF0000;
-						break;
+#else
+						Rmask = 0x00FF0000;
+						Gmask = 0x0000FF00;
+						Bmask = 0x000000FF;
 #endif
+						break;
 					case 32:
+						Amask = 0xFF000000;
 						Rmask = 0x00FF0000;
 						Gmask = 0x0000FF00;
 						Bmask = 0x000000FF;
@@ -283,6 +289,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 					Rmask = SDL_ReadLE32(src);
 					Gmask = SDL_ReadLE32(src);
 					Bmask = SDL_ReadLE32(src);
+					Amask = SDL_ReadLE32(src);
 					break;
 				default:
 					break;
@@ -292,7 +299,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 
 	/* Create a compatible surface, note that the colors are RGB ordered */
 	surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
-			biWidth, biHeight, biBitCount, Rmask, Gmask, Bmask, 0);
+			biWidth, biHeight, biBitCount, Rmask, Gmask, Bmask, Amask);
 	if ( surface == NULL ) {
 		was_error = 1;
 		goto done;
