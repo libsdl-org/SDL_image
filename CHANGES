@@ -1,5 +1,7 @@
 
 1.2.1:
+Mattias Engdegård - Tue Nov 20 08:08:53 PST 2001
+ * Fixed transparency in the GIF loading code
 Daniel Morais - Sun Sep 23 16:32:13 PDT 2001
  * Added support for the IFF (LBM) image format
 Sam Lantinga - Sun Aug 19 01:51:44 PDT 2001

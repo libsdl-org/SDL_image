@@ -36,36 +36,24 @@
 #ifdef LOAD_LBM
 
 
-//===========================================================================
-// DEFINES
-//===========================================================================
-
 #define MAXCOLORS 256
 
-//===========================================================================
-// STRUCTURES
-//===========================================================================
-
-// Structure for an IFF picture ( BMHD = Bitmap Header )
+/* Structure for an IFF picture ( BMHD = Bitmap Header ) */
 
 typedef struct
 {
-   Uint16 w, h;		// width & height of the bitmap in pixels
-   Sint16 x, y;      // screen coordinates of the bitmap
-   Uint8 planes;     // number of planes of the bitmap
-   Uint8 mask;       // mask type ( 0 => no mask )
-   Uint8 tcomp;      // compression type
-   Uint8 pad1;       // dummy value, for padding
-   Uint16 tcolor;    // transparent color
-   Uint8 xAspect,    // pixel aspect ratio
+    Uint16 w, h;		/* width & height of the bitmap in pixels */
+    Sint16 x, y;		/* screen coordinates of the bitmap */
+    Uint8 planes;		/* number of planes of the bitmap */
+    Uint8 mask;			/* mask type ( 0 => no mask ) */
+    Uint8 tcomp;		/* compression type */
+    Uint8 pad1;			/* dummy value, for padding */
+    Uint16 tcolor;		/* transparent color */
+    Uint8 xAspect,		/* pixel aspect ratio */
          yAspect;
-   Sint16  Lpage;		// width of the screen in pixels
-   Sint16  Hpage;		// height of the screen in pixels
-
+    Sint16  Lpage;		/* width of the screen in pixels */
+    Sint16  Hpage;		/* height of the screen in pixels */
 } BMHD;
-
-//===========================================================================
-// See if an image is contained in a data source
 
 int IMG_isLBM( SDL_RWops *src )
 {
@@ -84,9 +72,6 @@ int IMG_isLBM( SDL_RWops *src )
 	}
 	return( is_LBM );
 }
-
-//===========================================================================
-// Load a IFF type image from an SDL datasource
 
 SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 {
@@ -111,13 +96,14 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 		goto done;
 	}
 
-	if ( !SDL_RWread( src, &size, 4, 1 ) ) // Should be the size of the file minus 4+4 ( 'FORM'+size )
+	/* Should be the size of the file minus 4+4 ( 'FORM'+size ) */
+	if ( !SDL_RWread( src, &size, 4, 1 ) )
 	{
 	   error="error reading IFF chunk size";
 		goto done;
 	}
 
-	// As size is not used here, no need to swap it
+	/* As size is not used here, no need to swap it */
 	
 	if ( memcmp( id, "FORM", 4 ) != 0 ) 
 	{
@@ -133,7 +119,8 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
 	pbm = 0;
 
-	if ( !memcmp( id, "PBM ", 4 ) ) pbm = 1; // File format : PBM=Packed Bitmap, ILBM=Interleaved Bitmap
+	/* File format : PBM=Packed Bitmap, ILBM=Interleaved Bitmap */
+	if ( !memcmp( id, "PBM ", 4 ) ) pbm = 1;
 	else if ( memcmp( id, "ILBM", 4 ) )
 	{
 	   error="not a IFF picture";
@@ -162,7 +149,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
 		size = SDL_SwapBE32( size );
 		
-		if ( !memcmp( id, "BMHD", 4 ) ) // Bitmap header
+		if ( !memcmp( id, "BMHD", 4 ) ) /* Bitmap header */
 		{
 			if ( !SDL_RWread( src, &bmhd, sizeof( BMHD ), 1 ) )
 			{
@@ -181,7 +168,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 			bmhd.Hpage 	= SDL_SwapBE16( bmhd.Hpage );
 		}
 
-		if ( !memcmp( id, "CMAP", 4 ) ) // palette ( Color Map )
+		if ( !memcmp( id, "CMAP", 4 ) ) /* palette ( Color Map ) */
 		{
 			if ( !SDL_RWread( src, &colormap, size, 1 ) )
 			{
@@ -195,29 +182,31 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
 		if ( memcmp( id, "BODY", 4 ) )
 		{
-		   if ( size & 1 )	++size;  	// padding !
+		    if ( size & 1 )	++size;  	/* padding ! */
 			size -= bytesloaded;
-			if ( size )	SDL_RWseek( src, size, SEEK_CUR ); // skip the remaining bytes of this chunk
+			/* skip the remaining bytes of this chunk */
+			if ( size )	SDL_RWseek( src, size, SEEK_CUR );
 		}
 	}
 
-	// compute some usefull values, based on the bitmap header
+	/* compute some usefull values, based on the bitmap header */
 
-	width = ( bmhd.w + 15 ) & 0xFFFFFFF0;        // Width in pixels modulo 16
+	width = ( bmhd.w + 15 ) & 0xFFFFFFF0;  /* Width in pixels modulo 16 */
 
-	bytesperline = ( ( bmhd.w + 15 ) / 16 ) * 2;	// Number of bytes per line
+	bytesperline = ( ( bmhd.w + 15 ) / 16 ) * 2;
 
-	nbplanes = bmhd.planes;                      // Number of planes
+	nbplanes = bmhd.planes;
 
-	if ( pbm )                                   // File format : 'Packed Bitmap'
+	if ( pbm )                         /* File format : 'Packed Bitmap' */
 	{
 	   bytesperline *= 8;
 		nbplanes = 1;
 	}
 
-	if ( bmhd.mask ) ++nbplanes;                 // There is a mask ( 'stencil' )
+	if ( bmhd.mask ) ++nbplanes;       /* There is a mask ( 'stencil' ) */
 
-	// Allocate memory for a temporary buffer ( used for decompression/deinterleaving )
+	/* Allocate memory for a temporary buffer ( used for
+           decompression/deinterleaving ) */
 
 	if ( ( MiniBuf = (void *)malloc( bytesperline * nbplanes ) ) == NULL )
 	{
@@ -225,12 +214,10 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 		goto done;
 	}
 
-	// Create the surface
-
 	if ( ( Image = SDL_CreateRGBSurface( SDL_SWSURFACE, width, bmhd.h, 8, 0, 0, 0, 0 ) ) == NULL )
 	   goto done;
 
-	// Update palette informations
+	/* Update palette informations */
 
 	Image->format->palette->ncolors = nbcolors;
 
@@ -243,11 +230,11 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 	   Image->format->palette->colors[i].b = *ptr++;
 	}
 
-	// Get the bitmap
+	/* Get the bitmap */
 
 	for ( h=0; h < bmhd.h; h++ )
 	{
-		// uncompress the datas of each planes
+	    /* uncompress the datas of each planes */
 			  
 	   for ( plane=0; plane < nbplanes; plane++ )
 		{
@@ -255,7 +242,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 	
 			remainingbytes = bytesperline;
 	
-			if ( bmhd.tcomp == 1 )			// Datas are compressed
+			if ( bmhd.tcomp == 1 )	    /* Datas are compressed */
 			{
 			   do
 				{
@@ -268,7 +255,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 					if ( count & 0x80 )
 					{
 					   count ^= 0xFF;
-						count += 2; // now it
+					   count += 2; /* now it */
 						
 						if ( !SDL_RWread( src, &color, 1, 1 ) )
 						{
@@ -303,16 +290,16 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 			}
 		}
 	
-		// One line has been read, store it !
+	   /* One line has been read, store it ! */
 
 		ptr = Image->pixels;
 		ptr += h * width;
 	
-		if ( pbm )                 // File format : 'Packed Bitmap'
+		if ( pbm )                 /* File format : 'Packed Bitmap' */
 		{
 		   memcpy( ptr, MiniBuf, width );
 		}
-		else							   // We have to un-interlace the bits !
+		else		/* We have to un-interlace the bits ! */
 		{
 		   size = ( width + 7 ) / 8;
 	

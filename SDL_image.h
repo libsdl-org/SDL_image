@@ -85,9 +85,6 @@ extern DECLSPEC SDL_Surface *IMG_ReadXPMFromArray(char **xpm);
 #define IMG_SetError	SDL_SetError
 #define IMG_GetError	SDL_GetError
 
-/* used internally, NOT an exported function */
-extern int IMG_string_equals(const char *str1, const char *str2);
-
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
 }

@@ -253,7 +253,7 @@ IMG_LoadGIF_RW(SDL_RWops *src)
     } while (image == NULL);
 
 #ifdef USED_BY_SDL
-    if ( Gif89.transparent > 0 ) {
+    if ( Gif89.transparent >= 0 ) {
         SDL_SetColorKey(image, SDL_SRCCOLORKEY, Gif89.transparent);
     }
 #endif
