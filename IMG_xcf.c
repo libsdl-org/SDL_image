@@ -27,11 +27,14 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 
+#include "SDL_endian.h"
 #include "SDL_image.h"
 
 #ifdef LOAD_XCF
 
+#if DEBUG
 static char prop_names [][30] = {
   "end",
   "colormap",
@@ -59,6 +62,8 @@ static char prop_names [][30] = {
   "paths",
   "user_unit"
 };
+#endif
+
 
 typedef enum
 {
@@ -247,7 +252,7 @@ void xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
   prop->id = SDL_ReadBE32 (src);
   prop->length = SDL_ReadBE32 (src);
 
-#if 0
+#if DEBUG
   printf ("%.8X: %s: %d\n", SDL_RWtell (src), prop->id < 25 ? prop_names [prop->id] : "unknown", prop->length);
 #endif
 
@@ -306,7 +311,7 @@ xcf_header * read_xcf_header (SDL_RWops * src) {
     if (prop.id == PROP_COMPRESSION)
       h->compr = prop.data.compression;
     else if (prop.id == PROP_COLORMAP) {
-      int i;
+      // unused var: int i;
 
       h->cm_num = prop.data.colormap.num;
       h->cm_map = (char *) malloc (sizeof (char) * 3 * h->cm_num);
@@ -384,6 +389,7 @@ xcf_channel * read_xcf_channel (SDL_RWops * src) {
       l->visible = prop.data.visible ? 1 : 0;
       break;
     default:
+        ;
     }
   } while (prop.id != PROP_END);
 
@@ -520,7 +526,7 @@ static Uint32 rgb2grey (Uint32 a) {
 }
 
 void create_channel_surface (SDL_Surface * surf, xcf_image_type itype, Uint32 color, Uint32 opacity) {
-  Uint32 c;
+  Uint32 c = 0;
 
   switch (itype) {
   case IMAGE_RGB:
@@ -541,7 +547,7 @@ int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header * head,
   Uint8  * p8;
   Uint16 * p16;
   Uint32 * p;
-  int x, y, tx, ty, ox, oy, width, height, i, j;
+  int x, y, tx, ty, ox, oy, i, j;
   Uint32 *row;
 
   SDL_RWseek (src, layer->hierarchy_file_offset, SEEK_SET);
@@ -658,6 +664,8 @@ int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header * head,
   }
 
   free_xcf_hierarchy (hierarchy);
+  
+  return 0;
 }
 
 SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src) {
