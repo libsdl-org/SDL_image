@@ -67,7 +67,7 @@ SDL_Surface *IMG_Load_RW(SDL_RWops *src, int freesrc)
 }
 
 /* Portable case-insensitive string compare function */
-static int string_equals(const char *str1, const char *str2)
+int IMG_string_equals(const char *str1, const char *str2)
 {
 	while ( *str1 && *str2 ) {
 		if ( toupper((unsigned char)*str1) !=
@@ -99,11 +99,11 @@ SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, char *type)
 	/* Detect the type of image being loaded */
 	start = SDL_RWtell(src);
 	image = NULL;
-	for ( i=0; i < ARRAYSIZE(supported) && !image; ++i ) {
+	for ( i=0; i < ARRAYSIZE(supported); ++i ) {
 	        if( (supported[i].is
 		     && (SDL_RWseek(src, start, SEEK_SET),
 			 supported[i].is(src)))
-		    || (type && string_equals(type, supported[i].type))) {
+		    || (type && IMG_string_equals(type, supported[i].type))) {
 #ifdef DEBUG_IMGLIB
 			fprintf(stderr, "IMGLIB: Loading image as %s\n",
 							supported[i].type);
@@ -118,7 +118,7 @@ SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, char *type)
 	if ( freesrc ) {
 		SDL_RWclose(src);
 	}
-	if ( image == NULL ) {
+	if ( i == ARRAYSIZE(supported) ) {
 		IMG_SetError("Unsupported image format");
 	}
 	return(image);

@@ -41,39 +41,11 @@ int IMG_isXPM(SDL_RWops *src)
 
 	is_XPM = 0;
 	if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
-		if ( strncmp(magic, "/* XPM */", 9) == 0 ) {
+		if(memcmp(magic, "/* XPM */", 9) == 0) {
 			is_XPM = 1;
 		}
 	}
 	return(is_XPM);
-}
-
-static char *my_strdup(const char *string)
-{
-	char *newstring;
-
-	newstring = (char *)malloc(strlen(string)+1);
-	if ( newstring ) {
-		strcpy(newstring, string);
-	}
-	return(newstring);
-}
-
-/* Not exactly the same semantics as strncasecmp(), but portable */
-static int my_strncasecmp(const char *str1, const char *str2, int len)
-{
-	if ( len == 0 ) {
-		len = strlen(str2);
-		if ( len != strlen(str1) ) {
-			return(-1);
-		}
-	}
-	while ( len-- > 0 ) {
-		if ( tolower(*str1++) != tolower(*str2++) ) {
-			return(-1);
-		}
-	}
-	return(0);
 }
 
 static char *SDL_RWgets(char *string, int maxlen, SDL_RWops *src)
@@ -85,7 +57,7 @@ static char *SDL_RWgets(char *string, int maxlen, SDL_RWops *src)
 			/* EOF or error */
 			if ( i == 0 ) {
 				/* Hmm, EOF on initial read, return NULL */
-				string = NULL;
+				return NULL;
 			}
 			break;
 		}
@@ -93,392 +65,383 @@ static char *SDL_RWgets(char *string, int maxlen, SDL_RWops *src)
 		   as line separators because blank lines are just
 		   ignored by the XPM format.
 		*/
-		if ( (string[i] == '\r') || (string[i] == '\n') ) {
+		if ( (string[i] == '\n') || (string[i] == '\r') ) {
 			break;
 		}
 	}
-	if ( string ) {
-		string[i] = '\0';
-	}
+	string[i] = '\0';
 	return(string);
 }
 
 /* Hash table to look up colors from pixel strings */
-#define HASH_SIZE	256
-struct color_hash {
-	struct hash_entry {
-		int keylen;
-		char *key;
-		Uint32 color;
-		struct hash_entry *next;
-	} *entries[HASH_SIZE];
+#define STARTING_HASH_SIZE 256
+
+struct hash_entry {
+	char *key;
+	Uint32 color;
+	struct hash_entry *next;
 };
 
-static int hash_key(const char *key, int cpp)
+struct color_hash {
+	struct hash_entry **table;
+	struct hash_entry *entries; /* array of all entries */
+	struct hash_entry *next_free;
+	int size;
+	int maxnum;
+};
+
+static int hash_key(const char *key, int cpp, int size)
 {
 	int hash;
 
 	hash = 0;
 	while ( cpp-- > 0 ) {
-		hash += *key++;
+		hash = hash * 33 + *key++;
 	}
-	return(hash%HASH_SIZE);
+	return hash & (size - 1);
 }
 
-static struct color_hash *create_colorhash(void)
+static struct color_hash *create_colorhash(int maxnum)
 {
+	int bytes, s;
 	struct color_hash *hash;
 
-	hash = (struct color_hash *)malloc(sizeof *hash);
-	if ( hash ) {
-		memset(hash, 0, (sizeof *hash));
-	}
-	return(hash);
+	/* we know how many entries we need, so we can allocate
+	   everything here */
+	hash = malloc(sizeof *hash);
+	if(!hash)
+		return NULL;
+
+	/* use power-of-2 sized hash table for decoding speed */
+	for(s = STARTING_HASH_SIZE; s < maxnum; s <<= 1)
+		;
+	hash->size = s;
+	hash->maxnum = maxnum;
+	bytes = hash->size * sizeof(struct hash_entry **);
+	hash->entries = NULL;	/* in case malloc fails */
+	hash->table = malloc(bytes);
+	if(!hash->table)
+		return NULL;
+	memset(hash->table, 0, bytes);
+	hash->entries = malloc(maxnum * sizeof(struct hash_entry));
+	if(!hash->entries)
+		return NULL;
+	hash->next_free = hash->entries;
+	return hash;
 }
 
 static int add_colorhash(struct color_hash *hash,
-                         const char *key, int cpp, Uint32 color)
+                         char *key, int cpp, Uint32 color)
 {
-	int hash_index;
-	struct hash_entry *prev, *entry;
-
-	/* Create the hash entry */
-	entry = (struct hash_entry *)malloc(sizeof *entry);
-	if ( ! entry ) {
-		return(0);
-	}
-	entry->keylen = cpp;
-	entry->key = my_strdup(key);
-	if ( ! entry->key ) {
-		free(entry);
-		return(0);
-	}
-	entry->color = color;
-	entry->next = NULL;
-
-	/* Add it to the hash table */
-	hash_index = hash_key(key, cpp);
-	for ( prev = hash->entries[hash_index];
-	      prev && prev->next; prev = prev->next ) {
-		/* Go to the end of the list */ ;
-	}
-	if ( prev ) {
-		prev->next = entry;
-	} else {
-		hash->entries[hash_index] = entry;
-	}
-	return(1);
+	int index = hash_key(key, cpp, hash->size);
+	struct hash_entry *e = hash->next_free++;
+	e->color = color;
+	e->key = key;
+	e->next = hash->table[index];
+	hash->table[index] = e;
+	return 1;
 }
 
-static int get_colorhash(struct color_hash *hash,
-                         const char *key, int cpp, Uint32 *color)
-{
-	int hash_index;
-	struct hash_entry *entry;
+/* fast lookup that works if cpp == 1 */
+#define QUICK_COLORHASH(hash, key) ((hash)->table[*(key)]->color)
 
-	hash_index = hash_key(key, cpp);
-	for ( entry = hash->entries[hash_index]; entry; entry = entry->next ) {
-		if ( strncmp(key, entry->key, entry->keylen) == 0 ) {
-			*color = entry->color;
-			return(1);
-		}
+static Uint32 get_colorhash(struct color_hash *hash, const char *key, int cpp)
+{
+	struct hash_entry *entry = hash->table[hash_key(key, cpp, hash->size)];
+	while(entry) {
+		if(memcmp(key, entry->key, cpp) == 0)
+			return entry->color;
+		entry = entry->next;
 	}
-	return(0);
+	return 0;		/* garbage in - garbage out */
 }
 
 static void free_colorhash(struct color_hash *hash)
 {
-	int i;
-	struct hash_entry *entry, *freeable;
-
-	for ( i=0; i<HASH_SIZE; ++i ) {
-		entry = hash->entries[i];
-		while ( entry ) {
-			freeable = entry;
-			entry = entry->next;
-			free(freeable->key);
-			free(freeable);
-		}
+	if(hash && hash->table) {
+		free(hash->table);
+		free(hash->entries);
+		free(hash);
 	}
-	free(hash);
 }
 
-static int color_to_rgb(const char *colorspec, int *r, int *g, int *b)
+#define ARRAYSIZE(a) (int)(sizeof(a) / sizeof((a)[0]))
+
+/*
+ * convert colour spec to RGB (in 0xrrggbb format).
+ * return 1 if successful. may scribble on the colorspec buffer.
+ */
+static int color_to_rgb(char *spec, Uint32 *rgb)
 {
-	char rbuf[3];
-	char gbuf[3];
-	char bbuf[3];
+	/* poor man's rgb.txt */
+	static struct { char *name; Uint32 rgb; } known[] = {
+		{"none",  0xffffffff},
+		{"black", 0x00000000},
+		{"white", 0x00ffffff},
+		{"red",   0x00ff0000},
+		{"green", 0x0000ff00},
+		{"blue",  0x000000ff}
+	};
 
-	/* Handle monochrome black and white */
-	if ( my_strncasecmp(colorspec, "black", 0) == 0 ) {
-		*r = 0;
-		*g = 0;
-		*b = 0;
-		return(1);
-	}
-	if ( my_strncasecmp(colorspec, "white", 0) == 0 ) {
-		*r = 255;
-		*g = 255;
-		*b = 255;
-		return(1);
-	}
-
-	/* Normal hexidecimal color */
-	switch (strlen(colorspec)) {
+	if(spec[0] == '#') {
+		char buf[7];
+		++spec;
+		switch(strlen(spec)) {
 		case 3:
-			rbuf[0] = colorspec[0];
-			rbuf[1] = colorspec[0];
-			gbuf[0] = colorspec[1];
-			gbuf[1] = colorspec[1];
-			bbuf[0] = colorspec[2];
-			bbuf[1] = colorspec[2];
+			buf[0] = buf[1] = spec[0];
+			buf[2] = buf[3] = spec[1];
+			buf[4] = buf[5] = spec[2];
 			break;
 		case 6:
-			rbuf[0] = colorspec[0];
-			rbuf[1] = colorspec[1];
-			gbuf[0] = colorspec[2];
-			gbuf[1] = colorspec[3];
-			bbuf[0] = colorspec[4];
-			bbuf[1] = colorspec[5];
+			memcpy(buf, spec, 6);
 			break;
 		case 12:
-			rbuf[0] = colorspec[0];
-			rbuf[1] = colorspec[1];
-			gbuf[0] = colorspec[4];
-			gbuf[1] = colorspec[5];
-			bbuf[0] = colorspec[8];
-			bbuf[1] = colorspec[9];
+			buf[0] = spec[0];
+			buf[1] = spec[1];
+			buf[2] = spec[4];
+			buf[3] = spec[5];
+			buf[4] = spec[8];
+			buf[5] = spec[9];
 			break;
-		default:
-			return(0);
+		}
+		buf[6] = '\0';
+		*rgb = strtol(buf, NULL, 16);
+		return 1;
+	} else {
+		int i;
+		for(i = 0; i < ARRAYSIZE(known); i++)
+			if(IMG_string_equals(known[i].name, spec)) {
+				*rgb = known[i].rgb;
+				return 1;
+			}
+		return 0;
 	}
-	rbuf[2] = '\0';
-	*r = (int)strtol(rbuf, NULL, 16);
-	gbuf[2] = '\0';
-	*g = (int)strtol(gbuf, NULL, 16);
-	bbuf[2] = '\0';
-	*b = (int)strtol(bbuf, NULL, 16);
-	return(1);
 }
+
+static char *skipspace(char *p)
+{
+	while(isspace((unsigned char)*p))
+	      ++p;
+	return p;
+}
+
+static char *skipnonspace(char *p)
+{
+	while(!isspace((unsigned char)*p) && *p)
+		++p;
+	return p;
+}
+
+#ifndef MAX
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
 
 /* Load a XPM type image from an SDL datasource */
 SDL_Surface *IMG_LoadXPM_RW(SDL_RWops *src)
 {
 	SDL_Surface *image;
 	char line[1024];
-	char *here, *stop;
+	char *here;
 	int index;
-	int i, x, y;
+	int x, y;
 	int w, h, ncolors, cpp;
-	int found;
-	int r, g, b;
-	Uint32 colorkey;
-	char *colorkey_string;
 	int pixels_len;
-	char *pixels;
+	char *pixels = NULL;
 	int indexed;
 	Uint8 *dst;
-	Uint32 pixel;
 	struct color_hash *colors;
+	SDL_Color *im_colors = NULL;
+	char *keystrings, *nextkey;
+	char *error = NULL;
 
 	/* Skip to the first string, which describes the image */
-	image = NULL;
 	do {
-		here = SDL_RWgets(line, sizeof(line), src);
-		if ( ! here ) {
+	        here = SDL_RWgets(line, sizeof(line), src);
+		if ( !here ) {
 			IMG_SetError("Premature end of data");
 			return(NULL);
 		}
-		if ( *here == '"' ) {
-			++here;
-			/* Skip to width */
-			while ( isspace(*here) ) ++here;
-			w = atoi(here);
-			while ( ! isspace(*here) ) ++here;
-			/* Skip to height */
-			while ( isspace(*here) ) ++here;
-			h = atoi(here);
-			while ( ! isspace(*here) ) ++here;
-			/* Skip to number of colors */
-			while ( isspace(*here) ) ++here;
-			ncolors = atoi(here);
-			while ( ! isspace(*here) ) ++here;
-			/* Skip to characters per pixel */
-			while ( isspace(*here) ) ++here;
-			cpp = atoi(here);
-			while ( ! isspace(*here) ) ++here;
-
-			/* Verify the parameters */
-			if ( !w || !h || !ncolors || !cpp ) {
-				IMG_SetError("Invalid format description");
-				return(NULL);
-			}
-			pixels_len = 1+w*cpp+1+1;
-			pixels = (char *)malloc(pixels_len);
-			if ( ! pixels ) {
-				IMG_SetError("Out of memory");
-				return(NULL);
-			}
-
-			/* Create the new surface */
-			if ( ncolors <= 256 ) {
-				indexed = 1;
-				image = SDL_CreateRGBSurface(SDL_SWSURFACE,
-							w, h, 8, 0, 0, 0, 0);
-			} else {
-				int rmask, gmask, bmask;
-				indexed = 0;
-				if ( SDL_BYTEORDER == SDL_BIG_ENDIAN ) {
-					rmask = 0x000000ff;
-					gmask = 0x0000ff00;
-					bmask = 0x00ff0000;
-				} else {
-					rmask = 0x00ff0000;
-					gmask = 0x0000ff00;
-					bmask = 0x000000ff;
-				}
-				image = SDL_CreateRGBSurface(SDL_SWSURFACE,
-							w, h, 32,
-							rmask, gmask, bmask, 0);
-			}
-			if ( ! image ) {
-				/* Hmm, some SDL error (out of memory?) */
-				free(pixels);
-				return(NULL);
-			}
-		}
-	} while ( ! image );
-
-	/* Read the colors */
-	colors = create_colorhash();
-	if ( ! colors ) {
-		SDL_FreeSurface(image);
-		free(pixels);
-		IMG_SetError("Out of memory");
+		here = skipspace(here);
+	} while(*here != '"');
+	/*
+	 * The header string of an XPMv3 image has the format
+	 *
+	 * <width> <height> <ncolors> <cpp> [ <hotspot_x> <hotspot_y> ]
+	 *
+	 * where the hotspot coords are intended for mouse cursors.
+	 * Right now we don't use the hotspots but it should be handled
+	 * one day.
+	 */
+	if(sscanf(here + 1, "%d %d %d %d", &w, &h, &ncolors, &cpp) != 4
+	   || w <= 0 || h <= 0 || ncolors <= 0 || cpp <= 0) {
+		IMG_SetError("Invalid format description");
 		return(NULL);
 	}
-	colorkey_string = NULL;
-	for ( index=0; index < ncolors; ++index ) {
-		here = SDL_RWgets(line, sizeof(line), src);
-		if ( ! here ) {
-			SDL_FreeSurface(image);
-			image = NULL;
-			IMG_SetError("Premature end of data");
-			goto done;
-		}
-		if ( *here == '"' ) {
-			const char *key;
-			++here;
-			/* Grab the pixel key */
-			key = here;
-			for ( i=0; i<cpp; ++i ) {
-				if ( ! *here++ ) {
-					/* Parse error */
-					continue;
-				}
+
+	keystrings = malloc(ncolors * cpp);
+	if(!keystrings) {
+		IMG_SetError("Out of memory");
+		free(pixels);
+		return NULL;
+	}
+	nextkey = keystrings;
+
+	/* Create the new surface */
+	if(ncolors <= 256) {
+		indexed = 1;
+		image = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 8,
+					     0, 0, 0, 0);
+		im_colors = image->format->palette->colors;
+		image->format->palette->ncolors = ncolors;
+	} else {
+		indexed = 0;
+		image = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 32,
+					     0xff0000, 0x00ff00, 0x0000ff, 0);
+	}
+	if(!image) {
+		/* Hmm, some SDL error (out of memory?) */
+		free(pixels);
+		return(NULL);
+	}
+
+	/* Read the colors */
+	colors = create_colorhash(ncolors);
+	if ( ! colors ) {
+		error = "Out of memory";
+		goto done;
+	}
+	for(index = 0; index < ncolors; ++index ) {
+		char *key;
+		int len;
+
+		do {
+			here = SDL_RWgets(line, sizeof(line), src);
+			if(!here) {
+				error = "Premature end of data";
+				goto done;
 			}
-			if ( *here ) {
-				*here++ = '\0';
+			here = skipspace(here);
+		} while(*here != '"');
+
+		++here;
+		len = strlen(here);
+		if(len < cpp + 7)
+			continue;	/* cannot be a valid line */
+
+		key = here;
+		key[cpp] = '\0';
+		here += cpp + 1;
+
+		/* parse a colour definition */
+		for(;;) {
+			char nametype;
+			char *colname;
+			char delim;
+			Uint32 rgb;
+
+			here = skipspace(here);
+			nametype = *here;
+			here = skipnonspace(here);
+			here = skipspace(here);
+			colname = here;
+			while(*here && !isspace((unsigned char)*here)
+			      && *here != '"')
+				here++;
+			if(!*here) {
+				error = "color parse error";
+				goto done;
 			}
-			/* Find the color identifier */
-			found = 0;
-			while ( *here && ! found ) {
-				while ( isspace(*here) ) ++here;
-				if ( (*here != 'c') &&
-				     (*here != 'g') &&
-				     (*here != 'm') ) {
-					/* Skip color type */
-					while ( *here && !isspace(*here) )
-						++here;
-					/* Skip color name */
-					while ( isspace(*here) ) ++here;
-					while ( *here && !isspace(*here) )
-						++here;
-					continue;
-				}
-				++here;
-				while ( isspace(*here) ) ++here;
-				if ( my_strncasecmp(here, "None", 4) == 0 ) {
-					colorkey_string = my_strdup(key);
-					if ( indexed ) {
-						colorkey = (Uint32)index;
-					} else {
-						colorkey = 0xFFFFFFFF;
-					}
-					found = 1;
-					continue;
-				}
-				if ( *here == '#' ) {
-					++here;
-				}
-				while ( isspace(*here) ) ++here;
-				for ( stop=here; isalnum(*stop); ++stop ) {
-					/* Skip the pixel color */;
-				}
-				*stop++ = '\0';
-				found = color_to_rgb(here, &r, &g, &b);
-				if ( found ) {
-					if ( indexed ) {
-						SDL_Color *color;
-						color = &image->format->palette->colors[index];
-						color->r = (Uint8)r;
-						color->g = (Uint8)g;
-						color->b = (Uint8)b;
-						pixel = index;
-					} else {
-						pixel = (r<<16)|(g<<8)|b;
-					}
-					add_colorhash(colors, key, cpp, pixel);
-				}
-				*here = '\0';
-			}
-			if ( ! found ) {
-				/* Hum, couldn't parse a color.. */;
-			}
+			if(nametype == 's')
+				continue;      /* skip symbolic colour names */
+
+			delim = *here;
+			*here = '\0';
+			if(delim)
+			    here++;
+
+			if(!color_to_rgb(colname, &rgb))
+				continue;
+
+			memcpy(nextkey, key, cpp);
+			if(indexed) {
+				SDL_Color *c = im_colors + index;
+				c->r = rgb >> 16;
+				c->g = rgb >> 8;
+				c->b = rgb;
+				add_colorhash(colors, nextkey, cpp, index);
+			} else
+				add_colorhash(colors, nextkey, cpp, rgb);
+			nextkey += cpp;
+			if(rgb == 0xffffffff)
+				SDL_SetColorKey(image, SDL_SRCCOLORKEY,
+						indexed ? index : rgb);
+			break;
 		}
 	}
 
 	/* Read the pixels */
-	for ( y=0; y < h; ) {
-		here = SDL_RWgets(pixels, pixels_len, src);
-		if ( ! here ) {
-			SDL_FreeSurface(image);
-			image = NULL;
-			IMG_SetError("Premature end of data");
-			goto done;
-		}
-		if ( *here == '"' ) {
-			++here;
-			dst = (Uint8 *)image->pixels + y*image->pitch;
-			for ( x=0; x<w; ++x ) {
-				pixel = 0;
-				if ( colorkey_string &&
-				     (strncmp(here,colorkey_string,cpp)==0) ) {
-					pixel = colorkey;
-				} else {
-					get_colorhash(colors, here,cpp, &pixel);
-				}
-				if ( indexed ) {
-					*dst++ = pixel;
-				} else {
-					*((Uint32 *)dst)++ = pixel;
-				}
-				for ( i=0; *here && i<cpp; ++i ) {
-					++here;
+	pixels_len = w * cpp;
+	pixels = malloc(MAX(pixels_len + 5, 20));
+	if(!pixels) {
+		error = "Out of memory";
+		goto done;
+	}
+	dst = image->pixels;
+	for (y = 0; y < h; ) {
+		Uint8 *s;
+		char c;
+		do {
+			if(SDL_RWread(src, &c, 1, 1) <= 0) {
+				error = "Premature end of data";
+				goto done;
+			}
+		} while(c == ' ');
+		if(c != '"') {
+			/* comment or empty line, skip it */
+			while(c != '\n' && c != '\r') {
+				if(SDL_RWread(src, &c, 1, 1) <= 0) {
+					error = "Premature end of data";
+					goto done;
 				}
 			}
-			++y;
+			continue;
 		}
+		if(SDL_RWread(src, pixels, pixels_len + 3, 1) <= 0) {
+			error = "Premature end of data";
+			goto done;
+		}
+		s = pixels;
+		if(indexed) {
+			/* optimization for some common cases */
+			if(cpp == 1)
+				for(x = 0; x < w; x++)
+					dst[x] = QUICK_COLORHASH(colors,
+								 s + x);
+			else
+				for(x = 0; x < w; x++)
+					dst[x] = get_colorhash(colors,
+							       s + x * cpp,
+							       cpp);
+		} else {
+			for (x = 0; x < w; x++)
+				((Uint32*)dst)[x] = get_colorhash(colors,
+								  s + x * cpp,
+								  cpp);
+		}
+		dst += image->pitch;
+		y++;
 	}
-	if ( colorkey_string ) {
-        	SDL_SetColorKey(image, SDL_SRCCOLORKEY, colorkey);
-	}
+
 done:
-	free(pixels);
-	free_colorhash(colors);
-	if ( colorkey_string ) {
-		free(colorkey_string);
+	if(error) {
+		if(image)
+			SDL_FreeSurface(image);
+		image = NULL;
+		IMG_SetError(error);
 	}
+	free(pixels);
+	free(keystrings);
+	free_colorhash(colors);
 	return(image);
 }
 

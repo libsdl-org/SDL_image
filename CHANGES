@@ -1,4 +1,8 @@
 
+1.1.1:
+Mattias Engdegård - Wed Dec  6 10:00:07 PST 2000
+ * Improved the XPM loading code
+
 1.1.0:
 Sam Lantinga - Wed Nov 29 00:46:27 PST 2000
  * Added XPM file format support
