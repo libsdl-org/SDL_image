@@ -1501,7 +1501,7 @@ else
     no_undefined_flag=' -z text'
     # $CC -shared without GNU ld will not create a library from C++
     # object files and a static libstdc++, better avoid it by now
-    archive_cmds='$LD -G${allow_undefined_flag} -h $soname -o $lib $libobjs $deplibs $linkopts'
+    archive_cmds='$LD -G${allow_undefined_flag} -h $rpath/$soname -o $lib $libobjs $deplibs $linkopts'
     archive_expsym_cmds='$echo "{ global:" > $lib.exp~cat $export_symbols | sed -e "s/\(.*\)/\1;/" >> $lib.exp~$echo "local: *; };" >> $lib.exp~
 		$LD -G${allow_undefined_flag} -M $lib.exp -h $soname -o $lib $libobjs $deplibs $linkopts~$rm $lib.exp'
     hardcode_libdir_flag_spec=
