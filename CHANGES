@@ -1,5 +1,8 @@
 
 1.1.1:
+Mattias Engdegård - Tue Feb 27 12:44:43 PST 2001
+ * Improved the PCX loading code
+ * Modified showimage to set hardware palette for 8-bit displays
 Sam Lantinga - Tue Jan 30 14:24:06 PST 2001
  * Modified showimage to accept multiple images on the command line
 Sam Lantinga - Mon Dec 18 02:49:29 PST 2000

@@ -118,6 +118,8 @@ int main(int argc, char *argv[])
 		if ( (image->format->BytesPerPixel > 1) && (depth == 8) ) {
 	    		depth = 32;
 		}
+		if(depth == 8)
+			flags |= SDL_HWPALETTE;
 		screen = SDL_SetVideoMode(image->w, image->h, depth, flags);
 		if ( screen == NULL ) {
 			fprintf(stderr,"Couldn't set %dx%dx%d video mode: %s\n",
