@@ -233,7 +233,7 @@ static char *error;
  * If len > 0, it's assumed to be at least len chars (for efficiency).
  * Return NULL and set error upon EOF or parse error.
  */
-char *get_next_line(char ***lines, SDL_RWops *src, int len)
+static char *get_next_line(char ***lines, SDL_RWops *src, int len)
 {
 	if(lines) {
 		return *(*lines)++;
