@@ -77,13 +77,13 @@ int main(int argc, char *argv[])
 	/* Check command line usage */
 	if ( ! argv[1] ) {
 		fprintf(stderr, "Usage: %s <image_file>\n", argv[0]);
-		exit(1);
+		return(1);
 	}
 
 	/* Initialize the SDL library */
 	if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
 		fprintf(stderr, "Couldn't initialize SDL: %s\n",SDL_GetError());
-		exit(255);
+		return(255);
 	}
 
 	/* Open the image file */
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 	if ( image == NULL ) {
 		fprintf(stderr,"Couldn't load %s: %s\n",argv[1],SDL_GetError());
 		SDL_Quit();
-		exit(2);
+		return(2);
 	}
 	SDL_WM_SetCaption(argv[1], "showimage");
 
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr,"Couldn't set %dx%dx%d video mode: %s\n",
 				image->w, image->h, depth, SDL_GetError());
 		SDL_Quit();
-		exit(3);
+		return(3);
 	}
 
 	/* Set the palette, if one exists */
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
 			break;
 		    default:
 			/* We don't want this event */
-			SDL_EventState(i, SDL_IGNORE);
+			SDL_EventState((Uint8)i, SDL_IGNORE);
 			break;
 		}
 	}
@@ -143,5 +143,5 @@ int main(int argc, char *argv[])
 	/* We're done! */
 	SDL_FreeSurface(image);
 	SDL_Quit();
-	exit(0);
+	return(0);
 }

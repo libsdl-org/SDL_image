@@ -24,6 +24,7 @@
 
 /* This is an XPM image file loading framework */
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -47,6 +48,34 @@ int IMG_isXPM(SDL_RWops *src)
 	return(is_XPM);
 }
 
+static char *my_strdup(const char *string)
+{
+	char *newstring;
+
+	newstring = (char *)malloc(strlen(string)+1);
+	if ( newstring ) {
+		strcpy(newstring, string);
+	}
+	return(newstring);
+}
+
+/* Not exactly the same semantics as strncasecmp(), but portable */
+static int my_strncasecmp(const char *str1, const char *str2, int len)
+{
+	if ( len == 0 ) {
+		len = strlen(str2);
+		if ( len != strlen(str1) ) {
+			return(-1);
+		}
+	}
+	while ( len-- > 0 ) {
+		if ( tolower(*str1++) != tolower(*str2++) ) {
+			return(-1);
+		}
+	}
+	return(0);
+}
+
 static char *SDL_RWgets(char *string, int maxlen, SDL_RWops *src)
 {
 	int i;
@@ -64,7 +93,7 @@ static char *SDL_RWgets(char *string, int maxlen, SDL_RWops *src)
 		   as line separators because blank lines are just
 		   ignored by the XPM format.
 		*/
-		if ( (string[i] == '\n') || (string[i] == '\n') ) {
+		if ( (string[i] == '\r') || (string[i] == '\n') ) {
 			break;
 		}
 	}
@@ -119,7 +148,7 @@ static int add_colorhash(struct color_hash *hash,
 		return(0);
 	}
 	entry->keylen = cpp;
-	entry->key = strdup(key);
+	entry->key = my_strdup(key);
 	if ( ! entry->key ) {
 		free(entry);
 		return(0);
@@ -181,13 +210,13 @@ static int color_to_rgb(const char *colorspec, int *r, int *g, int *b)
 	char bbuf[3];
 
 	/* Handle monochrome black and white */
-	if ( strcasecmp(colorspec, "black") == 0 ) {
+	if ( my_strncasecmp(colorspec, "black", 0) == 0 ) {
 		*r = 0;
 		*g = 0;
 		*b = 0;
 		return(1);
 	}
-	if ( strcasecmp(colorspec, "white") == 0 ) {
+	if ( my_strncasecmp(colorspec, "white", 0) == 0 ) {
 		*r = 255;
 		*g = 255;
 		*b = 255;
@@ -369,8 +398,8 @@ SDL_Surface *IMG_LoadXPM_RW(SDL_RWops *src)
 				}
 				++here;
 				while ( isspace(*here) ) ++here;
-				if ( strncasecmp(here, "None", 4) == 0 ) {
-					colorkey_string = strdup(key);
+				if ( my_strncasecmp(here, "None", 4) == 0 ) {
+					colorkey_string = my_strdup(key);
 					if ( indexed ) {
 						colorkey = (Uint32)index;
 					} else {

@@ -22,8 +22,9 @@
     slouken@devolution.com
 */
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "SDL_endian.h"
 

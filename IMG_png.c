@@ -66,6 +66,9 @@
 
 #include "SDL_endian.h"
 
+#ifdef macintosh
+#define MACOS
+#endif
 #include <png.h>
 
 #define PNG_BYTES_TO_CHECK 4
@@ -210,8 +213,11 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 
 	if(ckey != -1) {
 	        if(color_type != PNG_COLOR_TYPE_PALETTE)
-		        ckey = SDL_MapRGB(surface->format, transv->red,
-					  transv->green, transv->blue);
+			/* FIXME: Should these be truncated or shifted down? */
+		        ckey = SDL_MapRGB(surface->format,
+			                 (Uint8)transv->red,
+			                 (Uint8)transv->green,
+			                 (Uint8)transv->blue);
 	        SDL_SetColorKey(surface, SDL_SRCCOLORKEY, ckey);
 	}
 
@@ -223,7 +229,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 		surface = NULL;
 		goto done;
 	}
-	for (row = 0; row < height; row++) {
+	for (row = 0; row < (int)height; row++) {
 		row_pointers[row] = (png_bytep)
 				(Uint8 *)surface->pixels + row*surface->pitch;
 	}
