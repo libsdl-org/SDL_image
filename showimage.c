@@ -100,8 +100,7 @@ int main(int argc, char *argv[])
 		if ( image == NULL ) {
 			fprintf(stderr, "Couldn't load %s: %s\n",
 			        argv[i], SDL_GetError());
-			SDL_Quit();
-			return(2);
+			continue;
 		}
 		SDL_WM_SetCaption(argv[i], "showimage");
 
@@ -109,6 +108,13 @@ int main(int argc, char *argv[])
 		depth = SDL_VideoModeOK(image->w, image->h, 32, flags);
 		/* Use the deepest native mode, except that we emulate 32bpp
 		   for viewing non-indexed images on 8bpp screens */
+		if ( depth == 0 ) {
+			if ( image->format->BytesPerPixel > 1 ) {
+				depth = 32;
+			} else {
+				depth = 8;
+			}
+		} else
 		if ( (image->format->BytesPerPixel > 1) && (depth == 8) ) {
 	    		depth = 32;
 		}
@@ -116,8 +122,7 @@ int main(int argc, char *argv[])
 		if ( screen == NULL ) {
 			fprintf(stderr,"Couldn't set %dx%dx%d video mode: %s\n",
 				image->w, image->h, depth, SDL_GetError());
-			SDL_Quit();
-			return(3);
+			continue;
 		}
 
 		/* Set the palette, if one exists */
