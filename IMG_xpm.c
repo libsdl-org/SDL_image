@@ -314,6 +314,10 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
 	char ***xpmlines = NULL;
 	int pixels_len;
 
+	error = NULL;
+	linebuf = NULL;
+	buflen = 0;
+
 	if(xpm)
 		xpmlines = &xpm;
 
