@@ -1,3 +1,9 @@
 configure
-Makefile.in
 aclocal.m4
+Makefile.in
+Makefile
+.libs
+.deps
+*.o
+*.lo
+*.la
