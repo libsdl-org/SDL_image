@@ -1,4 +1,8 @@
 
+1.0.10:
+Ray Kelm - Fri, 04 Aug 2000 20:58:00 -0400
+ * Added support for cross-compiling Windows DLL from Linux
+
 1.0.9:
 Mattias Engdegård - Sat Jul  1 17:57:37 PDT 2000
  * PNG loader properly sets the colorkey on 8-bit transparent images
