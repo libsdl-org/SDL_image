@@ -94,13 +94,11 @@ SDL_Surface *IMG_LoadPPM_RW(SDL_RWops *src)
 	SDL_Surface *surface;
 	int width, height;
 	int maxval, x, y;
-	Uint32 *row;
+	Uint8 *row;
 	Uint8 rgb[3];
-	int read_error;
 
 	/* Initialize the data we will clean up when we're done */
 	surface = NULL;
-	read_error = 0;
 
 	/* Check to make sure we have something to do */
 	if ( ! src ) {
@@ -129,7 +127,7 @@ SDL_Surface *IMG_LoadPPM_RW(SDL_RWops *src)
 	SDL_RWseek(src, -1, SEEK_CUR);
 
 	/* Create the surface of the appropriate type */
-	surface = SDL_AllocSurface(SDL_SWSURFACE, width, height, 32,
+	surface = SDL_AllocSurface(SDL_SWSURFACE, width, height, 24,
 				0x00FF0000,0x0000FF00,0x000000FF,0);
 	if ( surface == NULL ) {
 		IMG_SetError("Out of memory");
@@ -137,25 +135,12 @@ SDL_Surface *IMG_LoadPPM_RW(SDL_RWops *src)
 	}
 
 	/* Read the image into the surface */
-	for ( y=0; y<surface->h; ++y ) {
-		row = (Uint32 *)((Uint8 *)surface->pixels + y*surface->pitch);
-		for ( x=0; x<surface->w; ++x ) {
-			if ( ! SDL_RWread(src, rgb, 3, 1) ) {
-				read_error = 1;
-				goto done;
-			}
-			*row++ = ((((Uint32)rgb[0])<<16)|
-			          (((Uint32)rgb[1])<< 8)|
-			          (((Uint32)rgb[2])    ));
-		}
-	}
-
-done:
-	if ( read_error ) {
+	if(!SDL_RWread(src, surface->pixels, 3, surface->h*surface->w)){
 		SDL_FreeSurface(surface);
 		IMG_SetError("Error reading PPM data");
 		surface = NULL;
 	}
+done:
 	return(surface);
 }
 

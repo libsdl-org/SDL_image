@@ -3,6 +3,8 @@
 Mattias Engdegård - Tue Feb 27 12:44:43 PST 2001
  * Improved the PCX loading code
  * Modified showimage to set hardware palette for 8-bit displays
+Robert Stein - Thu, 22 Feb 2001 14:26:19 -0600
+ * Improved the PPM loading code
 Sam Lantinga - Tue Jan 30 14:24:06 PST 2001
  * Modified showimage to accept multiple images on the command line
 Sam Lantinga - Mon Dec 18 02:49:29 PST 2000
