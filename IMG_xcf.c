@@ -166,6 +166,7 @@ typedef struct {
 
   Uint32 offset_x;
   Uint32 offset_y;
+  int visible;
 } xcf_layer;
 
 typedef struct {
@@ -178,7 +179,8 @@ typedef struct {
 
   Uint32 color;
   Uint32 opacity;
-  int selection : 1;
+  int selection;
+  int visible;
 } xcf_channel;
 
 typedef struct {
@@ -245,7 +247,9 @@ void xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
   prop->id = SDL_ReadBE32 (src);
   prop->length = SDL_ReadBE32 (src);
 
+#if 0
   printf ("%.8X: %s: %d\n", SDL_RWtell (src), prop->id < 25 ? prop_names [prop->id] : "unknown", prop->length);
+#endif
 
   switch (prop->id) {
   case PROP_COLORMAP:
@@ -264,6 +268,9 @@ void xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
   case PROP_COMPRESSION:
   case PROP_COLOR:
     SDL_RWread (src, &prop->data, prop->length, 1);
+    break;
+  case PROP_VISIBLE:
+    prop->data.visible = SDL_ReadBE32 (src);
     break;
   default:
     //    SDL_RWread (src, &prop->data, prop->length, 1);
@@ -332,6 +339,8 @@ xcf_layer * read_xcf_layer (SDL_RWops * src) {
     if (prop.id == PROP_OFFSETS) {
       l->offset_x = prop.data.offset.x;
       l->offset_y = prop.data.offset.y;
+    } else if (prop.id == PROP_VISIBLE) {
+      l->visible = prop.data.visible ? 1 : 0;
     }
   } while (prop.id != PROP_END);
 
@@ -370,6 +379,9 @@ xcf_channel * read_xcf_channel (SDL_RWops * src) {
       break;
     case PROP_SELECTION:
       l->selection = 1;
+      break;
+    case PROP_VISIBLE:
+      l->visible = prop.data.visible ? 1 : 0;
       break;
     default:
     }
@@ -724,9 +736,10 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src) {
     rd.y = layer->offset_y;
     rd.w = layer->width;
     rd.h = layer->height;
-    free_xcf_layer (layer);
 
-    SDL_BlitSurface (lays, &rs, surface, &rd);
+    if (layer->visible)
+      SDL_BlitSurface (lays, &rs, surface, &rd);
+    free_xcf_layer (layer);
   }
 
   SDL_FreeSurface (lays);
@@ -756,7 +769,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src) {
     }
     for (i = 0; i < chnls; i++) {
       //      printf ("CNLBLT %i\n", i);
-      if (!channel [i]->selection) {
+      if (!channel [i]->selection && channel [i]->visible) {
 	create_channel_surface (chs, head->image_type, channel [i]->color, channel [i]->opacity);
 	SDL_BlitSurface (chs, NULL, surface, NULL);
       }

@@ -1,4 +1,8 @@
 
+1.2.3:
+Dag-Erling Smorgrav - Thu May  2 19:09:48 PDT 2002
+ * The XCF loader now ignores invisible layers and channels
+
 1.2.2:
 Sam Lantinga - Sat Apr 13 07:49:47 PDT 2002
  * Updated autogen.sh for new versions of automake
