@@ -501,7 +501,14 @@ fi
 
 if test -n "$RANLIB"; then
   old_archive_cmds="$old_archive_cmds~\$RANLIB \$oldlib"
-  old_postinstall_cmds="\$RANLIB \$oldlib~$old_postinstall_cmds"
+  case "$host_os" in
+  openbsd*)
+    old_postinstall_cmds="\$RANLIB -t \$oldlib~$old_postinstall_cmds"
+  ;;
+  *)
+    old_postinstall_cmds="\$RANLIB \$oldlib~$old_postinstall_cmds"
+  ;;
+  esac
 fi
 
 # Set sane defaults for `DLLTOOL', `OBJDUMP', and `AS', used on cygwin.
@@ -1444,19 +1451,23 @@ else
   openbsd*)
     hardcode_direct=yes
     hardcode_shlibpath_var=no
-    case "$host_os" in
+    if test -z "`echo __ELF__ | $CC -E - | grep __ELF__`" || test "$host_os-$host_cpu" = "openbsd2.
+8-powerpc"; then
+      archive_cmds='$CC -shared $pic_flag -o $lib $libobjs $deplibs $linkopts'
+      hardcode_libdir_flag_spec='${wl}-R$libdir'
+      export_dynamic_flag_spec='${wl}-E'
+    else
+      case "$host_os" in
       openbsd[01].* | openbsd2.[0-7] | openbsd2.[0-7].*)
-	archive_cmds='$LD -Bshareable -o $lib $libobjs $deplibs $linkopts'
-	hardcode_libdir_flag_spec='-R$libdir'
-      ;;
+       archive_cmds='$LD -Bshareable -o $lib $libobjs $deplibs $linkopts'
+       hardcode_libdir_flag_spec='-R$libdir'
+       ;;
       *)
-	archive_cmds='$CC -shared $pic_flag -o $lib $libobjs $deplibs $linkopts'
-	hardcode_libdir_flag_spec='${wl}-rpath,$libdir'
-	if test "`echo __ELF__ | $CC -E - | grep __ELF__`" = "" -o "$host_os-$host_cpu" = "openbsd2.8-powerpc"; then
-	  export_dynamic_flag_spec='${wl}-E'
-	fi
-      ;;
-    esac
+       archive_cmds='$CC -shared $pic_flag -o $lib $libobjs $deplibs $linkopts'
+       hardcode_libdir_flag_spec='${wl}-R$libdir'
+       ;;
+      esac
+    fi
     ;;
 
   os2*)
@@ -2083,11 +2094,20 @@ openbsd*)
   version_type=sunos
   need_lib_prefix=no
   need_version=no
+  sys_lib_search_path_spec="/usr/lib"
+  sys_lib_dlsearch_path_spec="/usr/lib /usr/local/lib"
   file_magic_cmd=/usr/bin/file
   file_magic_test_file=`echo /usr/lib/libc.so.*`
   if test "`echo __ELF__ | $CC -E - | grep __ELF__`" = "" -o "$host_os-$host_cpu" = "openbsd2.8-powerpc"; then
     deplibs_check_method='file_magic ELF [0-9][0-9]*-bit [LM]SB shared object'
-    shlibpath_overrides_runpath=no
+    case "$host_os" in
+    openbsd2.[89] | openbsd2.[89].*)
+      shlibpath_overrides_runpath=no
+    ;;
+    *)
+      shlibpath_overrides_runpath=yes
+    ;;
+    esac
   else
     deplibs_check_method='file_magic OpenBSD.* shared library'
     shlibpath_overrides_runpath=yes
@@ -2215,6 +2235,17 @@ sysv4*MP*)
 
 *)
   dynamic_linker=no
+  ;;
+
+nto-qnx)
+  version_type=linux
+  need_lib_prefix=no
+  need_version=no
+  library_names_spec='${libname}${release}.so$versuffix ${libname}${release}.so$major $libname.so'
+  soname_spec='${libname}${release}.so$major'
+  shlibpath_var=LD_LIBRARY_PATH
+  shlibpath_overrides_runpath=yes
+  deplibs_check_method='pass_all'
   ;;
 esac
 echo "$ac_t$dynamic_linker" 1>&6
