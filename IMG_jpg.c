@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <setjmp.h>
 
 #include "SDL_image.h"
 
@@ -171,16 +172,42 @@ static void jpeg_SDL_RW_src (j_decompress_ptr cinfo, SDL_RWops *ctx)
   src->pub.next_input_byte = NULL; /* until buffer loaded */
 }
 
+struct my_error_mgr {
+	struct jpeg_error_mgr errmgr;
+	jmp_buf escape;
+};
+
+static void my_error_exit(j_common_ptr cinfo)
+{
+	struct my_error_mgr *err = (struct my_error_mgr *)cinfo->err;
+	longjmp(err->escape, 1);
+}
+
+static void output_no_message(j_common_ptr cinfo)
+{
+	/* do nothing */
+}
+
 /* Load a JPEG type image from an SDL datasource */
 SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 {
-	struct jpeg_error_mgr errmgr;
 	struct jpeg_decompress_struct cinfo;
 	JSAMPROW rowptr[1];
-	SDL_Surface *surface;
+	SDL_Surface *volatile surface = NULL;
+	struct my_error_mgr jerr;
 
 	/* Create a decompression structure and load the JPEG header */
-	cinfo.err = jpeg_std_error(&errmgr);
+	cinfo.err = jpeg_std_error(&jerr.errmgr);
+	jerr.errmgr.error_exit = my_error_exit;
+	jerr.errmgr.output_message = output_no_message;
+	if(setjmp(jerr.escape)) {
+		/* If we get here, libjpeg found an error */
+		jpeg_destroy_decompress(&cinfo);
+		IMG_SetError("JPEG loading error");
+		SDL_FreeSurface(surface);
+		return NULL;
+	}
+
 	jpeg_create_decompress(&cinfo);
 	jpeg_SDL_RW_src(&cinfo, src);
 	jpeg_read_header(&cinfo, TRUE);

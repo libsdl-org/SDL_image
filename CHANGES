@@ -1,4 +1,8 @@
 
+1.2.2:
+Mattias Engdegård - Fri Dec 28 17:54:31 PST 2001
+ * Worked around exit() in the jpeg image library
+
 1.2.1:
 Mattias Engdegård - Tue Nov 20 08:08:53 PST 2001
  * Fixed transparency in the GIF loading code
