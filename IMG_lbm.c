@@ -285,7 +285,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 		if ( nbrcolorsfinal > (1<<bmhd.planes) ) {
 			nbrcolorsfinal = (1<<bmhd.planes);
 		}
-		for ( i=nbcolors; i < nbrcolorsfinal; i++ )
+		for ( i=nbcolors; i < (Uint32)nbrcolorsfinal; i++ )
 		{
 			Image->format->palette->colors[i].r = Image->format->palette->colors[i%nbcolors].r;
 			Image->format->palette->colors[i].g = Image->format->palette->colors[i%nbcolors].g;
