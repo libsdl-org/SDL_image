@@ -1,5 +1,7 @@
 
 1.1.1:
+Sam Lantinga - Tue Jan 30 14:24:06 PST 2001
+ * Modified showimage to accept multiple images on the command line
 Sam Lantinga - Mon Dec 18 02:49:29 PST 2000
  * Added a Visual C++ project including JPEG and PNG loading support
 Mattias Engdegård - Wed Dec  6 10:00:07 PST 2000

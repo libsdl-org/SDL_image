@@ -71,8 +71,10 @@ void draw_background(SDL_Surface *screen)
 
 int main(int argc, char *argv[])
 {
+	Uint32 flags;
 	SDL_Surface *screen, *image;
-	int i, depth;
+	int i, depth, done;
+	SDL_Event event;
 
 	/* Check command line usage */
 	if ( ! argv[1] ) {
@@ -86,62 +88,99 @@ int main(int argc, char *argv[])
 		return(255);
 	}
 
-	/* Open the image file */
-	image = IMG_Load(argv[1]);
-	if ( image == NULL ) {
-		fprintf(stderr,"Couldn't load %s: %s\n",argv[1],SDL_GetError());
-		SDL_Quit();
-		return(2);
-	}
-	SDL_WM_SetCaption(argv[1], "showimage");
-
-	/* Create a display for the image */
-	depth = SDL_VideoModeOK(image->w, image->h, 32, SDL_SWSURFACE);
-	/* Use the deepest native mode, except that we emulate 32bpp for
-	   viewing non-indexed images on 8bpp screens */
-	if ( (image->format->BytesPerPixel > 1) && (depth == 8) ) {
-	    depth = 32;
-	}
-	screen = SDL_SetVideoMode(image->w, image->h, depth, SDL_SWSURFACE);
-	if ( screen == NULL ) {
-		fprintf(stderr,"Couldn't set %dx%dx%d video mode: %s\n",
-				image->w, image->h, depth, SDL_GetError());
-		SDL_Quit();
-		return(3);
-	}
-
-	/* Set the palette, if one exists */
-	if ( image->format->palette ) {
-		SDL_SetColors(screen, image->format->palette->colors,
-				0, image->format->palette->ncolors);
-	}
-
-	/* Draw a background pattern if the surface has transparency */
-	if(image->flags & (SDL_SRCALPHA | SDL_SRCCOLORKEY))
-	    draw_background(screen);
-
-	/* Display the image */
-	SDL_BlitSurface(image, NULL, screen, NULL);
-	SDL_UpdateRect(screen, 0, 0, 0, 0);
-
-	/* Wait for any keyboard or mouse input */
-	for ( i=SDL_NOEVENT; i<SDL_NUMEVENTS; ++i ) {
-		switch (i) {
-		    case SDL_KEYDOWN:
-		    case SDL_MOUSEBUTTONDOWN:
-		    case SDL_QUIT:
-			/* Valid event, keep it */
-			break;
-		    default:
-			/* We don't want this event */
-			SDL_EventState((Uint8)i, SDL_IGNORE);
-			break;
+	flags = SDL_SWSURFACE;
+	for ( i=1; argv[i]; ++i ) {
+		if ( strcmp(argv[i], "-fullscreen") == 0 ) {
+			SDL_ShowCursor(0);
+			flags |= SDL_FULLSCREEN;
+			continue;
 		}
+		/* Open the image file */
+		image = IMG_Load(argv[i]);
+		if ( image == NULL ) {
+			fprintf(stderr, "Couldn't load %s: %s\n",
+			        argv[i], SDL_GetError());
+			SDL_Quit();
+			return(2);
+		}
+		SDL_WM_SetCaption(argv[i], "showimage");
+
+		/* Create a display for the image */
+		depth = SDL_VideoModeOK(image->w, image->h, 32, flags);
+		/* Use the deepest native mode, except that we emulate 32bpp
+		   for viewing non-indexed images on 8bpp screens */
+		if ( (image->format->BytesPerPixel > 1) && (depth == 8) ) {
+	    		depth = 32;
+		}
+		screen = SDL_SetVideoMode(image->w, image->h, depth, flags);
+		if ( screen == NULL ) {
+			fprintf(stderr,"Couldn't set %dx%dx%d video mode: %s\n",
+				image->w, image->h, depth, SDL_GetError());
+			SDL_Quit();
+			return(3);
+		}
+
+		/* Set the palette, if one exists */
+		if ( image->format->palette ) {
+			SDL_SetColors(screen, image->format->palette->colors,
+			              0, image->format->palette->ncolors);
+		}
+
+		/* Draw a background pattern if the surface has transparency */
+		if(image->flags & (SDL_SRCALPHA | SDL_SRCCOLORKEY))
+	    		draw_background(screen);
+
+		/* Display the image */
+		SDL_BlitSurface(image, NULL, screen, NULL);
+		SDL_UpdateRect(screen, 0, 0, 0, 0);
+
+		done = 0;
+		while ( ! done ) {
+			if ( SDL_PollEvent(&event) ) {
+				switch (event.type) {
+				    case SDL_KEYUP:
+					switch (event.key.keysym.sym) {
+					    case SDLK_LEFT:
+						if ( i > 1 ) {
+							i -= 2;
+							done = 1;
+						}
+						break;
+					    case SDLK_RIGHT:
+						if ( argv[i+1] ) {
+							done = 1;
+						}
+						break;
+					    case SDLK_ESCAPE:
+					    case SDLK_q:
+						argv[i+1] = NULL;
+						/* Drop through to done */
+					    case SDLK_SPACE:
+					    case SDLK_TAB:
+						done = 1;
+						break;
+					    default:
+						break;
+					}
+					break;
+				    case SDL_MOUSEBUTTONDOWN:
+					done = 1;
+					break;
+                                    case SDL_QUIT:
+					argv[i+1] = NULL;
+					done = 1;
+					break;
+				    default:
+					break;
+				}
+			} else {
+				SDL_Delay(10);
+			}
+		}
+		SDL_FreeSurface(image);
 	}
-	SDL_WaitEvent(NULL);
 
 	/* We're done! */
-	SDL_FreeSurface(image);
 	SDL_Quit();
 	return(0);
 }
