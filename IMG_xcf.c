@@ -678,14 +678,14 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src) {
 
   unsigned char * (* load_tile) (SDL_RWops *, Uint32, int, int, int);
 
+  /* Check to make sure we have something to do */
+  if ( ! src ) {
+    return NULL;
+  }
+
   /* Initialize the data we will clean up when we're done */
   surface = NULL;
   read_error = 0;
-
-  /* Check to make sure we have something to do */
-  if ( ! src ) {
-    goto done;
-  }
 
   head = read_xcf_header (src);
 
@@ -714,7 +714,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src) {
   head->layer_file_offsets = NULL;
   offsets = 0;
 
-  while (offset = SDL_ReadBE32 (src)) {
+  while ((offset = SDL_ReadBE32 (src))) {
     head->layer_file_offsets = (Uint32 *) realloc (head->layer_file_offsets, sizeof (Uint32) * (offsets+1));
     head->layer_file_offsets [offsets] = offset;
     offsets++;
@@ -757,7 +757,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src) {
   // read channels
   channel = NULL;
   chnls   = 0;
-  while (offset = SDL_ReadBE32 (src)) {
+  while ((offset = SDL_ReadBE32 (src))) {
     channel = (xcf_channel **) realloc (channel, sizeof (xcf_channel *) * (chnls+1));
     fp = SDL_RWtell (src);
     SDL_RWseek (src, offset, SEEK_SET);
