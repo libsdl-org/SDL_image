@@ -36,12 +36,12 @@ AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
-dnl Setup for automake
-AM_INIT_AUTOMAKE(SDL_image, $VERSION)
-
 dnl Detect the canonical host and target build environment
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
+
+dnl Setup for automake
+AM_INIT_AUTOMAKE(SDL_image, $VERSION)
 
 dnl Check for tools
 
@@ -99,7 +99,7 @@ if test x$enable_jpg = xyes; then
         CFLAGS="$CFLAGS -DLOAD_JPG"
         IMG_LIBS="$IMG_LIBS -ljpeg"
     else
-        AC_MSG_WARN(
+        AC_MSG_WARN([
 *** Unable to find JPEG library (http://www.ijg.org/)
 ])
         AC_MSG_WARN([JPG image loading disabled])
@@ -155,7 +155,7 @@ if test x$enable_tif = xyes; then
         CFLAGS="$CFLAGS -DLOAD_TIF"
         IMG_LIBS="$IMG_LIBS -ltiff"
     else
-        AC_MSG_WARN(
+        AC_MSG_WARN([
 *** Unable to find Tiff library (ftp://ftp.sgi.com/graphics/tiff/)
 ])
         AC_MSG_WARN([TIF image loading disabled])
