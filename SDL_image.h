@@ -1,6 +1,6 @@
 /*
     SDL_image:  An example image loading library for use with SDL
-    Copyright (C) 1999, 2000, 2001  Sam Lantinga
+    Copyright (C) 1999, 2000, 2001, 2002, 2003  Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
