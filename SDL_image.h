@@ -20,11 +20,7 @@
     slouken@libsdl.org
 */
 
-#ifdef SAVE_RCSID
-static char rcsid =
- "@(#) $Id$";
-#endif
-
+/* $Id$ */
 
 /* A simple library to load images of various formats as SDL surfaces */
 
