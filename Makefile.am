@@ -11,6 +11,7 @@ libSDL_image_la_SOURCES =		\
 	IMG_bmp.c		\
 	IMG_gif.c		\
 	IMG_jpg.c		\
+	IMG_lbm.c		\
 	IMG_pcx.c		\
 	IMG_png.c		\
 	IMG_pnm.c		\

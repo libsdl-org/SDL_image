@@ -111,6 +111,12 @@ if test x$enable_jpg = xyes; then
         AC_MSG_WARN([JPG image loading disabled])
     fi
 fi
+AC_ARG_ENABLE(lbm,
+[  --enable-lbm            support loading LBM images [default=yes]],
+              , enable_lbm=yes)
+if test x$enable_lbm = xyes; then
+    CFLAGS="$CFLAGS -DLOAD_LBM"
+fi
 AC_ARG_ENABLE(pcx,
 [  --enable-pcx            support loading PCX images [default=yes]],
               , enable_pcx=yes)

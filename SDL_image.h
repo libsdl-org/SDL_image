@@ -64,6 +64,7 @@ extern DECLSPEC int IMG_isGIF(SDL_RWops *src);
 extern DECLSPEC int IMG_isJPG(SDL_RWops *src);
 extern DECLSPEC int IMG_isTIF(SDL_RWops *src);
 extern DECLSPEC int IMG_isPNG(SDL_RWops *src);
+extern DECLSPEC int IMG_isLBM(SDL_RWops *src);
 
 /* Individual loading functions */
 extern DECLSPEC SDL_Surface *IMG_LoadBMP_RW(SDL_RWops *src);
@@ -76,12 +77,16 @@ extern DECLSPEC SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface *IMG_LoadTIF_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src);
+extern DECLSPEC SDL_Surface *IMG_LoadLBM_RW(SDL_RWops *src);
 
 extern DECLSPEC SDL_Surface *IMG_ReadXPMFromArray(char **xpm);
 
 /* We'll use SDL for reporting errors */
 #define IMG_SetError	SDL_SetError
 #define IMG_GetError	SDL_GetError
+
+/* used internally, NOT an exported function */
+extern int IMG_string_equals(const char *str1, const char *str2);
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus

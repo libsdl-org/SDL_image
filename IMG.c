@@ -48,6 +48,7 @@ static struct {
 	{ "GIF", IMG_isGIF, IMG_LoadGIF_RW },
 	{ "JPG", IMG_isJPG, IMG_LoadJPG_RW },
 	{ "TIF", IMG_isTIF, IMG_LoadTIF_RW },
+	{ "LBM", IMG_isLBM, IMG_LoadLBM_RW },
 	{ "PNG", IMG_isPNG, IMG_LoadPNG_RW }
 };
 
@@ -68,7 +69,7 @@ SDL_Surface *IMG_Load_RW(SDL_RWops *src, int freesrc)
 }
 
 /* Portable case-insensitive string compare function */
-static int IMG_string_equals(const char *str1, const char *str2)
+int IMG_string_equals(const char *str1, const char *str2)
 {
 	while ( *str1 && *str2 ) {
 		if ( toupper((unsigned char)*str1) !=

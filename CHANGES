@@ -1,5 +1,7 @@
 
 1.2.1:
+Daniel Morais - Sun Sep 23 16:32:13 PDT 2001
+ * Added support for the IFF (LBM) image format
 Sam Lantinga - Sun Aug 19 01:51:44 PDT 2001
  * Added Project Builder projects for building MacOS X framework
 Mattias Engdegård - Tue Jul 31 04:32:29 PDT 2001
