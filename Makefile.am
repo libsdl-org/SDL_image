@@ -22,7 +22,7 @@ libSDL_image_la_SOURCES =		\
 EXTRA_DIST =			\
 	CHANGES			\
 	VisualC.zip		\
-	MPWmake.sea.hqx		\
+	MPWmake.sea.bin		\
 	IMG_xxx.c		\
 	autogen.sh
 
