@@ -1,5 +1,8 @@
 
 1.2.2:
+Sam Lantinga - Sat Apr 13 07:49:47 PDT 2002
+ * Updated autogen.sh for new versions of automake
+ * Specify the SDL API calling convention (C by default)
 Mattias Engdegård - Fri Dec 28 17:54:31 PST 2001
  * Worked around exit() in the jpeg image library
 

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 aclocal
-automake --foreign
+automake --foreign --include-deps --add-missing --copy
 autoconf
 
 #./configure $*

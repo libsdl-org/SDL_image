@@ -43,43 +43,42 @@ extern "C" {
    surface afterwards by calling:
 	SDL_SetColorKey(image, SDL_RLEACCEL, image->format->colorkey);
  */
-extern DECLSPEC SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc,
-					      char *type);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, char *type);
 /* Convenience functions */
-extern DECLSPEC SDL_Surface *IMG_Load(const char *file);
-extern DECLSPEC SDL_Surface *IMG_Load_RW(SDL_RWops *src, int freesrc);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_Load(const char *file);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_Load_RW(SDL_RWops *src, int freesrc);
 
 /* Invert the alpha of a surface for use with OpenGL
    This function is now a no-op, and only provided for backwards compatibility.
 */
-extern DECLSPEC int IMG_InvertAlpha(int on);
+extern DECLSPEC int SDLCALL IMG_InvertAlpha(int on);
 
 /* Functions to detect a file type, given a seekable source */
-extern DECLSPEC int IMG_isBMP(SDL_RWops *src);
-extern DECLSPEC int IMG_isPNM(SDL_RWops *src);
-extern DECLSPEC int IMG_isXPM(SDL_RWops *src);
-extern DECLSPEC int IMG_isXCF(SDL_RWops *src);
-extern DECLSPEC int IMG_isPCX(SDL_RWops *src);
-extern DECLSPEC int IMG_isGIF(SDL_RWops *src);
-extern DECLSPEC int IMG_isJPG(SDL_RWops *src);
-extern DECLSPEC int IMG_isTIF(SDL_RWops *src);
-extern DECLSPEC int IMG_isPNG(SDL_RWops *src);
-extern DECLSPEC int IMG_isLBM(SDL_RWops *src);
+extern DECLSPEC int SDLCALL IMG_isBMP(SDL_RWops *src);
+extern DECLSPEC int SDLCALL IMG_isPNM(SDL_RWops *src);
+extern DECLSPEC int SDLCALL IMG_isXPM(SDL_RWops *src);
+extern DECLSPEC int SDLCALL IMG_isXCF(SDL_RWops *src);
+extern DECLSPEC int SDLCALL IMG_isPCX(SDL_RWops *src);
+extern DECLSPEC int SDLCALL IMG_isGIF(SDL_RWops *src);
+extern DECLSPEC int SDLCALL IMG_isJPG(SDL_RWops *src);
+extern DECLSPEC int SDLCALL IMG_isTIF(SDL_RWops *src);
+extern DECLSPEC int SDLCALL IMG_isPNG(SDL_RWops *src);
+extern DECLSPEC int SDLCALL IMG_isLBM(SDL_RWops *src);
 
 /* Individual loading functions */
-extern DECLSPEC SDL_Surface *IMG_LoadBMP_RW(SDL_RWops *src);
-extern DECLSPEC SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src);
-extern DECLSPEC SDL_Surface *IMG_LoadXPM_RW(SDL_RWops *src);
-extern DECLSPEC SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src);
-extern DECLSPEC SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src);
-extern DECLSPEC SDL_Surface *IMG_LoadGIF_RW(SDL_RWops *src);
-extern DECLSPEC SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src);
-extern DECLSPEC SDL_Surface *IMG_LoadTIF_RW(SDL_RWops *src);
-extern DECLSPEC SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src);
-extern DECLSPEC SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src);
-extern DECLSPEC SDL_Surface *IMG_LoadLBM_RW(SDL_RWops *src);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadBMP_RW(SDL_RWops *src);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadPNM_RW(SDL_RWops *src);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadXPM_RW(SDL_RWops *src);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadXCF_RW(SDL_RWops *src);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadPCX_RW(SDL_RWops *src);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadGIF_RW(SDL_RWops *src);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadJPG_RW(SDL_RWops *src);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTIF_RW(SDL_RWops *src);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadPNG_RW(SDL_RWops *src);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTGA_RW(SDL_RWops *src);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadLBM_RW(SDL_RWops *src);
 
-extern DECLSPEC SDL_Surface *IMG_ReadXPMFromArray(char **xpm);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArray(char **xpm);
 
 /* We'll use SDL for reporting errors */
 #define IMG_SetError	SDL_SetError
