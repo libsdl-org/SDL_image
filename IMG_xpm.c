@@ -22,7 +22,28 @@
     slouken@devolution.com
 */
 
-/* This is an XPM image file loading framework */
+/*
+ * XPM (X PixMap) image loader:
+ *
+ * Supports the XPMv3 format, EXCEPT:
+ * - hotspot coordinates are ignored
+ * - only colour ('c') colour symbols are used
+ * - rgb.txt is not used (for portability), so only RGB colours
+ *   are recognized (#rrggbb etc) - only a few basic colour names are
+ *   handled
+ *
+ * The result is an 8bpp indexed surface if possible, otherwise 32bpp.
+ * The colourkey is correctly set if transparency is used.
+ * 
+ * Besides the standard API, also provides
+ *
+ *     SDL_Surface *IMG_ReadXPMFromArray(char **xpm)
+ *
+ * that reads the image data from an XPM file included in the C source.
+ *
+ * TODO: include rgb.txt here. The full table (from solaris 2.6) only
+ * requires about 13K in binary form.
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -36,41 +57,10 @@
 /* See if an image is contained in a data source */
 int IMG_isXPM(SDL_RWops *src)
 {
-	int is_XPM;
-	char magic[10];
+	char magic[9];
 
-	is_XPM = 0;
-	if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
-		if(memcmp(magic, "/* XPM */", 9) == 0) {
-			is_XPM = 1;
-		}
-	}
-	return(is_XPM);
-}
-
-static char *SDL_RWgets(char *string, int maxlen, SDL_RWops *src)
-{
-	int i;
-
-	for ( i=0; i<(maxlen-1); ++i ) {
-		if ( SDL_RWread(src, &string[i], 1, 1) <= 0 ) {
-			/* EOF or error */
-			if ( i == 0 ) {
-				/* Hmm, EOF on initial read, return NULL */
-				return NULL;
-			}
-			break;
-		}
-		/* In this case it's okay to use either '\r' or '\n'
-		   as line separators because blank lines are just
-		   ignored by the XPM format.
-		*/
-		if ( (string[i] == '\n') || (string[i] == '\r') ) {
-			break;
-		}
-	}
-	string[i] = '\0';
-	return(string);
+	return (SDL_RWread(src, magic, sizeof(magic), 1)
+		&& memcmp(magic, "/* XPM */", 9) == 0);
 }
 
 /* Hash table to look up colors from pixel strings */
@@ -165,13 +155,26 @@ static void free_colorhash(struct color_hash *hash)
 	}
 }
 
+/* portable case-insensitive string comparison */
+static int string_equal(const char *a, const char *b, int n)
+{
+	while(*a && *b && n) {
+		if(toupper((unsigned char)*a) != toupper((unsigned char)*b))
+			return 0;
+		a++;
+		b++;
+		n--;
+	}
+	return *a == *b;
+}
+
 #define ARRAYSIZE(a) (int)(sizeof(a) / sizeof((a)[0]))
 
 /*
  * convert colour spec to RGB (in 0xrrggbb format).
- * return 1 if successful. may scribble on the colorspec buffer.
+ * return 1 if successful.
  */
-static int color_to_rgb(char *spec, Uint32 *rgb)
+static int color_to_rgb(char *spec, int speclen, Uint32 *rgb)
 {
 	/* poor man's rgb.txt */
 	static struct { char *name; Uint32 rgb; } known[] = {
@@ -185,23 +188,22 @@ static int color_to_rgb(char *spec, Uint32 *rgb)
 
 	if(spec[0] == '#') {
 		char buf[7];
-		++spec;
-		switch(strlen(spec)) {
-		case 3:
-			buf[0] = buf[1] = spec[0];
-			buf[2] = buf[3] = spec[1];
-			buf[4] = buf[5] = spec[2];
+		switch(speclen) {
+		case 4:
+			buf[0] = buf[1] = spec[1];
+			buf[2] = buf[3] = spec[2];
+			buf[4] = buf[5] = spec[3];
 			break;
-		case 6:
-			memcpy(buf, spec, 6);
+		case 7:
+			memcpy(buf, spec + 1, 6);
 			break;
-		case 12:
-			buf[0] = spec[0];
-			buf[1] = spec[1];
-			buf[2] = spec[4];
-			buf[3] = spec[5];
-			buf[4] = spec[8];
-			buf[5] = spec[9];
+		case 13:
+			buf[0] = spec[1];
+			buf[1] = spec[2];
+			buf[2] = spec[5];
+			buf[3] = spec[6];
+			buf[4] = spec[9];
+			buf[5] = spec[10];
 			break;
 		}
 		buf[6] = '\0';
@@ -210,7 +212,7 @@ static int color_to_rgb(char *spec, Uint32 *rgb)
 	} else {
 		int i;
 		for(i = 0; i < ARRAYSIZE(known); i++)
-			if(IMG_string_equals(known[i].name, spec)) {
+			if(string_equal(known[i].name, spec, speclen)) {
 				*rgb = known[i].rgb;
 				return 1;
 			}
@@ -218,51 +220,106 @@ static int color_to_rgb(char *spec, Uint32 *rgb)
 	}
 }
 
-static char *skipspace(char *p)
-{
-	while(isspace((unsigned char)*p))
-	      ++p;
-	return p;
-}
-
-static char *skipnonspace(char *p)
-{
-	while(!isspace((unsigned char)*p) && *p)
-		++p;
-	return p;
-}
-
 #ifndef MAX
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #endif
 
-/* Load a XPM type image from an SDL datasource */
-SDL_Surface *IMG_LoadXPM_RW(SDL_RWops *src)
+static char *linebuf;
+static int buflen;
+static char *error;
+
+/*
+ * Read next line from the source.
+ * If len > 0, it's assumed to be at least len chars (for efficiency).
+ * Return NULL and set error upon EOF or parse error.
+ */
+char *get_next_line(char ***lines, SDL_RWops *src, int len)
 {
-	SDL_Surface *image;
-	char line[1024];
-	char *here;
+	if(lines) {
+		return *(*lines)++;
+	} else {
+		char c;
+		int n;
+		do {
+			if(SDL_RWread(src, &c, 1, 1) <= 0) {
+				error = "Premature end of data";
+				return NULL;
+			}
+		} while(c != '"');
+		if(len) {
+			len += 4;	/* "\",\n\0" */
+			if(len > buflen){
+				buflen = len;
+				linebuf = realloc(linebuf, buflen);
+				if(!linebuf) {
+					error = "Out of memory";
+					return NULL;
+				}
+			}
+			if(SDL_RWread(src, linebuf, len - 1, 1) <= 0) {
+				error = "Premature end of data";
+				return NULL;
+			}
+			n = len - 2;
+		} else {
+			n = 0;
+			do {
+				if(n >= buflen - 1) {
+					if(buflen == 0)
+						buflen = 16;
+					buflen *= 2;
+					linebuf = realloc(linebuf, buflen);
+					if(!linebuf) {
+						error = "Out of memory";
+						return NULL;
+					}
+				}
+				if(SDL_RWread(src, linebuf + n, 1, 1) <= 0) {
+					error = "Premature end of data";
+					return NULL;
+				}
+			} while(linebuf[n++] != '"');
+			n--;
+		}
+		linebuf[n] = '\0';
+		return linebuf;
+	}
+}
+
+#define SKIPSPACE(p)				\
+do {						\
+	while(isspace((unsigned char)*(p)))	\
+	      ++(p);				\
+} while(0)
+
+#define SKIPNONSPACE(p)					\
+do {							\
+	while(!isspace((unsigned char)*(p)) && *p)	\
+	      ++(p);					\
+} while(0)
+
+/* read XPM from either array or RWops */
+static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
+{
+	SDL_Surface *image = NULL;
 	int index;
 	int x, y;
 	int w, h, ncolors, cpp;
-	int pixels_len;
-	char *pixels = NULL;
 	int indexed;
 	Uint8 *dst;
-	struct color_hash *colors;
+	struct color_hash *colors = NULL;
 	SDL_Color *im_colors = NULL;
-	char *keystrings, *nextkey;
-	char *error = NULL;
+	char *keystrings = NULL, *nextkey;
+	char *line;
+	char ***xpmlines = NULL;
+	int pixels_len;
 
-	/* Skip to the first string, which describes the image */
-	do {
-	        here = SDL_RWgets(line, sizeof(line), src);
-		if ( !here ) {
-			IMG_SetError("Premature end of data");
-			return(NULL);
-		}
-		here = skipspace(here);
-	} while(*here != '"');
+	if(xpm)
+		xpmlines = &xpm;
+
+	line = get_next_line(xpmlines, src, 0);
+	if(!line)
+		goto done;
 	/*
 	 * The header string of an XPMv3 image has the format
 	 *
@@ -272,17 +329,16 @@ SDL_Surface *IMG_LoadXPM_RW(SDL_RWops *src)
 	 * Right now we don't use the hotspots but it should be handled
 	 * one day.
 	 */
-	if(sscanf(here + 1, "%d %d %d %d", &w, &h, &ncolors, &cpp) != 4
+	if(sscanf(line, "%d %d %d %d", &w, &h, &ncolors, &cpp) != 4
 	   || w <= 0 || h <= 0 || ncolors <= 0 || cpp <= 0) {
-		IMG_SetError("Invalid format description");
-		return(NULL);
+		error = "Invalid format description";
+		goto done;
 	}
 
 	keystrings = malloc(ncolors * cpp);
 	if(!keystrings) {
-		IMG_SetError("Out of memory");
-		free(pixels);
-		return NULL;
+		error = "Out of memory";
+		goto done;
 	}
 	nextkey = keystrings;
 
@@ -300,152 +356,111 @@ SDL_Surface *IMG_LoadXPM_RW(SDL_RWops *src)
 	}
 	if(!image) {
 		/* Hmm, some SDL error (out of memory?) */
-		free(pixels);
-		return(NULL);
+		goto done;
 	}
 
 	/* Read the colors */
 	colors = create_colorhash(ncolors);
-	if ( ! colors ) {
+	if (!colors) {
 		error = "Out of memory";
 		goto done;
 	}
 	for(index = 0; index < ncolors; ++index ) {
-		char *key;
-		int len;
+		char *p;
+		line = get_next_line(xpmlines, src, 0);
+		if(!line)
+			goto done;
 
-		do {
-			here = SDL_RWgets(line, sizeof(line), src);
-			if(!here) {
-				error = "Premature end of data";
-				goto done;
-			}
-			here = skipspace(here);
-		} while(*here != '"');
-
-		++here;
-		len = strlen(here);
-		if(len < cpp + 7)
-			continue;	/* cannot be a valid line */
-
-		key = here;
-		key[cpp] = '\0';
-		here += cpp + 1;
+		p = line + cpp + 1;
 
 		/* parse a colour definition */
 		for(;;) {
 			char nametype;
 			char *colname;
-			char delim;
-			Uint32 rgb;
+			Uint32 rgb, pixel;
 
-			here = skipspace(here);
-			nametype = *here;
-			here = skipnonspace(here);
-			here = skipspace(here);
-			colname = here;
-			while(*here && !isspace((unsigned char)*here)
-			      && *here != '"')
-				here++;
-			if(!*here) {
-				error = "color parse error";
+			SKIPSPACE(p);
+			if(!*p) {
+				error = "colour parse error";
 				goto done;
 			}
+			nametype = *p;
+			SKIPNONSPACE(p);
+			SKIPSPACE(p);
+			colname = p;
+			SKIPNONSPACE(p);
 			if(nametype == 's')
 				continue;      /* skip symbolic colour names */
 
-			delim = *here;
-			*here = '\0';
-			if(delim)
-			    here++;
-
-			if(!color_to_rgb(colname, &rgb))
+			if(!color_to_rgb(colname, p - colname, &rgb))
 				continue;
 
-			memcpy(nextkey, key, cpp);
+			memcpy(nextkey, line, cpp);
 			if(indexed) {
 				SDL_Color *c = im_colors + index;
 				c->r = rgb >> 16;
 				c->g = rgb >> 8;
 				c->b = rgb;
-				add_colorhash(colors, nextkey, cpp, index);
+				pixel = index;
 			} else
-				add_colorhash(colors, nextkey, cpp, rgb);
+				pixel = rgb;
+			add_colorhash(colors, nextkey, cpp, pixel);
 			nextkey += cpp;
 			if(rgb == 0xffffffff)
-				SDL_SetColorKey(image, SDL_SRCCOLORKEY,
-						indexed ? index : rgb);
+				SDL_SetColorKey(image, SDL_SRCCOLORKEY, pixel);
 			break;
 		}
 	}
 
 	/* Read the pixels */
 	pixels_len = w * cpp;
-	pixels = malloc(MAX(pixels_len + 5, 20));
-	if(!pixels) {
-		error = "Out of memory";
-		goto done;
-	}
 	dst = image->pixels;
-	for (y = 0; y < h; ) {
-		char *s;
-		char c;
-		do {
-			if(SDL_RWread(src, &c, 1, 1) <= 0) {
-				error = "Premature end of data";
-				goto done;
-			}
-		} while(c == ' ');
-		if(c != '"') {
-			/* comment or empty line, skip it */
-			while(c != '\n' && c != '\r') {
-				if(SDL_RWread(src, &c, 1, 1) <= 0) {
-					error = "Premature end of data";
-					goto done;
-				}
-			}
-			continue;
-		}
-		if(SDL_RWread(src, pixels, pixels_len + 3, 1) <= 0) {
-			error = "Premature end of data";
-			goto done;
-		}
-		s = pixels;
+	for(y = 0; y < h; y++) {
+		line = get_next_line(xpmlines, src, pixels_len);
 		if(indexed) {
 			/* optimization for some common cases */
 			if(cpp == 1)
 				for(x = 0; x < w; x++)
 					dst[x] = QUICK_COLORHASH(colors,
-								 s + x);
+								 line + x);
 			else
 				for(x = 0; x < w; x++)
 					dst[x] = get_colorhash(colors,
-							       s + x * cpp,
+							       line + x * cpp,
 							       cpp);
 		} else {
 			for (x = 0; x < w; x++)
 				((Uint32*)dst)[x] = get_colorhash(colors,
-								  s + x * cpp,
+								line + x * cpp,
 								  cpp);
 		}
 		dst += image->pitch;
-		y++;
 	}
 
 done:
 	if(error) {
-		if(image)
-			SDL_FreeSurface(image);
+		SDL_FreeSurface(image);
 		image = NULL;
 		IMG_SetError(error);
 	}
-	free(pixels);
 	free(keystrings);
 	free_colorhash(colors);
+	free(linebuf);
 	return(image);
 }
 
-#else
+/* Load a XPM type image from an RWops datasource */
+SDL_Surface *IMG_LoadXPM_RW(SDL_RWops *src)
+{
+	return load_xpm(NULL, src);
+}
+
+SDL_Surface *IMG_ReadXPMFromArray(char **xpm)
+{
+	return load_xpm(xpm, NULL);
+}
+
+#else  /* not LOAD_XPM */
 
 /* See if an image is contained in a data source */
 int IMG_isXPM(SDL_RWops *src)
@@ -453,10 +468,15 @@ int IMG_isXPM(SDL_RWops *src)
 	return(0);
 }
 
+
 /* Load a XPM type image from an SDL datasource */
 SDL_Surface *IMG_LoadXPM_RW(SDL_RWops *src)
 {
 	return(NULL);
 }
 
-#endif /* LOAD_XPM */
+SDL_Surface *IMG_ReadXPMFromArray(char **xpm)
+{
+    return NULL;
+}
+#endif /* not LOAD_XPM */

@@ -29,6 +29,12 @@
 #include "SDL.h"
 #include "SDL_image.h"
 
+/* #define XPM_INCLUDED and supply picture.xpm to test the XPM inclusion
+   feature */
+
+#ifdef XPM_INCLUDED
+#include "picture.xpm"
+#endif
 
 /* Draw a Gimpish background pattern to show transparency in the image */
 void draw_background(SDL_Surface *screen)
@@ -97,7 +103,11 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		/* Open the image file */
+#ifdef XPM_INCLUDED
+		image = IMG_ReadXPMFromArray(picture_xpm);
+#else
 		image = IMG_Load(argv[i]);
+#endif
 		if ( image == NULL ) {
 			fprintf(stderr, "Couldn't load %s: %s\n",
 			        argv[i], SDL_GetError());

@@ -68,7 +68,7 @@ SDL_Surface *IMG_Load_RW(SDL_RWops *src, int freesrc)
 }
 
 /* Portable case-insensitive string compare function */
-int IMG_string_equals(const char *str1, const char *str2)
+static int IMG_string_equals(const char *str1, const char *str2)
 {
 	while ( *str1 && *str2 ) {
 		if ( toupper((unsigned char)*str1) !=
