@@ -13,7 +13,7 @@ libSDL_image_la_SOURCES =		\
 	IMG_jpg.c		\
 	IMG_pcx.c		\
 	IMG_png.c		\
-	IMG_ppm.c		\
+	IMG_pnm.c		\
 	IMG_tga.c		\
 	IMG_tif.c		\
 	IMG_xpm.c
