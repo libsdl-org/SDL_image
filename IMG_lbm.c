@@ -83,7 +83,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 	Uint32      size, bytesloaded, nbcolors;
 	Uint32      i, j, bytesperline, nbplanes, plane, h;
 	Uint32      remainingbytes;
-	int         width;
+	Uint32      width;
 	BMHD	      bmhd;
 	char        *error;
 
