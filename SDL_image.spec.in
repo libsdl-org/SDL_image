@@ -55,6 +55,7 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %defattr(-,root,root)
 %{prefix}/lib/lib*.a
+%{prefix}/lib/lib*.la
 %{prefix}/lib/lib*.so
 %{prefix}/include/SDL/
 
