@@ -47,11 +47,6 @@ static struct {
 	{ "PNG", IMG_isPNG, IMG_LoadPNG_RW },
 };
 
-/* Does the alpha value correspond to transparency or opacity?
-   Default: transparency
-*/
-int IMG_invert_alpha = 0;
-
 /* Load an image from a file */
 SDL_Surface *IMG_Load(const char *file)
 {
@@ -127,19 +122,9 @@ SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, char *type)
 }
 
 /* Invert the alpha of a surface for use with OpenGL
-   If you want to use a surface loaded with this library as an OpenGL texture,
-   set invart_alpha to 1.  If you want to use it with SDL alpha blit routines,
-   set it to 0.
-   This function returns the old alpha inversion value.
-
-   Currently this is is only used by the PNG and TGA loaders.
+   This function is a no-op and only kept for backwards compatibility.
  */
 int IMG_InvertAlpha(int on)
 {
-	int old_alpha_value;
-
-	old_alpha_value = IMG_invert_alpha;
-	IMG_invert_alpha = on;
-	return(old_alpha_value);
+    return 1;
 }
-

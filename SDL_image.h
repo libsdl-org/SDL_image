@@ -50,13 +50,8 @@ extern DECLSPEC SDL_Surface *IMG_Load(const char *file);
 extern DECLSPEC SDL_Surface *IMG_Load_RW(SDL_RWops *src, int freesrc);
 
 /* Invert the alpha of a surface for use with OpenGL
-   If you want to use a surface loaded with this library as an OpenGL texture,
-   set invart_alpha to 1.  If you want to use it with SDL alpha blit routines,
-   set it to 0.
-   This function returns the old alpha inversion value.
-
-   Currently this is is only used by the PNG and TGA loaders.
- */
+   This function is now a no-op, and only provided for backwards compatibility.
+*/
 extern DECLSPEC int IMG_InvertAlpha(int on);
 
 /* Functions to detect a file type, given a seekable source */

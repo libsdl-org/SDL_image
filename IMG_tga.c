@@ -38,9 +38,8 @@
  *
  * 2000-06-10 Mattias Engdegård <f91-men@nada.kth.se>: initial version
  * 2000-06-26 Mattias Engdegård <f91-men@nada.kth.se>: read greyscale TGAs
+ * 2000-08-09 Mattias Engdegård <f91-men@nada.kth.se>: alpha inversion removed
  */
-
-extern int IMG_invert_alpha;
 
 struct TGAheader {
     Uint8 infolen;		/* length of info field */
@@ -143,20 +142,19 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
     }
 
     bpp = (hdr.pixel_bits + 7) >> 3;
+    rmask = gmask = bmask = amask = 0;
     switch(hdr.pixel_bits) {
     case 8:
 	if(!indexed) {
 	    unsupported();
 	    return NULL;
 	}
-	rmask = gmask = bmask = amask = 0;
 	break;
 
     case 15:
     case 16:
 	/* 15 and 16bpp both seem to use 5 bits/plane. The extra alpha bit
 	   is ignored for now. */
-	amask = 0;
 	rmask = 0x7c00;
 	gmask = 0x03e0;
 	bmask = 0x001f;
@@ -246,7 +244,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 
     if(hdr.flags & TGA_ORIGIN_UPPER) {
 	lstep = img->pitch;
-	dst = (Uint8 *)img->pixels;
+	dst = img->pixels;
     } else {
 	lstep = -img->pitch;
 	dst = (Uint8 *)img->pixels + (h - 1) * img->pitch;
@@ -302,16 +300,8 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 	    for(x = 0; x < w; x++)
 		p[x] = SDL_Swap16(p[x]);
 	}
-	if(alpha && !IMG_invert_alpha) {
-	    /* TGA stores alpha traditionally (0 transparent, 0xff opaque) */
-	    int x;
-	    for(x = 0; x < w; x++)
-		dst[x * 4 + 3] ^= 0xff;
-	}
 	dst += lstep;
     }
-    if(alpha)
-	SDL_SetAlpha(img, SDL_SRCALPHA, 0);
     return img;
 
 error:

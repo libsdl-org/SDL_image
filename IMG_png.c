@@ -31,8 +31,6 @@
 
 #ifdef LOAD_PNG
 
-extern int IMG_invert_alpha;
-
 /*=============================================================================
         File: SDL_png.c
      Purpose: A PNG loader and saver for the SDL library      
@@ -158,10 +156,9 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	 */
 	png_set_packing(png_ptr);
 
-	/* SDL and PNG have inverted ideas of alpha */
-	if ( ! IMG_invert_alpha ) {
-		png_set_invert_alpha(png_ptr);
-	}
+	/* scale greyscale values to the range 0..255 */
+	if(color_type == PNG_COLOR_TYPE_GRAY)
+		png_set_expand(png_ptr);
 
 	/* For images with a single "transparent colour", set colour key;
 	   if more than one index has transparency, use full alpha channel */
@@ -180,8 +177,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 		    ckey = 0; /* actual value will be set later */
 	}
 
-	if ( (color_type == PNG_COLOR_TYPE_GRAY) ||
-		  (color_type == PNG_COLOR_TYPE_GRAY_ALPHA) )
+	if ( color_type == PNG_COLOR_TYPE_GRAY_ALPHA )
 		png_set_gray_to_rgb(png_ptr);
 
 	png_read_update_info(png_ptr, info_ptr);
@@ -240,13 +236,22 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 
 	/* Load the palette, if any */
 	palette = surface->format->palette;
-	if ( palette && (info_ptr->num_palette > 0) ) {
+	if ( palette ) {
+	    if(color_type == PNG_COLOR_TYPE_GRAY) {
+		palette->ncolors = 256;
+		for(i = 0; i < 256; i++) {
+		    palette->colors[i].r = i;
+		    palette->colors[i].g = i;
+		    palette->colors[i].b = i;
+		}
+	    } else if (info_ptr->num_palette > 0 ) {
 		palette->ncolors = info_ptr->num_palette; 
 		for( i=0; i<info_ptr->num_palette; ++i ) {
-			palette->colors[i].b =(Uint8)info_ptr->palette[i].blue;
-			palette->colors[i].g =(Uint8)info_ptr->palette[i].green;
-			palette->colors[i].r =(Uint8)info_ptr->palette[i].red;
+		    palette->colors[i].b = info_ptr->palette[i].blue;
+		    palette->colors[i].g = info_ptr->palette[i].green;
+		    palette->colors[i].r = info_ptr->palette[i].red;
 		}
+	    }
 	}
 
 done:	/* Clean up and return */

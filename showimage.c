@@ -30,7 +30,7 @@
 
 
 /* Draw a Gimpish background pattern to show transparency in the image */
-void draw_background(SDL_Surface *image, SDL_Surface *screen)
+void draw_background(SDL_Surface *screen)
 {
     Uint8 *dst = screen->pixels;
     int x, y;
@@ -69,7 +69,7 @@ void draw_background(SDL_Surface *image, SDL_Surface *screen)
     }
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	SDL_Surface *screen, *image;
 	int i, depth;
@@ -117,7 +117,7 @@ main(int argc, char *argv[])
 
 	/* Draw a background pattern if the surface has transparency */
 	if(image->flags & (SDL_SRCALPHA | SDL_SRCCOLORKEY))
-	    draw_background(image, screen);
+	    draw_background(screen);
 
 	/* Display the image */
 	SDL_BlitSurface(image, NULL, screen, NULL);

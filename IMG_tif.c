@@ -22,6 +22,9 @@
     slouken@devolution.com
 
     5/29/2000: TIFF loader written. Mark Baker (mbaker@0x7a69.net)
+    2000-07-28: Fixed two off-by one bugs in reversal loop and made it work on
+                big-endian machines (Mattias)
+    2000-08-09: Removed alpha inversion (Mattias)
 */
 
 
@@ -35,7 +38,6 @@
 #ifdef LOAD_TIF
 
 #include <tiffio.h>
-
 
 /*
  * These are the thunking routine to use the SDL_RWops* routines from
@@ -109,11 +111,9 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 	TIFF* tiff;
 	SDL_Surface* surface = NULL;
 	Uint32 img_width, img_height;
-	Uint32 Rmask, Gmask, Bmask, Amask;
+	Uint32 Rmask, Gmask, Bmask, Amask, mask;
 	Uint32 x, y;
 	Uint32 half;
-	Uint32 tl_coord, bl_coord;
-	Uint32 tl_pixel, bl_pixel;
 
 
 	/* turn off memory mapped access with the m flag */
@@ -126,21 +126,10 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 	TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &img_width);
 	TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &img_height);
 
-	if (SDL_BYTEORDER == SDL_LIL_ENDIAN)
-	{
-		Rmask = 0x000000FF;
-		Gmask = 0x0000FF00;
-		Bmask = 0x00FF0000;
-		Amask = 0xFF000000;
-	}
-	else
-	{
-		Rmask = 0xFF000000;
-		Gmask = 0x00FF0000;
-		Bmask = 0x0000FF00;
-		Amask = 0x000000FF;
-	}              
-
+	Rmask = 0x000000FF;
+	Gmask = 0x0000FF00;
+	Bmask = 0x00FF0000;
+	Amask = 0xFF000000;
 	surface = SDL_AllocSurface(SDL_SWSURFACE, img_width, img_height, 32,
 		Rmask, Gmask, Bmask, Amask);
 	if(!surface)
@@ -149,36 +138,18 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 	if(!TIFFReadRGBAImage(tiff, img_width, img_height, surface->pixels, 0))
 		return NULL;
 
-	/* 
-	 * For this to make any sense, a little information is needed.
-	 * Firstly, SDL uses more or less the opposite value for alpha as
-	 * libtiff, so we need to invert the alpha channel of each pixel.
-	 * To do this, I'm just xor it with the alpha mask.
-	 *
-	 * Secondly, libtiff loads the image more or less inverted.
-	 * So the top left of the image ends up being the bottom left.
-	 * To correct for this, we swap the pixels as we're inverting the 
-	 * alpha channel
-	*/
-
-	// We only need to loop 1/2 the height, because we're swapping values.
+	/* libtiff loads the image upside-down, flip it back */
 	half = img_height / 2;
-
-	for(y = 0; y <= half; y++)
+	for(y = 0; y < half; y++)
 	{
+	        Uint32 *top = (Uint32 *)surface->pixels + y * surface->pitch/4;
+	        Uint32 *bot = (Uint32 *)surface->pixels
+		              + (img_height - y - 1) * surface->pitch/4;
 		for(x = 0; x < img_width; x++)
 		{
-			tl_coord = y * img_width + x;
-			bl_coord = (img_height - y - 1) * img_width + x;
-
-			/* Invert the value of the alpha channel, while copying the pixel */
-			tl_pixel = *((Uint32*)surface->pixels + tl_coord) ^ Amask;
-			bl_pixel = *((Uint32*)surface->pixels + bl_coord) ^ Amask;
-
-			/* Now invert the location of the pixel relative to the image */
-			*((Uint32*)surface->pixels + bl_coord) = tl_pixel;
-			*((Uint32*)surface->pixels + tl_coord) = bl_pixel;
-
+		        Uint32 tmp = top[x];
+			top[x] = bot[x];
+			bot[x] = tmp;
 		}
 	}
 	TIFFClose(tiff);

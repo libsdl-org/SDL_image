@@ -112,13 +112,11 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 			Rmask = 0x000000FF;
 			Gmask = 0x0000FF00;
 			Bmask = 0x00FF0000;
-			Amask = 0xFF000000;
 		} else {
 		        int s = (pcxh.NPlanes == 4) ? 0 : 8;
-			Rmask = 0xFF000000 >> s;
-			Gmask = 0x00FF0000 >> s;
-			Bmask = 0x0000FF00 >> s;
-			Amask = 0x000000FF >> s;
+			Rmask = 0xFF0000;
+			Gmask = 0x00FF00;
+			Bmask = 0x0000FF;
 		}
 	}
 	surface = SDL_AllocSurface(SDL_SWSURFACE, width, height,
