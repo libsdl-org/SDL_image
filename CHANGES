@@ -1,4 +1,12 @@
 
+1.1.0:
+Sam Lantinga - Wed Nov 29 00:46:27 PST 2000
+ * Added XPM file format support
+   Supports color, greyscale, and mono XPMs with and without transparency
+Mattias Engdegård - Thu, 2 Nov 2000 23:23:17 +0100 (MET)
+ * Fixed array overrun when loading an unsupported format
+ * Minor compilation fixes for various platforms
+
 1.0.10:
 Mattias Engdegård - Wed Aug  9 20:32:22 MET DST 2000
  * Removed the alpha flipping, made IMG_InvertAlpha() a noop

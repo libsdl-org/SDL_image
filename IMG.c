@@ -30,6 +30,8 @@
 
 #include "SDL_image.h"
 
+#define ARRAYSIZE(a) (sizeof(a) / sizeof((a)[0]))
+
 /* Table of image detection and loading functions */
 static struct {
 	char *type;
@@ -40,11 +42,12 @@ static struct {
 	{ "TGA", NULL,      IMG_LoadTGA_RW },
 	{ "BMP", IMG_isBMP, IMG_LoadBMP_RW },
 	{ "PPM", IMG_isPPM, IMG_LoadPPM_RW },
+	{ "XPM", IMG_isXPM, IMG_LoadXPM_RW },
 	{ "PCX", IMG_isPCX, IMG_LoadPCX_RW },
 	{ "GIF", IMG_isGIF, IMG_LoadGIF_RW },
 	{ "JPG", IMG_isJPG, IMG_LoadJPG_RW },
 	{ "TIF", IMG_isTIF, IMG_LoadTIF_RW },
-	{ "PNG", IMG_isPNG, IMG_LoadPNG_RW },
+	{ "PNG", IMG_isPNG, IMG_LoadPNG_RW }
 };
 
 /* Load an image from a file */
@@ -96,7 +99,7 @@ SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, char *type)
 	/* Detect the type of image being loaded */
 	start = SDL_RWtell(src);
 	image = NULL;
-	for ( i=0; supported[i].type && !image; ++i ) {
+	for ( i=0; i < ARRAYSIZE(supported) && !image; ++i ) {
 	        if( (supported[i].is
 		     && (SDL_RWseek(src, start, SEEK_SET),
 			 supported[i].is(src)))

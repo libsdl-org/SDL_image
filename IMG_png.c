@@ -93,7 +93,7 @@ static void png_read_data(png_structp ctx, png_bytep area, png_size_t size)
 }
 SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 {
-	SDL_Surface *surface;
+	SDL_Surface *volatile surface;
 	png_structp png_ptr;
 	png_infop info_ptr;
 	png_uint_32 width, height;
@@ -103,9 +103,9 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	Uint32 Bmask;
 	Uint32 Amask;
 	SDL_Palette *palette;
-	png_bytep *row_pointers;
+	png_bytep *volatile row_pointers;
 	int row, i;
-	int ckey = -1;
+	volatile int ckey = -1;
 	png_color_16 *transv;
 
 	/* Initialize the data we will clean up when we're done */

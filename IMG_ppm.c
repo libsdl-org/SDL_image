@@ -88,6 +88,7 @@ static int ReadNumber(SDL_RWops *src)
 
 	return(number);
 }
+
 SDL_Surface *IMG_LoadPPM_RW(SDL_RWops *src)
 {
 	SDL_Surface *surface;

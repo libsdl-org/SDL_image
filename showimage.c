@@ -85,12 +85,12 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Couldn't initialize SDL: %s\n",SDL_GetError());
 		exit(255);
 	}
-	atexit(SDL_Quit);
 
 	/* Open the image file */
 	image = IMG_Load(argv[1]);
 	if ( image == NULL ) {
 		fprintf(stderr,"Couldn't load %s: %s\n",argv[1],SDL_GetError());
+		SDL_Quit();
 		exit(2);
 	}
 	SDL_WM_SetCaption(argv[1], "showimage");
@@ -106,6 +106,7 @@ int main(int argc, char *argv[])
 	if ( screen == NULL ) {
 		fprintf(stderr,"Couldn't set %dx%dx%d video mode: %s\n",
 				image->w, image->h, depth, SDL_GetError());
+		SDL_Quit();
 		exit(3);
 	}
 
@@ -141,5 +142,6 @@ int main(int argc, char *argv[])
 
 	/* We're done! */
 	SDL_FreeSurface(image);
+	SDL_Quit();
 	exit(0);
 }

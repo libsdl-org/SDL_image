@@ -15,7 +15,8 @@ libSDL_image_la_SOURCES =		\
 	IMG_png.c		\
 	IMG_ppm.c		\
 	IMG_tga.c		\
-	IMG_tif.c
+	IMG_tif.c		\
+	IMG_xpm.c
 
 EXTRA_DIST =			\
 	CHANGES			\

@@ -57,6 +57,7 @@ extern DECLSPEC int IMG_InvertAlpha(int on);
 /* Functions to detect a file type, given a seekable source */
 extern DECLSPEC int IMG_isBMP(SDL_RWops *src);
 extern DECLSPEC int IMG_isPPM(SDL_RWops *src);
+extern DECLSPEC int IMG_isXPM(SDL_RWops *src);
 extern DECLSPEC int IMG_isPCX(SDL_RWops *src);
 extern DECLSPEC int IMG_isGIF(SDL_RWops *src);
 extern DECLSPEC int IMG_isJPG(SDL_RWops *src);
@@ -66,6 +67,7 @@ extern DECLSPEC int IMG_isPNG(SDL_RWops *src);
 /* Individual loading functions */
 extern DECLSPEC SDL_Surface *IMG_LoadBMP_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface *IMG_LoadPPM_RW(SDL_RWops *src);
+extern DECLSPEC SDL_Surface *IMG_LoadXPM_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface *IMG_LoadGIF_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src);
