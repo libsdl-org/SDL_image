@@ -143,8 +143,8 @@ if test x$enable_tga = xyes; then
     CFLAGS="$CFLAGS -DLOAD_TGA"
 fi
 AC_ARG_ENABLE(tif,
-[  --enable-tif            support loading TIF images [default=yes]],
-              , enable_tif=yes)
+[  --enable-tif            support loading TIFF images [default=no]],
+              , enable_tif=no)
 if test x$enable_tif = xyes; then
     AC_CHECK_LIB(tiff, TIFFClientOpen, have_libtiff=yes)
     if test x$have_libtiff = xyes; then
