@@ -49,7 +49,8 @@ int IMG_isJPG(SDL_RWops *src)
 			SDL_RWread(src, magic, 4, 1);
 			SDL_RWread(src, magic, 4, 1);
 			if ( memcmp((char *)magic, "JFIF", 4) == 0 ||
-			     memcmp((char *)magic, "Exif", 4) == 0 ) {
+			     memcmp((char *)magic, "Exif", 4) == 0 ||
+			     memcmp((char *)magic, "VVL", 3) == 0 ) {
 				is_JPG = 1;
 			}
 		}
