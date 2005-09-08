@@ -47,6 +47,12 @@ int IMG_isJPG(SDL_RWops *src)
 	if ( SDL_RWread(src, magic, 2, 1) ) {
 		if ( (magic[0] == 0xFF) && (magic[1] == 0xD8) ) {
 			SDL_RWread(src, magic, 4, 1);
+
+			/* skip IPTC info block if it exists... */
+			if ( (magic[0] == 0xFF) && (magic[1] == 0xED) ) {
+				SDL_RWseek(src, (((Uint16)magic[2] << 8) |magic[3]) + 2, SEEK_CUR);
+			}
+
 			SDL_RWread(src, magic, 4, 1);
 			if ( memcmp((char *)magic, "JFIF", 4) == 0 ||
 			     memcmp((char *)magic, "Exif", 4) == 0 ||
