@@ -35,8 +35,8 @@
 /* Table of image detection and loading functions */
 static struct {
 	char *type;
-	int (*is)(SDL_RWops *src);
-	SDL_Surface *(*load)(SDL_RWops *src);
+	int (SDLCALL *is)(SDL_RWops *src);
+	SDL_Surface *(SDLCALL *load)(SDL_RWops *src);
 } supported[] = {
 	/* keep magicless formats first */
 	{ "TGA", NULL,      IMG_LoadTGA_RW },
