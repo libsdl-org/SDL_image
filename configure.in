@@ -37,8 +37,7 @@ AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
 dnl Detect the canonical host and target build environment
-AC_CANONICAL_HOST
-AC_CANONICAL_TARGET
+AC_CANONICAL_SYSTEM
 
 dnl Setup for automake
 AM_INIT_AUTOMAKE(SDL_image, $VERSION)
