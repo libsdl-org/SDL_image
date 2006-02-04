@@ -173,8 +173,8 @@ if test x$enable_tif = xyes; then
     fi
 fi
 AC_ARG_ENABLE(xcf,
-[  --enable-xcf            support loading XCF images [default=no]],
-              , enable_xcf=no)
+[  --enable-xcf            support loading XCF images [default=yes]],
+              , enable_xcf=yes)
 if test x$enable_xcf = xyes; then
     CFLAGS="$CFLAGS -DLOAD_XCF"
 fi
