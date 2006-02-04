@@ -76,14 +76,17 @@
 /* See if an image is contained in a data source */
 int IMG_isPNG(SDL_RWops *src)
 {
-   unsigned char buf[PNG_BYTES_TO_CHECK];
+	int start;
+	int is_PNG;
+	unsigned char buf[PNG_BYTES_TO_CHECK];
 
-   /* Read in the signature bytes */
-   if (SDL_RWread(src, buf, 1, PNG_BYTES_TO_CHECK) != PNG_BYTES_TO_CHECK)
-      return 0;
-
-   /* Compare the first PNG_BYTES_TO_CHECK bytes of the signature. */
-   return( !png_sig_cmp(buf, (png_size_t)0, PNG_BYTES_TO_CHECK));
+	start = SDL_RWtell(src);
+	is_PNG = 0;
+	if ( SDL_RWread(src, buf, 1, PNG_BYTES_TO_CHECK) == PNG_BYTES_TO_CHECK ) {
+		is_PNG = (png_sig_cmp(buf, (png_size_t)0, PNG_BYTES_TO_CHECK) == 0);
+	}
+	SDL_RWseek(src, start, SEEK_SET);
+	return(is_PNG);
 }
 
 /* Load a PNG type image from an SDL datasource */

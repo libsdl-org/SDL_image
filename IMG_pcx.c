@@ -64,12 +64,14 @@ struct PCXheader {
 /* See if an image is contained in a data source */
 int IMG_isPCX(SDL_RWops *src)
 {
+	int start;
 	int is_PCX;
 	const int ZSoft_Manufacturer = 10;
 	const int PC_Paintbrush_Version = 5;
 	const int PCX_RunLength_Encoding = 1;
 	struct PCXheader pcxh;
 
+	start = SDL_RWtell(src);
 	is_PCX = 0;
 	if ( SDL_RWread(src, &pcxh, sizeof(pcxh), 1) == 1 ) {
 		if ( (pcxh.Manufacturer == ZSoft_Manufacturer) &&
@@ -78,6 +80,7 @@ int IMG_isPCX(SDL_RWops *src)
 			is_PCX = 1;
 		}
 	}
+	SDL_RWseek(src, start, SEEK_SET);
 	return(is_PCX);
 }
 

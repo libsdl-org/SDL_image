@@ -77,8 +77,13 @@ static toff_t tiff_size(thandle_t fd)
 
 int IMG_isTIF(SDL_RWops* src)
 {
+	int start;
+	int is_TIF;
 	TIFF* tiff;
 	TIFFErrorHandler prev_handler;
+
+	start = SDL_RWtell(src);
+	is_TIF = 0;
 
 	/* Suppress output from libtiff */
 	prev_handler = TIFFSetErrorHandler(NULL);
@@ -92,13 +97,14 @@ int IMG_isTIF(SDL_RWops* src)
 	TIFFSetErrorHandler(prev_handler);
 
 	/* If it's not a TIFF, then tiff will be NULL. */
-	if(!tiff)
-		return 0;
+	if ( tiff ) {
+		is_TIF = 1;
 
-	/* Free up any dynamically allocated memory libtiff uses */
-	TIFFClose(tiff);
-	
-	return 1;
+		/* Free up any dynamically allocated memory libtiff uses */
+		TIFFClose(tiff);
+	}
+	SDL_RWseek(src, start, SEEK_SET);
+	return(is_TIF);
 }
 
 SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)

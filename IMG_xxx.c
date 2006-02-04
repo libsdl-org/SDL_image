@@ -33,10 +33,12 @@
 /* See if an image is contained in a data source */
 int IMG_isXXX(SDL_RWops *src)
 {
+	int start;
 	int is_XXX;
 
+	start = SDL_RWtell(src);
 	is_XXX = 0;
-
+	SDL_RWseek(src, start, SEEK_SET);
 	return(is_XXX);
 }
 

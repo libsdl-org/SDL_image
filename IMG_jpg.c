@@ -40,9 +40,11 @@
 /* See if an image is contained in a data source */
 int IMG_isJPG(SDL_RWops *src)
 {
+	int start;
 	int is_JPG;
 	Uint8 magic[4];
 
+	start = SDL_RWtell(src);
 	is_JPG = 0;
 	if ( SDL_RWread(src, magic, 2, 1) ) {
 		if ( (magic[0] == 0xFF) && (magic[1] == 0xD8) ) {
@@ -61,6 +63,7 @@ int IMG_isJPG(SDL_RWops *src)
 			}
 		}
 	}
+	SDL_RWseek(src, start, SEEK_SET);
 	return(is_JPG);
 }
 

@@ -57,10 +57,19 @@
 /* See if an image is contained in a data source */
 int IMG_isXPM(SDL_RWops *src)
 {
+	int start;
+	int is_XPM;
 	char magic[9];
 
-	return (SDL_RWread(src, magic, sizeof(magic), 1)
-		&& memcmp(magic, "/* XPM */", 9) == 0);
+	start = SDL_RWtell(src);
+	is_XPM = 0;
+	if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
+		if ( memcmp(magic, "/* XPM */", sizeof(magic)) == 0 ) {
+			is_XPM = 1;
+		}
+	}
+	SDL_RWseek(src, start, SEEK_SET);
+	return(is_XPM);
 }
 
 /* Hash table to look up colors from pixel strings */

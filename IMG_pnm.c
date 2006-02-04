@@ -42,19 +42,28 @@
 /* See if an image is contained in a data source */
 int IMG_isPNM(SDL_RWops *src)
 {
+	int start;
+	int is_PNM;
 	char magic[2];
 
-	/*
-	 * PNM magic signatures:
-	 * P1	PBM, ascii format
-	 * P2	PGM, ascii format
-	 * P3	PPM, ascii format
-	 * P4	PBM, binary format
-	 * P5	PGM, binary format
-	 * P6	PPM, binary format
-	 */
-	return (SDL_RWread(src, magic, 2, 1)
-		&& magic[0] == 'P' && magic[1] >= '1' && magic[1] <= '6');
+	start = SDL_RWtell(src);
+	is_PNM = 0;
+	if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
+		/*
+		 * PNM magic signatures:
+		 * P1	PBM, ascii format
+		 * P2	PGM, ascii format
+		 * P3	PPM, ascii format
+		 * P4	PBM, binary format
+		 * P5	PGM, binary format
+		 * P6	PPM, binary format
+		 */
+		if ( magic[0] == 'P' && magic[1] >= '1' && magic[1] <= '6' ) {
+			is_PNM = 1;
+		}
+	}
+	SDL_RWseek(src, start, SEEK_SET);
+	return(is_PNM);
 }
 
 /* read a non-negative integer from the source. return -1 upon error */

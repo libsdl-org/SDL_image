@@ -34,17 +34,20 @@
 /* See if an image is contained in a data source */
 int IMG_isGIF(SDL_RWops *src)
 {
+	int start;
 	int is_GIF;
 	char magic[6];
 
+	start = SDL_RWtell(src);
 	is_GIF = 0;
-	if ( SDL_RWread(src, magic, 6, 1) ) {
+	if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
 		if ( (strncmp(magic, "GIF", 3) == 0) &&
 		     ((memcmp(magic + 3, "87a", 3) == 0) ||
 		      (memcmp(magic + 3, "89a", 3) == 0)) ) {
 			is_GIF = 1;
 		}
 	}
+	SDL_RWseek(src, start, SEEK_SET);
 	return(is_GIF);
 }
 

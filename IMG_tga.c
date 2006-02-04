@@ -83,14 +83,10 @@ enum tga_type {
 #define LE16(p) ((p)[0] + ((p)[1] << 8))
 #define SETLE16(p, v) ((p)[0] = (v), (p)[1] = (v) >> 8)
 
-static void unsupported(void)
-{
-    IMG_SetError("unsupported TGA format");
-}
-
 /* Load a TGA type image from an SDL datasource */
 SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 {
+    int start;
     struct TGAheader hdr;
     int rle = 0;
     int alpha = 0;
@@ -112,6 +108,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
         return NULL;
     }
 
+    start = SDL_RWtell(src);
     if(!SDL_RWread(src, &hdr, sizeof(hdr), 1))
 	goto error;
     ncols = LE16(hdr.cmap_len);
@@ -143,8 +140,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 	break;
 
     default:
-        unsupported();
-	return NULL;
+        goto unsupported;
     }
 
     bpp = (hdr.pixel_bits + 7) >> 3;
@@ -152,8 +148,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
     switch(hdr.pixel_bits) {
     case 8:
 	if(!indexed) {
-	    unsupported();
-	    return NULL;
+            goto unsupported;
 	}
 	break;
 
@@ -185,14 +180,12 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 	break;
 
     default:
-	unsupported();
-	return NULL;
+        goto unsupported;
     }
 
     if((hdr.flags & TGA_INTERLEAVE_MASK) != TGA_INTERLEAVE_NONE
        || hdr.flags & TGA_ORIGIN_RIGHT) {
-	unsupported();
-	return NULL;
+        goto unsupported;
     }
     
     SDL_RWseek(src, hdr.infolen, SEEK_CUR); /* skip info field */
@@ -311,7 +304,13 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
     return img;
 
 error:
+    SDL_RWseek(src, start, SEEK_SET);
     IMG_SetError("Error reading TGA data");
+    return NULL;
+
+unsupported:
+    SDL_RWseek(src, start, SEEK_SET);
+    IMG_SetError("unsupported TGA format");
     return NULL;
 }
 

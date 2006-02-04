@@ -63,11 +63,13 @@ typedef struct
 
 int IMG_isLBM( SDL_RWops *src )
 {
+	int start;
 	int   is_LBM;
 	Uint8 magic[4+4+4];
 
+	start = SDL_RWtell(src);
 	is_LBM = 0;
-	if ( SDL_RWread( src, magic, 4+4+4, 1 ) )
+	if ( SDL_RWread( src, magic, sizeof(magic), 1 ) )
 	{
 		if ( !memcmp( magic, "FORM", 4 ) &&
 			( !memcmp( magic + 8, "PBM ", 4 ) ||
@@ -76,6 +78,7 @@ int IMG_isLBM( SDL_RWops *src )
 			is_LBM = 1;
 		}
 	}
+	SDL_RWseek(src, start, SEEK_SET);
 	return( is_LBM );
 }
 

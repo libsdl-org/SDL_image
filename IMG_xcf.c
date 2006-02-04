@@ -209,18 +209,21 @@ typedef unsigned char * (* load_tile_type) (SDL_RWops *, Uint32, int, int, int);
 
 
 /* See if an image is contained in a data source */
-int IMG_isXCF(SDL_RWops *src) {
-  int is_XCF;
-  char magic[14];
+int IMG_isXCF(SDL_RWops *src)
+{
+	int start;
+	int is_XCF;
+	char magic[14];
 
-  is_XCF = 0;
-  if ( SDL_RWread(src, magic, 14, 1) ) {
-    if (strncmp(magic, "gimp xcf ", 9) == 0) {
-      is_XCF = 1;
-    }
-  }
-
-  return(is_XCF);
+	start = SDL_RWtell(src);
+	is_XCF = 0;
+	if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
+		if (strncmp(magic, "gimp xcf ", 9) == 0) {
+			is_XCF = 1;
+		}
+	}
+	SDL_RWseek(src, start, SEEK_SET);
+	return(is_XCF);
 }
 
 static char * read_string (SDL_RWops * src) {

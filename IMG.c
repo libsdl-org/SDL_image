@@ -96,7 +96,7 @@ static int IMG_string_equals(const char *str1, const char *str2)
 /* Load an image from an SDL datasource, optionally specifying the type */
 SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, char *type)
 {
-	int i, start;
+	int i;
 	SDL_Surface *image;
 
 	/* Make sure there is something to do.. */
@@ -114,11 +114,9 @@ SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, char *type)
 	}
 
 	/* Detect the type of image being loaded */
-	start = SDL_RWtell(src);
 	image = NULL;
 	for ( i=0; i < ARRAYSIZE(supported); ++i ) {
 		if(supported[i].is) {
-			SDL_RWseek(src, start, SEEK_SET);
 			if(!supported[i].is(src))
 				continue;
 		} else {
@@ -131,7 +129,6 @@ SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, char *type)
 		fprintf(stderr, "IMGLIB: Loading image as %s\n",
 			supported[i].type);
 #endif
-		SDL_RWseek(src, start, SEEK_SET);
 		image = supported[i].load(src);
 		if(freesrc)
 			SDL_RWclose(src);
