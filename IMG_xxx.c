@@ -38,6 +38,9 @@ int IMG_isXXX(SDL_RWops *src)
 
 	start = SDL_RWtell(src);
 	is_XXX = 0;
+
+	/* Detect the image here */
+
 	SDL_RWseek(src, start, SEEK_SET);
 	return(is_XXX);
 }
@@ -45,11 +48,27 @@ int IMG_isXXX(SDL_RWops *src)
 /* Load a XXX type image from an SDL datasource */
 SDL_Surface *IMG_LoadXXX_RW(SDL_RWops *src)
 {
+	int start;
+	const char *error = NULL;
+	SDL_Surface *surface = NULL;
+
 	if ( !src ) {
 		/* The error message has been set in SDL_RWFromFile */
 		return NULL;
 	}
-	return(NULL);
+	start = SDL_RWtell(src);
+
+	/* Load the image here */
+
+	if ( error ) {
+		SDL_RWseek(src, start, SEEK_SET);
+		if ( surface ) {
+			SDL_FreeSurface(surface);
+			surface = NULL;
+		}
+		IMG_SetError(error);
+	}
+	return surface;
 }
 
 #else

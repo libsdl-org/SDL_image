@@ -202,6 +202,7 @@ static void output_no_message(j_common_ptr cinfo)
 /* Load a JPEG type image from an SDL datasource */
 SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 {
+	int start;
 	struct jpeg_decompress_struct cinfo;
 	JSAMPROW rowptr[1];
 	SDL_Surface *volatile surface = NULL;
@@ -211,6 +212,7 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 		/* The error message has been set in SDL_RWFromFile */
 		return NULL;
 	}
+	start = SDL_RWtell(src);
 
 	/* Create a decompression structure and load the JPEG header */
 	cinfo.err = jpeg_std_error(&jerr.errmgr);
@@ -219,8 +221,11 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 	if(setjmp(jerr.escape)) {
 		/* If we get here, libjpeg found an error */
 		jpeg_destroy_decompress(&cinfo);
+		if ( surface != NULL ) {
+			SDL_FreeSurface(surface);
+		}
+		SDL_RWseek(src, start, SEEK_SET);
 		IMG_SetError("JPEG loading error");
-		SDL_FreeSurface(surface);
 		return NULL;
 	}
 
@@ -249,8 +254,10 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 #endif
 				   0);
 	if ( surface == NULL ) {
+		jpeg_destroy_decompress(&cinfo);
+		SDL_RWseek(src, start, SEEK_SET);
 		IMG_SetError("Out of memory");
-		goto done;
+		return NULL;
 	}
 
 	/* Decompress the image */
@@ -261,10 +268,8 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 		jpeg_read_scanlines(&cinfo, rowptr, (JDIMENSION) 1);
 	}
 	jpeg_finish_decompress(&cinfo);
-
-	/* Clean up and return */
-done:
 	jpeg_destroy_decompress(&cinfo);
+
 	return(surface);
 }
 

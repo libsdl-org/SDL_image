@@ -310,6 +310,7 @@ do {							\
 /* read XPM from either array or RWops */
 static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
 {
+	int start;
 	SDL_Surface *image = NULL;
 	int index;
 	int x, y;
@@ -326,6 +327,8 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
 	error = NULL;
 	linebuf = NULL;
 	buflen = 0;
+
+	start = SDL_RWtell(src);
 
 	if(xpm)
 		xpmlines = &xpm;
@@ -452,8 +455,11 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
 
 done:
 	if(error) {
-		SDL_FreeSurface(image);
-		image = NULL;
+		SDL_RWseek(src, start, SEEK_SET);
+		if ( image ) {
+			SDL_FreeSurface(image);
+			image = NULL;
+		}
 		IMG_SetError(error);
 	}
 	free(keystrings);

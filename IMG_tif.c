@@ -109,6 +109,7 @@ int IMG_isTIF(SDL_RWops* src)
 
 SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 {
+	int start;
 	TIFF* tiff;
 	SDL_Surface* surface = NULL;
 	Uint32 img_width, img_height;
@@ -120,12 +121,13 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 		/* The error message has been set in SDL_RWFromFile */
 		return NULL;
 	}
+	start = SDL_RWtell(src);
 
 	/* turn off memory mapped access with the m flag */
 	tiff = TIFFClientOpen("SDL_image", "rm", (thandle_t)src, 
 		tiff_read, tiff_write, tiff_seek, tiff_close, tiff_size, NULL, NULL);
 	if(!tiff)
-		return NULL;
+		goto error;
 
 	/* Retrieve the dimensions of the image from the TIFF tags */
 	TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &img_width);
@@ -138,10 +140,10 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 	surface = SDL_AllocSurface(SDL_SWSURFACE, img_width, img_height, 32,
 		Rmask, Gmask, Bmask, Amask);
 	if(!surface)
-		return NULL;
+		goto error;
 	
 	if(!TIFFReadRGBAImage(tiff, img_width, img_height, surface->pixels, 0))
-		return NULL;
+		goto error;
 
 	/* libtiff loads the image upside-down, flip it back */
 	half = img_height / 2;
@@ -160,6 +162,13 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 	TIFFClose(tiff);
 	
 	return surface;
+
+error:
+	SDL_RWseek(src, start, SEEK_SET);
+	if ( surface ) {
+		SDL_FreeSurface(surface);
+	}
+	return NULL;
 }
 
 #else

@@ -105,6 +105,7 @@ static int ReadNumber(SDL_RWops *src)
 
 SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 {
+	int start;
 	SDL_Surface *surface = NULL;
 	int width, height;
 	int maxval, y, bpl;
@@ -121,6 +122,7 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 		/* The error message has been set in SDL_RWFromFile */
 		return NULL;
 	}
+	start = SDL_RWtell(src);
 
 	SDL_RWread(src, magic, 2, 1);
 	kind = magic[1] - '1';
@@ -229,9 +231,12 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 done:
 	free(buf);
 	if(error) {
-		SDL_FreeSurface(surface);
+		SDL_RWseek(src, start, SEEK_SET);
+		if ( surface ) {
+			SDL_FreeSurface(surface);
+			surface = NULL;
+		}
 		IMG_SetError(error);
-		surface = NULL;
 	}
 	return(surface);
 }

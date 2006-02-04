@@ -671,12 +671,15 @@ int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header * head,
   return 0;
 }
 
-SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src) {
+SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
+{
+  int start;
+  const char *error = NULL;
   SDL_Surface *surface, *lays;
   xcf_header * head;
   xcf_layer  * layer;
   xcf_channel ** channel;
-  int read_error, chnls, i, offsets;
+  int chnls, i, offsets;
   Uint32 offset, fp;
 
   unsigned char * (* load_tile) (SDL_RWops *, Uint32, int, int, int);
@@ -685,10 +688,10 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src) {
     /* The error message has been set in SDL_RWFromFile */
     return NULL;
   }
+  start = SDL_RWtell(src);
 
   /* Initialize the data we will clean up when we're done */
   surface = NULL;
-  read_error = 0;
 
   head = read_xcf_header (src);
 
@@ -710,7 +713,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src) {
 			     0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
 
   if ( surface == NULL ) {
-    IMG_SetError("Out of memory");
+    error = "Out of memory";
     goto done;
   }
 
@@ -728,7 +731,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src) {
 			  0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
 
   if ( lays == NULL ) {
-    IMG_SetError("Out of memory");
+    error = "Out of memory";
     goto done;
   }
 
@@ -775,7 +778,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src) {
 			   0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
 
     if (chs == NULL) {
-      IMG_SetError("Out of memory");
+      error = "Out of memory";
       goto done;
     }
     for (i = 0; i < chnls; i++) {
@@ -790,12 +793,15 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src) {
     SDL_FreeSurface (chs);
   }
 
- done:
+done:
   free_xcf_header (head);
-  if ( read_error ) {
-    SDL_FreeSurface(surface);
-    IMG_SetError("Error reading XCF data");
-    surface = NULL;
+  if ( error ) {
+    SDL_RWseek(src, start, SEEK_SET);
+    if ( surface ) {
+      SDL_FreeSurface(surface);
+      surface = NULL;
+    }
+    IMG_SetError(error);
   }
 
   return(surface);

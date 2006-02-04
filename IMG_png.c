@@ -99,6 +99,8 @@ static void png_read_data(png_structp ctx, png_bytep area, png_size_t size)
 }
 SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 {
+	int start;
+	const char *error;
 	SDL_Surface *volatile surface;
 	png_structp png_ptr;
 	png_infop info_ptr;
@@ -118,22 +120,24 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 		/* The error message has been set in SDL_RWFromFile */
 		return NULL;
 	}
+	start = SDL_RWtell(src);
 
 	/* Initialize the data we will clean up when we're done */
+	error = NULL;
 	png_ptr = NULL; info_ptr = NULL; row_pointers = NULL; surface = NULL;
 
 	/* Create the PNG loading context structure */
 	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
 					  NULL,NULL,NULL);
 	if (png_ptr == NULL){
-		IMG_SetError("Couldn't allocate memory for PNG file or incompatible PNG dll");
+		error = "Couldn't allocate memory for PNG file or incompatible PNG dll";
 		goto done;
 	}
 
 	 /* Allocate/initialize the memory for image information.  REQUIRED. */
 	info_ptr = png_create_info_struct(png_ptr);
 	if (info_ptr == NULL) {
-		IMG_SetError("Couldn't create image information for PNG file");
+		error = "Couldn't create image information for PNG file";
 		goto done;
 	}
 
@@ -142,7 +146,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	 * set up your own error handlers in png_create_read_struct() earlier.
 	 */
 	if ( setjmp(png_ptr->jmpbuf) ) {
-		IMG_SetError("Error reading the PNG file.");
+		error = "Error reading the PNG file.";
 		goto done;
 	}
 
@@ -222,7 +226,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	surface = SDL_AllocSurface(SDL_SWSURFACE, width, height,
 			bit_depth*info_ptr->channels, Rmask,Gmask,Bmask,Amask);
 	if ( surface == NULL ) {
-		IMG_SetError("Out of memory");
+		error = "Out of memory";
 		goto done;
 	}
 
@@ -239,9 +243,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	/* Create the array of pointers to image data */
 	row_pointers = (png_bytep*) malloc(sizeof(png_bytep)*height);
 	if ( (row_pointers == NULL) ) {
-		IMG_SetError("Out of memory");
-		SDL_FreeSurface(surface);
-		surface = NULL;
+		error = "Out of memory";
 		goto done;
 	}
 	for (row = 0; row < (int)height; row++) {
@@ -281,10 +283,21 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	}
 
 done:	/* Clean up and return */
-	png_destroy_read_struct(&png_ptr, info_ptr ? &info_ptr : (png_infopp)0,
+	if ( png_ptr ) {
+		png_destroy_read_struct(&png_ptr,
+		                        info_ptr ? &info_ptr : (png_infopp)0,
 								(png_infopp)0);
+	}
 	if ( row_pointers ) {
 		free(row_pointers);
+	}
+	if ( error ) {
+		SDL_RWseek(src, start, SEEK_SET);
+		if ( surface ) {
+			SDL_FreeSurface(surface);
+			surface = NULL;
+		}
+		IMG_SetError(error);
 	}
 	return(surface); 
 }

@@ -87,6 +87,7 @@ int IMG_isPCX(SDL_RWops *src)
 /* Load a PCX type image from an SDL datasource */
 SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 {
+	int start;
 	struct PCXheader pcxh;
 	Uint32 Rmask;
 	Uint32 Gmask;
@@ -103,6 +104,8 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 		/* The error message has been set in SDL_RWFromFile */
 		return NULL;
 	}
+	start = SDL_RWtell(src);
+
 	if ( ! SDL_RWread(src, &pcxh, sizeof(pcxh), 1) ) {
 		error = "file truncated";
 		goto done;
@@ -235,9 +238,12 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 done:
 	free(buf);
 	if ( error ) {
-		SDL_FreeSurface(surface);
+		SDL_RWseek(src, start, SEEK_SET);
+		if ( surface ) {
+			SDL_FreeSurface(surface);
+			surface = NULL;
+		}
 		IMG_SetError(error);
-		surface = NULL;
 	}
 	return(surface);
 }

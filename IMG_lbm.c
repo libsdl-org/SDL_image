@@ -84,6 +84,7 @@ int IMG_isLBM( SDL_RWops *src )
 
 SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 {
+	int start;
 	SDL_Surface *Image;
 	Uint8       id[4], pbm, colormap[MAXCOLORS*3], *MiniBuf, *ptr, count, color, msk;
 	Uint32      size, bytesloaded, nbcolors;
@@ -102,6 +103,8 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 		/* The error message has been set in SDL_RWFromFile */
 		return NULL;
 	}
+	start = SDL_RWtell(src);
+
 	if ( !SDL_RWread( src, id, 4, 1 ) )
 	{
 		error="error reading IFF chunk";
@@ -469,9 +472,12 @@ done:
 
 	if ( error )
 	{
+		SDL_RWseek(src, start, SEEK_SET);
+		if ( Image ) {
+			SDL_FreeSurface( Image );
+			Image = NULL;
+		}
 		IMG_SetError( error );
-		SDL_FreeSurface( Image );
-		Image = NULL;
 	}
 
 	return( Image );

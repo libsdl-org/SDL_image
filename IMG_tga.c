@@ -87,6 +87,7 @@ enum tga_type {
 SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 {
     int start;
+    const char *error = NULL;
     struct TGAheader hdr;
     int rle = 0;
     int alpha = 0;
@@ -94,7 +95,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
     int grey = 0;
     int ckey = -1;
     int ncols, w, h;
-    SDL_Surface *img;
+    SDL_Surface *img = NULL;
     Uint32 rmask, gmask, bmask, amask;
     Uint8 *dst;
     int i;
@@ -107,10 +108,12 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
         /* The error message has been set in SDL_RWFromFile */
         return NULL;
     }
-
     start = SDL_RWtell(src);
-    if(!SDL_RWread(src, &hdr, sizeof(hdr), 1))
+
+    if(!SDL_RWread(src, &hdr, sizeof(hdr), 1)) {
+        error = "Error reading TGA data";
 	goto error;
+    }
     ncols = LE16(hdr.cmap_len);
     switch(hdr.type) {
     case TGA_TYPE_RLE_INDEXED:
@@ -118,7 +121,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 	/* fallthrough */
     case TGA_TYPE_INDEXED:
 	if(!hdr.has_cmap || hdr.pixel_bits != 8 || ncols > 256)
-	    goto error;
+	    goto unsupported;
 	indexed = 1;
 	break;
 
@@ -134,7 +137,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 	/* fallthrough */
     case TGA_TYPE_BW:
 	if(hdr.pixel_bits != 8)
-	    goto error;
+	    goto unsupported;
 	/* Treat greyscale as 8bpp indexed images */
 	indexed = grey = 1;
 	break;
@@ -195,6 +198,10 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
     img = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h,
 			       bpp * 8,
 			       rmask, gmask, bmask, amask);
+    if(img == NULL) {
+        error = "Out of memory";
+        goto error;
+    }
 
     if(hdr.has_cmap) {
 	int palsiz = ncols * ((hdr.cmap_bits + 7) >> 3);
@@ -303,14 +310,15 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
     }
     return img;
 
+unsupported:
+    error = "Unsupported TGA format";
+
 error:
     SDL_RWseek(src, start, SEEK_SET);
-    IMG_SetError("Error reading TGA data");
-    return NULL;
-
-unsupported:
-    SDL_RWseek(src, start, SEEK_SET);
-    IMG_SetError("unsupported TGA format");
+    if ( img ) {
+        SDL_FreeSurface(img);
+    }
+    IMG_SetError(error);
     return NULL;
 }
 

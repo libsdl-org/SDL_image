@@ -151,6 +151,7 @@ static Image *ReadImage(SDL_RWops * src, int len, int height, int,
 Image *
 IMG_LoadGIF_RW(SDL_RWops *src)
 {
+    int start;
     unsigned char buf[16];
     unsigned char c;
     unsigned char localColorMap[3][MAXCOLORMAPSIZE];
@@ -163,8 +164,10 @@ IMG_LoadGIF_RW(SDL_RWops *src)
     Image *image = NULL;
 
     if ( src == NULL ) {
-        goto done;
+	return NULL;
     }
+    start = SDL_RWtell(src);
+
     if (!ReadOK(src, buf, 6)) {
 	RWSetMsg("error reading magic number");
         goto done;
@@ -262,6 +265,9 @@ IMG_LoadGIF_RW(SDL_RWops *src)
 #endif
 
 done:
+    if ( image == NULL ) {
+        SDL_RWseek(src, start, SEEK_SET);
+    }
     return image;
 }
 
