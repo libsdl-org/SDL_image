@@ -57,6 +57,7 @@ int IMG_isPNM(SDL_RWops *src)
 		 * P4	PBM, binary format
 		 * P5	PGM, binary format
 		 * P6	PPM, binary format
+		 * P7	PAM, a general wrapper for PNM data
 		 */
 		if ( magic[0] == 'P' && magic[1] >= '1' && magic[1] <= '6' ) {
 			is_PNM = 1;
@@ -114,7 +115,7 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 	char *error = NULL;
 	Uint8 magic[2];
 	int ascii;
-	enum { PBM, PGM, PPM } kind;
+	enum { PBM, PGM, PPM, PAM } kind;
 
 #define ERROR(s) do { error = (s); goto done; } while(0)
 

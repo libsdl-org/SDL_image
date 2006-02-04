@@ -41,15 +41,16 @@ static struct {
 	/* keep magicless formats first */
 	{ "TGA", NULL,      IMG_LoadTGA_RW },
 	{ "BMP", IMG_isBMP, IMG_LoadBMP_RW },
-	{ "PNM", IMG_isPNM, IMG_LoadPNM_RW }, /* P[BGP]M share code */
-	{ "XPM", IMG_isXPM, IMG_LoadXPM_RW },
-	{ "XCF", IMG_isXCF, IMG_LoadXCF_RW },
-	{ "PCX", IMG_isPCX, IMG_LoadPCX_RW },
 	{ "GIF", IMG_isGIF, IMG_LoadGIF_RW },
 	{ "JPG", IMG_isJPG, IMG_LoadJPG_RW },
-	{ "TIF", IMG_isTIF, IMG_LoadTIF_RW },
 	{ "LBM", IMG_isLBM, IMG_LoadLBM_RW },
-	{ "PNG", IMG_isPNG, IMG_LoadPNG_RW }
+	{ "PCX", IMG_isPCX, IMG_LoadPCX_RW },
+	{ "PNG", IMG_isPNG, IMG_LoadPNG_RW },
+	{ "PNM", IMG_isPNM, IMG_LoadPNM_RW }, /* P[BGP]M share code */
+	{ "TIF", IMG_isTIF, IMG_LoadTIF_RW },
+	{ "XCF", IMG_isXCF, IMG_LoadXCF_RW },
+	{ "XPM", IMG_isXPM, IMG_LoadXPM_RW },
+	{ "XV",  IMG_isXV,  IMG_LoadXV_RW  }
 };
 
 const SDL_version *IMG_Linked_Version(void)

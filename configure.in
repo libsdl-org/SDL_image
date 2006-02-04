@@ -184,6 +184,12 @@ AC_ARG_ENABLE(xpm,
 if test x$enable_xpm = xyes; then
     CFLAGS="$CFLAGS -DLOAD_XPM"
 fi
+AC_ARG_ENABLE(xv,
+[  --enable-xv             support loading XV thumbnail images [default=yes]],
+              , enable_xv=yes)
+if test x$enable_xv = xyes; then
+    CFLAGS="$CFLAGS -DLOAD_XV"
+fi
 AC_SUBST(IMG_LIBS)
 
 # Finally create all the generated files
