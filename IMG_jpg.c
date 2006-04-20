@@ -35,29 +35,65 @@
 /* Define this for fast loading and not as good image quality */
 /*#define FAST_JPEG*/
 
+/* Define this for quicker (but less perfect) JPEG identification */
+#define FAST_IS_JPEG
+
 /* See if an image is contained in a data source */
 int IMG_isJPG(SDL_RWops *src)
 {
 	int start;
 	int is_JPG;
+	int in_scan;
 	Uint8 magic[4];
+
+	/* This detection code is by Steaphan Greene <stea@cs.binghamton.edu> */
+	/* Blame me, not Sam, if this doesn't work right. */
+	/* And don't forget to report the problem to the the sdl list too! */
 
 	start = SDL_RWtell(src);
 	is_JPG = 0;
+	in_scan = 0;
 	if ( SDL_RWread(src, magic, 2, 1) ) {
 		if ( (magic[0] == 0xFF) && (magic[1] == 0xD8) ) {
-			SDL_RWread(src, magic, 4, 1);
-
-			/* skip IPTC info block if it exists... */
-			if ( (magic[0] == 0xFF) && (magic[1] == 0xED) ) {
-				SDL_RWseek(src, (((Uint16)magic[2] << 8) |magic[3]) + 2, SEEK_CUR);
-			}
-
-			SDL_RWread(src, magic, 4, 1);
-			if ( memcmp((char *)magic, "JFIF", 4) == 0 ||
-			     memcmp((char *)magic, "Exif", 4) == 0 ||
-			     memcmp((char *)magic, "VVL", 3) == 0 ) {
-				is_JPG = 1;
+			is_JPG = 1;
+			while (is_JPG == 1) {
+				if(SDL_RWread(src, magic, 1, 2) != 2) {
+					is_JPG = 0;
+				} else if( (magic[0] != 0xFF) && (in_scan == 0) ) {
+					is_JPG = 0;
+				} else if( (magic[0] != 0xFF) || (magic[1] == 0xFF) ) {
+					/* Extra padding in JPEG (legal) */
+					/* or this is data and we are scanning */
+					SDL_RWseek(src, -1, SEEK_CUR);
+				} else if(magic[1] == 0xD9) {
+					/* Got to end of good JPEG */
+					break;
+				} else if( (in_scan == 1) && (magic[1] == 0x00) ) {
+					/* This is an encoded 0xFF within the data */
+				} else if( (magic[1] >= 0xD0) && (magic[1] < 0xD9) ) {
+					/* These have nothing else */
+				} else if(SDL_RWread(src, magic+2, 1, 2) != 2) {
+					is_JPG = 0;
+				} else {
+					/* Yes, it's big-endian */
+					Uint32 start;
+					Uint32 size;
+					Uint32 end;
+					start = SDL_RWtell(src);
+					size = (magic[2] << 8) + magic[3];
+					end = SDL_RWseek(src, size-2, SEEK_CUR);
+					if ( end != start + size - 2 ) is_JPG = 0;
+					if ( magic[1] == 0xDA ) {
+						/* Now comes the actual JPEG meat */
+#ifdef	FAST_IS_JPEG
+						/* Ok, I'm convinced.  It is a JPEG. */
+						break;
+#else
+						/* I'm not convinced.  Prove it! */
+						in_scan = 1;
+#endif
+					}
+				}
 			}
 		}
 	}
@@ -231,26 +267,43 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 	jpeg_SDL_RW_src(&cinfo, src);
 	jpeg_read_header(&cinfo, TRUE);
 
-	/* Set 24-bit RGB output */
-	cinfo.out_color_space = JCS_RGB;
-	cinfo.quantize_colors = FALSE;
-#ifdef FAST_JPEG
-	cinfo.scale_num   = 1;
-	cinfo.scale_denom = 1;
-	cinfo.dct_method = JDCT_FASTEST;
-	cinfo.do_fancy_upsampling = FALSE;
-#endif
-	jpeg_calc_output_dimensions(&cinfo);
+	if(cinfo.num_components == 4) {
+		/* Set 32-bit Raw output */
+		cinfo.out_color_space = JCS_CMYK;
+		cinfo.quantize_colors = FALSE;
+		jpeg_calc_output_dimensions(&cinfo);
 
-	/* Allocate an output surface to hold the image */
-	surface = SDL_AllocSurface(SDL_SWSURFACE,
-	               cinfo.output_width, cinfo.output_height, 24,
+		/* Allocate an output surface to hold the image */
+		surface = SDL_AllocSurface(SDL_SWSURFACE,
+		        cinfo.output_width, cinfo.output_height, 32,
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
-	                           0x0000FF, 0x00FF00, 0xFF0000,
+		                   0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 #else
-	                           0xFF0000, 0x00FF00, 0x0000FF,
+		                   0x0000FF00, 0x00FF0000, 0xFF000000, 0x000000FF);
 #endif
-				   0);
+	} else {
+		/* Set 24-bit RGB output */
+		cinfo.out_color_space = JCS_RGB;
+		cinfo.quantize_colors = FALSE;
+#ifdef FAST_JPEG
+		cinfo.scale_num   = 1;
+		cinfo.scale_denom = 1;
+		cinfo.dct_method = JDCT_FASTEST;
+		cinfo.do_fancy_upsampling = FALSE;
+#endif
+		jpeg_calc_output_dimensions(&cinfo);
+
+		/* Allocate an output surface to hold the image */
+		surface = SDL_AllocSurface(SDL_SWSURFACE,
+		        cinfo.output_width, cinfo.output_height, 24,
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+		                   0x0000FF, 0x00FF00, 0xFF0000,
+#else
+		                   0xFF0000, 0x00FF00, 0x0000FF,
+#endif
+		                   0);
+	}
+
 	if ( surface == NULL ) {
 		jpeg_destroy_decompress(&cinfo);
 		SDL_RWseek(src, start, SEEK_SET);
