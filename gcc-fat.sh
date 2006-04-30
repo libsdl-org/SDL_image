@@ -71,7 +71,7 @@ if test x"$output" != x; then
 fi
 set -- $args
 while test x$1 != x; do
-    if test -f "ppc/$1"; then
+    if test -f "ppc/$1" && test "$1" != "$output"; then
         ppc_args="$ppc_args ppc/$1"
     else
         ppc_args="$ppc_args $1"
@@ -93,7 +93,7 @@ if test x"$output" != x; then
 fi
 set -- $args
 while test x$1 != x; do
-    if test -f "x86/$1"; then
+    if test -f "x86/$1" && test "$1" != "$output"; then
         x86_args="$x86_args x86/$1"
     else
         x86_args="$x86_args $1"
