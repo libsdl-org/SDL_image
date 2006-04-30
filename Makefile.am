@@ -29,6 +29,7 @@ EXTRA_DIST =			\
 	IMG_xxx.c		\
 	SDL_image.spec		\
 	SDL_image.spec.in	\
+	gcc-fat			\
 	autogen.sh
 
 libSDL_image_la_LDFLAGS = 	\
