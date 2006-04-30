@@ -2,7 +2,7 @@
 #
 # Build Universal binaries on Mac OS X, thanks Ryan!
 #
-# Usage: ./configure CC="sh gcc-fat" && make && rm -rf ppc x86
+# Usage: ./configure CC="sh gcc-fat.sh" && make && rm -rf ppc x86
 
 # PowerPC compiler flags (10.2 runtime compatibility)
 GCC_COMPILE_PPC="gcc-3.3 -arch ppc \

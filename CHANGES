@@ -1,4 +1,7 @@
 1.2.5:
+Sam Lantinga - Sun Apr 30 01:48:40 PDT 2006
+ * Added gcc-fat.sh for generating Universal binaries on Mac OS X
+ * Updated libtool support to version 1.5.22
 Sam Lantinga - Sat Feb  4 15:17:44 PST 2006
  * Added support for XV thumbnail images
 Gautier Portet - Fri, 19 Mar 2004 17:35:12 +0100
