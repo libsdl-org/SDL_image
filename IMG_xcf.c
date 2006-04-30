@@ -315,7 +315,7 @@ xcf_header * read_xcf_header (SDL_RWops * src) {
       // unused var: int i;
 
       h->cm_num = prop.data.colormap.num;
-      h->cm_map = (char *) malloc (sizeof (char) * 3 * h->cm_num);
+      h->cm_map = (unsigned char *) malloc (sizeof (unsigned char) * 3 * h->cm_num);
       memcpy (h->cm_map, prop.data.colormap.cmap, 3*sizeof (char)*h->cm_num);
       free (prop.data.colormap.cmap);
     }
@@ -453,7 +453,7 @@ void free_xcf_tile (unsigned char * t) {
 unsigned char * load_xcf_tile_none (SDL_RWops * src, Uint32 len, int bpp, int x, int y) {
   unsigned char * load;
 
-  load = (char *) malloc (len); // expect this is okay
+  load = (unsigned char *) malloc (len); // expect this is okay
   SDL_RWread (src, load, len, 1);
 
   return load;
@@ -465,10 +465,10 @@ unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, int x, 
   int i, size, count, j, length;
   unsigned char val;
 
-  t = load = (char *) malloc (len);
+  t = load = (unsigned char *) malloc (len);
   reallen = SDL_RWread (src, t, 1, len);
 
-  data = (char *) malloc (x*y*bpp);
+  data = (unsigned char *) malloc (x*y*bpp);
   for (i = 0; i < bpp; i++) {
     d    = data + i;
     size = x*y;
