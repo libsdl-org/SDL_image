@@ -45,7 +45,7 @@ while test x$1 != x; do
             compile=no; link=no;;
         -c) link=no;;
         -o) output=$2;;
-        *.c) source=$1;;
+        *.c|*.cc|*.cpp|*.S) source=$1;;
     esac
     shift
 done
@@ -57,7 +57,7 @@ if test x"$output" = x; then
     if test x$link = xyes; then
         output=a.out
     elif test x$compile = xyes; then
-        output=`basename $source .c`.o
+        output=`echo $source | sed -e 's|.*/||' -e 's|\(.*\)\.[^\.]*|\1|'`.o
     fi
 fi
 
