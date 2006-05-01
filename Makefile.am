@@ -37,7 +37,7 @@ libSDL_image_la_LDFLAGS = 	\
 	-no-undefined		\
 	-release $(LT_RELEASE)	\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
-libSDL_image_la_LIBADD = @IMG_LIBS@
+libSDL_image_la_LIBADD = $(IMG_LIBS)
 
 noinst_PROGRAMS = showimage
 
