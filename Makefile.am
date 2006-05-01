@@ -26,6 +26,7 @@ EXTRA_DIST =			\
 	VisualC.zip		\
 	Xcode.tar.gz		\
 	MPWmake.sea.bin		\
+	Watcom-OS2.zip		\
 	IMG_xxx.c		\
 	SDL_image.spec		\
 	SDL_image.spec.in	\
