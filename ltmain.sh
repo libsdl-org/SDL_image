@@ -5008,7 +5008,7 @@ EOF
 EOF
 
             case $host_os in
-              mingw*)
+	      *cygwin* | *mingw* )
                 cat >> $cwrappersource <<EOF
   execv("$SHELL",(char const **)newargz);
 EOF
