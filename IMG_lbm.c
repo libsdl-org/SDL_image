@@ -446,15 +446,15 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 						}
 						if ( SDL_BYTEORDER == SDL_LIL_ENDIAN )
 						{
-							*ptr++ = finalcolor>>16;
-							*ptr++ = finalcolor>>8;
-							*ptr++ = finalcolor;
+							*ptr++ = (Uint8)(finalcolor>>16);
+							*ptr++ = (Uint8)(finalcolor>>8);
+							*ptr++ = (Uint8)(finalcolor);
 						}
 						else
 						{
-							*ptr++ = finalcolor;
-							*ptr++ = finalcolor>>8;
-							*ptr++ = finalcolor>>16;
+							*ptr++ = (Uint8)(finalcolor);
+							*ptr++ = (Uint8)(finalcolor>>8);
+							*ptr++ = (Uint8)(finalcolor>>16);
 						}
 
 						maskBit = maskBit>>1;

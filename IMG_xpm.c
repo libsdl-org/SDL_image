@@ -412,9 +412,9 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
 			memcpy(nextkey, line, cpp);
 			if(indexed) {
 				SDL_Color *c = im_colors + index;
-				c->r = rgb >> 16;
-				c->g = rgb >> 8;
-				c->b = rgb;
+				c->r = (Uint8)(rgb >> 16);
+				c->g = (Uint8)(rgb >> 8);
+				c->b = (Uint8)(rgb);
 				pixel = index;
 			} else
 				pixel = rgb;
@@ -435,11 +435,11 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
 			/* optimization for some common cases */
 			if(cpp == 1)
 				for(x = 0; x < w; x++)
-					dst[x] = QUICK_COLORHASH(colors,
+					dst[x] = (Uint8)QUICK_COLORHASH(colors,
 								 line + x);
 			else
 				for(x = 0; x < w; x++)
-					dst[x] = get_colorhash(colors,
+					dst[x] = (Uint8)get_colorhash(colors,
 							       line + x * cpp,
 							       cpp);
 		} else {
