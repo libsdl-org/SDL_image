@@ -71,6 +71,196 @@
 
 #define PNG_BYTES_TO_CHECK 4
 
+static struct {
+	int loaded;
+	void *handle;
+	png_infop (*png_create_info_struct) (png_structp png_ptr);
+	png_structp (*png_create_read_struct) (png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
+	void (*png_destroy_read_struct) (png_structpp png_ptr_ptr, png_infopp info_ptr_ptr, png_infopp end_info_ptr_ptr);
+	png_uint_32 (*png_get_IHDR) (png_structp png_ptr, png_infop info_ptr, png_uint_32 *width, png_uint_32 *height, int *bit_depth, int *color_type, int *interlace_method, int *compression_method, int *filter_method);
+	png_voidp (*png_get_io_ptr) (png_structp png_ptr);
+	png_uint_32 (*png_get_tRNS) (png_structp png_ptr, png_infop info_ptr, png_bytep *trans, int *num_trans, png_color_16p *trans_values);
+	png_uint_32 (*png_get_valid) (png_structp png_ptr, png_infop info_ptr, png_uint_32 flag);
+	void (*png_read_image) (png_structp png_ptr, png_bytepp image);
+	void (*png_read_info) (png_structp png_ptr, png_infop info_ptr);
+	void (*png_read_update_info) (png_structp png_ptr, png_infop info_ptr);
+	void (*png_set_expand) (png_structp png_ptr);
+	void (*png_set_gray_to_rgb) (png_structp png_ptr);
+	void (*png_set_packing) (png_structp png_ptr);
+	void (*png_set_read_fn) (png_structp png_ptr, png_voidp io_ptr, png_rw_ptr read_data_fn);
+	void (*png_set_strip_16) (png_structp png_ptr);
+	int (*png_sig_cmp) (png_bytep sig, png_size_t start, png_size_t num_to_check);
+} lib;
+
+#ifdef LOAD_PNG_DYNAMIC
+int IMG_InitPNG()
+{
+	if ( lib.loaded == 0 ) {
+		lib.handle = SDL_LoadObject(LOAD_PNG_DYNAMIC);
+		if ( lib.handle == NULL ) {
+			return -1;
+		}
+		lib.png_create_info_struct =
+			(png_infop (*) (png_structp))
+			SDL_LoadFunction(lib.handle, "png_create_info_struct");
+		if ( lib.png_create_info_struct == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.png_create_read_struct =
+			(png_structp (*) (png_const_charp, png_voidp, png_error_ptr, png_error_ptr))
+			SDL_LoadFunction(lib.handle, "png_create_read_struct");
+		if ( lib.png_create_read_struct == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.png_destroy_read_struct =
+			(void (*) (png_structpp, png_infopp, png_infopp))
+			SDL_LoadFunction(lib.handle, "png_destroy_read_struct");
+		if ( lib.png_destroy_read_struct == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.png_get_IHDR =
+			(png_uint_32 (*) (png_structp, png_infop, png_uint_32 *, png_uint_32 *, int *, int *, int *, int *, int *))
+			SDL_LoadFunction(lib.handle, "png_get_IHDR");
+		if ( lib.png_get_IHDR == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.png_get_io_ptr =
+			(png_voidp (*) (png_structp))
+			SDL_LoadFunction(lib.handle, "png_get_io_ptr");
+		if ( lib.png_get_io_ptr == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.png_get_tRNS =
+			(png_uint_32 (*) (png_structp, png_infop, png_bytep *, int *, png_color_16p *))
+			SDL_LoadFunction(lib.handle, "png_get_tRNS");
+		if ( lib.png_get_tRNS == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.png_get_valid =
+			(png_uint_32 (*) (png_structp, png_infop, png_uint_32))
+			SDL_LoadFunction(lib.handle, "png_get_valid");
+		if ( lib.png_get_valid == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.png_read_image =
+			(void (*) (png_structp, png_bytepp))
+			SDL_LoadFunction(lib.handle, "png_read_image");
+		if ( lib.png_read_image == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.png_read_info =
+			(void (*) (png_structp, png_infop))
+			SDL_LoadFunction(lib.handle, "png_read_info");
+		if ( lib.png_read_info == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.png_read_update_info =
+			(void (*) (png_structp, png_infop))
+			SDL_LoadFunction(lib.handle, "png_read_update_info");
+		if ( lib.png_read_update_info == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.png_set_expand =
+			(void (*) (png_structp))
+			SDL_LoadFunction(lib.handle, "png_set_expand");
+		if ( lib.png_set_expand == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.png_set_gray_to_rgb =
+			(void (*) (png_structp))
+			SDL_LoadFunction(lib.handle, "png_set_gray_to_rgb");
+		if ( lib.png_set_gray_to_rgb == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.png_set_packing =
+			(void (*) (png_structp))
+			SDL_LoadFunction(lib.handle, "png_set_packing");
+		if ( lib.png_set_packing == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.png_set_read_fn =
+			(void (*) (png_structp, png_voidp, png_rw_ptr))
+			SDL_LoadFunction(lib.handle, "png_set_read_fn");
+		if ( lib.png_set_read_fn == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.png_set_strip_16 =
+			(void (*) (png_structp))
+			SDL_LoadFunction(lib.handle, "png_set_strip_16");
+		if ( lib.png_set_strip_16 == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.png_sig_cmp =
+			(int (*) (png_bytep, png_size_t, png_size_t))
+			SDL_LoadFunction(lib.handle, "png_sig_cmp");
+		if ( lib.png_sig_cmp == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+	}
+	++lib.loaded;
+
+	return 0;
+}
+void IMG_QuitPNG()
+{
+	if ( lib.loaded == 0 ) {
+		return;
+	}
+	if ( lib.loaded == 1 ) {
+		SDL_UnloadObject(lib.handle);
+	}
+	--lib.loaded;
+}
+#else
+int IMG_InitPNG()
+{
+	if ( lib.loaded == 0 ) {
+		lib.png_create_info_struct = png_create_info_struct;
+		lib.png_create_read_struct = png_create_read_struct;
+		lib.png_destroy_read_struct = png_destroy_read_struct;
+		lib.png_get_IHDR = png_get_IHDR;
+		lib.png_get_io_ptr = png_get_io_ptr;
+		lib.png_get_tRNS = png_get_tRNS;
+		lib.png_get_valid = png_get_valid;
+		lib.png_read_image = png_read_image;
+		lib.png_read_info = png_read_info;
+		lib.png_read_update_info = png_read_update_info;
+		lib.png_set_expand = png_set_expand;
+		lib.png_set_gray_to_rgb = png_set_gray_to_rgb;
+		lib.png_set_packing = png_set_packing;
+		lib.png_set_read_fn = png_set_read_fn;
+		lib.png_set_strip_16 = png_set_strip_16;
+		lib.png_sig_cmp = png_sig_cmp;
+	}
+	++lib.loaded;
+}
+void IMG_QuitPNG()
+{
+	if ( lib.loaded == 0 ) {
+		return;
+	}
+	if ( lib.loaded == 1 ) {
+	}
+	--lib.loaded;
+}
+#endif /* LOAD_PNG_DYNAMIC */
+
 /* See if an image is contained in a data source */
 int IMG_isPNG(SDL_RWops *src)
 {
@@ -78,12 +268,16 @@ int IMG_isPNG(SDL_RWops *src)
 	int is_PNG;
 	unsigned char buf[PNG_BYTES_TO_CHECK];
 
+	if ( IMG_InitPNG() < 0 ) {
+		return 0;
+	}
 	start = SDL_RWtell(src);
 	is_PNG = 0;
 	if ( SDL_RWread(src, buf, 1, PNG_BYTES_TO_CHECK) == PNG_BYTES_TO_CHECK ) {
-		is_PNG = (png_sig_cmp(buf, (png_size_t)0, PNG_BYTES_TO_CHECK) == 0);
+		is_PNG = (lib.png_sig_cmp(buf, (png_size_t)0, PNG_BYTES_TO_CHECK) == 0);
 	}
 	SDL_RWseek(src, start, SEEK_SET);
+	IMG_QuitPNG();
 	return(is_PNG);
 }
 
@@ -92,7 +286,7 @@ static void png_read_data(png_structp ctx, png_bytep area, png_size_t size)
 {
 	SDL_RWops *src;
 
-	src = (SDL_RWops *)png_get_io_ptr(ctx);
+	src = (SDL_RWops *)lib.png_get_io_ptr(ctx);
 	SDL_RWread(src, area, size, 1);
 }
 SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
@@ -120,12 +314,16 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	}
 	start = SDL_RWtell(src);
 
+	if ( IMG_InitPNG() < 0 ) {
+		return NULL;
+	}
+
 	/* Initialize the data we will clean up when we're done */
 	error = NULL;
 	png_ptr = NULL; info_ptr = NULL; row_pointers = NULL; surface = NULL;
 
 	/* Create the PNG loading context structure */
-	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
+	png_ptr = lib.png_create_read_struct(PNG_LIBPNG_VER_STRING,
 					  NULL,NULL,NULL);
 	if (png_ptr == NULL){
 		error = "Couldn't allocate memory for PNG file or incompatible PNG dll";
@@ -133,7 +331,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	}
 
 	 /* Allocate/initialize the memory for image information.  REQUIRED. */
-	info_ptr = png_create_info_struct(png_ptr);
+	info_ptr = lib.png_create_info_struct(png_ptr);
 	if (info_ptr == NULL) {
 		error = "Couldn't create image information for PNG file";
 		goto done;
@@ -149,32 +347,32 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	}
 
 	/* Set up the input control */
-	png_set_read_fn(png_ptr, src, png_read_data);
+	lib.png_set_read_fn(png_ptr, src, png_read_data);
 
 	/* Read PNG header info */
-	png_read_info(png_ptr, info_ptr);
-	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth,
+	lib.png_read_info(png_ptr, info_ptr);
+	lib.png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth,
 			&color_type, &interlace_type, NULL, NULL);
 
 	/* tell libpng to strip 16 bit/color files down to 8 bits/color */
-	png_set_strip_16(png_ptr) ;
+	lib.png_set_strip_16(png_ptr) ;
 
 	/* Extract multiple pixels with bit depths of 1, 2, and 4 from a single
 	 * byte into separate bytes (useful for paletted and grayscale images).
 	 */
-	png_set_packing(png_ptr);
+	lib.png_set_packing(png_ptr);
 
 	/* scale greyscale values to the range 0..255 */
 	if(color_type == PNG_COLOR_TYPE_GRAY)
-		png_set_expand(png_ptr);
+		lib.png_set_expand(png_ptr);
 
 	/* For images with a single "transparent colour", set colour key;
 	   if more than one index has transparency, or if partially transparent
 	   entries exist, use full alpha channel */
-	if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) {
+	if (lib.png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) {
 	        int num_trans;
 		Uint8 *trans;
-		png_get_tRNS(png_ptr, info_ptr, &trans, &num_trans,
+		lib.png_get_tRNS(png_ptr, info_ptr, &trans, &num_trans,
 			     &transv);
 		if(color_type == PNG_COLOR_TYPE_PALETTE) {
 		    /* Check if all tRNS entries are opaque except one */
@@ -191,18 +389,18 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 			ckey = t;
 		    } else {
 			/* more than one transparent index, or translucency */
-			png_set_expand(png_ptr);
+			lib.png_set_expand(png_ptr);
 		    }
 		} else
 		    ckey = 0; /* actual value will be set later */
 	}
 
 	if ( color_type == PNG_COLOR_TYPE_GRAY_ALPHA )
-		png_set_gray_to_rgb(png_ptr);
+		lib.png_set_gray_to_rgb(png_ptr);
 
-	png_read_update_info(png_ptr, info_ptr);
+	lib.png_read_update_info(png_ptr, info_ptr);
 
-	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth,
+	lib.png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth,
 			&color_type, &interlace_type, NULL, NULL);
 
 	/* Allocate the SDL surface to hold the image */
@@ -250,14 +448,14 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	}
 
 	/* Read the entire image in one go */
-	png_read_image(png_ptr, row_pointers);
+	lib.png_read_image(png_ptr, row_pointers);
 
 	/* and we're done!  (png_read_end() can be omitted if no processing of
 	 * post-IDAT text/time/etc. is desired)
 	 * In some cases it can't read PNG's created by some popular programs (ACDSEE),
 	 * we do not want to process comments, so we omit png_read_end
 
-	png_read_end(png_ptr, info_ptr);
+	lib.png_read_end(png_ptr, info_ptr);
 	*/
 
 	/* Load the palette, if any */
@@ -282,7 +480,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 
 done:	/* Clean up and return */
 	if ( png_ptr ) {
-		png_destroy_read_struct(&png_ptr,
+		lib.png_destroy_read_struct(&png_ptr,
 		                        info_ptr ? &info_ptr : (png_infopp)0,
 								(png_infopp)0);
 	}
@@ -295,7 +493,10 @@ done:	/* Clean up and return */
 			SDL_FreeSurface(surface);
 			surface = NULL;
 		}
+		IMG_QuitPNG();
 		IMG_SetError(error);
+	} else {
+		IMG_QuitPNG();
 	}
 	return(surface); 
 }

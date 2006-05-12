@@ -38,6 +38,133 @@
 /* Define this for quicker (but less perfect) JPEG identification */
 #define FAST_IS_JPEG
 
+static struct {
+	int loaded;
+	void *handle;
+	void (*jpeg_calc_output_dimensions) (j_decompress_ptr cinfo);
+	void (*jpeg_CreateDecompress) (j_decompress_ptr cinfo, int version, size_t structsize);
+	void (*jpeg_destroy_decompress) (j_decompress_ptr cinfo);
+	boolean (*jpeg_finish_decompress) (j_decompress_ptr cinfo);
+	int (*jpeg_read_header) (j_decompress_ptr cinfo, boolean require_image);
+	JDIMENSION (*jpeg_read_scanlines) (j_decompress_ptr cinfo, JSAMPARRAY scanlines, JDIMENSION max_lines);
+	boolean (*jpeg_resync_to_restart) (j_decompress_ptr cinfo, int desired);
+	boolean (*jpeg_start_decompress) (j_decompress_ptr cinfo);
+	struct jpeg_error_mgr * (*jpeg_std_error) (struct jpeg_error_mgr * err);
+} lib;
+
+#ifdef LOAD_JPG_DYNAMIC
+int IMG_InitJPG()
+{
+	if ( lib.loaded == 0 ) {
+		lib.handle = SDL_LoadObject(LOAD_JPG_DYNAMIC);
+		if ( lib.handle == NULL ) {
+			return -1;
+		}
+		lib.jpeg_calc_output_dimensions =
+			(void (*) (j_decompress_ptr))
+			SDL_LoadFunction(lib.handle, "jpeg_calc_output_dimensions");
+		if ( lib.jpeg_calc_output_dimensions == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.jpeg_CreateDecompress = 
+			(void (*) (j_decompress_ptr, int, size_t))
+			SDL_LoadFunction(lib.handle, "jpeg_CreateDecompress");
+		if ( lib.jpeg_CreateDecompress == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.jpeg_destroy_decompress = 
+			(void (*) (j_decompress_ptr))
+			SDL_LoadFunction(lib.handle, "jpeg_destroy_decompress");
+		if ( lib.jpeg_destroy_decompress == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.jpeg_finish_decompress = 
+			(boolean (*) (j_decompress_ptr))
+			SDL_LoadFunction(lib.handle, "jpeg_finish_decompress");
+		if ( lib.jpeg_finish_decompress == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.jpeg_read_header = 
+			(int (*) (j_decompress_ptr, boolean))
+			SDL_LoadFunction(lib.handle, "jpeg_read_header");
+		if ( lib.jpeg_read_header == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.jpeg_read_scanlines = 
+			(JDIMENSION (*) (j_decompress_ptr, JSAMPARRAY, JDIMENSION))
+			SDL_LoadFunction(lib.handle, "jpeg_read_scanlines");
+		if ( lib.jpeg_read_scanlines == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.jpeg_resync_to_restart = 
+			(boolean (*) (j_decompress_ptr, int))
+			SDL_LoadFunction(lib.handle, "jpeg_resync_to_restart");
+		if ( lib.jpeg_resync_to_restart == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.jpeg_start_decompress = 
+			(boolean (*) (j_decompress_ptr))
+			SDL_LoadFunction(lib.handle, "jpeg_start_decompress");
+		if ( lib.jpeg_start_decompress == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.jpeg_std_error = 
+			(struct jpeg_error_mgr * (*) (struct jpeg_error_mgr *))
+			SDL_LoadFunction(lib.handle, "jpeg_std_error");
+		if ( lib.jpeg_std_error == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+	}
+	++lib.loaded;
+
+	return 0;
+}
+void IMG_QuitJPG()
+{
+	if ( lib.loaded == 0 ) {
+		return;
+	}
+	if ( lib.loaded == 1 ) {
+		SDL_UnloadObject(lib.handle);
+	}
+	--lib.loaded;
+}
+#else
+int IMG_InitJPG()
+{
+	if ( lib.loaded == 0 ) {
+		lib.jpeg_calc_output_dimensions = jpeg_calc_output_dimensions;
+		lib.jpeg_CreateDecompress = jpeg_CreateDecompress;
+		lib.jpeg_destroy_decompress = jpeg_destroy_decompress;
+		lib.jpeg_finish_decompress = jpeg_finish_decompress;
+		lib.jpeg_read_header = jpeg_read_header;
+		lib.jpeg_read_scanlines = jpeg_read_scanlines;
+		lib.jpeg_resync_to_restart = jpeg_resync_to_restart;
+		lib.jpeg_start_decompress = jpeg_start_decompress;
+		lib.jpeg_std_error = jpeg_std_error;
+	}
+	++lib.loaded;
+}
+void IMG_QuitJPG()
+{
+	if ( lib.loaded == 0 ) {
+		return;
+	}
+	if ( lib.loaded == 1 ) {
+	}
+	--lib.loaded;
+}
+#endif /* LOAD_JPG_DYNAMIC */
+
 /* See if an image is contained in a data source */
 int IMG_isJPG(SDL_RWops *src)
 {
@@ -210,7 +337,7 @@ static void jpeg_SDL_RW_src (j_decompress_ptr cinfo, SDL_RWops *ctx)
   src->pub.init_source = init_source;
   src->pub.fill_input_buffer = fill_input_buffer;
   src->pub.skip_input_data = skip_input_data;
-  src->pub.resync_to_restart = jpeg_resync_to_restart; /* use default method */
+  src->pub.resync_to_restart = lib.jpeg_resync_to_restart; /* use default method */
   src->pub.term_source = term_source;
   src->ctx = ctx;
   src->pub.bytes_in_buffer = 0; /* forces fill_input_buffer on first read */
@@ -248,30 +375,35 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 	}
 	start = SDL_RWtell(src);
 
+	if ( IMG_InitJPG() < 0 ) {
+		return NULL;
+	}
+
 	/* Create a decompression structure and load the JPEG header */
-	cinfo.err = jpeg_std_error(&jerr.errmgr);
+	cinfo.err = lib.jpeg_std_error(&jerr.errmgr);
 	jerr.errmgr.error_exit = my_error_exit;
 	jerr.errmgr.output_message = output_no_message;
 	if(setjmp(jerr.escape)) {
 		/* If we get here, libjpeg found an error */
-		jpeg_destroy_decompress(&cinfo);
+		lib.jpeg_destroy_decompress(&cinfo);
 		if ( surface != NULL ) {
 			SDL_FreeSurface(surface);
 		}
 		SDL_RWseek(src, start, SEEK_SET);
+		IMG_QuitJPG();
 		IMG_SetError("JPEG loading error");
 		return NULL;
 	}
 
-	jpeg_create_decompress(&cinfo);
+	lib.jpeg_create_decompress(&cinfo);
 	jpeg_SDL_RW_src(&cinfo, src);
-	jpeg_read_header(&cinfo, TRUE);
+	lib.jpeg_read_header(&cinfo, TRUE);
 
 	if(cinfo.num_components == 4) {
 		/* Set 32-bit Raw output */
 		cinfo.out_color_space = JCS_CMYK;
 		cinfo.quantize_colors = FALSE;
-		jpeg_calc_output_dimensions(&cinfo);
+		lib.jpeg_calc_output_dimensions(&cinfo);
 
 		/* Allocate an output surface to hold the image */
 		surface = SDL_AllocSurface(SDL_SWSURFACE,
@@ -291,7 +423,7 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 		cinfo.dct_method = JDCT_FASTEST;
 		cinfo.do_fancy_upsampling = FALSE;
 #endif
-		jpeg_calc_output_dimensions(&cinfo);
+		lib.jpeg_calc_output_dimensions(&cinfo);
 
 		/* Allocate an output surface to hold the image */
 		surface = SDL_AllocSurface(SDL_SWSURFACE,
@@ -305,21 +437,24 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 	}
 
 	if ( surface == NULL ) {
-		jpeg_destroy_decompress(&cinfo);
+		lib.jpeg_destroy_decompress(&cinfo);
 		SDL_RWseek(src, start, SEEK_SET);
+		IMG_QuitJPG();
 		IMG_SetError("Out of memory");
 		return NULL;
 	}
 
 	/* Decompress the image */
-	jpeg_start_decompress(&cinfo);
+	lib.jpeg_start_decompress(&cinfo);
 	while ( cinfo.output_scanline < cinfo.output_height ) {
 		rowptr[0] = (JSAMPROW)(Uint8 *)surface->pixels +
 		                    cinfo.output_scanline * surface->pitch;
-		jpeg_read_scanlines(&cinfo, rowptr, (JDIMENSION) 1);
+		lib.jpeg_read_scanlines(&cinfo, rowptr, (JDIMENSION) 1);
 	}
-	jpeg_finish_decompress(&cinfo);
-	jpeg_destroy_decompress(&cinfo);
+	lib.jpeg_finish_decompress(&cinfo);
+	lib.jpeg_destroy_decompress(&cinfo);
+
+	IMG_QuitJPG();
 
 	return(surface);
 }
