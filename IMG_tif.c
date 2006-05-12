@@ -204,7 +204,7 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 	TIFF* tiff;
 	SDL_Surface* surface = NULL;
 	Uint32 img_width, img_height;
-	Uint32 Rmask, Gmask, Bmask, Amask, mask;
+	Uint32 Rmask, Gmask, Bmask, Amask;
 	Uint32 x, y;
 	Uint32 half;
 

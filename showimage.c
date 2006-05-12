@@ -49,21 +49,21 @@ void draw_background(SDL_Surface *screen)
 	    Uint32 c = col[((x ^ y) >> 3) & 1];
 	    switch(bpp) {
 	    case 1:
-		dst[x] = c;
+		dst[x] = (Uint8)c;
 		break;
 	    case 2:
-		((Uint16 *)dst)[x] = c;
+		((Uint16 *)dst)[x] = (Uint16)c;
 		break;
 	    case 3:
-		if(SDL_BYTEORDER == SDL_LIL_ENDIAN) {
-		    dst[x * 3] = c;
-		    dst[x * 3 + 1] = c >> 8;
-		    dst[x * 3 + 2] = c >> 16;
-		} else {
-		    dst[x * 3] = c >> 16;
-		    dst[x * 3 + 1] = c >> 8;
-		    dst[x * 3 + 2] = c;
-		}
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+		dst[x * 3]     = (Uint8)(c);
+		dst[x * 3 + 1] = (Uint8)(c >> 8);
+		dst[x * 3 + 2] = (Uint8)(c >> 16);
+#else
+		dst[x * 3]     = (Uint8)(c >> 16);
+		dst[x * 3 + 1] = (Uint8)(c >> 8);
+		dst[x * 3 + 2] = (Uint8)(c);
+#endif
 		break;
 	    case 4:
 		((Uint32 *)dst)[x] = c;
