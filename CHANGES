@@ -1,4 +1,6 @@
 1.2.5:
+Sam Lantinga - Thu May 11 21:51:19 PDT 2006
+ * Added support for dynamically loading libjpeg, libpng, and libtiff.
 Sam Lantinga - Sun Apr 30 01:48:40 PDT 2006
  * Added gcc-fat.sh for generating Universal binaries on Mac OS X
  * Updated libtool support to version 1.5.22
