@@ -153,6 +153,8 @@ int IMG_InitJPG()
 		lib.jpeg_std_error = jpeg_std_error;
 	}
 	++lib.loaded;
+
+	return 0;
 }
 void IMG_QuitJPG()
 {

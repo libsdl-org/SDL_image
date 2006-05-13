@@ -109,6 +109,8 @@ int IMG_InitTIF()
 		lib.TIFFSetErrorHandler = TIFFSetErrorHandler;
 	}
 	++lib.loaded;
+
+	return 0;
 }
 void IMG_QuitTIF()
 {

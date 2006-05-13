@@ -249,6 +249,8 @@ int IMG_InitPNG()
 		lib.png_sig_cmp = png_sig_cmp;
 	}
 	++lib.loaded;
+
+	return 0;
 }
 void IMG_QuitPNG()
 {
