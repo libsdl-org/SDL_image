@@ -317,7 +317,8 @@ DoExtension(SDL_RWops *src, int label)
 	break;
     case 0xfe:			/* Comment Extension */
 	str = "Comment Extension";
-	while (GetDataBlock(src, (unsigned char *) buf) != 0);
+	while (GetDataBlock(src, (unsigned char *) buf) != 0)
+	    ;
 	return FALSE;
     case 0xf9:			/* Graphic Control Extension */
 	str = "Graphic Control Extension";
@@ -328,7 +329,8 @@ DoExtension(SDL_RWops *src, int label)
 	if ((buf[0] & 0x1) != 0)
 	    Gif89.transparent = buf[3];
 
-	while (GetDataBlock(src, (unsigned char *) buf) != 0);
+	while (GetDataBlock(src, (unsigned char *) buf) != 0)
+	    ;
 	return FALSE;
     default:
 	str = (char *)buf;
@@ -336,7 +338,8 @@ DoExtension(SDL_RWops *src, int label)
 	break;
     }
 
-    while (GetDataBlock(src, (unsigned char *) buf) != 0);
+    while (GetDataBlock(src, (unsigned char *) buf) != 0)
+	;
 
     return FALSE;
 }
@@ -466,7 +469,8 @@ LWZReadByte(SDL_RWops *src, int flag, int input_code_size)
 	    if (ZeroDataBlock)
 		return -2;
 
-	    while ((count = GetDataBlock(src, buf)) > 0);
+	    while ((count = GetDataBlock(src, buf)) > 0)
+		;
 
 	    if (count != 0) {
 		/*
@@ -533,7 +537,8 @@ ReadImage(SDL_RWops * src, int len, int height, int cmapSize,
     **	If this is an "uninteresting picture" ignore it.
      */
     if (ignore) {
-	while (LWZReadByte(src, FALSE, c) >= 0);
+	while (LWZReadByte(src, FALSE, c) >= 0)
+	    ;
 	return NULL;
     }
     image = ImageNewCmap(len, height, cmapSize);
