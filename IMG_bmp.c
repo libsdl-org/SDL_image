@@ -309,6 +309,12 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 	/* Load the palette, if any */
 	palette = (surface->format)->palette;
 	if ( palette ) {
+		if ( SDL_RWseek(src, fp_offset+14+biSize, SEEK_SET) < 0 ) {
+			SDL_Error(SDL_EFSEEK);
+			was_error = 1;
+			goto done;
+		}
+
 		/*
 		| guich: always use 1<<bpp b/c some bitmaps can bring wrong information
 		| for colorsUsed

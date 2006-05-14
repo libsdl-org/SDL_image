@@ -1,4 +1,6 @@
 1.2.5:
+Maurizio Monge - Sun May 14 13:57:32 PDT 2006
+ * Fixed loading BMP palettes at unusual offsets
 Sam Lantinga - Thu May 11 21:51:19 PDT 2006
  * Added support for dynamically loading libjpeg, libpng, and libtiff.
 Sam Lantinga - Sun Apr 30 01:48:40 PDT 2006
