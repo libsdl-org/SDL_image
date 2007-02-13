@@ -69,6 +69,8 @@ int IMG_isPCX(SDL_RWops *src)
 	const int PCX_RunLength_Encoding = 1;
 	struct PCXheader pcxh;
 
+	if ( !src )
+		return 0;
 	start = SDL_RWtell(src);
 	is_PCX = 0;
 	if ( SDL_RWread(src, &pcxh, sizeof(pcxh), 1) == 1 ) {

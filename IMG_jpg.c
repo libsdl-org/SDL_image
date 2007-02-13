@@ -179,6 +179,8 @@ int IMG_isJPG(SDL_RWops *src)
 	/* Blame me, not Sam, if this doesn't work right. */
 	/* And don't forget to report the problem to the the sdl list too! */
 
+	if ( !src )
+		return 0;
 	start = SDL_RWtell(src);
 	is_JPG = 0;
 	in_scan = 0;

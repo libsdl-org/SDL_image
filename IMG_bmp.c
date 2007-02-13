@@ -36,6 +36,8 @@ int IMG_isBMP(SDL_RWops *src)
 	int is_BMP;
 	char magic[2];
 
+	if ( !src )
+		return 0;
 	start = SDL_RWtell(src);
 	is_BMP = 0;
 	if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {

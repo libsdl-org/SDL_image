@@ -273,6 +273,8 @@ int IMG_isPNG(SDL_RWops *src)
 	if ( IMG_InitPNG() < 0 ) {
 		return 0;
 	}
+	if ( !src )
+		return 0;
 	start = SDL_RWtell(src);
 	is_PNG = 0;
 	if ( SDL_RWread(src, buf, 1, PNG_BYTES_TO_CHECK) == PNG_BYTES_TO_CHECK ) {
