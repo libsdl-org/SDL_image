@@ -44,6 +44,8 @@ int IMG_isPNM(SDL_RWops *src)
 	int is_PNM;
 	char magic[2];
 
+	if ( !src )
+		return 0;
 	start = SDL_RWtell(src);
 	is_PNM = 0;
 	if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {

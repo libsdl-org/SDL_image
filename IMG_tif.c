@@ -174,6 +174,8 @@ int IMG_isTIF(SDL_RWops* src)
 	if ( IMG_InitTIF() < 0 ) {
 		return 0;
 	}
+	if ( !src )
+		return 0;
 	start = SDL_RWtell(src);
 	is_TIF = 0;
 

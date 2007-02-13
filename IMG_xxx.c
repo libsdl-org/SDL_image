@@ -34,6 +34,8 @@ int IMG_isXXX(SDL_RWops *src)
 	int start;
 	int is_XXX;
 
+	if ( !src )
+		return 0;
 	start = SDL_RWtell(src);
 	is_XXX = 0;
 

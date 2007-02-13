@@ -89,6 +89,8 @@ int IMG_isXV(SDL_RWops *src)
 	int is_XV;
 	int w, h;
 
+	if ( !src )
+		return 0;
 	start = SDL_RWtell(src);
 	is_XV = 0;
 	if ( get_header(src, &w, &h) == 0 ) {

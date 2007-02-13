@@ -213,6 +213,8 @@ int IMG_isXCF(SDL_RWops *src)
 	int is_XCF;
 	char magic[14];
 
+	if ( !src )
+		return 0;
 	start = SDL_RWtell(src);
 	is_XCF = 0;
 	if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {

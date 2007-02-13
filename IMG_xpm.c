@@ -59,6 +59,8 @@ int IMG_isXPM(SDL_RWops *src)
 	int is_XPM;
 	char magic[9];
 
+	if ( !src )
+		return 0;
 	start = SDL_RWtell(src);
 	is_XPM = 0;
 	if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
@@ -326,7 +328,8 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
 	linebuf = NULL;
 	buflen = 0;
 
-	start = SDL_RWtell(src);
+	if ( src ) 
+		start = SDL_RWtell(src);
 
 	if(xpm)
 		xpmlines = &xpm;
@@ -453,7 +456,8 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
 
 done:
 	if(error) {
-		SDL_RWseek(src, start, SEEK_SET);
+		if ( src )
+			SDL_RWseek(src, start, SEEK_SET);
 		if ( image ) {
 			SDL_FreeSurface(image);
 			image = NULL;
