@@ -26,7 +26,7 @@ GCC_COMPILE_X86="gcc-4.0 -arch i386 -mmacosx-version-min=10.4 \
 -isystem /Developer/SDKs/MacOSX10.4u.sdk/usr/include"
 
 GCC_LINK_X86="\
--L/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.0 \
+-L/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1 \
 -Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk"
 
 # Output both PowerPC and Intel object files
