@@ -237,7 +237,7 @@ if test x$enable_xv = xyes; then
     AC_DEFINE([LOAD_XV])
 fi
 
-if test x$enable_tif = xyes; then
+if test x$enable_tif = xyes -a x$have_libtiff = xyes; then
     if test x$enable_tif_shared = xyes && test x$tif_lib != x; then
         echo "-- dynamic libtiff -> $tif_lib"
         AC_DEFINE_UNQUOTED(LOAD_TIF_DYNAMIC, "$tif_lib")
@@ -250,7 +250,7 @@ if test x$enable_tif = xyes; then
         IMG_LIBS="-ltiff -lz"
     fi
 fi
-if test x$enable_jpg = xyes; then
+if test x$enable_jpg = xyes -a x$have_libjpg = xyes; then
     if test x$enable_jpg_shared = xyes && test x$jpg_lib != x; then
         echo "-- dynamic libjpeg -> $jpg_lib"
         AC_DEFINE_UNQUOTED(LOAD_JPG_DYNAMIC, "$jpg_lib")
@@ -258,7 +258,7 @@ if test x$enable_jpg = xyes; then
         IMG_LIBS="-ljpeg $IMG_LIBS"
     fi
 fi
-if test x$enable_png = xyes; then
+if test x$enable_png = xyes -a x$have_libpng = xyes; then
     if test x$enable_png_shared = xyes && test x$png_lib != x; then
         echo "-- dynamic libpng -> $png_lib"
         AC_DEFINE_UNQUOTED(LOAD_PNG_DYNAMIC, "$png_lib")
