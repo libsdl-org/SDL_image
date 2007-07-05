@@ -245,12 +245,11 @@ if test x$enable_tif = xyes -a x$have_libtiff = xyes; then
         if test x$have_libjpeg = xyes; then
             # Disable dynamic jpeg since we're linking it explicitly
             jpg_lib=''
-            IMG_LIBS="-ljpeg $IMG_LIBS"
         fi
-        IMG_LIBS="-ltiff -lz"
+        IMG_LIBS="-ltiff -lz $IMG_LIBS"
     fi
 fi
-if test x$enable_jpg = xyes -a x$have_libjpg = xyes; then
+if test x$enable_jpg = xyes -a x$have_libjpeg = xyes; then
     if test x$enable_jpg_shared = xyes && test x$jpg_lib != x; then
         echo "-- dynamic libjpeg -> $jpg_lib"
         AC_DEFINE_UNQUOTED(LOAD_JPG_DYNAMIC, "$jpg_lib")
