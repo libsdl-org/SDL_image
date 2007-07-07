@@ -62,7 +62,7 @@ case "$host" in
     *-*-cygwin* | *-*-mingw32*)
         if test "$build" != "$host"; then # cross-compiling
             # Default cross-compile location
-            ac_default_prefix=/usr/local/cross-tools/i386-mingw32msvc
+            ac_default_prefix=/usr/local/cross-tools/i386-mingw32
         else
             # Look for the location of the tools and install there
             if test "$BUILD_PREFIX" != ""; then
