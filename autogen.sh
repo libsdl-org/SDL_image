@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-aclocal
+aclocal -I acinclude
 automake --foreign --include-deps --add-missing --copy
 autoconf
 
