@@ -233,8 +233,9 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
 	if ( pbm )                         /* File format : 'Packed Bitmap' */
 	{
+printf("packed bitmap, %d, %d, width %d\n", bytesperline, bytesperline * 8, width);
 		bytesperline *= 8;
-		nbplanes = 1;
+		//nbplanes = 1;
 	}
 
 	if ( bmhd.mask & 1 ) ++nbplanes;   /* There is a mask ( 'stencil' ) */
@@ -262,6 +263,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 		int nbrcolorsfinal = 1 << nbplanes;
 		ptr = &colormap[0];
 
+printf("nbcolors = %d\n", nbcolors);
 		for ( i=0; i<nbcolors; i++ )
 		{
 			Image->format->palette->colors[i].r = *ptr++;
@@ -277,6 +279,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 		if ( (nbcolors==32 || flagEHB ) && (1<<bmhd.planes)==64 )
 		{
 			nbcolors = 64;
+printf("nbcolors updated to 64\n", nbcolors);
 			ptr = &colormap[0];
 			for ( i=32; i<64; i++ )
 			{
@@ -288,6 +291,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
 		/* If nbcolors < 2^nbplanes, repeat the colormap */
 		/* This happens when pictures have a stencil mask */
+printf("nbplanes %d, bmhd.planes %d\n", nbplanes, bmhd.planes);
 		if ( nbrcolorsfinal > (1<<bmhd.planes) ) {
 			nbrcolorsfinal = (1<<bmhd.planes);
 		}
@@ -297,7 +301,9 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 			Image->format->palette->colors[i].g = Image->format->palette->colors[i%nbcolors].g;
 			Image->format->palette->colors[i].b = Image->format->palette->colors[i%nbcolors].b;
 		}
-		Image->format->palette->ncolors = nbrcolorsfinal;
+printf("%d colors, %d colorsfinal\n", Image->format->palette->ncolors, nbrcolorsfinal);
+		if ( !pbm )
+			Image->format->palette->ncolors = nbrcolorsfinal;
 	}
 
 	/* Get the bitmap */
