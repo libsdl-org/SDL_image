@@ -57,11 +57,7 @@ else
 fi
 AC_CHECK_PROGS(WINDRES, [windres $hostaliaswindres $host_os-windres])
 
-dnl The alpha architecture needs special flags for binary portability
 case "$host" in
-    alpha*-*-linux*)
-        CFLAGS="$CFLAGS -mcpu=ev4 -Wa,-mall"
-        ;;
     *-*-beos*)
         ac_default_prefix=/boot/develop/tools/gnupro
         ;;
