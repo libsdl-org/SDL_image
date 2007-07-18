@@ -152,6 +152,16 @@ static int tiff_close(thandle_t fd)
 	return 0;
 }
 
+static int tiff_map(thandle_t fd, tdata_t* pbase, toff_t* psize)
+{
+	return (0);
+}
+
+static void tiff_unmap(thandle_t fd, tdata_t base, toff_t size)
+{
+	return;
+}
+
 static toff_t tiff_size(thandle_t fd)
 {
 	Uint32 save_pos;
@@ -168,37 +178,25 @@ int IMG_isTIF(SDL_RWops* src)
 {
 	int start;
 	int is_TIF;
-	TIFF* tiff;
-	TIFFErrorHandler prev_handler;
+	Uint8 magic[4];
 
-	if ( IMG_InitTIF() < 0 ) {
-		return 0;
-	}
 	if ( !src )
 		return 0;
 	start = SDL_RWtell(src);
 	is_TIF = 0;
-
-	/* Suppress output from libtiff */
-	prev_handler = lib.TIFFSetErrorHandler(NULL);
-	
-	/* Attempt to process the given file data */
-	/* turn off memory mapped access with the m flag */
-	tiff = lib.TIFFClientOpen("SDL_image", "rm", (thandle_t)src, 
-		tiff_read, tiff_write, tiff_seek, tiff_close, tiff_size, NULL, NULL);
-
-	/* Reset the default error handler, since it can be useful for info */
-	lib.TIFFSetErrorHandler(prev_handler);
-
-	/* If it's not a TIFF, then tiff will be NULL. */
-	if ( tiff ) {
-		is_TIF = 1;
-
-		/* Free up any dynamically allocated memory libtiff uses */
-		lib.TIFFClose(tiff);
+	if ( SDL_RWread(src, magic, 1, sizeof(magic)) == sizeof(magic) ) {
+		if ( (magic[0] == 'I' &&
+                      magic[1] == 'I' &&
+		      magic[2] == 0x2a &&
+                      magic[3] == 0x00) ||
+		     (magic[0] == 'M' &&
+                      magic[1] == 'M' &&
+		      magic[2] == 0x00 &&
+                      magic[3] == 0x2a) ) {
+			is_TIF = 1;
+		}
 	}
 	SDL_RWseek(src, start, SEEK_SET);
-	IMG_QuitTIF();
 	return(is_TIF);
 }
 
@@ -224,7 +222,7 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 
 	/* turn off memory mapped access with the m flag */
 	tiff = lib.TIFFClientOpen("SDL_image", "rm", (thandle_t)src, 
-		tiff_read, tiff_write, tiff_seek, tiff_close, tiff_size, NULL, NULL);
+		tiff_read, tiff_write, tiff_seek, tiff_close, tiff_size, tiff_map, tiff_unmap);
 	if(!tiff)
 		goto error;
 
