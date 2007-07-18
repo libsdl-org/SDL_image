@@ -23,6 +23,7 @@ libSDL_image_la_SOURCES =		\
 
 EXTRA_DIST =			\
 	CHANGES			\
+	version.rc		\
 	VisualC.zip		\
 	Xcode.tar.gz		\
 	MPWmake.sea.bin		\
@@ -33,11 +34,23 @@ EXTRA_DIST =			\
 	gcc-fat.sh		\
 	autogen.sh
 
+if USE_VERSION_RC
+libSDL_image_la_LDFLAGS = 	\
+	-no-undefined		\
+	-release $(LT_RELEASE)	\
+	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) -Wl,version.o
+libSDL_image_la_LIBADD = $(IMG_LIBS)
+libSDL_image_la_DEPENDENCIES = version.o
+else
 libSDL_image_la_LDFLAGS = 	\
 	-no-undefined		\
 	-release $(LT_RELEASE)	\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
 libSDL_image_la_LIBADD = $(IMG_LIBS)
+endif
+
+%.o : %.rc
+	$(WINDRES) $< $@
 
 noinst_PROGRAMS = showimage
 
