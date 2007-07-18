@@ -31,6 +31,12 @@ PNG support requires the PNG library: http://www.libpng.org/pub/png/libpng.html
     and the Zlib library: http://www.gzip.org/zlib/
 TIFF support requires the TIFF library: ftp://ftp.sgi.com/graphics/tiff/
 
+If you have these libraries installed in non-standard places, you can
+try adding those paths to the configure script, e.g.
+sh ./configure CPPFLAGS="-I/somewhere/include" LDFLAGS="-L/somewhere/lib"
+If this works, you may need to add /somewhere/lib to your LD_LIBRARY_PATH
+so shared library loading works correctly.
+
 This library is under the GNU Library General Public License, see the file
 "COPYING" for details.  Certain image loaders may be under a different
 license, see the individual image loader source files for details.

@@ -124,27 +124,37 @@ if test x$enable_png = xyes || test x$enable_tif = xyes; then
     CHECK_ZLIB()
 fi
 
+find_lib()
+{
+    gcc_lib_path=[`$CC -print-search-dirs 2>/dev/null | fgrep libraries | sed 's/[^=]*=\(.*\)/\1/' | sed 's/:/ /g'`]
+    env_lib_path=[`echo $LIBS $LDFLAGS | sed 's/-L[ ]*//g'`]
+    for path in $gcc_lib_path $env_lib_path /usr/lib /usr/local/lib; do
+        lib=[`ls -- $path/$1 2>/dev/null | sort -r | sed 's/.*\/\(.*\)/\1/; q'`]
+        if test x$lib != x; then
+            echo $lib
+            return
+        fi
+    done
+}
+
 if test x$enable_jpg = xyes || test x$enable_tif = xyes; then
-    AC_CHECK_LIB([jpeg], [jpeg_CreateDecompress], [have_libjpeg=yes])
-    if test x$have_libjpeg = xyes; then
+    AC_CHECK_HEADER([jpeglib.h], [have_jpg_hdr=yes])
+    AC_CHECK_LIB([jpeg], [jpeg_CreateDecompress], [have_jpg_lib=yes])
+    if test x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; then
         if test x$enable_jpg = xyes; then
-            AC_DEFINE(LOAD_JPG)
+            AC_DEFINE([LOAD_JPG])
         fi
         LIBS="-ljpeg $LIBS"
 
         case "$host" in
-            *-*-darwin*) # FIXME when Mac OS X ships with libjpeg
-                jpg_lib=''
+            *-*-darwin*)
+                jpg_lib=[`find_lib libjpeg.dylib`]
                 ;;
             *-*-cygwin* | *-*-mingw32*)
-                jpg_lib='jpeg.dll'
+		jpg_lib=[`find_lib "jpeg*dll"`]
                 ;;
             *)
-                for path in /usr/lib /usr/local/lib; do
-                    if test x$jpg_lib = x; then
-                        jpg_lib=[`ls -- $path/libjpeg.so.[0-9][0-9] 2>/dev/null | sort -r | sed 's/.*\/\(.*\)/\1/; q'`]
-                    fi
-                done
+		jpg_lib=[`find_lib "libjpeg.so.[0-9]*"`]
                 ;;
         esac
     elif test x$enable_jpg = xyes; then
@@ -154,23 +164,20 @@ if test x$enable_jpg = xyes || test x$enable_tif = xyes; then
 fi
 
 if test x$enable_png = xyes; then
-    AC_CHECK_LIB([png], [png_create_read_struct], [have_libpng=yes])
-    if test x$have_libpng = xyes; then
+    AC_CHECK_HEADER([png.h], [have_png_hdr=yes])
+    AC_CHECK_LIB([png], [png_create_read_struct], [have_png_lib=yes])
+    if test x$have_png_hdr = xyes -a x$have_png_lib = xyes; then
         AC_DEFINE([LOAD_PNG])
 
         case "$host" in
-            *-*-darwin*) # FIXME when Mac OS X ships with libpng
-                png_lib=''
+            *-*-darwin*)
+                png_lib=[`find_lib libpng.dylib`]
                 ;;
             *-*-cygwin* | *-*-mingw32*)
-                png_lib='libpng13.dll'
+		png_lib=[`find_lib "png*dll"`]
                 ;;
             *)
-                for path in /usr/lib /usr/local/lib; do
-                    if test x$png_lib = x; then
-                        png_lib=[`ls -- $path/libpng.so.[0-9] 2>/dev/null | sort -r | sed 's/.*\/\(.*\)/\1/; q'`]
-                    fi
-                done
+		png_lib=[`find_lib "libpng.so.[0-9]*"`]
                 ;;
         esac
     else
@@ -180,23 +187,20 @@ if test x$enable_png = xyes; then
 fi
 
 if test x$enable_tif = xyes; then
-    AC_CHECK_LIB([tiff], [TIFFClientOpen], [have_libtiff=yes])
-    if test x$have_libtiff = xyes; then
+    AC_CHECK_HEADER([tiffio.h], [have_tif_hdr=yes])
+    AC_CHECK_LIB([tiff], [TIFFClientOpen], [have_tif_lib=yes])
+    if test x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; then
         AC_DEFINE([LOAD_TIF])
 
         case "$host" in
-            *-*-darwin*) # FIXME when Mac OS X ships with libtiff
-                tif_lib=''
+            *-*-darwin*)
+                tif_lib=[`find_lib libtiff.dylib`]
                 ;;
             *-*-cygwin* | *-*-mingw32*)
-                tif_lib='libtiff.dll'
+		tif_lib=[`find_lib "tiff*dll"`]
                 ;;
             *)
-                for path in /usr/lib /usr/local/lib; do
-                    if test x$tif_lib = x; then
-                        tif_lib=[`ls -- $path/libtiff.so.[0-9] 2>/dev/null | sort -r | sed 's/.*\/\(.*\)/\1/; q'`]
-                    fi
-                done
+		tif_lib=[`find_lib "libtiff.so.[0-9]*"`]
                 ;;
         esac
     else
@@ -241,7 +245,7 @@ if test x$enable_xv = xyes; then
     AC_DEFINE([LOAD_XV])
 fi
 
-if test x$enable_tif = xyes -a x$have_libtiff = xyes; then
+if test x$enable_tif = xyes -a x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; then
     if test x$enable_tif_shared = xyes && test x$tif_lib != x; then
         echo "-- dynamic libtiff -> $tif_lib"
         AC_DEFINE_UNQUOTED(LOAD_TIF_DYNAMIC, "$tif_lib")
@@ -253,7 +257,7 @@ if test x$enable_tif = xyes -a x$have_libtiff = xyes; then
         IMG_LIBS="-ltiff -lz $IMG_LIBS"
     fi
 fi
-if test x$enable_jpg = xyes -a x$have_libjpeg = xyes; then
+if test x$enable_jpg = xyes -a x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; then
     if test x$enable_jpg_shared = xyes && test x$jpg_lib != x; then
         echo "-- dynamic libjpeg -> $jpg_lib"
         AC_DEFINE_UNQUOTED(LOAD_JPG_DYNAMIC, "$jpg_lib")
@@ -261,7 +265,7 @@ if test x$enable_jpg = xyes -a x$have_libjpeg = xyes; then
         IMG_LIBS="-ljpeg $IMG_LIBS"
     fi
 fi
-if test x$enable_png = xyes -a x$have_libpng = xyes; then
+if test x$enable_png = xyes -a x$have_png_hdr = xyes -a x$have_png_lib = xyes; then
     if test x$enable_png_shared = xyes && test x$png_lib != x; then
         echo "-- dynamic libpng -> $png_lib"
         AC_DEFINE_UNQUOTED(LOAD_PNG_DYNAMIC, "$png_lib")
@@ -272,8 +276,8 @@ fi
 
 LIBS="$saved_LIBS"
 
-AC_SUBST(WINDRES)
-AC_SUBST(IMG_LIBS)
+AC_SUBST([WINDRES])
+AC_SUBST([IMG_LIBS])
 
 # Finally create all the generated files
 AC_OUTPUT([
