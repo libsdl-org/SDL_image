@@ -46,10 +46,16 @@ dnl Check for tools
 
 AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
-AC_PROG_MAKE_SET
 AC_PROG_CC
 AC_C_INLINE
 AC_PROG_INSTALL
+AC_PROG_MAKE_SET
+if test -z "$host_alias"; then
+    hostaliaswindres=
+else
+    hostaliaswindres="$host_alias-windres"
+fi
+AC_CHECK_PROGS(WINDRES, [windres $hostaliaswindres $host_os-windres])
 
 dnl The alpha architecture needs special flags for binary portability
 case "$host" in
@@ -69,8 +75,12 @@ case "$host" in
                 ac_default_prefix=$BUILD_PREFIX
             fi
         fi
+        if test x$WINDRES != x; then
+            use_version_rc=true
+        fi
         ;;
 esac
+AM_CONDITIONAL(USE_VERSION_RC, test x$use_version_rc = xtrue)
 
 dnl Check for SDL
 SDL_VERSION=1.2.10
@@ -266,7 +276,8 @@ fi
 
 LIBS="$saved_LIBS"
 
-AC_SUBST([IMG_LIBS])
+AC_SUBST(WINDRES)
+AC_SUBST(IMG_LIBS)
 
 # Finally create all the generated files
 AC_OUTPUT([
