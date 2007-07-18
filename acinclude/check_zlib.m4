@@ -119,7 +119,7 @@ then
                 LDFLAGS="$ZLIB_OLD_LDFLAGS"
                 CPPFLAGS="$ZLIB_OLD_CPPFLAGS"
                 AC_MSG_RESULT(failed)
-                AC_MSG_ERROR(either specify a valid zlib installation with --with-zlib=DIR or disable zlib usage with --without-zlib)
+                AC_MSG_WARN(either specify a valid zlib installation with --with-zlib=DIR or disable zlib usage with --without-zlib)
         fi
 fi
 
