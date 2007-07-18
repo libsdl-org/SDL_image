@@ -1,4 +1,9 @@
 1.2.6:
+Sam lantinga - Wed Jul 18 00:30:32 PDT 2007
+ * Improved detection of libjpeg, libpng, and libtiff at configure time
+ * PNG and TIFF images are correctly identified even if dynamic libraries
+   to load them aren't available.
+ * Fixed loading of TIFF images using libtiff 3.6
 Sam Lantinga - Thu Jul 5 07:52:35 2007
  * Fixed static linking with libjpeg
 Michael Koch - Tue Feb 13 10:09:17 2007
