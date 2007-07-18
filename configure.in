@@ -151,10 +151,13 @@ if test x$enable_jpg = xyes || test x$enable_tif = xyes; then
                 jpg_lib=[`find_lib libjpeg*.dylib`]
                 ;;
             *-*-cygwin* | *-*-mingw32*)
-		jpg_lib=[`find_lib "jpeg*dll"`]
+                jpg_lib=[`find_lib "jpeg*dll"`]
                 ;;
             *)
-		jpg_lib=[`find_lib "libjpeg.so.[0-9]*"`]
+                jpg_lib=[`find_lib "libjpeg.so.[0-9]"`]
+                if test x$jpg_lib = x; then
+                    jpg_lib=[`find_lib "libjpeg.so.[0-9]*"`]
+                fi
                 ;;
         esac
     elif test x$enable_jpg = xyes; then
@@ -174,10 +177,13 @@ if test x$enable_png = xyes; then
                 png_lib=[`find_lib libpng*.dylib`]
                 ;;
             *-*-cygwin* | *-*-mingw32*)
-		png_lib=[`find_lib "png*dll"`]
+                png_lib=[`find_lib "png*dll"`]
                 ;;
             *)
-		png_lib=[`find_lib "libpng.so.[0-9]*"`]
+                png_lib=[`find_lib "libpng.so.[0-9]"`]
+                if test x$png_lib = x; then
+                    png_lib=[`find_lib "libpng.so.[0-9]*"`]
+                fi
                 ;;
         esac
     else
@@ -197,10 +203,13 @@ if test x$enable_tif = xyes; then
                 tif_lib=[`find_lib libtiff*.dylib`]
                 ;;
             *-*-cygwin* | *-*-mingw32*)
-		tif_lib=[`find_lib "tiff*dll"`]
+                tif_lib=[`find_lib "tiff*dll"`]
                 ;;
             *)
-		tif_lib=[`find_lib "libtiff.so.[0-9]*"`]
+                tif_lib=[`find_lib "libtiff.so.[0-9]"`]
+                if test x$tif_lib = x; then
+                    tif_lib=[`find_lib "libtiff.so.[0-9]*"`]
+                fi
                 ;;
         esac
     else
