@@ -297,7 +297,8 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 			Image->format->palette->colors[i].g = Image->format->palette->colors[i%nbcolors].g;
 			Image->format->palette->colors[i].b = Image->format->palette->colors[i%nbcolors].b;
 		}
-		Image->format->palette->ncolors = nbrcolorsfinal;
+		if ( !pbm )
+			Image->format->palette->ncolors = nbrcolorsfinal;
 	}
 
 	/* Get the bitmap */
