@@ -120,15 +120,12 @@ AC_ARG_ENABLE([xpm], [AC_HELP_STRING([--enable-xpm], [support loading XPM images
 AC_ARG_ENABLE([xv], [AC_HELP_STRING([--enable-xv], [support loading XV images [default=yes]])],
  [], [enable_xv=yes])
 
-if test x$enable_png = xyes || test x$enable_tif = xyes; then
-    CHECK_ZLIB()
-fi
-
 find_lib()
 {
-    gcc_lib_path=[`$CC -print-search-dirs 2>/dev/null | fgrep libraries | sed 's/[^=]*=\(.*\)/\1/' | sed 's/:/ /g'`]
+    gcc_bin_path=[`$CC -print-search-dirs 2>/dev/null | fgrep programs: | sed 's/[^=]*=\(.*\)/\1/' | sed 's/:/ /g'`]
+    gcc_lib_path=[`$CC -print-search-dirs 2>/dev/null | fgrep libraries: | sed 's/[^=]*=\(.*\)/\1/' | sed 's/:/ /g'`]
     env_lib_path=[`echo $LIBS $LDFLAGS | sed 's/-L[ ]*//g'`]
-    for path in $gcc_lib_path $env_lib_path /usr/lib /usr/local/lib; do
+    for path in $gcc_bin_path $gcc_lib_path $env_lib_path /usr/lib /usr/local/lib; do
         lib=[`ls -- $path/$1 2>/dev/null | sort -r | sed 's/.*\/\(.*\)/\1/; q'`]
         if test x$lib != x; then
             echo $lib
@@ -151,7 +148,7 @@ if test x$enable_jpg = xyes || test x$enable_tif = xyes; then
                 jpg_lib=[`find_lib libjpeg*.dylib`]
                 ;;
             *-*-cygwin* | *-*-mingw32*)
-                jpg_lib=[`find_lib "jpeg*dll"`]
+                jpg_lib=[`find_lib "jpeg.dll"`]
                 ;;
             *)
                 jpg_lib=[`find_lib "libjpeg.so.[0-9]"`]
@@ -177,7 +174,7 @@ if test x$enable_png = xyes; then
                 png_lib=[`find_lib libpng*.dylib`]
                 ;;
             *-*-cygwin* | *-*-mingw32*)
-                png_lib=[`find_lib "png*dll"`]
+                png_lib=[`find_lib "libpng*.dll"`]
                 ;;
             *)
                 png_lib=[`find_lib "libpng.so.[0-9]"`]
@@ -203,7 +200,7 @@ if test x$enable_tif = xyes; then
                 tif_lib=[`find_lib libtiff*.dylib`]
                 ;;
             *-*-cygwin* | *-*-mingw32*)
-                tif_lib=[`find_lib "tiff*dll"`]
+                tif_lib=[`find_lib "libtiff-*.dll"`]
                 ;;
             *)
                 tif_lib=[`find_lib "libtiff.so.[0-9]"`]
