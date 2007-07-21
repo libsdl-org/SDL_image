@@ -61,5 +61,5 @@ $(PACKAGE)-$(VERSION).tar.gz: distcheck
 
 # Rule to build RPM distribution package
 rpm: $(PACKAGE)-$(VERSION).tar.gz
-	rpm -ta $(PACKAGE)-$(VERSION).tar.gz
+	rpmbuild -ta $(PACKAGE)-$(VERSION).tar.gz
 
