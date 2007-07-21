@@ -153,6 +153,9 @@ if test x$enable_jpg = xyes || test x$enable_tif = xyes; then
             *)
                 jpg_lib=[`find_lib "libjpeg.so.[0-9]"`]
                 if test x$jpg_lib = x; then
+                    jpg_lib=[`find_lib "libjpeg.so.[0-9][0-9]"`]
+                fi
+                if test x$jpg_lib = x; then
                     jpg_lib=[`find_lib "libjpeg.so.[0-9]*"`]
                 fi
                 ;;
