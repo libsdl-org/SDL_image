@@ -642,7 +642,8 @@ int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header * head,
 	      *row++ = 0xFF000000
 		| (((Uint32) (*p8)) << 16)
 		| (((Uint32) (*p8)) << 8)
-		| (((Uint32) (*p8++)) << 0);
+		| (((Uint32) (*p8)) << 0);
+			++p8;
 	    }
 	    break;	    
 	  default:

@@ -310,7 +310,7 @@ do {							\
 /* read XPM from either array or RWops */
 static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
 {
-	int start;
+	int start = 0;
 	SDL_Surface *image = NULL;
 	int index;
 	int x, y;
