@@ -1,6 +1,5 @@
-#define APSTUDIO_READONLY_SYMBOLS
-#include "afxres.h"
-#undef APSTUDIO_READONLY_SYMBOLS
+
+#include "winresrc.h"
 
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
