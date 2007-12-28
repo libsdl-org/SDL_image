@@ -1,3 +1,7 @@
+1.2.7:
+Sam Lantinga - Fri Dec 28 08:34:54 PST 2007
+ * Fixed buffer overflow in GIF loading code, discovered by Michael Skladnikiewicz
+
 1.2.6:
 Sam lantinga - Wed Jul 18 00:30:32 PDT 2007
  * Improved detection of libjpeg, libpng, and libtiff at configure time
