@@ -1,4 +1,6 @@
 1.2.7:
+Sam Lantinga - Sun Nov  2 15:08:27 PST 2008
+ * Fixed buffer overflow in BMP loading code, discovered by j00ru//vx
 Sam Lantinga - Fri Dec 28 08:34:54 PST 2007
  * Fixed buffer overflow in GIF loading code, discovered by Michael Skladnikiewicz
 
