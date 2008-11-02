@@ -68,10 +68,14 @@ static int readRlePixels(SDL_Surface * surface, SDL_RWops * src, int isRle8)
 	*/
 	int pitch = surface->pitch;
 	int height = surface->h;
-	Uint8 * bits = (Uint8 *)surface->pixels + ((height-1) * pitch);
+	Uint8 *start = (Uint8 *)surface->pixels;
+	Uint8 *end = start + (height*pitch);
+	Uint8 *bits = end-pitch, *spot;
 	int ofs = 0;
 	Uint8 ch;
 	Uint8 needsPad;
+
+#define COPY_PIXEL(x)	spot = &bits[ofs++]; if(spot >= start && spot < end) *spot = (x)
 
 	for (;;) {
 		if ( !SDL_RWread(src, &ch, 1, 1) ) return 1;
@@ -84,15 +88,15 @@ static int readRlePixels(SDL_Surface * surface, SDL_RWops * src, int isRle8)
 			if ( !SDL_RWread(src, &pixel, 1, 1) ) return 1;
 			if ( isRle8 ) {                 /* 256-color bitmap, compressed */
 				do {
-					bits[ofs++] = pixel;
+					COPY_PIXEL(pixel);
 				} while (--ch);
-			}else {                         /* 16-color bitmap, compressed */
+			} else {                         /* 16-color bitmap, compressed */
 				Uint8 pixel0 = pixel >> 4;
 				Uint8 pixel1 = pixel & 0x0F;
 				for (;;) {
-					bits[ofs++] = pixel0;     /* even count, high nibble */
+					COPY_PIXEL(pixel0);	/* even count, high nibble */
 					if (!--ch) break;
-					bits[ofs++] = pixel1;     /* odd count, low nibble */
+					COPY_PIXEL(pixel1);	/* odd count, low nibble */
 					if (!--ch) break;
 				}
 			}
@@ -120,16 +124,18 @@ static int readRlePixels(SDL_Surface * surface, SDL_RWops * src, int isRle8)
 				if (isRle8) {
 					needsPad = ( ch & 1 );
 					do {
-						if ( !SDL_RWread(src, bits + ofs++, 1, 1) ) return 1;
+						Uint8 pixel;
+						if ( !SDL_RWread(src, &pixel, 1, 1) ) return 1;
+						COPY_PIXEL(pixel);
 					} while (--ch);
 				} else {
 					needsPad = ( ((ch+1)>>1) & 1 ); /* (ch+1)>>1: bytes size */
 					for (;;) {
 						Uint8 pixel;
 						if ( !SDL_RWread(src, &pixel, 1, 1) ) return 1;
-						bits[ofs++] = pixel >> 4;
+						COPY_PIXEL(pixel >> 4);
 						if (!--ch) break;
-						bits[ofs++] = pixel & 0x0F;
+						COPY_PIXEL(pixel & 0x0F);
 						if (!--ch) break;
 					}
 				}
