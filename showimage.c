@@ -1,6 +1,6 @@
 /*
     showimage:  A test application for the SDL image loading library.
-    Copyright (C) 1997-2006 Sam Lantinga
+    Copyright (C) 1997-2009 Sam Lantinga
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
