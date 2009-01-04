@@ -392,6 +392,34 @@ static SDL_Surface* LoadImageFromRWops(SDL_RWops* rw_ops, CFStringRef uti_string
 
 
 
+static SDL_Surface* LoadImageFromFile(const char* file)
+{
+	SDL_Surface* sdl_surface = NULL;
+	CGImageSourceRef image_source = NULL;
+	CGImageRef image_ref = NULL;
+	
+	// First ImageIO
+	image_source = CreateCGImageSourceFromFile(file);
+	
+	if(NULL == image_source)
+	{
+		return NULL;
+	}
+	
+	image_ref = CreateCGImageFromCGImageSource(image_source);
+	CFRelease(image_source);
+	
+	if(NULL == image_ref)
+	{
+		return NULL;
+	}
+	
+	sdl_surface = Create_SDL_Surface_From_CGImage(image_ref);
+	CFRelease(image_ref);
+	return sdl_surface;	
+}
+
+
 int IMG_isBMP(SDL_RWops *src)
 {
 	return Internal_isType(src, kUTTypeBMP);
@@ -452,27 +480,24 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops *src)
 // Potentially, Apple can optimize for either case.
 SDL_Surface* IMG_Load(const char *file)
 {
-	SDL_Surface* sdl_surface;
-	CGImageSourceRef image_source;
-	CGImageRef image_ref = NULL;
+	SDL_Surface* sdl_surface = NULL;
 
-	image_source = CreateCGImageSourceFromFile(file);
-	
-	if(NULL == image_source)
+	sdl_surface = LoadImageFromFile(file);
+	if(NULL == sdl_surface)
 	{
-		return NULL;
+		// Either the file doesn't exist or ImageIO doesn't understand the format.
+		// For the latter case, fallback to the native SDL_image handlers.
+		SDL_RWops *src = SDL_RWFromFile(file, "rb");
+		char *ext = strrchr(file, '.');
+		if(ext) {
+			ext++;
+		}
+		if(!src) {
+			/* The error message has been set in SDL_RWFromFile */
+			return NULL;
+		}
+		sdl_surface = IMG_LoadTyped_RW(src, 1, ext);
 	}
-	
-	image_ref = CreateCGImageFromCGImageSource(image_source);
-	CFRelease(image_source);
-	
-	if(NULL == image_ref)
-	{
-		return NULL;
-	}
-	
-	sdl_surface = Create_SDL_Surface_From_CGImage(image_ref);
-	CFRelease(image_ref);
-	return sdl_surface;	
+	return sdl_surface;
 }
 
