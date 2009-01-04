@@ -219,8 +219,7 @@ static SDL_Surface* LoadImageFromRWops(SDL_RWops* rw_ops, CFStringRef uti_string
 	return sdl_surface;
 }
 
-/* Since UIImage doesn't really support streams well, we should optimize for the file case. */
-SDL_Surface *IMG_Load(const char *file)
+static SDL_Surface* LoadImageFromFile(const char *file)
 {
 	NSAutoreleasePool* autorelease_pool = [[NSAutoreleasePool alloc] init];
 	SDL_Surface* sdl_surface = NULL;
@@ -229,14 +228,40 @@ SDL_Surface *IMG_Load(const char *file)
 	
 	ns_string = [[NSString alloc] initWithUTF8String:file];
 	ui_image = [[UIImage alloc] initWithContentsOfFile:ns_string];
-
+	
 	sdl_surface = Create_SDL_Surface_From_CGImage([ui_image CGImage]);
-
+	
 	[ui_image release];
 	[ns_string release];
 	
 	[autorelease_pool drain];
+	
+	return sdl_surface;
+}
 
+
+/* Since UIImage doesn't really support streams well, we should optimize for the file case. */
+SDL_Surface *IMG_Load(const char *file)
+{
+	SDL_Surface* sdl_surface = NULL;
+
+	sdl_surface = LoadImageFromFile(file);
+	if(NULL == sdl_surface)
+	{
+		// Either the file doesn't exist or ImageIO doesn't understand the format.
+		// For the latter case, fallback to the native SDL_image handlers.
+
+		SDL_RWops *src = SDL_RWFromFile(file, "rb");
+		char *ext = strrchr(file, '.');
+		if(ext) {
+			ext++;
+		}
+		if(!src) {
+			/* The error message has been set in SDL_RWFromFile */
+			return NULL;
+		}
+		sdl_surface = IMG_LoadTyped_RW(src, 1, ext);
+	}
 	return sdl_surface;
 }
 
