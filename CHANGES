@@ -1,3 +1,8 @@
+1.2.8:
+Eric Wing - Fri, 2 Jan 2009 02:01:16 -0800
+ * Added ImageIO loading infrastructure for Mac OS X
+ * Added UIImage loading infrastructure for iPhone / iPod Touch
+
 1.2.7:
 Sam Lantinga - Sun Nov  2 15:08:27 PST 2008
  * Fixed buffer overflow in BMP loading code, discovered by j00ru//vx
