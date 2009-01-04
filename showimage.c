@@ -80,6 +80,7 @@ int main(int argc, char *argv[])
 	SDL_Surface *screen, *image;
 	int i, depth, done;
 	SDL_Event event;
+	SDL_RWops* rw_ops;
 
 	/* Check command line usage */
 	if ( ! argv[1] ) {
@@ -100,6 +101,18 @@ int main(int argc, char *argv[])
 			flags |= SDL_FULLSCREEN;
 			continue;
 		}
+#if 0
+		rw_ops = SDL_RWFromFile(argv[1], "r");
+		
+		fprintf(stderr, "BMP:\t%d\n", IMG_isBMP(rw_ops));
+		fprintf(stderr, "GIF:\t%d\n", IMG_isGIF(rw_ops));
+		fprintf(stderr, "JPG:\t%d\n", IMG_isJPG(rw_ops));
+		fprintf(stderr, "PNG:\t%d\n", IMG_isPNG(rw_ops));
+		fprintf(stderr, "TIF:\t%d\n", IMG_isTIF(rw_ops));
+		/* fprintf(stderr, "TGA:\t%d\n", IMG_isTGA(rw_ops)); */
+		fprintf(stderr, "PCX:\t%d\n", IMG_isPCX(rw_ops));
+#endif
+
 		/* Open the image file */
 #ifdef XPM_INCLUDED
 		image = IMG_ReadXPMFromArray(picture_xpm);
