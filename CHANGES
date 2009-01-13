@@ -1,4 +1,6 @@
 1.2.8:
+Couriersud - Mon, 12 Jan 2009 17:21:13 -0800
+ * Added support for ICO and CUR image files
 Eric Wing - Fri, 2 Jan 2009 02:01:16 -0800
  * Added ImageIO loading infrastructure for Mac OS X
  * Added UIImage loading infrastructure for iPhone / iPod Touch
