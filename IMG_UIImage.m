@@ -268,6 +268,40 @@ SDL_Surface *IMG_Load(const char *file)
 
 
 /* Copied straight from other files so I don't have to alter them. */
+static int IMG_isICOCUR(SDL_RWops *src, int type)
+{
+	int start;
+	int is_ICOCUR;
+
+	/* The Win32 ICO file header (14 bytes) */
+    Uint16 bfReserved;
+    Uint16 bfType;
+    Uint16 bfCount;
+
+	if ( !src )
+		return 0;
+	start = SDL_RWtell(src);
+	is_ICOCUR = 0;
+    bfReserved = SDL_ReadLE16(src);
+    bfType = SDL_ReadLE16(src);
+    bfCount = SDL_ReadLE16(src);
+    if ((bfReserved == 0) && (bfType == type) && (bfCount != 0)) 
+    	is_ICOCUR = 1;
+	SDL_RWseek(src, start, SEEK_SET);
+
+	return (is_ICOCUR);
+}
+
+int IMG_isICO(SDL_RWops *src)
+{
+	return IMG_isICOCUR(src, 1);
+}
+
+int IMG_isCUR(SDL_RWops *src)
+{
+	return IMG_isICOCUR(src, 2);
+}
+
 int IMG_isBMP(SDL_RWops *src)
 {
 	int start;
@@ -420,7 +454,15 @@ int IMG_isTIF(SDL_RWops* src)
 	return(is_TIF);
 }
 
-
+SDL_Surface* IMG_LoadCUR_RW(SDL_RWops *src)
+{
+	/* FIXME: Is this a supported type? */
+	return LoadImageFromRWops(src, CFSTR("com.microsoft.cur"));
+}
+SDL_Surface* IMG_LoadICO_RW(SDL_RWops *src)
+{
+	return LoadImageFromRWops(src, kUTTypeICO);
+}
 SDL_Surface* IMG_LoadBMP_RW(SDL_RWops *src)
 {
 	return LoadImageFromRWops(src, kUTTypeBMP);
@@ -436,6 +478,10 @@ SDL_Surface* IMG_LoadJPG_RW(SDL_RWops *src)
 SDL_Surface* IMG_LoadPNG_RW(SDL_RWops *src)
 {
 	return LoadImageFromRWops(src, kUTTypePNG);
+}
+SDL_Surface* IMG_LoadTGA_RW(SDL_RWops *src)
+{
+	return LoadImageFromRWops(src, CFSTR("com.truevision.tga-image"));
 }
 SDL_Surface* IMG_LoadTIF_RW(SDL_RWops *src)
 {

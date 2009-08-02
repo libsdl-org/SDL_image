@@ -420,6 +420,17 @@ static SDL_Surface* LoadImageFromFile(const char* file)
 }
 
 
+int IMG_isCUR(SDL_RWops *src)
+{
+	/* FIXME: Is this a supported type? */
+	return Internal_isType(src, CFSTR("com.microsoft.cur"));
+}
+
+int IMG_isICO(SDL_RWops *src)
+{
+	return Internal_isType(src, kUTTypeICO);
+}
+
 int IMG_isBMP(SDL_RWops *src)
 {
 	return Internal_isType(src, kUTTypeBMP);
@@ -429,6 +440,7 @@ int IMG_isGIF(SDL_RWops *src)
 {
 	return Internal_isType(src, kUTTypeGIF);
 }
+
 // Note: JPEG 2000 is kUTTypeJPEG2000
 int IMG_isJPG(SDL_RWops *src)
 {
@@ -451,6 +463,15 @@ int IMG_isTIF(SDL_RWops *src)
 	return Internal_isType(src, kUTTypeTIFF);
 }
 
+SDL_Surface* IMG_LoadCUR_RW(SDL_RWops *src)
+{
+	/* FIXME: Is this a supported type? */
+	return LoadImageFromRWops(src, CFSTR("com.microsoft.cur"));
+}
+SDL_Surface* IMG_LoadICO_RW(SDL_RWops *src)
+{
+	return LoadImageFromRWops(src, kUTTypeICO);
+}
 SDL_Surface* IMG_LoadBMP_RW(SDL_RWops *src)
 {
 	return LoadImageFromRWops(src, kUTTypeBMP);
