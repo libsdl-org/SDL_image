@@ -293,4 +293,5 @@ AC_SUBST([IMG_LIBS])
 AC_OUTPUT([
 Makefile
 SDL_image.spec
+SDL_image.pc
 ])
