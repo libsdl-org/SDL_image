@@ -49,6 +49,9 @@ libSDL_image_la_LDFLAGS = 	\
 libSDL_image_la_LIBADD = $(IMG_LIBS)
 endif
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = SDL_image.pc
+
 %.o : %.rc
 	$(WINDRES) $< $@
 

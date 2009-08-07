@@ -80,6 +80,7 @@ AM_CONDITIONAL(USE_VERSION_RC, test x$use_version_rc = xtrue)
 
 dnl Check for SDL
 SDL_VERSION=1.2.10
+AC_SUBST(SDL_VERSION)
 AM_PATH_SDL($SDL_VERSION,
             :,
            AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
