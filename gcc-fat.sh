@@ -63,7 +63,7 @@ while test x$1 != x; do
         -V) exec gcc $1;;
         -print-prog-name=*) exec gcc $1;;
         -print-search-dirs) exec gcc $1;;
-        -E) GCC_COMPILE_PPC="$GCC_COMPILE_PPC -E"
+        -E) GCC_COMPILE_PPC32="$GCC_COMPILE_PPC32 -E"
             GCC_COMPILE_PPC64="$GCC_COMPILE_PPC64 -E"
             GCC_COMPILE_X86="$GCC_COMPILE_X86 -E"
             GCC_COMPILE_X64="$GCC_COMPILE_X64 -E"
