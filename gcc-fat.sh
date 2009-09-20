@@ -2,32 +2,55 @@
 #
 # Build Universal binaries on Mac OS X, thanks Ryan!
 #
-# Usage: ./configure CC="sh gcc-fat.sh" && make && rm -rf ppc x86
+# Usage: ./configure CC="sh gcc-fat.sh" && make && rm -rf ppc ppc64 x86 x64
 
-# PowerPC compiler flags (10.2 runtime compatibility)
-GCC_COMPILE_PPC="gcc-3.3 -arch ppc \
--DMAC_OS_X_VERSION_MIN_REQUIRED=1020 \
+# PowerPC 32-bit compiler flags (10.4 runtime compatibility)
+GCC_COMPILE_PPC32="gcc-4.0 -arch ppc -mmacosx-version-min=10.4 \
+-DMAC_OS_X_VERSION_MIN_REQUIRED=1040 \
 -nostdinc \
--F/Developer/SDKs/MacOSX10.2.8.sdk/System/Library/Frameworks \
--I/Developer/SDKs/MacOSX10.2.8.sdk/usr/include/gcc/darwin/3.3 \
--isystem /Developer/SDKs/MacOSX10.2.8.sdk/usr/include"
+-F/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks \
+-I/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin10/4.0.1/include \
+-isystem /Developer/SDKs/MacOSX10.4u.sdk/usr/include"
 
-GCC_LINK_PPC="\
--L/Developer/SDKs/MacOSX10.2.8.sdk/usr/lib/gcc/darwin/3.3 \
--F/Developer/SDKs/MacOSX10.2.8.sdk/System/Library/Frameworks \
--Wl,-syslibroot,/Developer/SDKs/MacOSX10.2.8.sdk"
+GCC_LINK_PPC32="\
+-L/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/powerpc-apple-darwin10/4.0.1 \
+-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk"
 
-# Intel compiler flags (10.4 runtime compatibility)
+# PowerPC 64-bit compiler flags (10.5 runtime compatibility)
+GCC_COMPILE_PPC64="gcc-4.0 -arch ppc64 -mmacosx-version-min=10.5 \
+-DMAC_OS_X_VERSION_MIN_REQUIRED=1050 \
+-nostdinc \
+-F/Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks \
+-I/Developer/SDKs/MacOSX10.5.sdk/usr/lib/gcc/powerpc-apple-darwin10/4.0.1/include \
+-isystem /Developer/SDKs/MacOSX10.5.sdk/usr/include"
+
+GCC_LINK_PPC64="\
+-L/Developer/SDKs/MacOSX10.5.sdk/usr/lib/gcc/powerpc-apple-darwin10/4.0.1/ppc64 \
+-Wl,-syslibroot,/Developer/SDKs/MacOSX10.5.sdk"
+
+# Intel 32-bit compiler flags (10.4 runtime compatibility)
 GCC_COMPILE_X86="gcc-4.0 -arch i386 -mmacosx-version-min=10.4 \
 -DMAC_OS_X_VERSION_MIN_REQUIRED=1040 \
 -nostdinc \
 -F/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks \
--I/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1/include \
+-I/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/include \
 -isystem /Developer/SDKs/MacOSX10.4u.sdk/usr/include"
 
 GCC_LINK_X86="\
--L/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin8/4.0.1 \
+-L/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1 \
 -Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk"
+
+# Intel 64-bit compiler flags (10.5 runtime compatibility)
+GCC_COMPILE_X64="gcc-4.0 -arch x86_64 -mmacosx-version-min=10.5 \
+-DMAC_OS_X_VERSION_MIN_REQUIRED=1050 \
+-nostdinc \
+-F/Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks \
+-I/Developer/SDKs/MacOSX10.5.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/include \
+-isystem /Developer/SDKs/MacOSX10.5.sdk/usr/include"
+
+GCC_LINK_X64="\
+-L/Developer/SDKs/MacOSX10.5.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/x86_64 \
+-Wl,-syslibroot,/Developer/SDKs/MacOSX10.5.sdk"
 
 # Output both PowerPC and Intel object files
 args="$*"
@@ -41,7 +64,9 @@ while test x$1 != x; do
         -print-prog-name=*) exec gcc $1;;
         -print-search-dirs) exec gcc $1;;
         -E) GCC_COMPILE_PPC="$GCC_COMPILE_PPC -E"
+            GCC_COMPILE_PPC64="$GCC_COMPILE_PPC64 -E"
             GCC_COMPILE_X86="$GCC_COMPILE_X86 -E"
+            GCC_COMPILE_X64="$GCC_COMPILE_X64 -E"
             compile=no; link=no;;
         -c) link=no;;
         -o) output=$2;;
@@ -50,8 +75,10 @@ while test x$1 != x; do
     shift
 done
 if test x$link = xyes; then
-    GCC_COMPILE_PPC="$GCC_COMPILE_PPC $GCC_LINK_PPC"
+    GCC_COMPILE_PPC32="$GCC_COMPILE_PPC32 $GCC_LINK_PPC32"
+    GCC_COMPILE_PPC64="$GCC_COMPILE_PPC64 $GCC_LINK_PPC64"
     GCC_COMPILE_X86="$GCC_COMPILE_X86 $GCC_LINK_X86"
+    GCC_COMPILE_X64="$GCC_COMPILE_X64 $GCC_LINK_X64"
 fi
 if test x"$output" = x; then
     if test x$link = xyes; then
@@ -61,6 +88,7 @@ if test x"$output" = x; then
     fi
 fi
 
+# Compile PPC 32-bit
 if test x"$output" != x; then
     dir=ppc/`dirname $output`
     if test -d $dir; then
@@ -78,11 +106,35 @@ while test x$1 != x; do
     fi
     shift
 done
-$GCC_COMPILE_PPC $ppc_args || exit $?
+$GCC_COMPILE_PPC32 $ppc_args || exit $?
 if test x"$output" != x; then
     cp $output ppc/$output
 fi
 
+# Compile PPC 64-bit
+if test x"$output" != x; then
+    dir=ppc64/`dirname $output`
+    if test -d $dir; then
+        :
+    else
+        mkdir -p $dir
+    fi
+fi
+set -- $args
+while test x$1 != x; do
+    if test -f "ppc64/$1" && test "$1" != "$output"; then
+        ppc64_args="$ppc64_args ppc64/$1"
+    else
+        ppc64_args="$ppc64_args $1"
+    fi
+    shift
+done
+$GCC_COMPILE_PPC64 $ppc64_args || exit $?
+if test x"$output" != x; then
+    cp $output ppc64/$output
+fi
+
+# Compile X86 32-bit
 if test x"$output" != x; then
     dir=x86/`dirname $output`
     if test -d $dir; then
@@ -105,6 +157,29 @@ if test x"$output" != x; then
     cp $output x86/$output
 fi
 
+# Compile X86 32-bit
 if test x"$output" != x; then
-    lipo -create -o $output ppc/$output x86/$output
+    dir=x64/`dirname $output`
+    if test -d $dir; then
+        :
+    else
+        mkdir -p $dir
+    fi
+fi
+set -- $args
+while test x$1 != x; do
+    if test -f "x64/$1" && test "$1" != "$output"; then
+        x64_args="$x64_args x64/$1"
+    else
+        x64_args="$x64_args $1"
+    fi
+    shift
+done
+$GCC_COMPILE_X64 $x64_args || exit $?
+if test x"$output" != x; then
+    cp $output x64/$output
+fi
+
+if test x"$output" != x; then
+    lipo -create -o $output ppc/$output ppc64/$output x86/$output x64/$output
 fi
