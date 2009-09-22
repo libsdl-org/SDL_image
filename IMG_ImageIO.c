@@ -10,6 +10,8 @@
 
 // For ImageIO framework and also LaunchServices framework (for UTIs)
 #include <ApplicationServices/ApplicationServices.h>
+// Used because CGDataProviderCreate became deprecated in 10.5
+#include <AvailabilityMacros.h>
 
 /**************************************************************
  ***** Begin Callback functions for block reading *************
@@ -35,10 +37,22 @@ static void MyProviderRewindCallback(void* rwops_userdata)
 	SDL_RWseek((struct SDL_RWops *)rwops_userdata, 0, RW_SEEK_SET);
 }
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1050 // CGDataProviderCreateSequential was introduced in 10.5; CGDataProviderCreate is deprecated
+off_t MyProviderSkipForwardBytesCallback(void* rwops_userdata, off_t the_count)
+{
+	off_t start_position = SDL_RWtell((struct SDL_RWops *)rwops_userdata);
+	SDL_RWseek((struct SDL_RWops *)rwops_userdata, the_count, RW_SEEK_CUR);
+    off_t end_position = SDL_RWtell((struct SDL_RWops *)rwops_userdata);
+    return (end_position - start_position);	
+}
+#else // CGDataProviderCreate was deprecated in 10.5
 static void MyProviderSkipBytesCallback(void* rwops_userdata, size_t the_count)
 {
 	SDL_RWseek((struct SDL_RWops *)rwops_userdata, the_count, RW_SEEK_CUR);
 }
+#endif
+
+
 /**************************************************************
  ***** End Callback functions for block reading ***************
  **************************************************************/
@@ -49,8 +63,23 @@ static CGImageSourceRef CreateCGImageSourceFromRWops(SDL_RWops* rw_ops, CFDictio
 {
 	CGImageSourceRef source_ref;
 
-
 	// Similar to SDL_RWops, Apple has their own callbacks for dealing with data streams.
+	
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1050 // CGDataProviderCreateSequential was introduced in 10.5; CGDataProviderCreate is deprecated
+	CGDataProviderSequentialCallbacks provider_callbacks =
+	{
+        0,
+		MyProviderGetBytesCallback,
+		MyProviderSkipForwardBytesCallback,
+		MyProviderRewindCallback,
+		MyProviderReleaseInfoCallback
+	};
+	
+	CGDataProviderRef data_provider = CGDataProviderCreateSequential(rw_ops, &provider_callbacks);
+	
+	
+#else // CGDataProviderCreate was deprecated in 10.5
+	
 	CGDataProviderCallbacks provider_callbacks =
 	{
 		MyProviderGetBytesCallback,
@@ -58,8 +87,9 @@ static CGImageSourceRef CreateCGImageSourceFromRWops(SDL_RWops* rw_ops, CFDictio
 		MyProviderRewindCallback,
 		MyProviderReleaseInfoCallback
 	};
+	
 	CGDataProviderRef data_provider = CGDataProviderCreate(rw_ops, &provider_callbacks);
-
+#endif
 	// Get the CGImageSourceRef.
 	// The dictionary can be NULL or contain hints to help ImageIO figure out the image type.
 	source_ref = CGImageSourceCreateWithDataProvider(data_provider, hints_and_options);
