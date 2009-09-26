@@ -185,7 +185,7 @@ static int readRlePixels(SDL_Surface * surface, SDL_RWops * src, int isRle8)
 
 static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 {
-	int was_error;
+	SDL_bool was_error;
 	long fp_offset;
 	int bmpPitch;
 	int i, pad;
@@ -196,6 +196,8 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 	Uint32 Amask;
 	SDL_Palette *palette;
 	Uint8 *bits;
+	Uint8 *top, *end;
+	SDL_bool topDown;
 	int ExpandBMP;
 
 	/* The Win32 BMP file header (14 bytes) */
@@ -220,9 +222,9 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 
 	/* Make sure we are passed a valid data source */
 	surface = NULL;
-	was_error = 0;
+	was_error = SDL_FALSE;
 	if ( src == NULL ) {
-		was_error = 1;
+		was_error = SDL_TRUE;
 		goto done;
 	}
 
@@ -231,12 +233,12 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 	SDL_ClearError();
 	if ( SDL_RWread(src, magic, 1, 2) != 2 ) {
 		SDL_Error(SDL_EFREAD);
-		was_error = 1;
+		was_error = SDL_TRUE;
 		goto done;
 	}
 	if ( strncmp(magic, "BM", 2) != 0 ) {
 		SDL_SetError("File is not a Windows BMP file");
-		was_error = 1;
+		was_error = SDL_TRUE;
 		goto done;
 	}
 	bfSize		= SDL_ReadLE32(src);
@@ -269,10 +271,16 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 		biClrUsed	= SDL_ReadLE32(src);
 		biClrImportant	= SDL_ReadLE32(src);
 	}
+	if (biHeight < 0) {
+		topDown = SDL_TRUE;
+		biHeight = -biHeight;
+	} else {
+		topDown = SDL_FALSE;
+	}
 
 	/* Check for read error */
 	if ( strcmp(SDL_GetError(), "") != 0 ) {
-		was_error = 1;
+		was_error = SDL_TRUE;
 		goto done;
 	}
 
@@ -346,7 +354,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 	surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
 			biWidth, biHeight, biBitCount, Rmask, Gmask, Bmask, Amask);
 	if ( surface == NULL ) {
-		was_error = 1;
+		was_error = SDL_TRUE;
 		goto done;
 	}
 
@@ -355,7 +363,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 	if ( palette ) {
 		if ( SDL_RWseek(src, fp_offset+14+biSize, SEEK_SET) < 0 ) {
 			SDL_Error(SDL_EFSEEK);
-			was_error = 1;
+			was_error = SDL_TRUE;
 			goto done;
 		}
 
@@ -387,7 +395,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 	/* Read the surface pixels.  Note that the bmp image is upside down */
 	if ( SDL_RWseek(src, fp_offset+bfOffBits, SEEK_SET) < 0 ) {
 		SDL_Error(SDL_EFSEEK);
-		was_error = 1;
+		was_error = SDL_TRUE;
 		goto done;
 	}
 	if ((biCompression == BI_RLE4) || (biCompression == BI_RLE8)) {
@@ -395,7 +403,8 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 		if (was_error) SDL_SetError("Error reading from BMP");
 		goto done;
 	}
-	bits = (Uint8 *)surface->pixels+(surface->h*surface->pitch);
+	top = (Uint8 *)surface->pixels;
+	end = (Uint8 *)surface->pixels+(surface->h*surface->pitch);
 	switch (ExpandBMP) {
 		case 1:
 			bmpPitch = (biWidth + 7) >> 3;
@@ -410,8 +419,12 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 					(4-(surface->pitch%4)) : 0);
 			break;
 	}
-	while ( bits > (Uint8 *)surface->pixels ) {
-		bits -= surface->pitch;
+	if ( topDown ) {
+		bits = top;
+	} else {
+		bits = end - surface->pitch;
+	}
+	while ( bits >= top && bits < end ) {
 		switch (ExpandBMP) {
 			case 1:
 			case 4: {
@@ -422,7 +435,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 					if ( !SDL_RWread(src, &pixel, 1, 1) ) {
 						SDL_SetError(
 					"Error reading from BMP");
-						was_error = 1;
+						was_error = SDL_TRUE;
 						goto done;
 					}
 				}
@@ -435,7 +448,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 			if ( SDL_RWread(src, bits, 1, surface->pitch)
 							 != surface->pitch ) {
 				SDL_Error(SDL_EFREAD);
-				was_error = 1;
+				was_error = SDL_TRUE;
 				goto done;
 			}
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
@@ -467,6 +480,11 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 				SDL_RWread(src, &padbyte, 1, 1);
 			}
 		}
+		if ( topDown ) {
+			bits += surface->pitch;
+		} else {
+			bits -= surface->pitch;
+		}
 	}
 done:
 	if ( was_error ) {
@@ -496,7 +514,7 @@ SDL_Read8(SDL_RWops * src)
 static SDL_Surface *
 LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
 {
-    int was_error;
+    SDL_bool was_error;
     long fp_offset;
     int bmpPitch;
     int i, pad;
@@ -530,9 +548,9 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
 
     /* Make sure we are passed a valid data source */
     surface = NULL;
-    was_error = 0;
+    was_error = SDL_FALSE;
     if (src == NULL) {
-        was_error = 1;
+        was_error = SDL_TRUE;
         goto done;
     }
 
@@ -545,7 +563,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
     bfCount = SDL_ReadLE16(src);
     if ((bfReserved != 0) || (bfType != type) || (bfCount == 0)) {
         SDL_SetError("File is not a Windows %s file", type == 1 ? "ICO" : "CUR");
-        was_error = 1;
+        was_error = SDL_TRUE;
         goto done;
     }
 
@@ -579,7 +597,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
     /* Advance to the DIB Data */
     if (SDL_RWseek(src, icoOfs, RW_SEEK_SET) < 0) {
         SDL_Error(SDL_EFSEEK);
-        was_error = 1;
+        was_error = SDL_TRUE;
         goto done;
     }
 
@@ -598,13 +616,13 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
         biClrImportant = SDL_ReadLE32(src);
     } else {
         SDL_SetError("Unsupported ICO bitmap format");
-        was_error = 1;
+        was_error = SDL_TRUE;
         goto done;
     }
 
     /* Check for read error */
     if (SDL_strcmp(SDL_GetError(), "") != 0) {
-        was_error = 1;
+        was_error = SDL_TRUE;
         goto done;
     }
 
@@ -629,13 +647,13 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
             break;
         default:
             SDL_SetError("ICO file with unsupported bit count");
-            was_error = 1;
+            was_error = SDL_TRUE;
             goto done;
         }
         break;
     default:
         SDL_SetError("Compressed ICO files not supported");
-        was_error = 1;
+        was_error = SDL_TRUE;
         goto done;
     }
 
@@ -646,7 +664,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
         SDL_CreateRGBSurface(0, biWidth, biHeight, 32, 0x00FF0000,
                              0x0000FF00, 0x000000FF, 0xFF000000);
     if (surface == NULL) {
-        was_error = 1;
+        was_error = SDL_TRUE;
         goto done;
     }
 
@@ -694,7 +712,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
                     if (i % (8 / ExpandBMP) == 0) {
                         if (!SDL_RWread(src, &pixel, 1, 1)) {
                             SDL_SetError("Error reading from ICO");
-                            was_error = 1;
+                            was_error = SDL_TRUE;
                             goto done;
                         }
                     }
@@ -708,7 +726,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
             if (SDL_RWread(src, bits, 1, surface->pitch)
                 != surface->pitch) {
                 SDL_Error(SDL_EFREAD);
-                was_error = 1;
+                was_error = SDL_TRUE;
                 goto done;
             }
             break;
@@ -735,7 +753,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
             if (i % (8 / ExpandBMP) == 0) {
                 if (!SDL_RWread(src, &pixel, 1, 1)) {
                     SDL_SetError("Error reading from ICO");
-                    was_error = 1;
+                    was_error = SDL_TRUE;
                     goto done;
                 }
             }
