@@ -60,6 +60,53 @@ const SDL_version *IMG_Linked_Version(void)
 	return(&linked_version);
 }
 
+extern int IMG_InitJPG();
+extern int IMG_QuitJPG();
+extern int IMG_InitPNG();
+extern int IMG_QuitPNG();
+extern int IMG_InitTIF();
+extern int IMG_QuitTIF();
+
+static int initialized = 0;
+
+int IMG_Init(int flags)
+{
+	int result = 0;
+
+	if ((flags & IMG_INIT_JPG) && !(initialized & IMG_INIT_JPG)) {
+		if (IMG_InitJPG() == 0) {
+			result |= IMG_INIT_JPG;
+		}
+	}
+	if ((flags & IMG_INIT_PNG) && !(initialized & IMG_INIT_PNG)) {
+		if (IMG_InitPNG() == 0) {
+			result |= IMG_INIT_PNG;
+		}
+	}
+	if ((flags & IMG_INIT_TIF) && !(initialized & IMG_INIT_TIF)) {
+		if (IMG_InitTIF() == 0) {
+			result |= IMG_INIT_TIF;
+		}
+	}
+	initialized |= result;
+
+	return (result);
+}
+
+void IMG_Quit()
+{
+	if (initialized & IMG_INIT_JPG) {
+		IMG_QuitJPG();
+	}
+	if (initialized & IMG_INIT_PNG) {
+		IMG_QuitPNG();
+	}
+	if (initialized & IMG_INIT_TIF) {
+		IMG_QuitTIF();
+	}
+	initialized = 0;
+}
+
 #if !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
 /* Load an image from a file */
 SDL_Surface *IMG_Load(const char *file)

@@ -92,7 +92,7 @@ static struct {
 } lib;
 
 #ifdef LOAD_PNG_DYNAMIC
-static int IMG_InitPNG()
+int IMG_InitPNG()
 {
 	if ( lib.loaded == 0 ) {
 		lib.handle = SDL_LoadObject(LOAD_PNG_DYNAMIC);
@@ -216,7 +216,7 @@ static int IMG_InitPNG()
 
 	return 0;
 }
-static void IMG_QuitPNG()
+void IMG_QuitPNG()
 {
 	if ( lib.loaded == 0 ) {
 		return;
@@ -227,7 +227,7 @@ static void IMG_QuitPNG()
 	--lib.loaded;
 }
 #else
-static int IMG_InitPNG()
+int IMG_InitPNG()
 {
 	if ( lib.loaded == 0 ) {
 		lib.png_create_info_struct = png_create_info_struct;
@@ -251,7 +251,7 @@ static int IMG_InitPNG()
 
 	return 0;
 }
-static void IMG_QuitPNG()
+void IMG_QuitPNG()
 {
 	if ( lib.loaded == 0 ) {
 		return;
@@ -506,6 +506,16 @@ done:	/* Clean up and return */
 }
 
 #else
+
+int IMG_InitPNG()
+{
+	IMG_SetError("PNG images are not supported");
+	return(-1);
+}
+
+void IMG_QuitPNG()
+{
+}
 
 /* See if an image is contained in a data source */
 int IMG_isPNG(SDL_RWops *src)

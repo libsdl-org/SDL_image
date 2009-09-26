@@ -53,7 +53,7 @@ static struct {
 } lib;
 
 #ifdef LOAD_JPG_DYNAMIC
-static int IMG_InitJPG()
+int IMG_InitJPG()
 {
 	if ( lib.loaded == 0 ) {
 		lib.handle = SDL_LoadObject(LOAD_JPG_DYNAMIC);
@@ -128,7 +128,7 @@ static int IMG_InitJPG()
 
 	return 0;
 }
-static void IMG_QuitJPG()
+void IMG_QuitJPG()
 {
 	if ( lib.loaded == 0 ) {
 		return;
@@ -139,7 +139,7 @@ static void IMG_QuitJPG()
 	--lib.loaded;
 }
 #else
-static int IMG_InitJPG()
+int IMG_InitJPG()
 {
 	if ( lib.loaded == 0 ) {
 		lib.jpeg_calc_output_dimensions = jpeg_calc_output_dimensions;
@@ -156,7 +156,7 @@ static int IMG_InitJPG()
 
 	return 0;
 }
-static void IMG_QuitJPG()
+void IMG_QuitJPG()
 {
 	if ( lib.loaded == 0 ) {
 		return;
@@ -464,6 +464,16 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 }
 
 #else
+
+int IMG_InitJPG()
+{
+	IMG_SetError("JPEG images are not supported");
+	return(-1);
+}
+
+void IMG_QuitJPG()
+{
+}
 
 /* See if an image is contained in a data source */
 int IMG_isJPG(SDL_RWops *src)
