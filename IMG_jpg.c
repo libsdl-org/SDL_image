@@ -53,7 +53,7 @@ static struct {
 } lib;
 
 #ifdef LOAD_JPG_DYNAMIC
-int IMG_InitJPG()
+static int IMG_InitJPG()
 {
 	if ( lib.loaded == 0 ) {
 		lib.handle = SDL_LoadObject(LOAD_JPG_DYNAMIC);
@@ -128,7 +128,7 @@ int IMG_InitJPG()
 
 	return 0;
 }
-void IMG_QuitJPG()
+static void IMG_QuitJPG()
 {
 	if ( lib.loaded == 0 ) {
 		return;
@@ -139,7 +139,7 @@ void IMG_QuitJPG()
 	--lib.loaded;
 }
 #else
-int IMG_InitJPG()
+static int IMG_InitJPG()
 {
 	if ( lib.loaded == 0 ) {
 		lib.jpeg_calc_output_dimensions = jpeg_calc_output_dimensions;
@@ -156,7 +156,7 @@ int IMG_InitJPG()
 
 	return 0;
 }
-void IMG_QuitJPG()
+static void IMG_QuitJPG()
 {
 	if ( lib.loaded == 0 ) {
 		return;

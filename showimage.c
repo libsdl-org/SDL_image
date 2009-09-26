@@ -35,7 +35,7 @@
 #endif
 
 /* Draw a Gimpish background pattern to show transparency in the image */
-void draw_background(SDL_Surface *screen)
+static void draw_background(SDL_Surface *screen)
 {
     Uint8 *dst = screen->pixels;
     int x, y;
