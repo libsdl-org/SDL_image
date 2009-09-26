@@ -169,7 +169,7 @@ fi
 
 if test x$enable_png = xyes; then
     AC_CHECK_HEADER([png.h], [have_png_hdr=yes])
-    AC_CHECK_LIB([png], [png_create_read_struct], [have_png_lib=yes])
+    AC_CHECK_LIB([png], [png_create_read_struct], [have_png_lib=yes], [], [-lz])
     if test x$have_png_hdr = xyes -a x$have_png_lib = xyes; then
         AC_DEFINE([LOAD_PNG])
 
@@ -195,7 +195,7 @@ fi
 
 if test x$enable_tif = xyes; then
     AC_CHECK_HEADER([tiffio.h], [have_tif_hdr=yes])
-    AC_CHECK_LIB([tiff], [TIFFClientOpen], [have_tif_lib=yes])
+    AC_CHECK_LIB([tiff], [TIFFClientOpen], [have_tif_lib=yes], [], [-lz])
     if test x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; then
         AC_DEFINE([LOAD_TIF])
 
