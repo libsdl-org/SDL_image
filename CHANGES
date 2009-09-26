@@ -1,4 +1,6 @@
 1.2.8:
+Mason Wheeler - 2009-06-10 06:29:45 PDT 
+ * Added IMG_Init()/IMG_Quit() to prevent constantly loading and unloading DLLs
 Couriersud - Mon, 12 Jan 2009 17:21:13 -0800
  * Added support for ICO and CUR image files
 Eric Wing - Fri, 2 Jan 2009 02:01:16 -0800

@@ -41,7 +41,7 @@ static struct {
 } lib;
 
 #ifdef LOAD_TIF_DYNAMIC
-static int IMG_InitTIF()
+int IMG_InitTIF()
 {
 	if ( lib.loaded == 0 ) {
 		lib.handle = SDL_LoadObject(LOAD_TIF_DYNAMIC);
@@ -88,7 +88,7 @@ static int IMG_InitTIF()
 
 	return 0;
 }
-static void IMG_QuitTIF()
+void IMG_QuitTIF()
 {
 	if ( lib.loaded == 0 ) {
 		return;
@@ -99,7 +99,7 @@ static void IMG_QuitTIF()
 	--lib.loaded;
 }
 #else
-static int IMG_InitTIF()
+int IMG_InitTIF()
 {
 	if ( lib.loaded == 0 ) {
 		lib.TIFFClientOpen = TIFFClientOpen;
@@ -112,7 +112,7 @@ static int IMG_InitTIF()
 
 	return 0;
 }
-static void IMG_QuitTIF()
+void IMG_QuitTIF()
 {
 	if ( lib.loaded == 0 ) {
 		return;
@@ -271,6 +271,16 @@ error:
 }
 
 #else
+
+int IMG_InitTIF()
+{
+	IMG_SetError("TIFF images are not supported");
+	return(-1);
+}
+
+void IMG_QuitTIF()
+{
+}
 
 /* See if an image is contained in a data source */
 int IMG_isTIF(SDL_RWops *src)

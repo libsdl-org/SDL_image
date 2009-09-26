@@ -56,6 +56,20 @@ extern "C" {
  */
 extern DECLSPEC const SDL_version * SDLCALL IMG_Linked_Version(void);
 
+typedef enum
+{
+    IMG_INIT_JPG = 0x00000001,
+    IMG_INIT_PNG = 0x00000002,
+    IMG_INIT_TIF = 0x00000004,
+} IMG_InitFlags;
+
+/* Loads dynamic libraries and prepares them for use.  Flags should be
+   one or more flags from IMG_InitFlags OR'd together */
+extern DECLSPEC int SDLCALL IMG_Init(int flags);
+
+/* Unloads libraries loaded with IMG_Init */
+extern DECLSPEC void SDLCALL IMG_Quit();
+
 /* Load an image from an SDL data source.
    The 'type' may be one of: "BMP", "GIF", "PNG", etc.
 
