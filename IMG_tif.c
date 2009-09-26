@@ -41,7 +41,7 @@ static struct {
 } lib;
 
 #ifdef LOAD_TIF_DYNAMIC
-int IMG_InitTIF()
+static int IMG_InitTIF()
 {
 	if ( lib.loaded == 0 ) {
 		lib.handle = SDL_LoadObject(LOAD_TIF_DYNAMIC);
@@ -88,7 +88,7 @@ int IMG_InitTIF()
 
 	return 0;
 }
-void IMG_QuitTIF()
+static void IMG_QuitTIF()
 {
 	if ( lib.loaded == 0 ) {
 		return;
@@ -99,7 +99,7 @@ void IMG_QuitTIF()
 	--lib.loaded;
 }
 #else
-int IMG_InitTIF()
+static int IMG_InitTIF()
 {
 	if ( lib.loaded == 0 ) {
 		lib.TIFFClientOpen = TIFFClientOpen;
@@ -112,7 +112,7 @@ int IMG_InitTIF()
 
 	return 0;
 }
-void IMG_QuitTIF()
+static void IMG_QuitTIF()
 {
 	if ( lib.loaded == 0 ) {
 		return;

@@ -251,7 +251,7 @@ static Uint32 Swap32 (Uint32 v) {
     |  ((v & 0xFF000000));
 }
 
-void xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
+static void xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
   prop->id = SDL_ReadBE32 (src);
   prop->length = SDL_ReadBE32 (src);
 
@@ -286,14 +286,14 @@ void xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
   }
 }
 
-void free_xcf_header (xcf_header * h) {
+static void free_xcf_header (xcf_header * h) {
   if (h->cm_num)
     free (h->cm_map);
 
   free (h);
 }
 
-xcf_header * read_xcf_header (SDL_RWops * src) {
+static xcf_header * read_xcf_header (SDL_RWops * src) {
   xcf_header * h;
   xcf_prop prop;
 
@@ -326,12 +326,12 @@ xcf_header * read_xcf_header (SDL_RWops * src) {
   return h;
 }
 
-void free_xcf_layer (xcf_layer * l) {
+static void free_xcf_layer (xcf_layer * l) {
   free (l->name);
   free (l);
 }
 
-xcf_layer * read_xcf_layer (SDL_RWops * src) {
+static xcf_layer * read_xcf_layer (SDL_RWops * src) {
   xcf_layer * l;
   xcf_prop    prop;
 
@@ -358,12 +358,12 @@ xcf_layer * read_xcf_layer (SDL_RWops * src) {
   return l;
 }
 
-void free_xcf_channel (xcf_channel * c) {
+static void free_xcf_channel (xcf_channel * c) {
   free (c->name);
   free (c);
 }
 
-xcf_channel * read_xcf_channel (SDL_RWops * src) {
+static xcf_channel * read_xcf_channel (SDL_RWops * src) {
   xcf_channel * l;
   xcf_prop    prop;
 
@@ -401,12 +401,12 @@ xcf_channel * read_xcf_channel (SDL_RWops * src) {
   return l;
 }
 
-void free_xcf_hierarchy (xcf_hierarchy * h) {
+static void free_xcf_hierarchy (xcf_hierarchy * h) {
   free (h->level_file_offsets);
   free (h);
 }
 
-xcf_hierarchy * read_xcf_hierarchy (SDL_RWops * src) {
+static xcf_hierarchy * read_xcf_hierarchy (SDL_RWops * src) {
   xcf_hierarchy * h;
   int i;
 
@@ -425,12 +425,12 @@ xcf_hierarchy * read_xcf_hierarchy (SDL_RWops * src) {
   return h;
 }
 
-void free_xcf_level (xcf_level * l) {
+static void free_xcf_level (xcf_level * l) {
   free (l->tile_file_offsets);
   free (l);
 }
 
-xcf_level * read_xcf_level (SDL_RWops * src) {
+static xcf_level * read_xcf_level (SDL_RWops * src) {
   xcf_level * l;
   int i;
 
@@ -448,11 +448,11 @@ xcf_level * read_xcf_level (SDL_RWops * src) {
   return l;
 }
 
-void free_xcf_tile (unsigned char * t) {
+static void free_xcf_tile (unsigned char * t) {
   free (t);
 }
 
-unsigned char * load_xcf_tile_none (SDL_RWops * src, Uint32 len, int bpp, int x, int y) {
+static unsigned char * load_xcf_tile_none (SDL_RWops * src, Uint32 len, int bpp, int x, int y) {
   unsigned char * load;
 
   load = (unsigned char *) malloc (len); // expect this is okay
@@ -461,7 +461,7 @@ unsigned char * load_xcf_tile_none (SDL_RWops * src, Uint32 len, int bpp, int x,
   return load;
 }
 
-unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, int x, int y) {
+static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, int x, int y) {
   unsigned char * load, * t, * data, * d;
   Uint32 reallen;
   int i, size, count, j, length;
@@ -528,7 +528,7 @@ static Uint32 rgb2grey (Uint32 a) {
   return (l << 16) | (l << 8) | l;
 }
 
-void create_channel_surface (SDL_Surface * surf, xcf_image_type itype, Uint32 color, Uint32 opacity) {
+static void create_channel_surface (SDL_Surface * surf, xcf_image_type itype, Uint32 color, Uint32 opacity) {
   Uint32 c = 0;
 
   switch (itype) {
@@ -543,7 +543,7 @@ void create_channel_surface (SDL_Surface * surf, xcf_image_type itype, Uint32 co
   SDL_FillRect (surf, NULL, c);
 }
 
-int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_layer * layer, load_tile_type load_tile) {
+static int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_layer * layer, load_tile_type load_tile) {
   xcf_hierarchy * hierarchy;
   xcf_level     * level;
   unsigned char * tile;
