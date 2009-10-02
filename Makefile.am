@@ -25,6 +25,7 @@ EXTRA_DIST =			\
 	CHANGES			\
 	version.rc		\
 	VisualC.zip		\
+	VisualCE.zip		\
 	Xcode.tar.gz		\
 	MPWmake.sea.bin		\
 	Watcom-OS2.zip		\
