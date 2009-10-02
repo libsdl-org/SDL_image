@@ -126,7 +126,12 @@ find_lib()
     gcc_bin_path=[`$CC -print-search-dirs 2>/dev/null | fgrep programs: | sed 's/[^=]*=\(.*\)/\1/' | sed 's/:/ /g'`]
     gcc_lib_path=[`$CC -print-search-dirs 2>/dev/null | fgrep libraries: | sed 's/[^=]*=\(.*\)/\1/' | sed 's/:/ /g'`]
     env_lib_path=[`echo $LIBS $LDFLAGS | sed 's/-L[ ]*//g'`]
-    for path in $gcc_bin_path $gcc_lib_path $env_lib_path /usr/lib /usr/local/lib; do
+    if test "$cross_compiling" = yes; then
+        host_lib_path=""
+    else
+        host_lib_path="/usr/lib /usr/local/lib"
+    fi
+    for path in $gcc_bin_path $gcc_lib_path $env_lib_path $host_lib_path; do
         lib=[`ls -- $path/$1 2>/dev/null | sort -r | sed 's/.*\/\(.*\)/\1/; q'`]
         if test x$lib != x; then
             echo $lib
