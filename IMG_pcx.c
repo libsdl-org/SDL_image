@@ -66,6 +66,7 @@ int IMG_isPCX(SDL_RWops *src)
 	int is_PCX;
 	const int ZSoft_Manufacturer = 10;
 	const int PC_Paintbrush_Version = 5;
+	const int PCX_Uncompressed_Encoding = 0;
 	const int PCX_RunLength_Encoding = 1;
 	struct PCXheader pcxh;
 
@@ -76,7 +77,8 @@ int IMG_isPCX(SDL_RWops *src)
 	if ( SDL_RWread(src, &pcxh, sizeof(pcxh), 1) == 1 ) {
 		if ( (pcxh.Manufacturer == ZSoft_Manufacturer) &&
 		     (pcxh.Version == PC_Paintbrush_Version) &&
-		     (pcxh.Encoding == PCX_RunLength_Encoding) ) {
+		     (pcxh.Encoding == PCX_RunLength_Encoding ||
+		      pcxh.Encoding == PCX_Uncompressed_Encoding) ) {
 			is_PCX = 1;
 		}
 	}
@@ -145,6 +147,9 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 		goto done;
 
 	bpl = pcxh.NPlanes * pcxh.BytesPerLine;
+	if (bpl > surface->pitch) {
+		error = "bytes per line is too large (corrupt?)";
+	}
 	buf = malloc(bpl);
 	row = surface->pixels;
 	for ( y=0; y<surface->h; ++y ) {
@@ -152,23 +157,30 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 		int i, count = 0;
 		Uint8 ch;
 		Uint8 *dst = (src_bits == 8) ? row : buf;
-		for(i = 0; i < bpl; i++) {
-			if(!count) {
-				if(!SDL_RWread(src, &ch, 1, 1)) {
-					error = "file truncated";
-					goto done;
-				}
-				if( (ch & 0xc0) == 0xc0) {
-					count = ch & 0x3f;
+		if ( pcxh.Encoding == 0 ) {
+			if(!SDL_RWread(src, dst, bpl, 1)) {
+				error = "file truncated";
+				goto done;
+			}
+		} else {
+			for(i = 0; i < bpl; i++) {
+				if(!count) {
 					if(!SDL_RWread(src, &ch, 1, 1)) {
 						error = "file truncated";
 						goto done;
 					}
-				} else
-					count = 1;
+					if( (ch & 0xc0) == 0xc0) {
+						count = ch & 0x3f;
+						if(!SDL_RWread(src, &ch, 1, 1)) {
+							error = "file truncated";
+							goto done;
+						}
+					} else
+						count = 1;
+				}
+				dst[i] = ch;
+				count--;
 			}
-			dst[i] = ch;
-			count--;
 		}
 
 		if(src_bits <= 4) {

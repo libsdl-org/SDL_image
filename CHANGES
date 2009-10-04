@@ -1,4 +1,6 @@
 1.2.8:
+Sam Lantinga - Sun Oct  4 13:12:54 PDT 2009
+ * Added support for uncompressed PCX files
 Mason Wheeler - 2009-06-10 06:29:45 PDT 
  * Added IMG_Init()/IMG_Quit() to prevent constantly loading and unloading DLLs
 Couriersud - Mon, 12 Jan 2009 17:21:13 -0800
