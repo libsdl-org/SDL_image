@@ -190,6 +190,12 @@ if test x$enable_png = xyes; then
                 if test x$png_lib = x; then
                     png_lib=[`find_lib "libpng.so.[0-9]*"`]
                 fi
+                if test x$png_lib = x; then
+                    png_lib=[`find_lib "libpng*.so.[0-9]"`]
+                fi
+                if test x$png_lib = x; then
+                    png_lib=[`find_lib "libpng*.so.[0-9]*"`]
+                fi
                 ;;
         esac
     else
