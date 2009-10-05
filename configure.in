@@ -172,9 +172,15 @@ if test x$enable_jpg = xyes || test x$enable_tif = xyes; then
     fi
 fi
 
-if test x$enable_png = xyes; then
-    AC_CHECK_HEADER([png.h], [have_png_hdr=yes])
-    AC_CHECK_LIB([png], [png_create_read_struct], [have_png_lib=yes], [], [-lz])
+if test "x$enable_png" = xyes; then
+    PKG_CHECK_MODULES([LIBPNG], [libpng], [dnl
+        have_png_hdr=yes
+        CFLAGS="$LIBPNG_CFLAGS $CFLAGS"
+        have_png_lib=yes
+      ], [dnl
+        AC_CHECK_HEADER([png.h], [have_png_hdr=yes])
+        AC_CHECK_LIB([png], [png_create_read_struct], [have_png_lib=yes], [], [-lz])
+      ])
     if test x$have_png_hdr = xyes -a x$have_png_lib = xyes; then
         AC_DEFINE([LOAD_PNG])
 
