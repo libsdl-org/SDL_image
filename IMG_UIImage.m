@@ -8,8 +8,7 @@
  */
 #include "SDL_image.h"
 #import <UIKit/UIKit.h>
-#import <Foundation/Foundation.h>
-
+#import <MobileCoreServices/MobileCoreServices.h> // for UTCoreTypes.h
 
 // Once we have our image, we need to get it into an SDL_Surface
 // (Copied straight from the ImageIO backend.)
