@@ -71,6 +71,10 @@ static int initialized = 0;
 
 int IMG_Init(int flags)
 {
+#if defined(__APPLE__) && !defined(SDL_IMAGE_USE_COMMON_BACKEND)
+	initialized = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
+	return initialized;
+#else
 	int result = 0;
 
 	if ((flags & IMG_INIT_JPG) && !(initialized & IMG_INIT_JPG)) {
@@ -91,10 +95,12 @@ int IMG_Init(int flags)
 	initialized |= result;
 
 	return (result);
+#endif
 }
 
 void IMG_Quit()
 {
+#if !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
 	if (initialized & IMG_INIT_JPG) {
 		IMG_QuitJPG();
 	}
@@ -104,6 +110,7 @@ void IMG_Quit()
 	if (initialized & IMG_INIT_TIF) {
 		IMG_QuitTIF();
 	}
+#endif
 	initialized = 0;
 }
 
