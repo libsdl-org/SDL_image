@@ -9,8 +9,7 @@ dnl AM_PATH_SDL([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for SDL, and define SDL_CFLAGS and SDL_LIBS
 dnl
 AC_DEFUN([AM_PATH_SDL],
-[AC_REQUIRE([PKG_PROG_PKG_CONFIG])
-dnl 
+[dnl 
 dnl Get the cflags and libraries from the sdl-config script
 dnl
 AC_ARG_WITH(sdl-prefix,[  --with-sdl-prefix=PFX   Prefix where SDL is installed (optional)],
@@ -47,6 +46,7 @@ AC_ARG_ENABLE(sdltest, [  --disable-sdltest       Do not try to compile and run 
 
   if test "x$sdl_pc" = xyes ; then
     no_sdl=""
+    SDL_CONFIG="pkg-config sdl"
   else
     as_save_PATH="$PATH"
     if test "x$prefix" != xNONE && test "$cross_compiling" != yes; then
