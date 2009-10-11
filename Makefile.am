@@ -34,7 +34,6 @@ EXTRA_DIST =			\
 	IMG_ImageIO.c		\
 	IMG_UIImage.m		\
 	SDL_image.spec		\
-	SDL_image.spec.in	\
 	gcc-fat.sh		\
 	autogen.sh
 
