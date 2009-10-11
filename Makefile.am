@@ -30,6 +30,8 @@ EXTRA_DIST =			\
 	MPWmake.sea.bin		\
 	Watcom-OS2.zip		\
 	IMG_xxx.c		\
+	IMG_ImageIO.c		\
+	IMG_UIImage.m		\
 	SDL_image.spec		\
 	SDL_image.spec.in	\
 	gcc-fat.sh		\
