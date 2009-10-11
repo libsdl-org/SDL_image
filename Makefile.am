@@ -27,6 +27,7 @@ EXTRA_DIST =			\
 	VisualC.zip		\
 	VisualCE.zip		\
 	Xcode.tar.gz		\
+	Xcode_iPhone.tar.gz	\
 	MPWmake.sea.bin		\
 	Watcom-OS2.zip		\
 	IMG_xxx.c		\
