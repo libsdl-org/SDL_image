@@ -78,6 +78,29 @@ case "$host" in
 esac
 AM_CONDITIONAL(USE_VERSION_RC, test x$use_version_rc = xtrue)
 
+dnl set this to use on systems that use lib64 instead of lib
+base_libdir=`echo \${libdir} | sed 's/.*\/\(.*\)/\1/; q'`
+
+dnl Function to find a library in the compiler search path
+find_lib()
+{
+    gcc_bin_path=[`$CC -print-search-dirs 2>/dev/null | fgrep programs: | sed 's/[^=]*=\(.*\)/\1/' | sed 's/:/ /g'`]
+    gcc_lib_path=[`$CC -print-search-dirs 2>/dev/null | fgrep libraries: | sed 's/[^=]*=\(.*\)/\1/' | sed 's/:/ /g'`]
+    env_lib_path=[`echo $LIBS $LDFLAGS $* | sed 's/-L[ ]*//g'`]
+    if test "$cross_compiling" = yes; then
+        host_lib_path=""
+    else
+        host_lib_path="/usr/$base_libdir /usr/local/$base_libdir"
+    fi
+    for path in $gcc_bin_path $gcc_lib_path $env_lib_path $host_lib_path; do
+        lib=[`ls -- $path/$1 2>/dev/null | sort | sed 's/.*\/\(.*\)/\1/; q'`]
+        if test x$lib != x; then
+            echo $lib
+            return
+        fi
+    done
+}
+
 dnl Check for SDL
 SDL_VERSION=1.2.10
 AC_SUBST(SDL_VERSION)
@@ -120,25 +143,6 @@ AC_ARG_ENABLE([xpm], [AC_HELP_STRING([--enable-xpm], [support loading XPM images
  [], [enable_xpm=yes])
 AC_ARG_ENABLE([xv], [AC_HELP_STRING([--enable-xv], [support loading XV images [default=yes]])],
  [], [enable_xv=yes])
-
-find_lib()
-{
-    gcc_bin_path=[`$CC -print-search-dirs 2>/dev/null | fgrep programs: | sed 's/[^=]*=\(.*\)/\1/' | sed 's/:/ /g'`]
-    gcc_lib_path=[`$CC -print-search-dirs 2>/dev/null | fgrep libraries: | sed 's/[^=]*=\(.*\)/\1/' | sed 's/:/ /g'`]
-    env_lib_path=[`echo $LIBS $LDFLAGS | sed 's/-L[ ]*//g'`]
-    if test "$cross_compiling" = yes; then
-        host_lib_path=""
-    else
-        host_lib_path="/usr/lib /usr/local/lib"
-    fi
-    for path in $gcc_bin_path $gcc_lib_path $env_lib_path $host_lib_path; do
-        lib=[`ls -- $path/$1 2>/dev/null | sort -r | sed 's/.*\/\(.*\)/\1/; q'`]
-        if test x$lib != x; then
-            echo $lib
-            return
-        fi
-    done
-}
 
 if test x$enable_jpg = xyes || test x$enable_tif = xyes; then
     AC_CHECK_HEADER([jpeglib.h], [have_jpg_hdr=yes])
