@@ -318,7 +318,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	}
 	start = SDL_RWtell(src);
 
-	if ( IMG_InitPNG() < 0 ) {
+	if ( IMG_Init(IMG_INIT_PNG) < 0 ) {
 		return NULL;
 	}
 
@@ -497,10 +497,7 @@ done:	/* Clean up and return */
 			SDL_FreeSurface(surface);
 			surface = NULL;
 		}
-		IMG_QuitPNG();
 		IMG_SetError(error);
-	} else {
-		IMG_QuitPNG();
 	}
 	return(surface); 
 }

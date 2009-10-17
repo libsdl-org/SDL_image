@@ -216,7 +216,7 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 	}
 	start = SDL_RWtell(src);
 
-	if ( IMG_InitTIF() < 0 ) {
+	if ( IMG_Init(IMG_INIT_TIF) < 0 ) {
 		return NULL;
 	}
 
@@ -257,7 +257,6 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 		}
 	}
 	lib.TIFFClose(tiff);
-	IMG_QuitTIF();
 	
 	return surface;
 
@@ -266,7 +265,6 @@ error:
 	if ( surface ) {
 		SDL_FreeSurface(surface);
 	}
-	IMG_QuitTIF();
 	return NULL;
 }
 
