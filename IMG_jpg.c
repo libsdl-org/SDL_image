@@ -379,7 +379,7 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 	}
 	start = SDL_RWtell(src);
 
-	if ( IMG_InitJPG() < 0 ) {
+	if ( IMG_Init(IMG_INIT_JPG) < 0 ) {
 		return NULL;
 	}
 
@@ -394,7 +394,6 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 			SDL_FreeSurface(surface);
 		}
 		SDL_RWseek(src, start, SEEK_SET);
-		IMG_QuitJPG();
 		IMG_SetError("JPEG loading error");
 		return NULL;
 	}
@@ -443,7 +442,6 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 	if ( surface == NULL ) {
 		lib.jpeg_destroy_decompress(&cinfo);
 		SDL_RWseek(src, start, SEEK_SET);
-		IMG_QuitJPG();
 		IMG_SetError("Out of memory");
 		return NULL;
 	}
@@ -457,8 +455,6 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 	}
 	lib.jpeg_finish_decompress(&cinfo);
 	lib.jpeg_destroy_decompress(&cinfo);
-
-	IMG_QuitJPG();
 
 	return(surface);
 }
