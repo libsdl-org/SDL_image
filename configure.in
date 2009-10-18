@@ -155,7 +155,7 @@ if test x$enable_jpg = xyes || test x$enable_tif = xyes; then
 
         case "$host" in
             *-*-darwin*)
-                jpg_lib=[`find_lib libjpeg*.dylib`]
+                jpg_lib=[`find_lib libjpeg.dylib`]
                 ;;
             *-*-cygwin* | *-*-mingw32*)
                 jpg_lib=[`find_lib "jpeg.dll"`]
@@ -190,7 +190,7 @@ if test "x$enable_png" = xyes; then
 
         case "$host" in
             *-*-darwin*)
-                png_lib=[`find_lib libpng*.dylib`]
+                png_lib=[`find_lib libpng.dylib`]
                 ;;
             *-*-cygwin* | *-*-mingw32*)
                 png_lib=[`find_lib "libpng*.dll"`]
@@ -222,7 +222,7 @@ if test x$enable_tif = xyes; then
 
         case "$host" in
             *-*-darwin*)
-                tif_lib=[`find_lib libtiff*.dylib`]
+                tif_lib=[`find_lib libtiff.dylib`]
                 ;;
             *-*-cygwin* | *-*-mingw32*)
                 tif_lib=[`find_lib "libtiff-*.dll"`]
