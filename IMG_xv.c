@@ -96,7 +96,7 @@ int IMG_isXV(SDL_RWops *src)
 	if ( get_header(src, &w, &h) == 0 ) {
 		is_XV = 1;
 	}
-	SDL_RWseek(src, start, SEEK_SET);
+	SDL_RWseek(src, start, RW_SEEK_SET);
 	return(is_XV);
 }
 
@@ -139,7 +139,7 @@ SDL_Surface *IMG_LoadXV_RW(SDL_RWops *src)
 
 done:
 	if ( error ) {
-		SDL_RWseek(src, start, SEEK_SET);
+		SDL_RWseek(src, start, RW_SEEK_SET);
 		if ( surface ) {
 			SDL_FreeSurface(surface);
 			surface = NULL;

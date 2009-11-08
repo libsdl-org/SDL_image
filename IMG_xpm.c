@@ -68,7 +68,7 @@ int IMG_isXPM(SDL_RWops *src)
 			is_XPM = 1;
 		}
 	}
-	SDL_RWseek(src, start, SEEK_SET);
+	SDL_RWseek(src, start, RW_SEEK_SET);
 	return(is_XPM);
 }
 
@@ -457,7 +457,7 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
 done:
 	if(error) {
 		if ( src )
-			SDL_RWseek(src, start, SEEK_SET);
+			SDL_RWseek(src, start, RW_SEEK_SET);
 		if ( image ) {
 			SDL_FreeSurface(image);
 			image = NULL;

@@ -281,7 +281,7 @@ int IMG_isPNG(SDL_RWops *src)
 			is_PNG = 1;
 		}
 	}
-	SDL_RWseek(src, start, SEEK_SET);
+	SDL_RWseek(src, start, RW_SEEK_SET);
 	return(is_PNG);
 }
 
@@ -492,7 +492,7 @@ done:	/* Clean up and return */
 		free(row_pointers);
 	}
 	if ( error ) {
-		SDL_RWseek(src, start, SEEK_SET);
+		SDL_RWseek(src, start, RW_SEEK_SET);
 		if ( surface ) {
 			SDL_FreeSurface(surface);
 			surface = NULL;

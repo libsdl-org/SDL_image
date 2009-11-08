@@ -82,7 +82,7 @@ int IMG_isPCX(SDL_RWops *src)
 			is_PCX = 1;
 		}
 	}
-	SDL_RWseek(src, start, SEEK_SET);
+	SDL_RWseek(src, start, RW_SEEK_SET);
 	return(is_PCX);
 }
 
@@ -250,7 +250,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 done:
 	free(buf);
 	if ( error ) {
-		SDL_RWseek(src, start, SEEK_SET);
+		SDL_RWseek(src, start, RW_SEEK_SET);
 		if ( surface ) {
 			SDL_FreeSurface(surface);
 			surface = NULL;
