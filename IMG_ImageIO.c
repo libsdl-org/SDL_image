@@ -449,6 +449,32 @@ static SDL_Surface* LoadImageFromFile(const char* file)
 	return sdl_surface;	
 }
 
+int IMG_InitJPG()
+{
+	return 0;
+}
+
+void IMG_QuitJPG()
+{
+}
+
+int IMG_InitPNG()
+{
+	return 0;
+}
+
+void IMG_QuitPNG()
+{
+}
+
+int IMG_InitTIF()
+{
+	return 0;
+}
+
+void IMG_QuitTIF()
+{
+}
 
 int IMG_isCUR(SDL_RWops *src)
 {

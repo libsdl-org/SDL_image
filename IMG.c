@@ -61,20 +61,16 @@ const SDL_version *IMG_Linked_Version(void)
 }
 
 extern int IMG_InitJPG();
-extern int IMG_QuitJPG();
+extern void IMG_QuitJPG();
 extern int IMG_InitPNG();
-extern int IMG_QuitPNG();
+extern void IMG_QuitPNG();
 extern int IMG_InitTIF();
-extern int IMG_QuitTIF();
+extern void IMG_QuitTIF();
 
 static int initialized = 0;
 
 int IMG_Init(int flags)
 {
-#if defined(__APPLE__) && !defined(SDL_IMAGE_USE_COMMON_BACKEND)
-	initialized = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
-	return initialized;
-#else
 	int result = 0;
 
 	if ((flags & IMG_INIT_JPG) && !(initialized & IMG_INIT_JPG)) {
@@ -95,12 +91,10 @@ int IMG_Init(int flags)
 	initialized |= result;
 
 	return (result);
-#endif
 }
 
 void IMG_Quit()
 {
-#if !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
 	if (initialized & IMG_INIT_JPG) {
 		IMG_QuitJPG();
 	}
@@ -110,7 +104,6 @@ void IMG_Quit()
 	if (initialized & IMG_INIT_TIF) {
 		IMG_QuitTIF();
 	}
-#endif
 	initialized = 0;
 }
 
