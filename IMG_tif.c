@@ -216,7 +216,7 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 	}
 	start = SDL_RWtell(src);
 
-	if ( IMG_Init(IMG_INIT_TIF) < 0 ) {
+	if ( !IMG_Init(IMG_INIT_TIF) ) {
 		return NULL;
 	}
 

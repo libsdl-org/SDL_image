@@ -1,3 +1,7 @@
+1.2.9:
+Sam Lantinga - Sun Nov  8 07:52:11 PST 2009
+ * Fixed checking for IMG_Init() return value in image loaders
+
 1.2.8:
 Sam Lantinga - Sun Oct  4 13:12:54 PDT 2009
  * Added support for uncompressed PCX files

@@ -265,6 +265,32 @@ SDL_Surface *IMG_Load(const char *file)
 }
 
 
+int IMG_InitJPG()
+{
+	return 0;
+}
+
+void IMG_QuitJPG()
+{
+}
+
+int IMG_InitPNG()
+{
+	return 0;
+}
+
+void IMG_QuitPNG()
+{
+}
+
+int IMG_InitTIF()
+{
+	return 0;
+}
+
+void IMG_QuitTIF()
+{
+}
 
 /* Copied straight from other files so I don't have to alter them. */
 static int IMG_isICOCUR(SDL_RWops *src, int type)
