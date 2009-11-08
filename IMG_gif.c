@@ -47,7 +47,7 @@ int IMG_isGIF(SDL_RWops *src)
 			is_GIF = 1;
 		}
 	}
-	SDL_RWseek(src, start, SEEK_SET);
+	SDL_RWseek(src, start, RW_SEEK_SET);
 	return(is_GIF);
 }
 
@@ -266,7 +266,7 @@ IMG_LoadGIF_RW(SDL_RWops *src)
 
 done:
     if ( image == NULL ) {
-        SDL_RWseek(src, start, SEEK_SET);
+        SDL_RWseek(src, start, RW_SEEK_SET);
     }
     return image;
 }

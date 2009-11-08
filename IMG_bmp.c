@@ -47,7 +47,7 @@ int IMG_isBMP(SDL_RWops *src)
 			is_BMP = 1;
 		}
 	}
-	SDL_RWseek(src, start, SEEK_SET);
+	SDL_RWseek(src, start, RW_SEEK_SET);
 	return(is_BMP);
 }
 
@@ -70,7 +70,7 @@ static int IMG_isICOCUR(SDL_RWops *src, int type)
     bfCount = SDL_ReadLE16(src);
     if ((bfReserved == 0) && (bfType == type) && (bfCount != 0)) 
     	is_ICOCUR = 1;
-	SDL_RWseek(src, start, SEEK_SET);
+	SDL_RWseek(src, start, RW_SEEK_SET);
 
 	return (is_ICOCUR);
 }
@@ -361,7 +361,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 	/* Load the palette, if any */
 	palette = (surface->format)->palette;
 	if ( palette ) {
-		if ( SDL_RWseek(src, fp_offset+14+biSize, SEEK_SET) < 0 ) {
+		if ( SDL_RWseek(src, fp_offset+14+biSize, RW_SEEK_SET) < 0 ) {
 			SDL_Error(SDL_EFSEEK);
 			was_error = SDL_TRUE;
 			goto done;
@@ -393,7 +393,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 	}
 
 	/* Read the surface pixels.  Note that the bmp image is upside down */
-	if ( SDL_RWseek(src, fp_offset+bfOffBits, SEEK_SET) < 0 ) {
+	if ( SDL_RWseek(src, fp_offset+bfOffBits, RW_SEEK_SET) < 0 ) {
 		SDL_Error(SDL_EFSEEK);
 		was_error = SDL_TRUE;
 		goto done;
@@ -489,7 +489,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 done:
 	if ( was_error ) {
 		if ( src ) {
-			SDL_RWseek(src, fp_offset, SEEK_SET);
+			SDL_RWseek(src, fp_offset, RW_SEEK_SET);
 		}
 		if ( surface ) {
 			SDL_FreeSurface(surface);

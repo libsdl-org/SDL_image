@@ -79,7 +79,7 @@ int IMG_isLBM( SDL_RWops *src )
 			is_LBM = 1;
 		}
 	}
-	SDL_RWseek(src, start, SEEK_SET);
+	SDL_RWseek(src, start, RW_SEEK_SET);
 	return( is_LBM );
 }
 
@@ -220,7 +220,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 			if ( size & 1 )	++size;  	/* padding ! */
 			size -= bytesloaded;
 			/* skip the remaining bytes of this chunk */
-			if ( size )	SDL_RWseek( src, size, SEEK_CUR );
+			if ( size )	SDL_RWseek( src, size, RW_SEEK_CUR );
 		}
 	}
 
@@ -474,7 +474,7 @@ done:
 
 	if ( error )
 	{
-		SDL_RWseek(src, start, SEEK_SET);
+		SDL_RWseek(src, start, RW_SEEK_SET);
 		if ( Image ) {
 			SDL_FreeSurface( Image );
 			Image = NULL;

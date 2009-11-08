@@ -63,7 +63,7 @@ int IMG_isPNM(SDL_RWops *src)
 			is_PNM = 1;
 		}
 	}
-	SDL_RWseek(src, start, SEEK_SET);
+	SDL_RWseek(src, start, RW_SEEK_SET);
 	return(is_PNM);
 }
 
@@ -232,7 +232,7 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 done:
 	free(buf);
 	if(error) {
-		SDL_RWseek(src, start, SEEK_SET);
+		SDL_RWseek(src, start, RW_SEEK_SET);
 		if ( surface ) {
 			SDL_FreeSurface(surface);
 			surface = NULL;

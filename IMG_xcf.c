@@ -222,7 +222,7 @@ int IMG_isXCF(SDL_RWops *src)
 			is_XCF = 1;
 		}
 	}
-	SDL_RWseek(src, start, SEEK_SET);
+	SDL_RWseek(src, start, RW_SEEK_SET);
 	return(is_XCF);
 }
 
@@ -282,7 +282,7 @@ static void xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
     break;
   default:
     //    SDL_RWread (src, &prop->data, prop->length, 1);
-    SDL_RWseek (src, prop->length, SEEK_CUR);
+    SDL_RWseek (src, prop->length, RW_SEEK_CUR);
   }
 }
 
@@ -553,17 +553,17 @@ static int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header 
   int x, y, tx, ty, ox, oy, i, j;
   Uint32 *row;
 
-  SDL_RWseek (src, layer->hierarchy_file_offset, SEEK_SET);
+  SDL_RWseek (src, layer->hierarchy_file_offset, RW_SEEK_SET);
   hierarchy = read_xcf_hierarchy (src);
 
   level = NULL;
   for (i = 0; hierarchy->level_file_offsets [i]; i++) {
-    SDL_RWseek (src, hierarchy->level_file_offsets [i], SEEK_SET);
+    SDL_RWseek (src, hierarchy->level_file_offsets [i], RW_SEEK_SET);
     level = read_xcf_level (src);
 
     ty = tx = 0;
     for (j = 0; level->tile_file_offsets [j]; j++) {
-      SDL_RWseek (src, level->tile_file_offsets [j], SEEK_SET);
+      SDL_RWseek (src, level->tile_file_offsets [j], RW_SEEK_SET);
       ox = tx+64 > level->width ? level->width % 64 : 64;
       oy = ty+64 > level->height ? level->height % 64 : 64;
 
@@ -739,7 +739,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
   // Blit layers backwards, because Gimp saves them highest first
   for (i = offsets; i > 0; i--) {
     SDL_Rect rs, rd;
-    SDL_RWseek (src, head->layer_file_offsets [i-1], SEEK_SET);
+    SDL_RWseek (src, head->layer_file_offsets [i-1], RW_SEEK_SET);
 
     layer = read_xcf_layer (src);
     do_layer_surface (lays, src, head, layer, load_tile);
@@ -759,7 +759,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
 
   SDL_FreeSurface (lays);
 
-  SDL_RWseek (src, fp, SEEK_SET);
+  SDL_RWseek (src, fp, RW_SEEK_SET);
 
   // read channels
   channel = NULL;
@@ -767,9 +767,9 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
   while ((offset = SDL_ReadBE32 (src))) {
     channel = (xcf_channel **) realloc (channel, sizeof (xcf_channel *) * (chnls+1));
     fp = SDL_RWtell (src);
-    SDL_RWseek (src, offset, SEEK_SET);
+    SDL_RWseek (src, offset, RW_SEEK_SET);
     channel [chnls++] = (read_xcf_channel (src));
-    SDL_RWseek (src, fp, SEEK_SET);    
+    SDL_RWseek (src, fp, RW_SEEK_SET);    
   }
 
   if (chnls) {
@@ -797,7 +797,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
 done:
   free_xcf_header (head);
   if ( error ) {
-    SDL_RWseek(src, start, SEEK_SET);
+    SDL_RWseek(src, start, RW_SEEK_SET);
     if ( surface ) {
       SDL_FreeSurface(surface);
       surface = NULL;
