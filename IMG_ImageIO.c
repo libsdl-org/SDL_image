@@ -6,6 +6,9 @@
  *  Copyright 2009 __MyCompanyName__. All rights reserved.
  *
  */
+
+#if defined(__APPLE__) && !defined(SDL_IMAGE_USE_COMMON_BACKEND)
+
 #include "SDL_image.h"
 
 // For ImageIO framework and also LaunchServices framework (for UTIs)
@@ -282,7 +285,26 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage(CGImageRef image_ref)
 
 		// FIXME: Reverse the premultiplied alpha
 		if ((bitmap_info & kCGBitmapAlphaInfoMask) == kCGImageAlphaPremultipliedFirst) {
-			// Errr, alpha premultiplication is lossy...
+			int i, j;
+			Uint8 *p = (Uint8 *)surface->pixels;
+			for (i = surface->h * surface->pitch/4; i--; ) {
+#if __LITTLE_ENDIAN__
+				Uint8 A = p[3];
+				if (A) {
+					for (j = 0; j < 3; ++j) {
+						p[j] = (p[j] * 255) / A;
+					}
+				}
+#else
+				Uint8 A = p[0];
+				if (A) {
+					for (j = 1; i < 4; ++j) {
+						p[j] = (p[j] * 255) / A;
+					}
+				}
+#endif /* ENDIAN */
+				p += 4;
+			}
 		}
 	}
 
@@ -487,3 +509,4 @@ SDL_Surface* IMG_Load(const char *file)
 	return sdl_surface;
 }
 
+#endif /* defined(__APPLE__) && !defined(SDL_IMAGE_USE_COMMON_BACKEND) */
