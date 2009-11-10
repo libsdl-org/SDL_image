@@ -44,13 +44,9 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage(CGImageRef image_ref)
 		case 32:
 		{
 			color_space = CGColorSpaceCreateDeviceRGB();
-#if __BIG_ENDIAN__
-			//bitmap_info = kCGImageAlphaFirst | kCGBitmapByteOrder32Big; /* ARGB Big Endian */
-			bitmap_info = kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Big; /* ARGB Big Endian */
-#else
-			//bitmap_info = kCGImageAlphaFirst | kCGBitmapByteOrder32Little; /* ARGB Little Endian */
-			bitmap_info = kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little; /* ARGB Little Endian */
-#endif 
+			//bitmap_info = kCGImageAlphaFirst | kCGBitmapByteOrder32Host; /* ARGB */
+			bitmap_info = kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host; /* ARGB */
+
 			Amask = 0xFF000000;
 			Rmask = 0x00FF0000;
 			Gmask = 0x0000FF00;
@@ -62,11 +58,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage(CGImageRef image_ref)
 		default:
 		{
 			color_space = CGColorSpaceCreateDeviceRGB();
-#if __BIG_ENDIAN__
-			bitmap_info = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Big; /* XRGB Big Endian */
-#else
-			bitmap_info = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Little; /* XRGB Little Endian */
-#endif
+			bitmap_info = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Host; /* XRGB */
 			Amask = 0x00000000;
 			Rmask = 0x00FF0000;
 			Gmask = 0x0000FF00;
