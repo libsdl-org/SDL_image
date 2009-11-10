@@ -75,6 +75,15 @@ case "$host" in
             use_version_rc=true
         fi
         ;;
+    *-*-darwin*)
+        AC_ARG_ENABLE([imageio], [AC_HELP_STRING([--enable-imageio], [use native Mac OS X frameworks for loading images [default=yes]])],
+                      [], [enable_imageio=yes])
+        if test x$enable_imageio = xyes; then
+            IMG_LIBS="-Wl,-framework,ApplicationServices $IMG_LIBS"
+        else
+            CFLAGS="$CFLAGS -DSDL_IMAGE_USE_COMMON_BACKEND"
+        fi
+        ;;
 esac
 AM_CONDITIONAL(USE_VERSION_RC, test x$use_version_rc = xtrue)
 
@@ -108,7 +117,7 @@ AM_PATH_SDL($SDL_VERSION,
             :,
            AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
 )
-CFLAGS="$CFLAGS -DSDL_IMAGE_USE_COMMON_BACKEND $SDL_CFLAGS"
+CFLAGS="$CFLAGS $SDL_CFLAGS"
 LIBS="$LIBS $SDL_LIBS"
 saved_LIBS="$LIBS"
 

@@ -21,18 +21,13 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage(CGImageRef image_ref)
 	 * non-RGBA image formats so I'm making the rest up.
 	 * All this code should be scrutinized.
 	 */
-	
+
 	size_t the_width = CGImageGetWidth(image_ref);
 	size_t the_height = CGImageGetHeight(image_ref);
 	CGRect the_rect = {{0, 0}, {the_width, the_height}};
-	
+
 	size_t bits_per_pixel = CGImageGetBitsPerPixel(image_ref);
-	size_t bytes_per_row = CGImageGetBytesPerRow(image_ref);
-	//	size_t bits_per_component = CGImageGetBitsPerComponent(image_ref);
 	size_t bits_per_component = 8;
-	
-//	CGImageAlphaInfo alpha_info = CGImageGetAlphaInfo(image_ref);
-	
 
 	SDL_Surface* sdl_surface = NULL;
 	Uint32 Rmask;
@@ -40,143 +35,73 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage(CGImageRef image_ref)
 	Uint32 Bmask;
 	Uint32 Amask;
 
-	
 	CGContextRef bitmap_context = NULL;
-	
 	CGColorSpaceRef color_space = NULL;
 	CGBitmapInfo bitmap_info = CGImageGetBitmapInfo(image_ref);
 
-	
-	switch(bits_per_pixel)
+	switch (bits_per_pixel)
 	{
-		case 8:
-		{
-			bytes_per_row = the_width*4;
-			//				color_space = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
-			color_space = CGColorSpaceCreateDeviceRGB();
-			//				bitmap_info = kCGImageAlphaPremultipliedFirst;
-#if __BIG_ENDIAN__
-			bitmap_info = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Big; /* XRGB Big Endian */
-#else
-			bitmap_info = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Little; /* XRGB Little Endian */
-#endif
-
-			Rmask = 0x00FF0000;
-			Gmask = 0x0000FF00;
-			Bmask = 0x000000FF;
-			Amask = 0x00000000;
-
-			sdl_surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
-											   the_width, the_height, 32, Rmask, Gmask, Bmask, Amask);
-
-
-			
-			break;
-		}
-		case 15:
-		case 16:
-		{
-			bytes_per_row = the_width*4;
-
-			color_space = CGColorSpaceCreateDeviceRGB();
-
-#if __BIG_ENDIAN__
-			bitmap_info = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Big; /* XRGB Big Endian */
-#else
-			bitmap_info = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Little; /* XRGB Little Endian */
-#endif
-			Rmask = 0x00FF0000;
-			Gmask = 0x0000FF00;
-			Bmask = 0x000000FF;
-			Amask = 0x00000000;
-
-
-			sdl_surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
-											   the_width, the_height, 32, Rmask, Gmask, Bmask, Amask);
-
-			break;
-		}
-		case 24:
-		{
-			bytes_per_row = the_width*4;
-			//			color_space = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
-			color_space = CGColorSpaceCreateDeviceRGB();
-			//			bitmap_info = kCGImageAlphaNone;
-#if __BIG_ENDIAN__
-			bitmap_info = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Big; /* XRGB Big Endian */
-#else
-			bitmap_info = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Little; /* XRGB Little Endian */
-#endif
-			Rmask = 0x00FF0000;
-			Gmask = 0x0000FF00;
-			Bmask = 0x000000FF;
-			Amask = 0x00000000;
-
-			sdl_surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
-											   the_width, the_height, 32, Rmask, Gmask, Bmask, Amask);
-
-			break;
-		}
 		case 32:
 		{
-						
-			bytes_per_row = the_width*4;
-			//			color_space = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
 			color_space = CGColorSpaceCreateDeviceRGB();
-			//			bitmap_info = kCGImageAlphaPremultipliedFirst;
 #if __BIG_ENDIAN__
-			bitmap_info = kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Big; /* XRGB Big Endian */
+			//bitmap_info = kCGImageAlphaFirst | kCGBitmapByteOrder32Big; /* ARGB Big Endian */
+			bitmap_info = kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Big; /* ARGB Big Endian */
 #else
-			bitmap_info = kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little; /* XRGB Little Endian */
+			//bitmap_info = kCGImageAlphaFirst | kCGBitmapByteOrder32Little; /* ARGB Little Endian */
+			bitmap_info = kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little; /* ARGB Little Endian */
 #endif 
 			Amask = 0xFF000000;
 			Rmask = 0x00FF0000;
 			Gmask = 0x0000FF00;
 			Bmask = 0x000000FF;
 
-			sdl_surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
-											   the_width, the_height, 32, Rmask, Gmask, Bmask, Amask);
+			sdl_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, the_width, the_height, 32, Rmask, Gmask, Bmask, Amask);
 			break;
 		}
 		default:
 		{
-            sdl_surface = NULL;
-            break;
+			color_space = CGColorSpaceCreateDeviceRGB();
+#if __BIG_ENDIAN__
+			bitmap_info = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Big; /* XRGB Big Endian */
+#else
+			bitmap_info = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Little; /* XRGB Little Endian */
+#endif
+			Amask = 0x00000000;
+			Rmask = 0x00FF0000;
+			Gmask = 0x0000FF00;
+			Bmask = 0x000000FF;
+
+			sdl_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, the_width, the_height, 32, Rmask, Gmask, Bmask, Amask);
+			break;
 		}
-			
 	}
 
-	if(NULL == sdl_surface)
+	if (sdl_surface)
 	{
-		if(color_space != NULL)
-		{
-			CGColorSpaceRelease(color_space);			
-		}
-		return NULL;
+		// Sets up a context to be drawn to with sdl_surface->pixels as the area to be drawn to
+		bitmap_context = CGBitmapContextCreate(
+															sdl_surface->pixels,
+															the_width,
+															the_height,
+															bits_per_component,
+															sdl_surface->pitch,
+															color_space,
+															bitmap_info
+															);
+
+		// Draws the image into the context's image_data
+		CGContextDrawImage(bitmap_context, the_rect, image_ref);
+
+		CGContextRelease(bitmap_context);
 	}
 
+	if (color_space)
+	{
+		CGColorSpaceRelease(color_space);			
+	}
 
-	// Sets up a context to be drawn to with sdl_surface->pixels as the area to be drawn to
-	bitmap_context = CGBitmapContextCreate(
-														sdl_surface->pixels,
-														the_width,
-														the_height,
-														bits_per_component,
-														bytes_per_row,
-														color_space,
-														bitmap_info
-														);
-	
-	// Draws the image into the context's image_data
-	CGContextDrawImage(bitmap_context, the_rect, image_ref);
-	
-	CGContextRelease(bitmap_context);
-	CGColorSpaceRelease(color_space);
-	
 	return sdl_surface;
-	
-	
-	
 }
 
 static SDL_Surface* LoadImageFromRWops(SDL_RWops* rw_ops, CFStringRef uti_string_hint)

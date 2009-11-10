@@ -20,6 +20,8 @@
     slouken@libsdl.org
 */
 
+#if !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
+
 /* This is a TIFF image file loading framework */
 
 #include <stdio.h>
@@ -293,3 +295,5 @@ SDL_Surface *IMG_LoadTIF_RW(SDL_RWops *src)
 }
 
 #endif /* LOAD_TIF */
+
+#endif /* !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND) */
