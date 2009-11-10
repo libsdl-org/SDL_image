@@ -235,7 +235,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage(CGImageRef image_ref)
 	CGRect rect = {{0, 0}, {w, h}};
 
 	CGImageAlphaInfo alpha = CGImageGetAlphaInfo(image_ref);
-	size_t bits_per_pixel = CGImageGetBitsPerPixel(image_ref);
+	//size_t bits_per_pixel = CGImageGetBitsPerPixel(image_ref);
 	size_t bits_per_component = 8;
 
 	SDL_Surface* surface;
