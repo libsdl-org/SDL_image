@@ -22,70 +22,63 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage(CGImageRef image_ref)
 	 * All this code should be scrutinized.
 	 */
 
-	size_t the_width = CGImageGetWidth(image_ref);
-	size_t the_height = CGImageGetHeight(image_ref);
-	CGRect the_rect = {{0, 0}, {the_width, the_height}};
+	size_t w = CGImageGetWidth(image_ref);
+	size_t h = CGImageGetHeight(image_ref);
+	CGRect rect = {{0, 0}, {w, h}};
 
+	CGImageAlphaInfo alpha = CGImageGetAlphaInfo(image_ref);
 	size_t bits_per_pixel = CGImageGetBitsPerPixel(image_ref);
 	size_t bits_per_component = 8;
 
-	SDL_Surface* sdl_surface = NULL;
+	SDL_Surface* surface;
+	Uint32 Amask;
 	Uint32 Rmask;
 	Uint32 Gmask;
 	Uint32 Bmask;
-	Uint32 Amask;
 
-	CGContextRef bitmap_context = NULL;
-	CGColorSpaceRef color_space = NULL;
-	CGBitmapInfo bitmap_info = CGImageGetBitmapInfo(image_ref);
+	CGContextRef bitmap_context;
+	CGBitmapInfo bitmap_info;
+	CGColorSpaceRef color_space = CGColorSpaceCreateDeviceRGB();
 
-	switch (bits_per_pixel)
-	{
-		case 32:
-		{
-			color_space = CGColorSpaceCreateDeviceRGB();
-			//bitmap_info = kCGImageAlphaFirst | kCGBitmapByteOrder32Host; /* ARGB */
-			bitmap_info = kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host; /* ARGB */
-
-			Amask = 0xFF000000;
-			Rmask = 0x00FF0000;
-			Gmask = 0x0000FF00;
-			Bmask = 0x000000FF;
-
-			sdl_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, the_width, the_height, 32, Rmask, Gmask, Bmask, Amask);
-			break;
-		}
-		default:
-		{
-			color_space = CGColorSpaceCreateDeviceRGB();
-			bitmap_info = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Host; /* XRGB */
-			Amask = 0x00000000;
-			Rmask = 0x00FF0000;
-			Gmask = 0x0000FF00;
-			Bmask = 0x000000FF;
-
-			sdl_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, the_width, the_height, 32, Rmask, Gmask, Bmask, Amask);
-			break;
-		}
+	if (alpha == kCGImageAlphaNone ||
+	    alpha == kCGImageAlphaNoneSkipFirst ||
+	    alpha == kCGImageAlphaNoneSkipLast) {
+		bitmap_info = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Host; /* XRGB */
+		Amask = 0x00000000;
+	} else {
+		/* kCGImageAlphaFirst isn't supported */
+		//bitmap_info = kCGImageAlphaFirst | kCGBitmapByteOrder32Host; /* ARGB */
+		bitmap_info = kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host; /* ARGB */
+		Amask = 0xFF000000;
 	}
 
-	if (sdl_surface)
+	Rmask = 0x00FF0000;
+	Gmask = 0x0000FF00;
+	Bmask = 0x000000FF;
+
+	surface = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 32, Rmask, Gmask, Bmask, Amask);
+	if (surface)
 	{
-		// Sets up a context to be drawn to with sdl_surface->pixels as the area to be drawn to
+		// Sets up a context to be drawn to with surface->pixels as the area to be drawn to
 		bitmap_context = CGBitmapContextCreate(
-															sdl_surface->pixels,
-															the_width,
-															the_height,
+															surface->pixels,
+															surface->w,
+															surface->h,
 															bits_per_component,
-															sdl_surface->pitch,
+															surface->pitch,
 															color_space,
 															bitmap_info
 															);
 
 		// Draws the image into the context's image_data
-		CGContextDrawImage(bitmap_context, the_rect, image_ref);
+		CGContextDrawImage(bitmap_context, rect, image_ref);
 
 		CGContextRelease(bitmap_context);
+
+		// FIXME: Reverse the premultiplied alpha
+		if ((bitmap_info & kCGBitmapAlphaInfoMask) == kCGImageAlphaPremultipliedFirst) {
+			// Errr, alpha premultiplication is lossy...
+		}
 	}
 
 	if (color_space)
@@ -93,7 +86,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage(CGImageRef image_ref)
 		CGColorSpaceRelease(color_space);			
 	}
 
-	return sdl_surface;
+	return surface;
 }
 
 static SDL_Surface* LoadImageFromRWops(SDL_RWops* rw_ops, CFStringRef uti_string_hint)
