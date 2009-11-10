@@ -1,4 +1,6 @@
 1.2.9:
+Sam Lantinga - Tue Nov 10 00:29:20 PST 2009
+ * Fixed alpha premultiplication on Mac OS X and iPhone OS
 Sam Lantinga - Sun Nov  8 07:52:11 PST 2009
  * Fixed checking for IMG_Init() return value in image loaders
 
