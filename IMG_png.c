@@ -20,6 +20,8 @@
     slouken@libsdl.org
 */
 
+#if !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
+
 /* This is a PNG image file loading framework */
 
 #include <stdlib.h>
@@ -527,3 +529,5 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 }
 
 #endif /* LOAD_PNG */
+
+#endif /* !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND) */

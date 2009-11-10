@@ -19,7 +19,8 @@ libSDL_image_la_SOURCES =		\
 	IMG_tif.c		\
 	IMG_xcf.c		\
 	IMG_xpm.c		\
-	IMG_xv.c
+	IMG_xv.c		\
+	IMG_ImageIO.c
 
 EXTRA_DIST =			\
 	CHANGES			\
@@ -31,7 +32,6 @@ EXTRA_DIST =			\
 	MPWmake.sea.bin		\
 	Watcom-OS2.zip		\
 	IMG_xxx.c		\
-	IMG_ImageIO.c		\
 	IMG_UIImage.m		\
 	SDL_image.spec		\
 	gcc-fat.sh		\

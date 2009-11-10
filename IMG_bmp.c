@@ -20,6 +20,8 @@
     slouken@libsdl.org
 */
 
+#if !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
+
 /* This is a BMP image file loading framework */
 /* ICO/CUR file support is here as well since it uses similar internal
  * representation */
@@ -839,3 +841,5 @@ SDL_Surface *IMG_LoadICO_RW(SDL_RWops *src)
 }
 
 #endif /* LOAD_BMP */
+
+#endif /* !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND) */

@@ -20,6 +20,8 @@
     slouken@libsdl.org
 */
 
+#if !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
+
 /* This is a GIF image file loading framework */
 
 #include <stdio.h>
@@ -620,3 +622,5 @@ SDL_Surface *IMG_LoadGIF_RW(SDL_RWops *src)
 }
 
 #endif /* LOAD_GIF */
+
+#endif /* !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND) */
