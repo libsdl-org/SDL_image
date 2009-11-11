@@ -298,7 +298,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage(CGImageRef image_ref)
 #else
 				Uint8 A = p[0];
 				if (A) {
-					for (j = 1; i < 4; ++j) {
+					for (j = 1; j < 4; ++j) {
 						p[j] = (p[j] * 255) / A;
 					}
 				}
