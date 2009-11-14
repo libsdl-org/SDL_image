@@ -73,18 +73,18 @@ int IMG_Init(int flags)
 {
 	int result = 0;
 
-	if ((flags & IMG_INIT_JPG) && !(initialized & IMG_INIT_JPG)) {
-		if (IMG_InitJPG() == 0) {
+	if (flags & IMG_INIT_JPG) {
+		if ((initialized & IMG_INIT_JPG) || IMG_InitJPG() == 0) {
 			result |= IMG_INIT_JPG;
 		}
 	}
-	if ((flags & IMG_INIT_PNG) && !(initialized & IMG_INIT_PNG)) {
-		if (IMG_InitPNG() == 0) {
+	if (flags & IMG_INIT_PNG) {
+		if ((initialized & IMG_INIT_PNG) || IMG_InitPNG() == 0) {
 			result |= IMG_INIT_PNG;
 		}
 	}
-	if ((flags & IMG_INIT_TIF) && !(initialized & IMG_INIT_TIF)) {
-		if (IMG_InitTIF() == 0) {
+	if (flags & IMG_INIT_TIF) {
+		if ((initialized & IMG_INIT_TIF) || IMG_InitTIF() == 0) {
 			result |= IMG_INIT_TIF;
 		}
 	}
