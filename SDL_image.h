@@ -70,7 +70,7 @@ typedef enum
 extern DECLSPEC int SDLCALL IMG_Init(int flags);
 
 /* Unloads libraries loaded with IMG_Init */
-extern DECLSPEC void SDLCALL IMG_Quit();
+extern DECLSPEC void SDLCALL IMG_Quit(void);
 
 /* Load an image from an SDL data source.
    The 'type' may be one of: "BMP", "GIF", "PNG", etc.
