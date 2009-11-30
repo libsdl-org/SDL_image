@@ -340,6 +340,10 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 			switch (biBitCount) {
 				case 15:
 				case 16:
+					Rmask = SDL_ReadLE32(src);
+					Gmask = SDL_ReadLE32(src);
+					Bmask = SDL_ReadLE32(src);
+					break;
 				case 32:
 					Rmask = SDL_ReadLE32(src);
 					Gmask = SDL_ReadLE32(src);
