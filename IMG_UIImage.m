@@ -114,7 +114,6 @@ static SDL_Surface* LoadImageFromRWops(SDL_RWops* rw_ops, CFStringRef uti_string
 	SDL_Surface* sdl_surface;
 	UIImage* ui_image;
 
-	CGImageRef image_ref = NULL;
 	int bytes_read = 0;
 	// I don't know what a good size is. 
 	// Max recommended texture size is 1024x1024 on iPhone so maybe base it on that?
@@ -129,11 +128,6 @@ static SDL_Surface* LoadImageFromRWops(SDL_RWops* rw_ops, CFStringRef uti_string
 		bytes_read = SDL_RWread(rw_ops, temp_buffer, 1, block_size);
 		[ns_data appendBytes:temp_buffer length:bytes_read];
 	} while(bytes_read > 0);
-
-	if(NULL == image_ref)
-	{
-		return NULL;
-	}
 
 	ui_image = [[UIImage alloc] initWithData:ns_data];
 	
@@ -156,8 +150,10 @@ static SDL_Surface* LoadImageFromFile(const char *file)
 	
 	ns_string = [[NSString alloc] initWithUTF8String:file];
 	ui_image = [[UIImage alloc] initWithContentsOfFile:ns_string];
-	
-	sdl_surface = Create_SDL_Surface_From_CGImage([ui_image CGImage]);
+	if(ui_image != NULL)
+	{
+		sdl_surface = Create_SDL_Surface_From_CGImage([ui_image CGImage]);
+	}
 	
 	[ui_image release];
 	[ns_string release];
@@ -432,10 +428,6 @@ SDL_Surface* IMG_LoadJPG_RW(SDL_RWops *src)
 SDL_Surface* IMG_LoadPNG_RW(SDL_RWops *src)
 {
 	return LoadImageFromRWops(src, kUTTypePNG);
-}
-SDL_Surface* IMG_LoadTGA_RW(SDL_RWops *src)
-{
-	return LoadImageFromRWops(src, CFSTR("com.truevision.tga-image"));
 }
 SDL_Surface* IMG_LoadTIF_RW(SDL_RWops *src)
 {
