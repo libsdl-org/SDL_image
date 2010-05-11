@@ -149,7 +149,7 @@ static CGImageRef CreateCGImageFromCGImageSource(CGImageSourceRef image_source)
 {
 	CGImageRef image_ref = NULL;
 	
-    if(NULL == image_source)
+	if(NULL == image_source)
 	{
 		return NULL;
 	}
@@ -157,6 +157,10 @@ static CGImageRef CreateCGImageFromCGImageSource(CGImageSourceRef image_source)
 	// Get the first item in the image source (some image formats may
 	// contain multiple items).
 	image_ref = CGImageSourceCreateImageAtIndex(image_source, 0, NULL);
+	if(NULL == image_ref)
+	{
+		IMG_SetError("CGImageSourceCreateImageAtIndex() failed");
+	}
 	return image_ref;
 }
 
