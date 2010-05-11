@@ -239,7 +239,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 		goto done;
 	}
 	if ( strncmp(magic, "BM", 2) != 0 ) {
-		SDL_SetError("File is not a Windows BMP file");
+		IMG_SetError("File is not a Windows BMP file");
 		was_error = SDL_TRUE;
 		goto done;
 	}
@@ -406,7 +406,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 	}
 	if ((biCompression == BI_RLE4) || (biCompression == BI_RLE8)) {
 		was_error = readRlePixels(surface, src, biCompression == BI_RLE8);
-		if (was_error) SDL_SetError("Error reading from BMP");
+		if (was_error) IMG_SetError("Error reading from BMP");
 		goto done;
 	}
 	top = (Uint8 *)surface->pixels;
@@ -439,7 +439,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 			for ( i=0; i<surface->w; ++i ) {
 				if ( i%(8/ExpandBMP) == 0 ) {
 					if ( !SDL_RWread(src, &pixel, 1, 1) ) {
-						SDL_SetError(
+						IMG_SetError(
 					"Error reading from BMP");
 						was_error = SDL_TRUE;
 						goto done;
@@ -568,7 +568,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
     bfType = SDL_ReadLE16(src);
     bfCount = SDL_ReadLE16(src);
     if ((bfReserved != 0) || (bfType != type) || (bfCount == 0)) {
-        SDL_SetError("File is not a Windows %s file", type == 1 ? "ICO" : "CUR");
+        IMG_SetError("File is not a Windows %s file", type == 1 ? "ICO" : "CUR");
         was_error = SDL_TRUE;
         goto done;
     }
@@ -621,7 +621,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
         biClrUsed = SDL_ReadLE32(src);
         biClrImportant = SDL_ReadLE32(src);
     } else {
-        SDL_SetError("Unsupported ICO bitmap format");
+        IMG_SetError("Unsupported ICO bitmap format");
         was_error = SDL_TRUE;
         goto done;
     }
@@ -652,13 +652,13 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
             ExpandBMP = 0;
             break;
         default:
-            SDL_SetError("ICO file with unsupported bit count");
+            IMG_SetError("ICO file with unsupported bit count");
             was_error = SDL_TRUE;
             goto done;
         }
         break;
     default:
-        SDL_SetError("Compressed ICO files not supported");
+        IMG_SetError("Compressed ICO files not supported");
         was_error = SDL_TRUE;
         goto done;
     }
@@ -717,7 +717,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
                 for (i = 0; i < surface->w; ++i) {
                     if (i % (8 / ExpandBMP) == 0) {
                         if (!SDL_RWread(src, &pixel, 1, 1)) {
-                            SDL_SetError("Error reading from ICO");
+                            IMG_SetError("Error reading from ICO");
                             was_error = SDL_TRUE;
                             goto done;
                         }
@@ -758,7 +758,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
         for (i = 0; i < surface->w; ++i) {
             if (i % (8 / ExpandBMP) == 0) {
                 if (!SDL_RWread(src, &pixel, 1, 1)) {
-                    SDL_SetError("Error reading from ICO");
+                    IMG_SetError("Error reading from ICO");
                     was_error = SDL_TRUE;
                     goto done;
                 }
