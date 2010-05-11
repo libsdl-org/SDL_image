@@ -1,4 +1,6 @@
 1.2.11:
+Sam Lantinga - Mon May 10 22:42:53 PDT 2010
+ * Fixed loading HAM6 images with stencil mask
 Mark Tucker - Fri, 27 Nov 2009 12:38:21 -0500
  * Fixed bug loading 15 and 16 bit BMP images
 
