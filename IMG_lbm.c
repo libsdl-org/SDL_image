@@ -55,7 +55,7 @@ typedef struct
     Uint8 pad1;			/* dummy value, for padding */
     Uint16 tcolor;		/* transparent color */
     Uint8 xAspect,		/* pixel aspect ratio */
-         yAspect;
+          yAspect;
     Sint16  Lpage;		/* width of the screen in pixels */
     Sint16  Hpage;		/* height of the screen in pixels */
 } BMHD;
@@ -89,7 +89,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 	SDL_Surface *Image;
 	Uint8       id[4], pbm, colormap[MAXCOLORS*3], *MiniBuf, *ptr, count, color, msk;
 	Uint32      size, bytesloaded, nbcolors;
-	Uint32      i, j, bytesperline, nbplanes, plane, h;
+	Uint32      i, j, bytesperline, nbplanes, stencil, plane, h;
 	Uint32      remainingbytes;
 	Uint32      width;
 	BMHD	      bmhd;
@@ -238,12 +238,13 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 		nbplanes = 1;
 	}
 
-	if ( bmhd.mask & 1 ) ++nbplanes;   /* There is a mask ( 'stencil' ) */
+	stencil = (bmhd.mask & 1);   /* There is a mask ( 'stencil' ) */
 
 	/* Allocate memory for a temporary buffer ( used for
            decompression/deinterleaving ) */
 
-	if ( ( MiniBuf = (void *)malloc( bytesperline * nbplanes ) ) == NULL )
+	MiniBuf = (void *)malloc( bytesperline * (nbplanes + stencil) );
+	if ( MiniBuf == NULL )
 	{
 		error="no enough memory for temporary buffer";
 		goto done;
@@ -260,7 +261,8 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 	/* There is no palette in 24 bits ILBM file */
 	if ( nbcolors>0 && flagHAM==0 )
 	{
-		int nbrcolorsfinal = 1 << nbplanes;
+		/* FIXME: Should this include the stencil? See comment below */
+		int nbrcolorsfinal = 1 << (nbplanes + stencil);
 		ptr = &colormap[0];
 
 		for ( i=0; i<nbcolors; i++ )
@@ -308,7 +310,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 	{
 		/* uncompress the datas of each planes */
 
-		for ( plane=0; plane < nbplanes; plane++ )
+		for ( plane=0; plane < (nbplanes+stencil); plane++ )
 		{
 			ptr = MiniBuf + ( plane * bytesperline );
 
@@ -331,7 +333,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
 						if ( ( count > remainingbytes ) || !SDL_RWread( src, &color, 1, 1 ) )
 						{
-						   error="error reading BODY chunk";
+							error="error reading BODY chunk";
 							goto done;
 						}
 						memset( ptr, color, count );
@@ -384,7 +386,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 				{
 					memset( ptr, 0, 8 );
 
-					for ( plane=0; plane < nbplanes; plane++ )
+					for ( plane=0; plane < (nbplanes + stencil); plane++ )
 					{
 						color = *( MiniBuf + i + ( plane * bytesperline ) );
 						msk = 0x80;
