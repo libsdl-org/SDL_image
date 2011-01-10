@@ -429,6 +429,10 @@ SDL_Surface* IMG_LoadPNG_RW(SDL_RWops *src)
 {
 	return LoadImageFromRWops(src, kUTTypePNG);
 }
+SDL_Surface* IMG_LoadTGA_RW(SDL_RWops *src)
+{
+	return LoadImageFromRWops(src, CFSTR("com.truevision.tga-image"));
+}
 SDL_Surface* IMG_LoadTIF_RW(SDL_RWops *src)
 {
 	return LoadImageFromRWops(src, kUTTypeTIFF);
