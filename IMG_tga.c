@@ -22,6 +22,8 @@
 
 #if !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
 
+/* This is a Targa image file loading framework */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
