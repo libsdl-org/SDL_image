@@ -23,6 +23,7 @@ libSDL_image_la_SOURCES =		\
 	IMG_ImageIO.c
 
 EXTRA_DIST =			\
+	Android.mk		\
 	CHANGES			\
 	version.rc		\
 	VisualC.zip		\
