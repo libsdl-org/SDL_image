@@ -9,7 +9,7 @@ LOCAL_CFLAGS := -I$(LOCAL_PATH)/../jpeg -I$(LOCAL_PATH)/../png -I$(LOCAL_PATH)/.
 	-DLOAD_PCX -DLOAD_PNM -DLOAD_TGA -DLOAD_XCF -DLOAD_XPM \
 	-DLOAD_XV
 
-LOCAL_SRC_FILES := $(notdir $(wildcard $(LOCAL_PATH)/*.c))
+LOCAL_SRC_FILES := $(notdir $(filter-out %/showimage.c, $(wildcard $(LOCAL_PATH)/*.c)))
 
 LOCAL_SHARED_LIBRARIES := SDL
 
