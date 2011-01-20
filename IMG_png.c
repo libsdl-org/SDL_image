@@ -71,6 +71,10 @@
 #endif
 #include <png.h>
 
+/* Check for the older version of libpng */
+#if (PNG_LIBPNG_VER_MAJOR == 1) && (PNG_LIBPNG_VER_MINOR)
+#define LIBPNG_VERSION_12
+#endif
 
 static struct {
 	int loaded;
@@ -93,7 +97,9 @@ static struct {
 	void (*png_set_read_fn) (png_structp png_ptr, png_voidp io_ptr, png_rw_ptr read_data_fn);
 	void (*png_set_strip_16) (png_structp png_ptr);
 	int (*png_sig_cmp) (png_bytep sig, png_size_t start, png_size_t num_to_check);
+#ifndef LIBPNG_VERSION_12
 	jmp_buf* (*png_set_longjmp_fn) (png_structp, png_longjmp_ptr, size_t);
+#endif
 } lib;
 
 #ifdef LOAD_PNG_DYNAMIC
@@ -230,6 +236,7 @@ int IMG_InitPNG()
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
+#ifndef LIBPNG_VERSION_12
 		lib.png_set_longjmp_fn =
 			(jmp_buf * (*) (png_structp, png_longjmp_ptr, size_t))
 			SDL_LoadFunction(lib.handle, "png_set_longjmp_fn");
@@ -237,6 +244,7 @@ int IMG_InitPNG()
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
+#endif
 	}
 	++lib.loaded;
 
@@ -373,7 +381,12 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	 * the normal method of doing things with libpng).  REQUIRED unless you
 	 * set up your own error handlers in png_create_read_struct() earlier.
 	 */
-	if ( setjmp(*lib.png_set_longjmp_fn(png_ptr, longjmp, sizeof (jmp_buf)))) {
+#ifndef LIBPNG_VERSION_12
+	if ( setjmp(*lib.png_set_longjmp_fn(png_ptr, longjmp, sizeof (jmp_buf))) )
+#else
+	if ( setjmp(png_ptr->jmpbuf) )
+#endif
+	{
 		error = "Error reading the PNG file.";
 		goto done;
 	}
