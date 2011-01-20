@@ -80,6 +80,8 @@ static struct {
 	void (*png_destroy_read_struct) (png_structpp png_ptr_ptr, png_infopp info_ptr_ptr, png_infopp end_info_ptr_ptr);
 	png_uint_32 (*png_get_IHDR) (png_structp png_ptr, png_infop info_ptr, png_uint_32 *width, png_uint_32 *height, int *bit_depth, int *color_type, int *interlace_method, int *compression_method, int *filter_method);
 	png_voidp (*png_get_io_ptr) (png_structp png_ptr);
+	png_byte (*png_get_channels) (png_structp png_ptr, png_infop info_ptr);
+	png_uint_32 (*png_get_PLTE) (png_structp png_ptr, png_infop info_ptr, png_colorp *palette, int *num_palette);
 	png_uint_32 (*png_get_tRNS) (png_structp png_ptr, png_infop info_ptr, png_bytep *trans, int *num_trans, png_color_16p *trans_values);
 	png_uint_32 (*png_get_valid) (png_structp png_ptr, png_infop info_ptr, png_uint_32 flag);
 	void (*png_read_image) (png_structp png_ptr, png_bytepp image);
@@ -91,6 +93,7 @@ static struct {
 	void (*png_set_read_fn) (png_structp png_ptr, png_voidp io_ptr, png_rw_ptr read_data_fn);
 	void (*png_set_strip_16) (png_structp png_ptr);
 	int (*png_sig_cmp) (png_bytep sig, png_size_t start, png_size_t num_to_check);
+	jmp_buf* (*png_set_longjmp_fn) (png_structp, png_longjmp_ptr, size_t);
 } lib;
 
 #ifdef LOAD_PNG_DYNAMIC
@@ -129,10 +132,24 @@ int IMG_InitPNG()
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
+		lib.png_get_channels =
+			(png_byte (*) (png_structp, png_infop))
+			SDL_LoadFunction(lib.handle, "png_get_channels");
+		if ( lib.png_get_channels == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
 		lib.png_get_io_ptr =
 			(png_voidp (*) (png_structp))
 			SDL_LoadFunction(lib.handle, "png_get_io_ptr");
 		if ( lib.png_get_io_ptr == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
+		lib.png_get_PLTE =
+			(png_uint_32 (*) (png_structp, png_infop, png_colorp *, int *))
+			SDL_LoadFunction(lib.handle, "png_get_PLTE");
+		if ( lib.png_get_PLTE == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
@@ -213,6 +230,13 @@ int IMG_InitPNG()
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
+		lib.png_set_longjmp_fn =
+			(jmp_buf * (*) (png_structp, png_longjmp_ptr, size_t))
+			SDL_LoadFunction(lib.handle, "png_set_longjmp_fn");
+		if ( lib.png_set_longjmp_fn == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
 	}
 	++lib.loaded;
 
@@ -236,7 +260,9 @@ int IMG_InitPNG()
 		lib.png_create_read_struct = png_create_read_struct;
 		lib.png_destroy_read_struct = png_destroy_read_struct;
 		lib.png_get_IHDR = png_get_IHDR;
+		lib.png_get_channels = png_get_channels;
 		lib.png_get_io_ptr = png_get_io_ptr;
+		lib.png_get_PLTE = png_get_PLTE;
 		lib.png_get_tRNS = png_get_tRNS;
 		lib.png_get_valid = png_get_valid;
 		lib.png_read_image = png_read_image;
@@ -347,7 +373,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	 * the normal method of doing things with libpng).  REQUIRED unless you
 	 * set up your own error handlers in png_create_read_struct() earlier.
 	 */
-	if ( setjmp(png_ptr->jmpbuf) ) {
+	if ( setjmp(*lib.png_set_longjmp_fn(png_ptr, longjmp, sizeof (jmp_buf)))) {
 		error = "Error reading the PNG file.";
 		goto done;
 	}
@@ -416,9 +442,9 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 			Rmask = 0x000000FF;
 			Gmask = 0x0000FF00;
 			Bmask = 0x00FF0000;
-			Amask = (info_ptr->channels == 4) ? 0xFF000000 : 0;
+			Amask = (lib.png_get_channels(png_ptr, info_ptr) == 4) ? 0xFF000000 : 0;
 		} else {
-		        int s = (info_ptr->channels == 4) ? 0 : 8;
+		        int s = (lib.png_get_channels(png_ptr, info_ptr) == 4) ? 0 : 8;
 			Rmask = 0xFF000000 >> s;
 			Gmask = 0x00FF0000 >> s;
 			Bmask = 0x0000FF00 >> s;
@@ -426,7 +452,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 		}
 	}
 	surface = SDL_AllocSurface(SDL_SWSURFACE, width, height,
-			bit_depth*info_ptr->channels, Rmask,Gmask,Bmask,Amask);
+			bit_depth*lib.png_get_channels(png_ptr, info_ptr), Rmask,Gmask,Bmask,Amask);
 	if ( surface == NULL ) {
 		error = "Out of memory";
 		goto done;
@@ -467,6 +493,9 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	/* Load the palette, if any */
 	palette = surface->format->palette;
 	if ( palette ) {
+	    int png_num_palette;
+	    png_colorp png_palette;
+	    lib.png_get_PLTE(png_ptr, info_ptr, &png_palette, &png_num_palette);
 	    if(color_type == PNG_COLOR_TYPE_GRAY) {
 		palette->ncolors = 256;
 		for(i = 0; i < 256; i++) {
@@ -474,12 +503,12 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 		    palette->colors[i].g = i;
 		    palette->colors[i].b = i;
 		}
-	    } else if (info_ptr->num_palette > 0 ) {
-		palette->ncolors = info_ptr->num_palette; 
-		for( i=0; i<info_ptr->num_palette; ++i ) {
-		    palette->colors[i].b = info_ptr->palette[i].blue;
-		    palette->colors[i].g = info_ptr->palette[i].green;
-		    palette->colors[i].r = info_ptr->palette[i].red;
+	    } else if (png_num_palette > 0 ) {
+		palette->ncolors = png_num_palette; 
+		for( i=0; i<png_num_palette; ++i ) {
+		    palette->colors[i].b = png_palette[i].blue;
+		    palette->colors[i].g = png_palette[i].green;
+		    palette->colors[i].r = png_palette[i].red;
 		}
 	    }
 	}

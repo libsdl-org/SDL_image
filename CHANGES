@@ -1,4 +1,6 @@
 1.2.11:
+Thomas Klausner - Wed Jan 19 19:31:25 PST 2011
+ * Fixed compiling with libpng 1.4
 Sam Lantinga - Mon May 10 22:42:53 PDT 2010
  * Fixed loading HAM6 images with stencil mask
 Mark Tucker - Fri, 27 Nov 2009 12:38:21 -0500
