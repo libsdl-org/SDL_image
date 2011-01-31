@@ -11,10 +11,17 @@
 
 #include "SDL_image.h"
 
-// For ImageIO framework and also LaunchServices framework (for UTIs)
-#include <ApplicationServices/ApplicationServices.h>
 // Used because CGDataProviderCreate became deprecated in 10.5
 #include <AvailabilityMacros.h>
+#include <TargetConditionals.h>
+
+#if (TARGET_OS_IPHONE == 1) || (TARGET_IPHONE_SIMULATOR == 1)
+#import <MobileCoreServices/MobileCoreServices.h> // for UTCoreTypes.h
+#import <ImageIO/ImageIO.h>
+#else
+// For ImageIO framework and also LaunchServices framework (for UTIs)
+#include <ApplicationServices/ApplicationServices.h>
+#endif
 
 /**************************************************************
  ***** Begin Callback functions for block reading *************
