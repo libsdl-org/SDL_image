@@ -90,7 +90,7 @@ int IMG_Init(int flags)
 	}
 	initialized |= result;
 
-	return (result);
+	return (initialized);
 }
 
 void IMG_Quit()

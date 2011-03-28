@@ -72,7 +72,7 @@
 #include <png.h>
 
 /* Check for the older version of libpng */
-#if (PNG_LIBPNG_VER_MAJOR == 1) && (PNG_LIBPNG_VER_MINOR)
+#if (PNG_LIBPNG_VER_MAJOR == 1) && (PNG_LIBPNG_VER_MINOR < 4)
 #define LIBPNG_VERSION_12
 #endif
 
@@ -282,6 +282,9 @@ int IMG_InitPNG()
 		lib.png_set_read_fn = png_set_read_fn;
 		lib.png_set_strip_16 = png_set_strip_16;
 		lib.png_sig_cmp = png_sig_cmp;
+#ifndef LIBPNG_VERSION_12
+		lib.png_set_longjmp_fn = png_set_longjmp_fn;
+#endif
 	}
 	++lib.loaded;
 
