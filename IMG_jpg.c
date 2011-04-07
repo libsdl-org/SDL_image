@@ -34,6 +34,12 @@
 
 #include <jpeglib.h>
 
+#if JPEG_LIB_VERSION >= 80
+	typedef JPEG_boolean boolean;
+	#define TRUE JPEG_TRUE
+	#define FALSE JPEG_FALSE
+#endif
+
 /* Define this for fast loading and not as good image quality */
 /*#define FAST_JPEG*/
 
