@@ -34,7 +34,7 @@
 
 #include <jpeglib.h>
 
-#if JPEG_LIB_VERSION >= 80
+#if JPEG_LIB_VERSION >= 80 && defined(__MINGW__)
 	typedef JPEG_boolean boolean;
 	#define TRUE JPEG_TRUE
 	#define FALSE JPEG_FALSE
