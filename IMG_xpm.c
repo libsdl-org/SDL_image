@@ -123,8 +123,10 @@ static struct color_hash *create_colorhash(int maxnum)
 		return NULL;
 	memset(hash->table, 0, bytes);
 	hash->entries = malloc(maxnum * sizeof(struct hash_entry));
-	if(!hash->entries)
+	if(!hash->entries) {
+		free(hash->table);
 		return NULL;
+	}
 	hash->next_free = hash->entries;
 	return hash;
 }
@@ -259,11 +261,13 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
 			len += 4;	/* "\",\n\0" */
 			if(len > buflen){
 				buflen = len;
-				linebuf = realloc(linebuf, buflen);
-				if(!linebuf) {
+				char *linebufnew = realloc(linebuf, buflen);
+				if(!linebufnew) {
+					free(linebuf);
 					error = "Out of memory";
 					return NULL;
 				}
+				linebuf = linebufnew;
 			}
 			if(SDL_RWread(src, linebuf, len - 1, 1) <= 0) {
 				error = "Premature end of data";
@@ -277,11 +281,13 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
 					if(buflen == 0)
 						buflen = 16;
 					buflen *= 2;
-					linebuf = realloc(linebuf, buflen);
-					if(!linebuf) {
+					char *linebufnew = realloc(linebuf, buflen);
+					if(!linebufnew) {
+						free(linebuf);
 						error = "Out of memory";
 						return NULL;
 					}
+					linebuf = linebufnew;
 				}
 				if(SDL_RWread(src, linebuf + n, 1, 1) <= 0) {
 					error = "Premature end of data";
