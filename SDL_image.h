@@ -60,7 +60,8 @@ typedef enum
 {
     IMG_INIT_JPG = 0x00000001,
     IMG_INIT_PNG = 0x00000002,
-    IMG_INIT_TIF = 0x00000004
+    IMG_INIT_TIF = 0x00000004,
+    IMG_INIT_WEBP = 0x00000008
 } IMG_InitFlags;
 
 /* Loads dynamic libraries and prepares them for use.  Flags should be
@@ -104,6 +105,7 @@ extern DECLSPEC int SDLCALL IMG_isTIF(SDL_RWops *src);
 extern DECLSPEC int SDLCALL IMG_isXCF(SDL_RWops *src);
 extern DECLSPEC int SDLCALL IMG_isXPM(SDL_RWops *src);
 extern DECLSPEC int SDLCALL IMG_isXV(SDL_RWops *src);
+extern DECLSPEC int SDLCALL IMG_isWEBP(SDL_RWops *src);
 
 /* Individual loading functions */
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadICO_RW(SDL_RWops *src);
@@ -120,6 +122,7 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTIF_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadXCF_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadXPM_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadXV_RW(SDL_RWops *src);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadWEBP_RW(SDL_RWops *src);
 
 extern DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArray(char **xpm);
 
