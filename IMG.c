@@ -50,7 +50,8 @@ static struct {
 	{ "TIF", IMG_isTIF, IMG_LoadTIF_RW },
 	{ "XCF", IMG_isXCF, IMG_LoadXCF_RW },
 	{ "XPM", IMG_isXPM, IMG_LoadXPM_RW },
-	{ "XV",  IMG_isXV,  IMG_LoadXV_RW  }
+	{ "XV",  IMG_isXV,  IMG_LoadXV_RW  },
+	{ "WEBP", IMG_isWEBP, IMG_LoadWEBP_RW },
 };
 
 const SDL_version *IMG_Linked_Version(void)
@@ -66,6 +67,9 @@ extern int IMG_InitPNG();
 extern void IMG_QuitPNG();
 extern int IMG_InitTIF();
 extern void IMG_QuitTIF();
+
+extern int IMG_InitWEBP();
+extern void IMG_QuitWEBP();
 
 static int initialized = 0;
 
@@ -88,6 +92,11 @@ int IMG_Init(int flags)
 			result |= IMG_INIT_TIF;
 		}
 	}
+	if (flags & IMG_INIT_WEBP) {
+		if ((initialized & IMG_INIT_WEBP) || IMG_InitWEBP() == 0) {
+			result |= IMG_INIT_WEBP;
+		}
+	}
 	initialized |= result;
 
 	return (initialized);
@@ -103,6 +112,9 @@ void IMG_Quit()
 	}
 	if (initialized & IMG_INIT_TIF) {
 		IMG_QuitTIF();
+	}
+	if (initialized & IMG_INIT_WEBP) {
+		IMG_QuitWEBP();
 	}
 	initialized = 0;
 }

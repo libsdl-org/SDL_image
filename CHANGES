@@ -1,4 +1,6 @@
 1.2.11:
+Michael Bonfils - Mon Nov 28 21:46:00 EST 2011
+ * Added WEBP image support
 Thomas Klausner - Wed Jan 19 19:31:25 PST 2011
  * Fixed compiling with libpng 1.4
 Sam Lantinga - Mon May 10 22:42:53 PDT 2010

@@ -20,6 +20,7 @@ libSDL_image_la_SOURCES =		\
 	IMG_xcf.c		\
 	IMG_xpm.c		\
 	IMG_xv.c		\
+	IMG_webp.c	\
 	IMG_ImageIO.c
 
 EXTRA_DIST =			\

@@ -152,6 +152,10 @@ AC_ARG_ENABLE([xpm], [AC_HELP_STRING([--enable-xpm], [support loading XPM images
  [], [enable_xpm=yes])
 AC_ARG_ENABLE([xv], [AC_HELP_STRING([--enable-xv], [support loading XV images [default=yes]])],
  [], [enable_xv=yes])
+AC_ARG_ENABLE([webp], [AC_HELP_STRING([--enable-webp], [support loading WEBP images [default=yes]])],
+ [], [enable_webp=yes])
+AC_ARG_ENABLE([webp-shared], AC_HELP_STRING([--enable-webp-shared], [dynamically load WEBP support [[default=yes]]]),
+ [], [enable_webp_shared=yes])
 
 if test x$enable_jpg = xyes || test x$enable_tif = xyes; then
     AC_CHECK_HEADER([jpeglib.h], [have_jpg_hdr=yes])
@@ -249,6 +253,44 @@ if test x$enable_tif = xyes; then
     fi
 fi
 
+if test x$enable_webp = xyes; then
+    PKG_CHECK_MODULES([LIBWEBP], [libwebp], [dnl
+        have_webp_hdr=yes
+        CFLAGS="$LIBWEBP_CFLAGS $CFLAGS"
+        have_webp_lib=yes
+      ], [dnl
+        AC_CHECK_HEADER([webp/decode.h], [have_webp_hdr=yes])
+        AC_CHECK_LIB([webp], [WebPGetDecoderVersion], [have_webp_lib=yes], [], [-lm])
+      ])
+    if test x$have_webp_hdr = xyes -a x$have_webp_lib = xyes; then
+        AC_DEFINE([LOAD_WEBP])
+
+        case "$host" in
+            *-*-darwin*)
+                webp_lib=[`find_lib libwebp.dylib`]
+                ;;
+            *-*-cygwin* | *-*-mingw32*)
+                webp_lib=[`find_lib "libwebp*.dll"`]
+                ;;
+            *)
+                webp_lib=[`find_lib "libwebp.so.[0-9]"`]
+                if test x$webp_lib = x; then
+                    webp_lib=[`find_lib "libwebp.so.[0-9]*"`]
+                fi
+                if test x$webp_lib = x; then
+                    webp_lib=[`find_lib "libwebp*.so.[0-9]"`]
+                fi
+                if test x$webp_lib = x; then
+                    webp_lib=[`find_lib "libwebp*.so.[0-9]*"`]
+                fi
+                ;;
+        esac
+    else
+        AC_MSG_WARN([*** Unable to find WEBP library (http://code.google.com/intl/en-US/speed/webp/index.html)])
+        AC_MSG_WARN([WEBP Pimage loading disabled])
+    fi
+fi
+
 if test x$enable_bmp = xyes; then
     AC_DEFINE([LOAD_BMP])
 fi
@@ -283,6 +325,15 @@ fi
 
 if test x$enable_xv = xyes; then
     AC_DEFINE([LOAD_XV])
+fi
+
+if test x$enable_webp = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib = xyes; then
+    if test x$enable_webp_shared = xyes && test x$webp_lib != x; then
+        echo "-- dynamic libwebp -> $webp_lib"
+        AC_DEFINE_UNQUOTED(LOAD_WEBP_DYNAMIC, "$webp_lib")
+    else
+        IMG_LIBS="-lwebp $IMG_LIBS"
+    fi
 fi
 
 if test x$enable_tif = xyes -a x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; then
