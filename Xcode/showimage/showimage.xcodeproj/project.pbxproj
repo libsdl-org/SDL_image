@@ -158,7 +158,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 00B7E563097EF9A500826121 /* Build configuration list for PBXProject "showimage" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* SDL App */;
 			projectDirPath = "";
 			projectRoot = "";

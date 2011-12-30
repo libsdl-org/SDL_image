@@ -21,7 +21,7 @@ libSDL_image_la_SOURCES =		\
 	IMG_xpm.c		\
 	IMG_xv.c		\
 	IMG_webp.c	\
-	IMG_ImageIO.c
+	IMG_ImageIO.m
 
 EXTRA_DIST =			\
 	Android.mk		\

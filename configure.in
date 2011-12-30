@@ -47,6 +47,7 @@ AM_INIT_AUTOMAKE(SDL_image, $VERSION)
 dnl Check for tools
 AC_PROG_LIBTOOL
 AC_PROG_CC
+AC_PROG_OBJC
 AC_C_INLINE
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
@@ -369,6 +370,8 @@ LIBS="$saved_LIBS"
 
 AC_SUBST([WINDRES])
 AC_SUBST([IMG_LIBS])
+
+OBJCFLAGS=$CFLAGS
 
 # Finally create all the generated files
 AC_OUTPUT([

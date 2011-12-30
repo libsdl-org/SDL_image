@@ -11,7 +11,7 @@
 		007288A80F0DA79800C302A9 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007288A60F0DA79800C302A9 /* ApplicationServices.framework */; };
 		00728B2A0F0E004C00C302A9 /* IMG_tga.c in Sources */ = {isa = PBXBuildFile; fileRef = 3BB4C05F012FAC847F000001 /* IMG_tga.c */; };
 		00A06D7812FFBFD5009F1A11 /* SDL_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 1014BAEA010A4B677F000001 /* SDL_image.h */; };
-		00A6250312F4E9CC00577F68 /* IMG_ImageIO.c in Sources */ = {isa = PBXBuildFile; fileRef = 00A624FD12F4E99800577F68 /* IMG_ImageIO.c */; };
+		00A6250312F4E9CC00577F68 /* IMG_ImageIO.m in Sources */ = {isa = PBXBuildFile; fileRef = 00A624FD12F4E99800577F68 /* IMG_ImageIO.m */; };
 		00A625CF12F544F400577F68 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00A625CE12F544F400577F68 /* ImageIO.framework */; };
 		BE1FA73207AF4C45004B6283 /* IMG.c in Sources */ = {isa = PBXBuildFile; fileRef = 3BB4C058012FAC847F000001 /* IMG.c */; };
 		BE1FA73607AF4C45004B6283 /* IMG_pcx.c in Sources */ = {isa = PBXBuildFile; fileRef = 3BB4C05C012FAC847F000001 /* IMG_pcx.c */; };
@@ -27,22 +27,15 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 00A06D6A12FFBF9F009F1A11 /* SDLiPhoneOS.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = FD6526630DE8FCCB002AD96B /* libSDL.a */;
+			remoteGlobalIDString = FD6526630DE8FCCB002AD96B;
 			remoteInfo = libSDL;
 		};
 		00A06D7412FFBF9F009F1A11 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00A06D6A12FFBF9F009F1A11 /* SDLiPhoneOS.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 006E982211955059001DE610 /* testsdl.app */;
+			remoteGlobalIDString = 006E982211955059001DE610;
 			remoteInfo = testsdl;
-		};
-		00A06D7612FFBFB4009F1A11 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00A06D6A12FFBF9F009F1A11 /* SDLiPhoneOS.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 0064653F107E3D7400183915 /* Generate Header Files */;
-			remoteInfo = "Generate Header Files";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -51,7 +44,7 @@
 		007288A60F0DA79800C302A9 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 		00728B3F0F0E008100C302A9 /* IMG_UIImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IMG_UIImage.m; path = ../IMG_UIImage.m; sourceTree = SOURCE_ROOT; };
 		00A06D6A12FFBF9F009F1A11 /* SDLiPhoneOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDLiPhoneOS.xcodeproj; path = "../../SDL/Xcode-iPhoneOS/SDL/SDLiPhoneOS.xcodeproj"; sourceTree = SOURCE_ROOT; };
-		00A624FD12F4E99800577F68 /* IMG_ImageIO.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_ImageIO.c; path = ../IMG_ImageIO.c; sourceTree = SOURCE_ROOT; };
+		00A624FD12F4E99800577F68 /* IMG_ImageIO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IMG_ImageIO.m; path = ../IMG_ImageIO.m; sourceTree = SOURCE_ROOT; };
 		00A625CE12F544F400577F68 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		1014BAEA010A4B677F000001 /* SDL_image.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SDL_image.h; path = ../SDL_image.h; sourceTree = SOURCE_ROOT; };
 		3BB4C058012FAC847F000001 /* IMG.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = IMG.c; path = ../IMG.c; sourceTree = SOURCE_ROOT; };
@@ -136,7 +129,7 @@
 		08FB77ACFE841707C02AAC07 /* Library Source */ = {
 			isa = PBXGroup;
 			children = (
-				00A624FD12F4E99800577F68 /* IMG_ImageIO.c */,
+				00A624FD12F4E99800577F68 /* IMG_ImageIO.m */,
 				3BB4C058012FAC847F000001 /* IMG.c */,
 				3BB4C059012FAC847F000001 /* IMG_bmp.c */,
 				3BB4C05A012FAC847F000001 /* IMG_gif.c */,
@@ -218,7 +211,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				00A06D7712FFBFB4009F1A11 /* PBXTargetDependency */,
 			);
 			name = libSDL_image;
 			productInstallPath = /usr/local/lib;
@@ -298,19 +290,11 @@
 				BE1FA73E07AF4C45004B6283 /* IMG_xxx.c in Sources */,
 				005DF5E90A140CA2006B0BD5 /* IMG_xv.c in Sources */,
 				00728B2A0F0E004C00C302A9 /* IMG_tga.c in Sources */,
-				00A6250312F4E9CC00577F68 /* IMG_ImageIO.c in Sources */,
+				00A6250312F4E9CC00577F68 /* IMG_ImageIO.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		00A06D7712FFBFB4009F1A11 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "Generate Header Files";
-			targetProxy = 00A06D7612FFBFB4009F1A11 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		007288110F0DA5BA00C302A9 /* Debug */ = {
