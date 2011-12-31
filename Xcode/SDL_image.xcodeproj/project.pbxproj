@@ -427,7 +427,7 @@
 				INFOPLIST_FILE = "Info-Framework__Upgraded_.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				OTHER_CFLAGS = "";
-				PRODUCT_NAME = SDL_image;
+				PRODUCT_NAME = SDLimage;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
 					"-Wall",
@@ -463,7 +463,7 @@
 				OTHER_CFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = SDL_image;
+				PRODUCT_NAME = SDLimage;
 				REZ_EXECUTABLE = YES;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
@@ -542,7 +542,7 @@
 				INFOPLIST_FILE = "Info-Framework__Upgraded_.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				OTHER_CFLAGS = "";
-				PRODUCT_NAME = SDL_image;
+				PRODUCT_NAME = SDLimage;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
 					"-Wall",
@@ -576,7 +576,7 @@
 				OTHER_CFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = SDL_image;
+				PRODUCT_NAME = SDLimage;
 				REZ_EXECUTABLE = YES;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
@@ -648,7 +648,7 @@
 					"-lpng",
 					"-lz",
 				);
-				PRODUCT_NAME = SDL_image;
+				PRODUCT_NAME = SDLimage;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
 					"-Wall",
@@ -697,7 +697,7 @@
 					"-lpng",
 					"-lz",
 				);
-				PRODUCT_NAME = SDL_image;
+				PRODUCT_NAME = SDLimage;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
 					"-Wall",
@@ -739,7 +739,7 @@
 					"-lpng",
 					"-lz",
 				);
-				PRODUCT_NAME = SDL_image;
+				PRODUCT_NAME = SDLimage;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
 					"-Wall",
@@ -787,7 +787,7 @@
 				);
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = SDL_image;
+				PRODUCT_NAME = SDLimage;
 				REZ_EXECUTABLE = YES;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
@@ -834,7 +834,7 @@
 				);
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = SDL_image;
+				PRODUCT_NAME = SDLimage;
 				REZ_EXECUTABLE = YES;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
@@ -870,7 +870,7 @@
 				OTHER_CFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = SDL_image;
+				PRODUCT_NAME = SDLimage;
 				REZ_EXECUTABLE = YES;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
