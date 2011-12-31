@@ -37,6 +37,4 @@ sh ./configure CPPFLAGS="-I/somewhere/include" LDFLAGS="-L/somewhere/lib"
 If this works, you may need to add /somewhere/lib to your LD_LIBRARY_PATH
 so shared library loading works correctly.
 
-This library is under the GNU Library General Public License, see the file
-"COPYING" for details.  Certain image loaders may be under a different
-license, see the individual image loader source files for details.
+This library is under the zlib License, see the file "COPYING" for details.
