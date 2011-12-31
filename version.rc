@@ -25,7 +25,7 @@ BEGIN
             VALUE "FileDescription", "SDL_image\0"
             VALUE "FileVersion", "1, 2, 11, 0\0"
             VALUE "InternalName", "SDL_image\0"
-            VALUE "LegalCopyright", "Copyright © 2009 Sam Lantinga\0"
+            VALUE "LegalCopyright", "Copyright © 2012 Sam Lantinga\0"
             VALUE "OriginalFilename", "SDL_image.dll\0"
             VALUE "ProductName", "Simple DirectMedia Layer\0"
             VALUE "ProductVersion", "1, 2, 11, 0\0"

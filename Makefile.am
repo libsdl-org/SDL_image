@@ -28,9 +28,9 @@ EXTRA_DIST =			\
 	CHANGES			\
 	version.rc		\
 	VisualC			\
-	VisualCE.zip		\
-	Xcode.tar.gz		\
-	Xcode_iPhone.tar.gz	\
+	VisualCE		\
+	Xcode			\
+	Xcode_iPhone		\
 	MPWmake.sea.bin		\
 	Watcom-OS2.zip		\
 	IMG_xxx.c		\
