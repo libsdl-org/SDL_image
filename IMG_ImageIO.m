@@ -109,6 +109,7 @@ static CGImageSourceRef CreateCGImageSourceFromRWops(SDL_RWops* rw_ops, CFDictio
     // Get the CGImageSourceRef.
     // The dictionary can be NULL or contain hints to help ImageIO figure out the image type.
     source_ref = CGImageSourceCreateWithDataProvider(data_provider, hints_and_options);
+    CGDataProviderRelease(data_provider);
     return source_ref;
 }
 
