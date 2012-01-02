@@ -177,7 +177,7 @@ IMG_LoadGIF_RW(SDL_RWops *src)
 	RWSetMsg("not a GIF file");
         goto done;
     }
-    strncpy(version, (char *) buf + 3, 3);
+    memcpy(version, (char *) buf + 3, 3);
     version[3] = '\0';
 
     if ((strcmp(version, "87a") != 0) && (strcmp(version, "89a") != 0)) {

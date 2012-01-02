@@ -245,6 +245,8 @@ static char *error;
  */
 static char *get_next_line(char ***lines, SDL_RWops *src, int len)
 {
+	char *linebufnew;
+
 	if(lines) {
 		return *(*lines)++;
 	} else {
@@ -260,7 +262,7 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
 			len += 4;	/* "\",\n\0" */
 			if(len > buflen){
 				buflen = len;
-				char *linebufnew = realloc(linebuf, buflen);
+				linebufnew = realloc(linebuf, buflen);
 				if(!linebufnew) {
 					free(linebuf);
 					error = "Out of memory";
@@ -280,7 +282,7 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
 					if(buflen == 0)
 						buflen = 16;
 					buflen *= 2;
-					char *linebufnew = realloc(linebuf, buflen);
+					linebufnew = realloc(linebuf, buflen);
 					if(!linebufnew) {
 						free(linebuf);
 						error = "Out of memory";

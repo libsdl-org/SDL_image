@@ -124,6 +124,7 @@ void IMG_QuitWEBP()
 static int webp_getinfo( SDL_RWops *src, int *datasize ) {
 	int start;
 	int is_WEBP;
+	int data;
 	Uint8 magic[20];
 
 	if ( !src )
@@ -144,7 +145,7 @@ static int webp_getinfo( SDL_RWops *src, int *datasize ) {
 										 magic[14] == '8' &&
 										 magic[15] == ' '  ) {
 			is_WEBP = 1;
-			int data = magic[16] | magic[17]<<8 | magic[18]<<16 | magic[19]<<24;
+			data = magic[16] | magic[17]<<8 | magic[18]<<16 | magic[19]<<24;
 			if ( datasize )
 				*datasize = data;
 		}
@@ -168,6 +169,11 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 	Uint32 Gmask;
 	Uint32 Bmask;
 	Uint32 Amask;
+	WebPBitstreamFeatures features;
+	int raw_data_size;
+	uint8_t *raw_data;
+	int r;
+	uint8_t *ret;
 
 	if ( !src ) {
 		/* The error message has been set in SDL_RWFromFile */
@@ -181,7 +187,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 	}
 
 
-	int raw_data_size = -1;
+	raw_data_size = -1;
 	if ( !webp_getinfo( src, &raw_data_size ) ) {
 		error = "Invalid WEBP";
 		goto error;
@@ -190,13 +196,13 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 	// skip header
 	SDL_RWseek(src, start+20, RW_SEEK_SET );
 
-	uint8_t *raw_data = (uint8_t*) malloc( raw_data_size );
+	raw_data = (uint8_t*) malloc( raw_data_size );
 	if ( raw_data == NULL ) {
 		error = "Failed to allocate enought buffer for WEBP";
 		goto error;
 	}
 
-	int r = SDL_RWread(src, raw_data, 1, raw_data_size );
+	r = SDL_RWread(src, raw_data, 1, raw_data_size );
 	if ( r != raw_data_size ) {
 		error = "Failed to read WEBP";
 		goto error;
@@ -211,8 +217,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 	}
 #endif
 
-	WebPBitstreamFeatures features;
-  if ( lib.webp_get_features_internal( raw_data, raw_data_size, &features, WEBP_DECODER_ABI_VERSION ) != VP8_STATUS_OK ) {
+	if ( lib.webp_get_features_internal( raw_data, raw_data_size, &features, WEBP_DECODER_ABI_VERSION ) != VP8_STATUS_OK ) {
 		error = "WebPGetFeatures has failed";
 		return NULL;
 	}
@@ -231,8 +236,6 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 		goto error;
 	}
 
-
-	uint8_t *ret = NULL;
 	if ( features.has_alpha ) {
 		ret = lib.webp_decode_rgba_into( raw_data, raw_data_size, surface->pixels, surface->pitch * surface->h,  surface->pitch );
 	} else {
