@@ -172,7 +172,7 @@ if test x$enable_jpg = xyes || test x$enable_tif = xyes; then
                 jpg_lib=[`find_lib libjpeg.dylib`]
                 ;;
             *-*-cygwin* | *-*-mingw32*)
-                jpg_lib=[`find_lib "jpeg.dll"`]
+                jpg_lib=[`find_lib "libjpeg*.dll"`]
                 ;;
             *)
                 jpg_lib=[`find_lib "libjpeg.so.[0-9]"`]
