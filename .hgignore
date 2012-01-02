@@ -1,0 +1,10 @@
+syntax:glob
+autom4te*
+config.cache
+config.log
+config.status
+Makefile
+libtool
+.deps
+SDL_image.pc
+SDL_image.spec
