@@ -260,7 +260,7 @@ static void init_source (j_decompress_ptr cinfo)
 /*
  * Fill the input buffer --- called whenever buffer is emptied.
  */
-static int fill_input_buffer (j_decompress_ptr cinfo)
+static boolean fill_input_buffer (j_decompress_ptr cinfo)
 {
 	my_source_mgr * src = (my_source_mgr *) cinfo->src;
 	int nbytes;
