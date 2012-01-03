@@ -1,4 +1,6 @@
 1.2.11:
+Sam Lantinga - Tue Jan  3 01:36:33 EST 2012
+ * The Mac OS X framework name changed to SDLimage, to meet Apple's requirements
 Sam Lantinga - Sat Dec 31 09:35:40 EST 2011
  * SDL_image is now under the zlib license
 Michael Bonfils - Mon Nov 28 21:46:00 EST 2011
