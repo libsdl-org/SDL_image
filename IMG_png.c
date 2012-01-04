@@ -339,7 +339,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	png_structp png_ptr;
 	png_infop info_ptr;
 	png_uint_32 width, height;
-	int bit_depth, color_type, interlace_type;
+	int bit_depth, color_type, interlace_type, num_channels;
 	Uint32 Rmask;
 	Uint32 Gmask;
 	Uint32 Bmask;
@@ -451,15 +451,19 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 			&color_type, &interlace_type, NULL, NULL);
 
 	/* Allocate the SDL surface to hold the image */
-	Rmask = Gmask = Bmask = Amask = 0 ; 
+	Rmask = Gmask = Bmask = Amask = 0 ;
+	num_channels = lib.png_get_channels(png_ptr, info_ptr);
+	/* Some .png files are monochrome, with as much as 1 channel and 1 bit per pixel */
+	if( num_channels != 3 && num_channels != 4 )
+		num_channels = 3;
 	if ( color_type != PNG_COLOR_TYPE_PALETTE ) {
 		if ( SDL_BYTEORDER == SDL_LIL_ENDIAN ) {
 			Rmask = 0x000000FF;
 			Gmask = 0x0000FF00;
 			Bmask = 0x00FF0000;
-			Amask = (lib.png_get_channels(png_ptr, info_ptr) == 4) ? 0xFF000000 : 0;
+			Amask = (num_channels == 4) ? 0xFF000000 : 0;
 		} else {
-		        int s = (lib.png_get_channels(png_ptr, info_ptr) == 4) ? 0 : 8;
+			int s = (num_channels == 4) ? 0 : 8;
 			Rmask = 0xFF000000 >> s;
 			Gmask = 0x00FF0000 >> s;
 			Bmask = 0x0000FF00 >> s;
@@ -467,7 +471,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 		}
 	}
 	surface = SDL_AllocSurface(SDL_SWSURFACE, width, height,
-			bit_depth*lib.png_get_channels(png_ptr, info_ptr), Rmask,Gmask,Bmask,Amask);
+			bit_depth*num_channels, Rmask,Gmask,Bmask,Amask);
 	if ( surface == NULL ) {
 		error = "Out of memory";
 		goto done;
