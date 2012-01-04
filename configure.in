@@ -86,6 +86,7 @@ case "$host" in
         fi
         ;;
 esac
+AM_CONDITIONAL(USE_IMAGEIO, test x$enable_imageio = xyes)
 AM_CONDITIONAL(USE_VERSION_RC, test x$use_version_rc = xtrue)
 
 dnl set this to use on systems that use lib64 instead of lib
