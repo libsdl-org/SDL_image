@@ -883,6 +883,8 @@ OBJCDEPMODE
 am__fastdepOBJC_TRUE
 am__fastdepOBJC_FALSE
 WINDRES
+USE_IMAGEIO_TRUE
+USE_IMAGEIO_FALSE
 USE_VERSION_RC_TRUE
 USE_VERSION_RC_FALSE
 SDL_VERSION
@@ -3710,13 +3712,13 @@ if test "${lt_cv_nm_interface+set}" = set; then
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:3713: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:3715: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:3716: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:3718: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:3719: output\"" >&5)
+  (eval echo "\"\$as_me:3721: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -4943,7 +4945,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4946 "configure"' > conftest.$ac_ext
+  echo '#line 4948 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7104,11 +7106,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7107: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7109: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7111: \$? = $ac_status" >&5
+   echo "$as_me:7113: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7443,11 +7445,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7446: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7448: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7450: \$? = $ac_status" >&5
+   echo "$as_me:7452: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7548,11 +7550,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7551: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7553: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7555: \$? = $ac_status" >&5
+   echo "$as_me:7557: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -7603,11 +7605,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7606: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7608: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7610: \$? = $ac_status" >&5
+   echo "$as_me:7612: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10361,7 +10363,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10364 "configure"
+#line 10366 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10457,7 +10459,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10460 "configure"
+#line 10462 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12759,6 +12761,14 @@ fi
         fi
         ;;
 esac
+ if test x$enable_imageio = xyes; then
+  USE_IMAGEIO_TRUE=
+  USE_IMAGEIO_FALSE='#'
+else
+  USE_IMAGEIO_TRUE='#'
+  USE_IMAGEIO_FALSE=
+fi
+
  if test x$use_version_rc = xtrue; then
   USE_VERSION_RC_TRUE=
   USE_VERSION_RC_FALSE='#'
@@ -15159,6 +15169,13 @@ echo "$as_me: error: conditional \"am__fastdepOBJC\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${USE_IMAGEIO_TRUE}" && test -z "${USE_IMAGEIO_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"USE_IMAGEIO\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"USE_IMAGEIO\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 if test -z "${USE_VERSION_RC_TRUE}" && test -z "${USE_VERSION_RC_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"USE_VERSION_RC\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -16102,6 +16119,8 @@ OBJCDEPMODE!$OBJCDEPMODE$ac_delim
 am__fastdepOBJC_TRUE!$am__fastdepOBJC_TRUE$ac_delim
 am__fastdepOBJC_FALSE!$am__fastdepOBJC_FALSE$ac_delim
 WINDRES!$WINDRES$ac_delim
+USE_IMAGEIO_TRUE!$USE_IMAGEIO_TRUE$ac_delim
+USE_IMAGEIO_FALSE!$USE_IMAGEIO_FALSE$ac_delim
 USE_VERSION_RC_TRUE!$USE_VERSION_RC_TRUE$ac_delim
 USE_VERSION_RC_FALSE!$USE_VERSION_RC_FALSE$ac_delim
 SDL_VERSION!$SDL_VERSION$ac_delim
@@ -16118,7 +16137,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 38; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 40; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
