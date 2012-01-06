@@ -8,11 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		005DF5E90A140CA2006B0BD5 /* IMG_xv.c in Sources */ = {isa = PBXBuildFile; fileRef = 005DF5E70A140CA2006B0BD5 /* IMG_xv.c */; };
-		007288A80F0DA79800C302A9 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007288A60F0DA79800C302A9 /* ApplicationServices.framework */; };
 		00728B2A0F0E004C00C302A9 /* IMG_tga.c in Sources */ = {isa = PBXBuildFile; fileRef = 3BB4C05F012FAC847F000001 /* IMG_tga.c */; };
 		00A06D7812FFBFD5009F1A11 /* SDL_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 1014BAEA010A4B677F000001 /* SDL_image.h */; };
 		00A6250312F4E9CC00577F68 /* IMG_ImageIO.m in Sources */ = {isa = PBXBuildFile; fileRef = 00A624FD12F4E99800577F68 /* IMG_ImageIO.m */; };
-		00A625CF12F544F400577F68 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00A625CE12F544F400577F68 /* ImageIO.framework */; };
 		61161B8914B6625C009198B1 /* IMG_webp.c in Sources */ = {isa = PBXBuildFile; fileRef = 61161B8814B6625C009198B1 /* IMG_webp.c */; };
 		BE1FA73207AF4C45004B6283 /* IMG.c in Sources */ = {isa = PBXBuildFile; fileRef = 3BB4C058012FAC847F000001 /* IMG.c */; };
 		BE1FA73607AF4C45004B6283 /* IMG_pcx.c in Sources */ = {isa = PBXBuildFile; fileRef = 3BB4C05C012FAC847F000001 /* IMG_pcx.c */; };
@@ -23,29 +21,9 @@
 		BE1FA73E07AF4C45004B6283 /* IMG_xxx.c in Sources */ = {isa = PBXBuildFile; fileRef = B2D7A06503FAB42200A8000A /* IMG_xxx.c */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		00A06D7212FFBF9F009F1A11 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00A06D6A12FFBF9F009F1A11 /* SDLiPhoneOS.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = FD6526630DE8FCCB002AD96B;
-			remoteInfo = libSDL;
-		};
-		00A06D7412FFBF9F009F1A11 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00A06D6A12FFBF9F009F1A11 /* SDLiPhoneOS.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 006E982211955059001DE610;
-			remoteInfo = testsdl;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		005DF5E70A140CA2006B0BD5 /* IMG_xv.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = IMG_xv.c; path = ../IMG_xv.c; sourceTree = SOURCE_ROOT; };
-		007288A60F0DA79800C302A9 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
-		00A06D6A12FFBF9F009F1A11 /* SDLiPhoneOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDLiPhoneOS.xcodeproj; path = "../../SDL/Xcode-iPhoneOS/SDL/SDLiPhoneOS.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		00A624FD12F4E99800577F68 /* IMG_ImageIO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IMG_ImageIO.m; path = ../IMG_ImageIO.m; sourceTree = SOURCE_ROOT; };
-		00A625CE12F544F400577F68 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		1014BAEA010A4B677F000001 /* SDL_image.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SDL_image.h; path = ../SDL_image.h; sourceTree = SOURCE_ROOT; };
 		3BB4C058012FAC847F000001 /* IMG.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = IMG.c; path = ../IMG.c; sourceTree = SOURCE_ROOT; };
 		3BB4C059012FAC847F000001 /* IMG_bmp.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = IMG_bmp.c; path = ../IMG_bmp.c; sourceTree = SOURCE_ROOT; };
@@ -61,9 +39,6 @@
 		61161B8814B6625C009198B1 /* IMG_webp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_webp.c; path = ../IMG_webp.c; sourceTree = SOURCE_ROOT; };
 		B2D7A06503FAB42200A8000A /* IMG_xxx.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = IMG_xxx.c; path = ../IMG_xxx.c; sourceTree = SOURCE_ROOT; };
 		BE1FA74107AF4C45004B6283 /* libSDL_image.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSDL_image.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		F59C710300D5CB5801000001 /* ReadMe.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
-		F59C710400D5CB5801000001 /* Welcome.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Welcome.txt; sourceTree = "<group>"; };
-		F59C710600D5CB5801000001 /* SDL_image.info */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SDL_image.info; sourceTree = "<group>"; };
 		F5FB1F0001CD818601FAFB42 /* IMG_lbm.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = IMG_lbm.c; path = ../IMG_lbm.c; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -72,23 +47,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				007288A80F0DA79800C302A9 /* ApplicationServices.framework in Frameworks */,
-				00A625CF12F544F400577F68 /* ImageIO.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		00A06D6B12FFBF9F009F1A11 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				00A06D7312FFBF9F009F1A11 /* libSDL.a */,
-				00A06D7512FFBF9F009F1A11 /* testsdl.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		0153844A006D81B07F000001 /* Public Headers */ = {
 			isa = PBXGroup;
 			children = (
@@ -109,10 +73,8 @@
 		0867D691FE84028FC02AAC07 /* SDL_imageFramework */ = {
 			isa = PBXGroup;
 			children = (
-				F59C70FC00D5CB5801000001 /* pkg-support */,
 				0153844A006D81B07F000001 /* Public Headers */,
 				08FB77ACFE841707C02AAC07 /* Library Source */,
-				BE1FA76107AF72F5004B6283 /* Frameworks */,
 				034768DDFF38A45A11DB9C8B /* Products */,
 			);
 			name = SDL_imageFramework;
@@ -146,42 +108,6 @@
 				B2D7A06503FAB42200A8000A /* IMG_xxx.c */,
 			);
 			name = "Library Source";
-			sourceTree = "<group>";
-		};
-		BE1FA76007AF72B1004B6283 /* Linked Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				00A06D6A12FFBF9F009F1A11 /* SDLiPhoneOS.xcodeproj */,
-				007288A60F0DA79800C302A9 /* ApplicationServices.framework */,
-				00A625CE12F544F400577F68 /* ImageIO.framework */,
-			);
-			name = "Linked Frameworks";
-			sourceTree = "<group>";
-		};
-		BE1FA76107AF72F5004B6283 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				BE1FA76007AF72B1004B6283 /* Linked Frameworks */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		F59C70FC00D5CB5801000001 /* pkg-support */ = {
-			isa = PBXGroup;
-			children = (
-				F59C710100D5CB5801000001 /* resources */,
-				F59C710600D5CB5801000001 /* SDL_image.info */,
-			);
-			path = "pkg-support";
-			sourceTree = SOURCE_ROOT;
-		};
-		F59C710100D5CB5801000001 /* resources */ = {
-			isa = PBXGroup;
-			children = (
-				F59C710300D5CB5801000001 /* ReadMe.txt */,
-				F59C710400D5CB5801000001 /* Welcome.txt */,
-			);
-			path = resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -235,35 +161,12 @@
 			mainGroup = 0867D691FE84028FC02AAC07 /* SDL_imageFramework */;
 			productRefGroup = 034768DDFF38A45A11DB9C8B /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 00A06D6B12FFBF9F009F1A11 /* Products */;
-					ProjectRef = 00A06D6A12FFBF9F009F1A11 /* SDLiPhoneOS.xcodeproj */;
-				},
-			);
 			projectRoot = ..;
 			targets = (
 				BE1FA72F07AF4C45004B6283 /* libSDL_image */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		00A06D7312FFBF9F009F1A11 /* libSDL.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libSDL.a;
-			remoteRef = 00A06D7212FFBF9F009F1A11 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		00A06D7512FFBF9F009F1A11 /* testsdl.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = testsdl.app;
-			remoteRef = 00A06D7412FFBF9F009F1A11 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXRezBuildPhase section */
 		BE1FA74007AF4C45004B6283 /* Rez */ = {
@@ -340,6 +243,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					LOAD_BMP,
 					LOAD_GIF,
