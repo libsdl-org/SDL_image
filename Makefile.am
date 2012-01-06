@@ -34,7 +34,7 @@ EXTRA_DIST =			\
 	VisualC			\
 	VisualCE		\
 	Xcode			\
-	Xcode_iPhone		\
+	Xcode-iOS		\
 	MPWmake.sea.bin		\
 	Watcom-OS2.zip		\
 	IMG_xxx.c		\
