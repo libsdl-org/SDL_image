@@ -13,7 +13,7 @@
 		BE1FA83107AF9002004B6283 /* showimage.c in Sources */ = {isa = PBXBuildFile; fileRef = F5A068FF01CD8555012F876B /* showimage.c */; };
 		BE1FA83307AF9002004B6283 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		BE1FA83407AF9002004B6283 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE1FA82007AF8F33004B6283 /* SDL.framework */; };
-		BE1FA83507AF9002004B6283 /* SDLimage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE1FA82207AF8F44004B6283 /* SDLimage.framework */; };
+		BE1FA83507AF9002004B6283 /* SDL_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE1FA82207AF8F44004B6283 /* SDL_image.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,7 +22,7 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		BE1FA82007AF8F33004B6283 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL.framework; path = /Library/Frameworks/SDL.framework; sourceTree = "<absolute>"; };
-		BE1FA82207AF8F44004B6283 /* SDLimage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDLimage.framework; path = /Library/Frameworks/SDLimage.framework; sourceTree = "<absolute>"; };
+		BE1FA82207AF8F44004B6283 /* SDL_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL_image.framework; path = /Library/Frameworks/SDL_image.framework; sourceTree = "<absolute>"; };
 		BE1FA83607AF9002004B6283 /* Info-showimage__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-showimage__Upgraded_.plist"; sourceTree = "<group>"; };
 		BE1FA83707AF9002004B6283 /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5A068FF01CD8555012F876B /* showimage.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = showimage.c; path = ../../showimage.c; sourceTree = SOURCE_ROOT; };
@@ -37,7 +37,7 @@
 			files = (
 				BE1FA83307AF9002004B6283 /* Cocoa.framework in Frameworks */,
 				BE1FA83407AF9002004B6283 /* SDL.framework in Frameworks */,
-				BE1FA83507AF9002004B6283 /* SDLimage.framework in Frameworks */,
+				BE1FA83507AF9002004B6283 /* SDL_image.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -56,7 +56,7 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BE1FA82207AF8F44004B6283 /* SDLimage.framework */,
+				BE1FA82207AF8F44004B6283 /* SDL_image.framework */,
 				BE1FA82007AF8F33004B6283 /* SDL.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 			);
