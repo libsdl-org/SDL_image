@@ -76,7 +76,7 @@
 		3BB4C061012FAC847F000001 /* IMG_xcf.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = IMG_xcf.c; path = ../IMG_xcf.c; sourceTree = SOURCE_ROOT; };
 		3BB4C062012FAC847F000001 /* IMG_xpm.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = IMG_xpm.c; path = ../IMG_xpm.c; sourceTree = SOURCE_ROOT; };
 		61F85449145A19BC002CA294 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		AA9EE77514B27A62008773C0 /* webp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = webp.framework; path = webp/webp.framework; sourceTree = "<group>"; };
+		AA9EE77514B27A62008773C0 /* webp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = webp.framework; path = Frameworks/webp.framework; sourceTree = "<group>"; };
 		AA9EE77814B27A95008773C0 /* IMG_webp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_webp.c; path = ../IMG_webp.c; sourceTree = "<group>"; };
 		B2D7A06503FAB42200A8000A /* IMG_xxx.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = IMG_xxx.c; path = ../IMG_xxx.c; sourceTree = SOURCE_ROOT; };
 		BE1FA72D07AF4C44004B6283 /* Info-Framework__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Framework__Upgraded_.plist"; sourceTree = "<group>"; };
@@ -444,7 +444,7 @@
 					"$(HOME)/Library/Frameworks",
 					/Library/Frameworks,
 				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED = "\"$(SRCROOT)/webp\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED = "\"$(SRCROOT)/Frameworks\"";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					LOAD_BMP,
@@ -466,7 +466,7 @@
 					"$(HOME)/Library/Frameworks/SDL.framework/Headers",
 					/Library/Frameworks/SDL.framework/Headers,
 				);
-				HEADER_SEARCH_PATHS_QUOTED = "\"$(SRCROOT)/webp/webp.framework/Headers\"";
+				HEADER_SEARCH_PATHS_QUOTED = "\"$(SRCROOT)/Frameworks/webp.framework/Headers\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = SDL_image;
 				SDKROOT = macosx;
@@ -480,7 +480,7 @@
 				DYLIB_CURRENT_VERSION = 9.3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/webp\"",
+					"\"$(SRCROOT)/Frameworks\"",
 				);
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "Info-Framework__Upgraded_.plist";
@@ -558,7 +558,7 @@
 					"$(HOME)/Library/Frameworks",
 					/Library/Frameworks,
 				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED = "\"$(SRCROOT)/webp\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED = "\"$(SRCROOT)/Frameworks\"";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					LOAD_BMP,
@@ -580,7 +580,7 @@
 					"$(HOME)/Library/Frameworks/SDL.framework/Headers",
 					/Library/Frameworks/SDL.framework/Headers,
 				);
-				HEADER_SEARCH_PATHS_QUOTED = "\"$(SRCROOT)/webp/webp.framework/Headers\"";
+				HEADER_SEARCH_PATHS_QUOTED = "\"$(SRCROOT)/Frameworks/webp.framework/Headers\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = SDL_image;
 				SDKROOT = macosx;
@@ -596,7 +596,7 @@
 				DYLIB_CURRENT_VERSION = 9.3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/webp\"",
+					"\"$(SRCROOT)/Frameworks\"",
 				);
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "Info-Framework__Upgraded_.plist";
