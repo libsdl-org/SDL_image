@@ -80,8 +80,8 @@
 		AA9EE77814B27A95008773C0 /* IMG_webp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_webp.c; path = ../IMG_webp.c; sourceTree = "<group>"; };
 		B2D7A06503FAB42200A8000A /* IMG_xxx.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = IMG_xxx.c; path = ../IMG_xxx.c; sourceTree = SOURCE_ROOT; };
 		BE1FA72D07AF4C44004B6283 /* Info-Framework__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Framework__Upgraded_.plist"; sourceTree = "<group>"; };
-		BE1FA72E07AF4C45004B6283 /* SDLimage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDLimage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		BE1FA74107AF4C45004B6283 /* libSDLimage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSDLimage.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE1FA72E07AF4C45004B6283 /* SDL_image.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDL_image.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE1FA74107AF4C45004B6283 /* libSDL_image.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSDL_image.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1FA74507AF4C45004B6283 /* Create DMG */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Create DMG"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1FA76207AF7335004B6283 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL.framework; path = /Library/Frameworks/SDL.framework; sourceTree = "<absolute>"; };
 		F59C710300D5CB5801000001 /* ReadMe.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
@@ -125,8 +125,8 @@
 			isa = PBXGroup;
 			children = (
 				089C1665FE841158C02AAC07 /* Resources */,
-				BE1FA72E07AF4C45004B6283 /* SDLimage.framework */,
-				BE1FA74107AF4C45004B6283 /* libSDLimage.a */,
+				BE1FA72E07AF4C45004B6283 /* SDL_image.framework */,
+				BE1FA74107AF4C45004B6283 /* libSDL_image.a */,
 				BE1FA74507AF4C45004B6283 /* Create DMG */,
 			);
 			name = Products;
@@ -254,7 +254,7 @@
 			name = Framework;
 			productInstallPath = "@executable_path/../Frameworks";
 			productName = SDL_image;
-			productReference = BE1FA72E07AF4C45004B6283 /* SDLimage.framework */;
+			productReference = BE1FA72E07AF4C45004B6283 /* SDL_image.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		BE1FA72F07AF4C45004B6283 /* Static Library */ = {
@@ -273,7 +273,7 @@
 			name = "Static Library";
 			productInstallPath = /usr/local/lib;
 			productName = "Static Library";
-			productReference = BE1FA74107AF4C45004B6283 /* libSDLimage.a */;
+			productReference = BE1FA74107AF4C45004B6283 /* libSDL_image.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		BE1FA74207AF4C45004B6283 /* Create DMG */ = {
@@ -363,7 +363,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd $SYMROOT/$CONFIGURATION/SDLimage.framework\nif ! [ -L Frameworks ]; then\nln -s Versions/Current/Frameworks Frameworks\nfi";
+			shellScript = "cd $SYMROOT/$CONFIGURATION/SDL_image.framework\nif ! [ -L Frameworks ]; then\nln -s Versions/Current/Frameworks Frameworks\nfi";
 		};
 		AA9EE77414B27854008773C0 /* Convert SDL includes to SDL Framework includes */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -377,7 +377,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd $SYMROOT/$CONFIGURATION/SDLimage.framework/Versions/Current/Headers\nsed 's,#include \"\\(.*\\)\",#include <SDL/\\1>,' <SDL_image.h >SDL_image.h.new\nmv SDL_image.h.new SDL_image.h";
+			shellScript = "cd $SYMROOT/$CONFIGURATION/SDL_image.framework/Versions/Current/Headers\nsed 's,#include \"\\(.*\\)\",#include <SDL/\\1>,' <SDL_image.h >SDL_image.h.new\nmv SDL_image.h.new SDL_image.h";
 		};
 		BE1FA74407AF4C45004B6283 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -386,7 +386,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# clean up the framework, remove headers, extra files\nmkdir -p build/dmg-tmp\n/Developer/Tools/CpMac -r $TARGET_BUILD_DIR/SDLimage.framework build/dmg-tmp/\ncp pkg-support/resources/ReadMe.txt build/dmg-tmp\n\n# remove the .DS_Store files if any (we may want to provide one in the future for fancy .dmgs)\nrm -rf build/dmg-tmp/.DS_Store\n\n# create the dmg\nhdiutil create -ov -fs HFS+ -volname SDL_image -srcfolder build/dmg-tmp build/SDL_image.dmg\n\n# clean up\nrm -rf build/dmg-tmp\n\n# compress it???\n#(cd build; gnutar -zcvf SDL_image.dmg.tar.gz SDL_image.dmg)";
+			shellScript = "# clean up the framework, remove headers, extra files\nmkdir -p build/dmg-tmp\n/Developer/Tools/CpMac -r $TARGET_BUILD_DIR/SDL_image.framework build/dmg-tmp/\ncp pkg-support/resources/ReadMe.txt build/dmg-tmp\n\n# remove the .DS_Store files if any (we may want to provide one in the future for fancy .dmgs)\nrm -rf build/dmg-tmp/.DS_Store\n\n# create the dmg\nhdiutil create -ov -fs HFS+ -volname SDL_image -srcfolder build/dmg-tmp build/SDL_image.dmg\n\n# clean up\nrm -rf build/dmg-tmp\n\n# compress it???\n#(cd build; gnutar -zcvf SDL_image.dmg.tar.gz SDL_image.dmg)";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -468,7 +468,7 @@
 				);
 				HEADER_SEARCH_PATHS_QUOTED = "\"$(SRCROOT)/webp/webp.framework/Headers\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				PRODUCT_NAME = SDLimage;
+				PRODUCT_NAME = SDL_image;
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -521,7 +521,7 @@
 				OTHER_CFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = SDLimage;
+				PRODUCT_NAME = SDL_image;
 				REZ_EXECUTABLE = YES;
 				SECTORDER_FLAGS = "";
 			};
@@ -582,7 +582,7 @@
 				);
 				HEADER_SEARCH_PATHS_QUOTED = "\"$(SRCROOT)/webp/webp.framework/Headers\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				PRODUCT_NAME = SDLimage;
+				PRODUCT_NAME = SDL_image;
 				SDKROOT = macosx;
 				SEPARATE_STRIP = YES;
 				STRIP_STYLE = "non-global";
@@ -635,7 +635,7 @@
 				OTHER_CFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = SDLimage;
+				PRODUCT_NAME = SDL_image;
 				REZ_EXECUTABLE = YES;
 				SECTORDER_FLAGS = "";
 			};
