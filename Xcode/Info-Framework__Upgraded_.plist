@@ -6,22 +6,16 @@
 	<string>English</string>
 	<key>CFBundleExecutable</key>
 	<string>SDL_image</string>
-	<key>CFBundleGetInfoString</key>
-	<string>http://www.libsdl.org/projects/SDL_image</string>
-	<key>CFBundleIconFile</key>
-	<string></string>
 	<key>CFBundleIdentifier</key>
-	<string>SDLimage</string>
+	<string>org.libsdl.SDL-image</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Simple DirectMedia Layer Image Library</string>
+	<string>SDL_image</string>
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.2.11</string>
-	<key>CFBundleSignature</key>
-	<string>SDLimageX</string>
 	<key>CFBundleVersion</key>
 	<string>1.2.11</string>
 </dict>
