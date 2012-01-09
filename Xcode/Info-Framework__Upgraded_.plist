@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>SDLimage</string>
+	<string>SDL_image</string>
 	<key>CFBundleGetInfoString</key>
 	<string>http://www.libsdl.org/projects/SDL_image</string>
 	<key>CFBundleIconFile</key>
