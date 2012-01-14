@@ -476,7 +476,7 @@
 		007288120F0DA5BA00C302A9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 9;
+				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 9.3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -592,7 +592,7 @@
 		007288160F0DA5C400C302A9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 9;
+				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 9.3;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
