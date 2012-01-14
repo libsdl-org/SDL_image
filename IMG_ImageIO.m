@@ -184,9 +184,8 @@ static CFDictionaryRef CreateHintDictionary(CFStringRef uti_string_hint)
     return hint_dictionary;
 }
 
-
 // Once we have our image, we need to get it into an SDL_Surface
-static SDL_Surface* Create_SDL_Surface_From_CGImage(CGImageRef image_ref)
+static SDL_Surface* Create_SDL_Surface_From_CGImage_RGB(CGImageRef image_ref)
 {
     /* This code is adapted from Apple's Documentation found here:
      * http://developer.apple.com/documentation/GraphicsImaging/Conceptual/OpenGL-MacProgGuide/index.html
@@ -297,6 +296,66 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage(CGImageRef image_ref)
     }
     
     return surface;
+}
+static SDL_Surface* Create_SDL_Surface_From_CGImage_Index(CGImageRef image_ref)
+{
+    size_t w = CGImageGetWidth(image_ref);
+    size_t h = CGImageGetHeight(image_ref);
+    size_t bits_per_pixel = CGImageGetBitsPerPixel(image_ref);
+    size_t bytes_per_row = CGImageGetBytesPerRow(image_ref);
+
+    SDL_Surface* surface;
+    SDL_Palette* palette;
+	CGColorSpaceRef color_space = CGImageGetColorSpace(image_ref);
+    CGColorSpaceRef base_color_space = CGColorSpaceGetBaseColorSpace(color_space);
+    size_t num_components = CGColorSpaceGetNumberOfComponents(base_color_space);
+    size_t num_entries = CGColorSpaceGetColorTableCount(color_space);
+    uint8_t *entry, entries[num_components * num_entries];
+
+    /* What do we do if it's not RGB? */
+    if (num_components != 3) {
+        SDL_SetError("Unknown colorspace components %lu", num_components);
+        return NULL;
+    }
+    if (bits_per_pixel != 8) {
+        SDL_SetError("Unknown bits_per_pixel %lu", bits_per_pixel);
+        return NULL;
+    }
+
+    CGColorSpaceGetColorTable(color_space, entries);
+    surface = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, bits_per_pixel, 0, 0, 0, 0);
+    if (surface) {
+        uint8_t* pixels = (uint8_t*)surface->pixels;
+        CGDataProviderRef provider = CGImageGetDataProvider(image_ref);
+        NSData* data = (id)CGDataProviderCopyData(provider);
+        [data autorelease];
+        const uint8_t* bytes = [data bytes];
+        size_t i;
+
+        palette = surface->format->palette;
+        for (i = 0, entry = entries; i < num_entries; ++i) {
+            palette->colors[i].r = entry[0];
+            palette->colors[i].g = entry[1];
+            palette->colors[i].b = entry[2];
+            entry += num_components;
+        }
+
+        for (i = 0; i < h; ++i) {
+            SDL_memcpy(pixels, bytes, w);
+            pixels += surface->pitch;
+            bytes += bytes_per_row;
+        }
+    }
+    return surface;
+}
+static SDL_Surface* Create_SDL_Surface_From_CGImage(CGImageRef image_ref)
+{
+	CGColorSpaceRef color_space = CGImageGetColorSpace(image_ref);
+    if (CGColorSpaceGetModel(color_space) == kCGColorSpaceModelIndexed) {
+        return Create_SDL_Surface_From_CGImage_Index(image_ref);
+    } else {
+        return Create_SDL_Surface_From_CGImage_RGB(image_ref);
+    }
 }
 
 

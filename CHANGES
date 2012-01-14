@@ -1,4 +1,6 @@
 1.2.11:
+Sam Lantinga - Sat Jan 14 17:54:38 EST 2012
+ * Fixed loading 8-bit PNG images on Mac OS X
 Sam Lantinga - Sat Dec 31 09:35:40 EST 2011
  * SDL_image is now under the zlib license
 Michael Bonfils - Mon Nov 28 21:46:00 EST 2011
