@@ -453,9 +453,6 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	/* Allocate the SDL surface to hold the image */
 	Rmask = Gmask = Bmask = Amask = 0 ;
 	num_channels = lib.png_get_channels(png_ptr, info_ptr);
-	/* Some .png files are monochrome, with as much as 1 channel and 1 bit per pixel */
-	if( num_channels != 3 && num_channels != 4 )
-		num_channels = 3;
 	if ( color_type != PNG_COLOR_TYPE_PALETTE ) {
 		if ( SDL_BYTEORDER == SDL_LIL_ENDIAN ) {
 			Rmask = 0x000000FF;
