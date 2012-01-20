@@ -1,3 +1,7 @@
+1.2.12:
+Sam Lantinga - Thu Jan 19 23:18:09 EST 2012
+ * Fixed loading 8-bit PNG images with libpng
+
 1.2.11:
 Sam Lantinga - Sat Jan 14 17:54:38 EST 2012
  * Fixed loading 8-bit PNG images on Mac OS X
