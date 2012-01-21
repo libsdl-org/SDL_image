@@ -1,3 +1,7 @@
+The source code to this library used with SDL_image can be found here:
+http://www.libsdl.org/projects/SDL_image/libs/
+---
+
 Copyright (c) 1988-1997 Sam Leffler
 Copyright (c) 1991-1997 Silicon Graphics, Inc.
 
