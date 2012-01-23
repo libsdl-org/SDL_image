@@ -253,7 +253,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 	   goto done;
 
 	if ( bmhd.mask & 2 )               /* There is a transparent color */
-		SDL_SetColorKey( Image, SDL_SRCCOLORKEY, bmhd.tcolor );
+		SDL_SetColorKey( Image, SDL_TRUE, bmhd.tcolor );
 
 	/* Update palette informations */
 

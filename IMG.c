@@ -155,7 +155,7 @@ static int IMG_string_equals(const char *str1, const char *str2)
 }
 
 /* Load an image from an SDL datasource, optionally specifying the type */
-SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, char *type)
+SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, const char *type)
 {
 	int i;
 	SDL_Surface *image;
@@ -201,6 +201,39 @@ SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, char *type)
 	}
 	IMG_SetError("Unsupported image format");
 	return NULL;
+}
+
+SDL_Texture *IMG_LoadTexture(SDL_Renderer *renderer, const char *file)
+{
+    SDL_Texture *texture = NULL;
+    SDL_Surface *surface = IMG_Load(file);
+    if (surface) {
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+    }
+    return texture;
+}
+
+SDL_Texture *IMG_LoadTexture_RW(SDL_Renderer *renderer, SDL_RWops *src, int freesrc)
+{
+    SDL_Texture *texture = NULL;
+    SDL_Surface *surface = IMG_Load_RW(src, freesrc);
+    if (surface) {
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+    }
+    return texture;
+}
+
+SDL_Texture *IMG_LoadTextureTyped_RW(SDL_Renderer *renderer, SDL_RWops *src, int freesrc, const char *type)
+{
+    SDL_Texture *texture = NULL;
+    SDL_Surface *surface = IMG_LoadTyped_RW(src, freesrc, type);
+    if (surface) {
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+    }
+    return texture;
 }
 
 /* Invert the alpha of a surface for use with OpenGL

@@ -709,7 +709,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
   }
 
   /* Create the surface of the appropriate type */
-  surface = SDL_AllocSurface(SDL_SWSURFACE, head->width, head->height, 32,
+  surface = SDL_CreateRGBSurface(SDL_SWSURFACE, head->width, head->height, 32,
 			     0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
 
   if ( surface == NULL ) {
@@ -727,7 +727,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
   }
   fp = SDL_RWtell (src);
  
-  lays = SDL_AllocSurface(SDL_SWSURFACE, head->width, head->height, 32,
+  lays = SDL_CreateRGBSurface(SDL_SWSURFACE, head->width, head->height, 32,
 			  0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
 
   if ( lays == NULL ) {
@@ -774,7 +774,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
   if (chnls) {
     SDL_Surface * chs;
 
-    chs = SDL_AllocSurface(SDL_SWSURFACE, head->width, head->height, 32,
+    chs = SDL_CreateRGBSurface(SDL_SWSURFACE, head->width, head->height, 32,
 			   0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
 
     if (chs == NULL) {

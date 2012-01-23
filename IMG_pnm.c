@@ -149,7 +149,7 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 
 	if(kind == PPM) {
 		/* 24-bit surface in R,G,B byte order */
-		surface = SDL_AllocSurface(SDL_SWSURFACE, width, height, 24,
+		surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 24,
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
 					   0x000000ff, 0x0000ff00, 0x00ff0000,
 #else
@@ -158,7 +158,7 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 					   0);
 	} else {
 		/* load PBM/PGM as 8-bit indexed images */
-		surface = SDL_AllocSurface(SDL_SWSURFACE, width, height, 8,
+		surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 8,
 					   0, 0, 0, 0);
 	}
 	if ( surface == NULL )
