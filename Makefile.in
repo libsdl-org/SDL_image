@@ -37,14 +37,14 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@USE_VERSION_RC_FALSE@libSDL_image_la_DEPENDENCIES =  \
+@USE_VERSION_RC_FALSE@libSDL2_image_la_DEPENDENCIES =  \
 @USE_VERSION_RC_FALSE@	$(am__DEPENDENCIES_1)
 noinst_PROGRAMS = showimage$(EXEEXT)
 subdir = .
 DIST_COMMON = README $(am__configure_deps) \
-	$(libSDL_imageinclude_HEADERS) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(srcdir)/SDL_image.pc.in \
-	$(srcdir)/SDL_image.spec.in $(top_srcdir)/configure COPYING \
+	$(libSDL2_imageinclude_HEADERS) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in $(srcdir)/SDL2_image.pc.in \
+	$(srcdir)/SDL2_image.spec.in $(top_srcdir)/configure COPYING \
 	config.guess config.sub depcomp install-sh ltmain.sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude/libtool.m4 \
@@ -59,7 +59,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
-CONFIG_CLEAN_FILES = SDL_image.spec SDL_image.pc
+CONFIG_CLEAN_FILES = SDL2_image.spec SDL2_image.pc
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -67,26 +67,27 @@ am__vpath_adj = case $$p in \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(pkgconfigdir)" \
-	"$(DESTDIR)$(libSDL_imageincludedir)"
+	"$(DESTDIR)$(libSDL2_imageincludedir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-am__libSDL_image_la_SOURCES_DIST = IMG.c IMG_bmp.c IMG_gif.c IMG_jpg.c \
-	IMG_lbm.c IMG_pcx.c IMG_png.c IMG_pnm.c IMG_tga.c IMG_tif.c \
-	IMG_xcf.c IMG_xpm.c IMG_xv.c IMG_webp.c IMG_ImageIO.m
+am__libSDL2_image_la_SOURCES_DIST = IMG.c IMG_bmp.c IMG_gif.c \
+	IMG_jpg.c IMG_lbm.c IMG_pcx.c IMG_png.c IMG_pnm.c IMG_tga.c \
+	IMG_tif.c IMG_xcf.c IMG_xpm.c IMG_xv.c IMG_webp.c \
+	IMG_ImageIO.m
 @USE_IMAGEIO_TRUE@am__objects_1 = IMG_ImageIO.lo
-am_libSDL_image_la_OBJECTS = IMG.lo IMG_bmp.lo IMG_gif.lo IMG_jpg.lo \
+am_libSDL2_image_la_OBJECTS = IMG.lo IMG_bmp.lo IMG_gif.lo IMG_jpg.lo \
 	IMG_lbm.lo IMG_pcx.lo IMG_png.lo IMG_pnm.lo IMG_tga.lo \
 	IMG_tif.lo IMG_xcf.lo IMG_xpm.lo IMG_xv.lo IMG_webp.lo \
 	$(am__objects_1)
-libSDL_image_la_OBJECTS = $(am_libSDL_image_la_OBJECTS)
-libSDL_image_la_LINK = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+libSDL2_image_la_OBJECTS = $(am_libSDL2_image_la_OBJECTS)
+libSDL2_image_la_LINK = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(OBJCLD) $(AM_OBJCFLAGS) $(OBJCFLAGS) \
-	$(libSDL_image_la_LDFLAGS) $(LDFLAGS) -o $@
+	$(libSDL2_image_la_LDFLAGS) $(LDFLAGS) -o $@
 PROGRAMS = $(noinst_PROGRAMS)
 showimage_SOURCES = showimage.c
 showimage_OBJECTS = showimage.$(OBJEXT)
-showimage_DEPENDENCIES = libSDL_image.la
+showimage_DEPENDENCIES = libSDL2_image.la
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -108,12 +109,12 @@ OBJCLD = $(OBJC)
 OBJCLINK = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
 	$(OBJCLD) $(AM_OBJCFLAGS) $(OBJCFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libSDL_image_la_SOURCES) showimage.c
-DIST_SOURCES = $(am__libSDL_image_la_SOURCES_DIST) showimage.c
+SOURCES = $(libSDL2_image_la_SOURCES) showimage.c
+DIST_SOURCES = $(am__libSDL2_image_la_SOURCES_DIST) showimage.c
 pkgconfigDATA_INSTALL = $(INSTALL_DATA)
 DATA = $(pkgconfig_DATA)
-libSDL_imageincludeHEADERS_INSTALL = $(INSTALL_HEADER)
-HEADERS = $(libSDL_imageinclude_HEADERS)
+libSDL2_imageincludeHEADERS_INSTALL = $(INSTALL_HEADER)
+HEADERS = $(libSDL2_imageinclude_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -262,13 +263,13 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-lib_LTLIBRARIES = libSDL_image.la
-libSDL_imageincludedir = $(includedir)/SDL
-libSDL_imageinclude_HEADERS = \
+lib_LTLIBRARIES = libSDL2_image.la
+libSDL2_imageincludedir = $(includedir)/SDL2
+libSDL2_imageinclude_HEADERS = \
 	SDL_image.h
 
 @USE_IMAGEIO_TRUE@IMAGEIO_SOURCE = IMG_ImageIO.m
-libSDL_image_la_SOURCES = \
+libSDL2_image_la_SOURCES = \
 	IMG.c			\
 	IMG_bmp.c		\
 	IMG_gif.c		\
@@ -295,26 +296,26 @@ EXTRA_DIST = \
 	Xcode-iOS		\
 	IMG_xxx.c		\
 	IMG_UIImage.m		\
-	SDL_image.spec		\
+	SDL2_image.spec		\
 	gcc-fat.sh		\
 	autogen.sh
 
-@USE_VERSION_RC_FALSE@libSDL_image_la_LDFLAGS = \
+@USE_VERSION_RC_FALSE@libSDL2_image_la_LDFLAGS = \
 @USE_VERSION_RC_FALSE@	-no-undefined		\
 @USE_VERSION_RC_FALSE@	-release $(LT_RELEASE)	\
 @USE_VERSION_RC_FALSE@	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE)
 
-@USE_VERSION_RC_TRUE@libSDL_image_la_LDFLAGS = \
+@USE_VERSION_RC_TRUE@libSDL2_image_la_LDFLAGS = \
 @USE_VERSION_RC_TRUE@	-no-undefined		\
 @USE_VERSION_RC_TRUE@	-release $(LT_RELEASE)	\
 @USE_VERSION_RC_TRUE@	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) -Wl,version.o
 
-@USE_VERSION_RC_FALSE@libSDL_image_la_LIBADD = $(IMG_LIBS)
-@USE_VERSION_RC_TRUE@libSDL_image_la_LIBADD = $(IMG_LIBS)
-@USE_VERSION_RC_TRUE@libSDL_image_la_DEPENDENCIES = version.o
+@USE_VERSION_RC_FALSE@libSDL2_image_la_LIBADD = $(IMG_LIBS)
+@USE_VERSION_RC_TRUE@libSDL2_image_la_LIBADD = $(IMG_LIBS)
+@USE_VERSION_RC_TRUE@libSDL2_image_la_DEPENDENCIES = version.o
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = SDL_image.pc
-showimage_LDADD = libSDL_image.la
+pkgconfig_DATA = SDL2_image.pc
+showimage_LDADD = libSDL2_image.la
 all: all-am
 
 .SUFFIXES:
@@ -352,9 +353,9 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(srcdir) && $(AUTOCONF)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
-SDL_image.spec: $(top_builddir)/config.status $(srcdir)/SDL_image.spec.in
+SDL2_image.spec: $(top_builddir)/config.status $(srcdir)/SDL2_image.spec.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-SDL_image.pc: $(top_builddir)/config.status $(srcdir)/SDL_image.pc.in
+SDL2_image.pc: $(top_builddir)/config.status $(srcdir)/SDL2_image.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
@@ -383,8 +384,8 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libSDL_image.la: $(libSDL_image_la_OBJECTS) $(libSDL_image_la_DEPENDENCIES) 
-	$(libSDL_image_la_LINK) -rpath $(libdir) $(libSDL_image_la_OBJECTS) $(libSDL_image_la_LIBADD) $(LIBS)
+libSDL2_image.la: $(libSDL2_image_la_OBJECTS) $(libSDL2_image_la_DEPENDENCIES) 
+	$(libSDL2_image_la_LINK) -rpath $(libdir) $(libSDL2_image_la_OBJECTS) $(libSDL2_image_la_LIBADD) $(LIBS)
 
 clean-noinstPROGRAMS:
 	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
@@ -486,22 +487,22 @@ uninstall-pkgconfigDATA:
 	  echo " rm -f '$(DESTDIR)$(pkgconfigdir)/$$f'"; \
 	  rm -f "$(DESTDIR)$(pkgconfigdir)/$$f"; \
 	done
-install-libSDL_imageincludeHEADERS: $(libSDL_imageinclude_HEADERS)
+install-libSDL2_imageincludeHEADERS: $(libSDL2_imageinclude_HEADERS)
 	@$(NORMAL_INSTALL)
-	test -z "$(libSDL_imageincludedir)" || $(MKDIR_P) "$(DESTDIR)$(libSDL_imageincludedir)"
-	@list='$(libSDL_imageinclude_HEADERS)'; for p in $$list; do \
+	test -z "$(libSDL2_imageincludedir)" || $(MKDIR_P) "$(DESTDIR)$(libSDL2_imageincludedir)"
+	@list='$(libSDL2_imageinclude_HEADERS)'; for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  f=$(am__strip_dir) \
-	  echo " $(libSDL_imageincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(libSDL_imageincludedir)/$$f'"; \
-	  $(libSDL_imageincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(libSDL_imageincludedir)/$$f"; \
+	  echo " $(libSDL2_imageincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(libSDL2_imageincludedir)/$$f'"; \
+	  $(libSDL2_imageincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(libSDL2_imageincludedir)/$$f"; \
 	done
 
-uninstall-libSDL_imageincludeHEADERS:
+uninstall-libSDL2_imageincludeHEADERS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(libSDL_imageinclude_HEADERS)'; for p in $$list; do \
+	@list='$(libSDL2_imageinclude_HEADERS)'; for p in $$list; do \
 	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(libSDL_imageincludedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(libSDL_imageincludedir)/$$f"; \
+	  echo " rm -f '$(DESTDIR)$(libSDL2_imageincludedir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(libSDL2_imageincludedir)/$$f"; \
 	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
@@ -580,7 +581,7 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
-	-find $(distdir) -type d ! -perm -755 -exec chmod u+rwx,go+rx {} \; -o \
+	-find $(distdir) -type d ! -perm -777 -exec chmod a+rwx {} \; -o \
 	  ! -type d ! -perm -444 -links 1 -exec chmod a+r {} \; -o \
 	  ! -type d ! -perm -400 -exec chmod a+r {} \; -o \
 	  ! -type d ! -perm -444 -exec $(install_sh) -c -m a+r {} {} \; \
@@ -681,7 +682,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(DATA) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(pkgconfigdir)" "$(DESTDIR)$(libSDL_imageincludedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(pkgconfigdir)" "$(DESTDIR)$(libSDL2_imageincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -730,7 +731,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-libSDL_imageincludeHEADERS \
+install-data-am: install-libSDL2_imageincludeHEADERS \
 	install-pkgconfigDATA
 
 install-dvi: install-dvi-am
@@ -770,7 +771,7 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-libLTLIBRARIES \
-	uninstall-libSDL_imageincludeHEADERS uninstall-pkgconfigDATA
+	uninstall-libSDL2_imageincludeHEADERS uninstall-pkgconfigDATA
 
 .MAKE: install-am install-strip
 
@@ -784,13 +785,13 @@ uninstall-am: uninstall-libLTLIBRARIES \
 	install-data install-data-am install-dvi install-dvi-am \
 	install-exec install-exec-am install-html install-html-am \
 	install-info install-info-am install-libLTLIBRARIES \
-	install-libSDL_imageincludeHEADERS install-man install-pdf \
+	install-libSDL2_imageincludeHEADERS install-man install-pdf \
 	install-pdf-am install-pkgconfigDATA install-ps install-ps-am \
 	install-strip installcheck installcheck-am installdirs \
 	maintainer-clean maintainer-clean-generic mostlyclean \
 	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
 	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-libLTLIBRARIES uninstall-libSDL_imageincludeHEADERS \
+	uninstall-libLTLIBRARIES uninstall-libSDL2_imageincludeHEADERS \
 	uninstall-pkgconfigDATA
 
 

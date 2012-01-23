@@ -3,10 +3,10 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: SDL_image
+Name: @PACKAGE@
 Description: image loading library for Simple DirectMedia Layer
 Version: @VERSION@
-Requires: sdl >= @SDL_VERSION@
-Libs: -L${libdir} -lSDL_image
+Requires: sdl2 >= @SDL_VERSION@
+Libs: -L${libdir} -lSDL2_image
 Cflags: -I${includedir}/SDL
 
