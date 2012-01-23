@@ -57,7 +57,7 @@ rm -rf $RPM_BUILD_ROOT
 %{prefix}/lib/lib*.a
 %{prefix}/lib/lib*.la
 %{prefix}/lib/lib*.so
-%{prefix}/include/SDL/
+%{prefix}/include/*/
 %{prefix}/lib/pkgconfig/*.pc
 
 %changelog
