@@ -7,5 +7,10 @@ Makefile
 libtool
 .deps
 .libs
-SDL_image.pc
-SDL_image.spec
+*.lo
+*.o
+*.la
+*.lai
+SDL2_image.pc
+SDL2_image.spec
+showimage
