@@ -11102,7 +11102,7 @@ fi
 
 
 # Define the identity of the package.
- PACKAGE=SDL_image
+ PACKAGE=SDL2_image
  VERSION=$VERSION
 
 
@@ -15014,7 +15014,7 @@ LIBS="$saved_LIBS"
 OBJCFLAGS=$CFLAGS
 
 # Finally create all the generated files
-ac_config_files="$ac_config_files Makefile SDL_image.spec SDL_image.pc"
+ac_config_files="$ac_config_files Makefile SDL2_image.spec SDL2_image.pc"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -15888,8 +15888,8 @@ do
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "SDL_image.spec") CONFIG_FILES="$CONFIG_FILES SDL_image.spec" ;;
-    "SDL_image.pc") CONFIG_FILES="$CONFIG_FILES SDL_image.pc" ;;
+    "SDL2_image.spec") CONFIG_FILES="$CONFIG_FILES SDL2_image.spec" ;;
+    "SDL2_image.pc") CONFIG_FILES="$CONFIG_FILES SDL2_image.pc" ;;
 
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}

@@ -42,7 +42,7 @@ dnl Detect the canonical build and host environments
 AC_CANONICAL_HOST
 
 dnl Setup for automake
-AM_INIT_AUTOMAKE(SDL_image, $VERSION)
+AM_INIT_AUTOMAKE(SDL2_image, $VERSION)
 
 dnl Check for tools
 AC_PROG_LIBTOOL
@@ -377,6 +377,6 @@ OBJCFLAGS=$CFLAGS
 # Finally create all the generated files
 AC_OUTPUT([
 Makefile
-SDL_image.spec
-SDL_image.pc
+SDL2_image.spec
+SDL2_image.pc
 ])
