@@ -235,7 +235,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 	    }
 	    free(pal);
 	    if(ckey >= 0)
-		SDL_SetColorKey(img, SDL_SRCCOLORKEY, ckey);
+		SDL_SetColorKey(img, SDL_TRUE, ckey);
 	} else {
 	    /* skip unneeded colormap */
 	    SDL_RWseek(src, palsiz, RW_SEEK_CUR);
