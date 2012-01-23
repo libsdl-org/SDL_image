@@ -436,7 +436,7 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 		lib.jpeg_calc_output_dimensions(&cinfo);
 
 		/* Allocate an output surface to hold the image */
-		surface = SDL_AllocSurface(SDL_SWSURFACE,
+		surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
 		        cinfo.output_width, cinfo.output_height, 24,
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
 		                   0x0000FF, 0x00FF00, 0xFF0000,
