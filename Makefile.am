@@ -35,8 +35,6 @@ EXTRA_DIST =			\
 	VisualCE		\
 	Xcode			\
 	Xcode-iOS		\
-	MPWmake.sea.bin		\
-	Watcom-OS2.zip		\
 	IMG_xxx.c		\
 	IMG_UIImage.m		\
 	SDL_image.spec		\
