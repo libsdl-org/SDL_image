@@ -113,7 +113,7 @@ find_lib()
 }
 
 dnl Check for SDL
-SDL_VERSION=1.2.10
+SDL_VERSION=2.0.0
 AC_SUBST(SDL_VERSION)
 AM_PATH_SDL($SDL_VERSION,
             :,

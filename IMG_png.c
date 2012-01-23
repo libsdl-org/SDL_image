@@ -467,7 +467,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 			Amask = 0x000000FF >> s;
 		}
 	}
-	surface = SDL_AllocSurface(SDL_SWSURFACE, width, height,
+	surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height,
 			bit_depth*num_channels, Rmask,Gmask,Bmask,Amask);
 	if ( surface == NULL ) {
 		error = "Out of memory";

@@ -228,7 +228,8 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 	Bmask = 0x00FF0000;
 	Amask = features.has_alpha?0xFF000001:0;
 
-	surface = SDL_AllocSurface(SDL_SWSURFACE, features.width, features.height,
+	surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
+            features.width, features.height,
 			features.has_alpha?32:24, Rmask,Gmask,Bmask,Amask);
 
 	if ( surface == NULL ) {

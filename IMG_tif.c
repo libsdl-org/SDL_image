@@ -235,7 +235,7 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 	Gmask = 0x0000FF00;
 	Bmask = 0x00FF0000;
 	Amask = 0xFF000000;
-	surface = SDL_AllocSurface(SDL_SWSURFACE, img_width, img_height, 32,
+	surface = SDL_CreateRGBSurface(SDL_SWSURFACE, img_width, img_height, 32,
 		Rmask, Gmask, Bmask, Amask);
 	if(!surface)
 		goto error;

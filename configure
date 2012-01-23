@@ -12799,7 +12799,7 @@ find_lib()
     done
 }
 
-SDL_VERSION=1.2.10
+SDL_VERSION=2.0.0
 
 
 
@@ -12958,12 +12958,12 @@ if test -n "$PKG_CONFIG"; then
         pkg_cv_SDL_CFLAGS="$SDL_CFLAGS"
     else
         if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"sdl >= \$min_sdl_version\"") >&5
-  ($PKG_CONFIG --exists --print-errors "sdl >= $min_sdl_version") 2>&5
+    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"sdl2 >= \$min_sdl_version\"") >&5
+  ($PKG_CONFIG --exists --print-errors "sdl2 >= $min_sdl_version") 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; then
-  pkg_cv_SDL_CFLAGS=`$PKG_CONFIG --cflags "sdl >= $min_sdl_version" 2>/dev/null`
+  pkg_cv_SDL_CFLAGS=`$PKG_CONFIG --cflags "sdl2 >= $min_sdl_version" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -12976,12 +12976,12 @@ if test -n "$PKG_CONFIG"; then
         pkg_cv_SDL_LIBS="$SDL_LIBS"
     else
         if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"sdl >= \$min_sdl_version\"") >&5
-  ($PKG_CONFIG --exists --print-errors "sdl >= $min_sdl_version") 2>&5
+    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"sdl2 >= \$min_sdl_version\"") >&5
+  ($PKG_CONFIG --exists --print-errors "sdl2 >= $min_sdl_version") 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; then
-  pkg_cv_SDL_LIBS=`$PKG_CONFIG --libs "sdl >= $min_sdl_version" 2>/dev/null`
+  pkg_cv_SDL_LIBS=`$PKG_CONFIG --libs "sdl2 >= $min_sdl_version" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -13000,24 +13000,18 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        SDL_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "sdl >= $min_sdl_version"`
+	        SDL_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "sdl2 >= $min_sdl_version"`
         else
-	        SDL_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "sdl >= $min_sdl_version"`
+	        SDL_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "sdl2 >= $min_sdl_version"`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$SDL_PKG_ERRORS" >&5
 
 	{ echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6; }
-                             { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-             sdl_pc=no
-
+                sdl_pc=no
 elif test $pkg_failed = untried; then
-	             { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-             sdl_pc=no
-
+	sdl_pc=no
 else
 	SDL_CFLAGS=$pkg_cv_SDL_CFLAGS
 	SDL_LIBS=$pkg_cv_SDL_LIBS
@@ -13030,27 +13024,27 @@ fi
     if test x$sdl_exec_prefix != x ; then
       sdl_config_args="$sdl_config_args --exec-prefix=$sdl_exec_prefix"
       if test x${SDL_CONFIG+set} != xset ; then
-        SDL_CONFIG=$sdl_exec_prefix/bin/sdl-config
+        SDL_CONFIG=$sdl_exec_prefix/bin/sdl2-config
       fi
     fi
     if test x$sdl_prefix != x ; then
       sdl_config_args="$sdl_config_args --prefix=$sdl_prefix"
       if test x${SDL_CONFIG+set} != xset ; then
-        SDL_CONFIG=$sdl_prefix/bin/sdl-config
+        SDL_CONFIG=$sdl_prefix/bin/sdl2-config
       fi
     fi
   fi
 
   if test "x$sdl_pc" = xyes ; then
     no_sdl=""
-    SDL_CONFIG="pkg-config sdl"
+    SDL_CONFIG="pkg-config sdl2"
   else
     as_save_PATH="$PATH"
     if test "x$prefix" != xNONE && test "$cross_compiling" != yes; then
       PATH="$prefix/bin:$prefix/usr/bin:$PATH"
     fi
-    # Extract the first word of "sdl-config", so it can be a program name with args.
-set dummy sdl-config; ac_word=$2
+    # Extract the first word of "sdl2-config", so it can be a program name with args.
+set dummy sdl2-config; ac_word=$2
 { echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
 if test "${ac_cv_path_SDL_CONFIG+set}" = set; then
@@ -13171,11 +13165,11 @@ int main (int argc, char *argv[])
     }
   else
     {
-      printf("\n*** 'sdl-config --version' returned %d.%d.%d, but the minimum version\n", $sdl_major_version, $sdl_minor_version, $sdl_micro_version);
-      printf("*** of SDL required is %d.%d.%d. If sdl-config is correct, then it is\n", major, minor, micro);
+      printf("\n*** 'sdl2-config --version' returned %d.%d.%d, but the minimum version\n", $sdl_major_version, $sdl_minor_version, $sdl_micro_version);
+      printf("*** of SDL required is %d.%d.%d. If sdl2-config is correct, then it is\n", major, minor, micro);
       printf("*** best to upgrade to the required version.\n");
-      printf("*** If sdl-config was wrong, set the environment variable SDL_CONFIG\n");
-      printf("*** to point to the correct copy of sdl-config, and remove the file\n");
+      printf("*** If sdl2-config was wrong, set the environment variable SDL_CONFIG\n");
+      printf("*** to point to the correct copy of sdl2-config, and remove the file\n");
       printf("*** config.cache before re-running configure\n");
       return 1;
     }
@@ -13233,10 +13227,10 @@ echo "${ECHO_T}no" >&6; }
      :
   else
      if test "$SDL_CONFIG" = "no" ; then
-       echo "*** The sdl-config script installed by SDL could not be found"
+       echo "*** The sdl2-config script installed by SDL could not be found"
        echo "*** If SDL was installed in PREFIX, make sure PREFIX/bin is in"
        echo "*** your path, or set the SDL_CONFIG environment variable to the"
-       echo "*** full path to sdl-config."
+       echo "*** full path to sdl2-config."
      else
        if test -f conf.sdltest ; then
         :
@@ -13302,7 +13296,7 @@ sed 's/^/| /' conftest.$ac_ext >&5
 	 echo "*** The test program failed to compile or link. See the file config.log for the"
           echo "*** exact error that occured. This usually means SDL was incorrectly installed"
           echo "*** or that you have moved SDL since it was installed. In the latter case, you"
-          echo "*** may want to edit the sdl-config script: $SDL_CONFIG"
+          echo "*** may want to edit the sdl2-config script: $SDL_CONFIG"
 fi
 
 rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \

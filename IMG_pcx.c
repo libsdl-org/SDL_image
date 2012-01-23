@@ -140,7 +140,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 		error = "unsupported PCX format";
 		goto done;
 	}
-	surface = SDL_AllocSurface(SDL_SWSURFACE, width, height,
+	surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height,
 				   bits, Rmask, Gmask, Bmask, Amask);
 	if ( surface == NULL )
 		goto done;
