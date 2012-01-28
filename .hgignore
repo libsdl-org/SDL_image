@@ -12,5 +12,4 @@ libtool
 *.la
 *.lai
 SDL2_image.pc
-SDL2_image.spec
 showimage
