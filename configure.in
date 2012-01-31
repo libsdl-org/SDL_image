@@ -115,7 +115,7 @@ find_lib()
 dnl Check for SDL
 SDL_VERSION=2.0.0
 AC_SUBST(SDL_VERSION)
-AM_PATH_SDL($SDL_VERSION,
+AM_PATH_SDL2($SDL_VERSION,
             :,
            AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
 )
