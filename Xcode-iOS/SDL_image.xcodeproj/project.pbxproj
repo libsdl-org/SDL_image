@@ -38,7 +38,7 @@
 		3BB4C062012FAC847F000001 /* IMG_xpm.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = IMG_xpm.c; path = ../IMG_xpm.c; sourceTree = SOURCE_ROOT; };
 		61161B8814B6625C009198B1 /* IMG_webp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_webp.c; path = ../IMG_webp.c; sourceTree = SOURCE_ROOT; };
 		B2D7A06503FAB42200A8000A /* IMG_xxx.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = IMG_xxx.c; path = ../IMG_xxx.c; sourceTree = SOURCE_ROOT; };
-		BE1FA74107AF4C45004B6283 /* libSDL_image.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSDL_image.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE1FA74107AF4C45004B6283 /* libSDL2_image.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSDL2_image.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5FB1F0001CD818601FAFB42 /* IMG_lbm.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = IMG_lbm.c; path = ../IMG_lbm.c; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -65,7 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				089C1665FE841158C02AAC07 /* Resources */,
-				BE1FA74107AF4C45004B6283 /* libSDL_image.a */,
+				BE1FA74107AF4C45004B6283 /* libSDL2_image.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -140,7 +140,7 @@
 			name = libSDL_image;
 			productInstallPath = /usr/local/lib;
 			productName = "Static Library";
-			productReference = BE1FA74107AF4C45004B6283 /* libSDL_image.a */;
+			productReference = BE1FA74107AF4C45004B6283 /* libSDL2_image.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -237,7 +237,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				LIBRARY_STYLE = STATIC;
-				PRODUCT_NAME = SDL_image;
+				PRODUCT_NAME = SDL2_image;
 				SECTORDER_FLAGS = "";
 			};
 			name = Debug;
@@ -278,7 +278,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				LIBRARY_STYLE = STATIC;
-				PRODUCT_NAME = SDL_image;
+				PRODUCT_NAME = SDL2_image;
 				SECTORDER_FLAGS = "";
 			};
 			name = Release;
