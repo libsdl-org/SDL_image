@@ -19,7 +19,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
+#if (!defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)) || !defined(BMP_USES_IMAGEIO)
 
 /* This is a BMP image file loading framework */
 /* ICO/CUR file support is here as well since it uses similar internal
