@@ -571,6 +571,8 @@ static int Internal_isType (SDL_RWops *rw_ops, CFStringRef uti_string_to_test)
         return Internal_isType_ImageIO(rw_ops, uti_string_to_test);
 }
 
+#ifdef BMP_USES_IMAGEIO
+
 int IMG_isCUR(SDL_RWops *src)
 {
     /* FIXME: Is this a supported type? */
@@ -586,6 +588,8 @@ int IMG_isBMP(SDL_RWops *src)
 {
     return Internal_isType(src, kUTTypeBMP);
 }
+
+#endif /* BMP_USES_IMAGEIO */
 
 int IMG_isGIF(SDL_RWops *src)
 {
@@ -725,6 +729,8 @@ static SDL_Surface* LoadImageFromFile (const char *file)
         return LoadImageFromFile_ImageIO(file);
 }
 
+#ifdef BMP_USES_IMAGEIO
+
 SDL_Surface* IMG_LoadCUR_RW (SDL_RWops *src)
 {
     /* FIXME: Is this a supported type? */
@@ -740,6 +746,8 @@ SDL_Surface* IMG_LoadBMP_RW (SDL_RWops *src)
 {
     return LoadImageFromRWops(src, kUTTypeBMP);
 }
+
+#endif /* BMP_USES_IMAGEIO */
 
 SDL_Surface* IMG_LoadGIF_RW (SDL_RWops *src)
 {
