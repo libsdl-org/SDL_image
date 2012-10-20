@@ -249,6 +249,7 @@
 				LIBRARY_STYLE = STATIC;
 				PRODUCT_NAME = SDL2_image;
 				SECTORDER_FLAGS = "";
+				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
@@ -290,6 +291,7 @@
 				LIBRARY_STYLE = STATIC;
 				PRODUCT_NAME = SDL2_image;
 				SECTORDER_FLAGS = "";
+				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
