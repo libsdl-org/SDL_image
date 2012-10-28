@@ -94,8 +94,8 @@
 		AA579DF1161C07E6005F809B /* IMG.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG.c; path = ../IMG.c; sourceTree = "<group>"; };
 		AA9EE77514B27A62008773C0 /* webp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = webp.framework; path = Frameworks/webp.framework; sourceTree = "<group>"; };
 		BE1FA72D07AF4C44004B6283 /* Info-Framework__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Framework__Upgraded_.plist"; sourceTree = "<group>"; };
-		BE1FA72E07AF4C45004B6283 /* SDL_image.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SDL_image.framework; path = SDL2_image.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		BE1FA74107AF4C45004B6283 /* libSDL_image.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSDL_image.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE1FA72E07AF4C45004B6283 /* SDL2_image.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDL2_image.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE1FA74107AF4C45004B6283 /* libSDL2_image.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSDL2_image.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1FA74507AF4C45004B6283 /* Create DMG */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Create DMG"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1FA76207AF7335004B6283 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = /Library/Frameworks/SDL2.framework; sourceTree = "<absolute>"; };
 		F59C710300D5CB5801000001 /* ReadMe.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
@@ -138,8 +138,8 @@
 			isa = PBXGroup;
 			children = (
 				089C1665FE841158C02AAC07 /* Resources */,
-				BE1FA72E07AF4C45004B6283 /* SDL_image.framework */,
-				BE1FA74107AF4C45004B6283 /* libSDL_image.a */,
+				BE1FA72E07AF4C45004B6283 /* SDL2_image.framework */,
+				BE1FA74107AF4C45004B6283 /* libSDL2_image.a */,
 				BE1FA74507AF4C45004B6283 /* Create DMG */,
 			);
 			name = Products;
@@ -267,7 +267,7 @@
 			name = Framework;
 			productInstallPath = "@executable_path/../Frameworks";
 			productName = SDL_image;
-			productReference = BE1FA72E07AF4C45004B6283 /* SDL_image.framework */;
+			productReference = BE1FA72E07AF4C45004B6283 /* SDL2_image.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		BE1FA72F07AF4C45004B6283 /* Static Library */ = {
@@ -286,7 +286,7 @@
 			name = "Static Library";
 			productInstallPath = /usr/local/lib;
 			productName = "Static Library";
-			productReference = BE1FA74107AF4C45004B6283 /* libSDL_image.a */;
+			productReference = BE1FA74107AF4C45004B6283 /* libSDL2_image.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		BE1FA74207AF4C45004B6283 /* Create DMG */ = {
@@ -511,7 +511,7 @@
 				);
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "Info-Framework__Upgraded_.plist";
-				INSTALL_PATH = "@rpath";
+				INSTALL_PATH = "@executable_path/../Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/Frameworks";
 				WRAPPER_EXTENSION = framework;
 			};
@@ -548,9 +548,9 @@
 				OTHER_CFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = SDL_image;
 				REZ_EXECUTABLE = YES;
 				SECTORDER_FLAGS = "";
+				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
@@ -628,7 +628,7 @@
 				);
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "Info-Framework__Upgraded_.plist";
-				INSTALL_PATH = "@rpath";
+				INSTALL_PATH = "@executable_path/../Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/Frameworks";
 				WRAPPER_EXTENSION = framework;
 			};
@@ -663,9 +663,9 @@
 				OTHER_CFLAGS = "";
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = SDL_image;
 				REZ_EXECUTABLE = YES;
 				SECTORDER_FLAGS = "";
+				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
