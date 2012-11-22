@@ -1,4 +1,6 @@
 1.2.12:
+Sylvain - Thu Nov 22 13:09:59 PST 2012
+ * Added extended XPM color table (disabled by default in IMG_xpm.c)
 Sam Lantinga - Thu Jan 19 23:18:09 EST 2012
  * Fixed regression in 1.2.11 loading 8-bit PNG images with libpng
 
