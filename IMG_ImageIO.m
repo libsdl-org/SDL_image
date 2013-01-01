@@ -217,13 +217,13 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_RGB(CGImageRef image_ref)
 	 * libpng loader.
 	 * Thanks to Allegro. :)
 	 */
-	CGFloat whitePoint[3] = { 1, 1, 1 };
-	CGFloat blackPoint[3] = { 0, 0, 0 };
+	CGFloat whitePoint[3] = { 0.950, 1.000, 1.089 };
+	CGFloat blackPoint[3] = { 0.000, 0.000, 0.000 };
 	CGFloat gamma[3] = { 2.2, 2.2, 2.2 };
 	CGFloat matrix[9] = {
-		1, 1, 1,
-		1, 1, 1,
-		1, 1, 1
+		0.412, 0.213, 0.019,
+		0.358, 0.715, 0.119,
+		0.180, 0.072, 0.950
 	};
 	CGColorSpaceRef color_space =
 		CGColorSpaceCreateCalibratedRGB(

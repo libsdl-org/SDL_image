@@ -1,4 +1,6 @@
 1.2.12:
+mscott - 2012-02-06 19:40:23 PST
+ * Fixed image corruption when using ImageIO framework
 Sylvain - Thu Nov 22 13:09:59 PST 2012
  * Added extended XPM color table (disabled by default in IMG_xpm.c)
 Sam Lantinga - Thu Jan 19 23:18:09 EST 2012
