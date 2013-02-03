@@ -87,7 +87,7 @@ enum tga_type {
 /* Load a TGA type image from an SDL datasource */
 SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 {
-    int start;
+    Sint64 start;
     const char *error = NULL;
     struct TGAheader hdr;
     int rle = 0;
@@ -169,18 +169,20 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 	alpha = 1;
 	/* fallthrough */
     case 24:
-	if(SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+		{
 	    int s = alpha ? 0 : 8;
 	    amask = 0x000000ff >> s;
 	    rmask = 0x0000ff00 >> s;
 	    gmask = 0x00ff0000 >> s;
 	    bmask = 0xff000000 >> s;
-	} else {
+		}
+#else
 	    amask = alpha ? 0xff000000 : 0;
 	    rmask = 0x00ff0000;
 	    gmask = 0x0000ff00;
 	    bmask = 0x000000ff;
-	}
+#endif
 	break;
 
     default:
@@ -207,7 +209,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
     if(hdr.has_cmap) {
 	int palsiz = ncols * ((hdr.cmap_bits + 7) >> 3);
 	if(indexed && !grey) {
-	    Uint8 *pal = malloc(palsiz), *p = pal;
+	    Uint8 *pal = (Uint8 *)SDL_malloc(palsiz), *p = pal;
 	    SDL_Color *colors = img->format->palette->colors;
 	    img->format->palette->ncolors = ncols;
 	    SDL_RWread(src, pal, palsiz, 1);
@@ -233,7 +235,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 		    break;
 		}
 	    }
-	    free(pal);
+	    SDL_free(pal);
 	    if(ckey >= 0)
 		SDL_SetColorKey(img, SDL_TRUE, ckey);
 	} else {
@@ -250,11 +252,11 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
     }
 
     if(hdr.flags & TGA_ORIGIN_UPPER) {
-	lstep = img->pitch;
-	dst = img->pixels;
+		lstep = img->pitch;
+		dst = (Uint8 *)img->pixels;
     } else {
-	lstep = -img->pitch;
-	dst = (Uint8 *)img->pixels + (h - 1) * img->pitch;
+		lstep = -img->pitch;
+		dst = (Uint8 *)img->pixels + (h - 1) * img->pitch;
     }
 
     /* The RLE decoding code is slightly convoluted since we can't rely on
@@ -281,7 +283,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 			n = w - x;
 		    rep -= n;
 		    while(n--) {
-			memcpy(dst + x * bpp, &pixel, bpp);
+			SDL_memcpy(dst + x * bpp, &pixel, bpp);
 			x++;
 		    }
 		    if(x == w)
@@ -300,13 +302,15 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 	} else {
 	    SDL_RWread(src, dst, w * bpp, 1);
 	}
-	if(SDL_BYTEORDER == SDL_BIG_ENDIAN && bpp == 2) {
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+	if (bpp == 2) {
 	    /* swap byte order */
 	    int x;
 	    Uint16 *p = (Uint16 *)dst;
 	    for(x = 0; x < w; x++)
 		p[x] = SDL_Swap16(p[x]);
 	}
+#endif
 	dst += lstep;
     }
     return img;
