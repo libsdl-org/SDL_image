@@ -33,7 +33,7 @@
 /* See if an image is contained in a data source */
 int IMG_isGIF(SDL_RWops *src)
 {
-	int start;
+	Sint64 start;
 	int is_GIF;
 	char magic[6];
 
@@ -42,9 +42,9 @@ int IMG_isGIF(SDL_RWops *src)
 	start = SDL_RWtell(src);
 	is_GIF = 0;
 	if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
-		if ( (strncmp(magic, "GIF", 3) == 0) &&
-		     ((memcmp(magic + 3, "87a", 3) == 0) ||
-		      (memcmp(magic + 3, "89a", 3) == 0)) ) {
+		if ( (SDL_strncmp(magic, "GIF", 3) == 0) &&
+		     ((SDL_memcmp(magic + 3, "87a", 3) == 0) ||
+		      (SDL_memcmp(magic + 3, "89a", 3) == 0)) ) {
 			is_GIF = 1;
 		}
 	}
@@ -152,7 +152,7 @@ static Image *ReadImage(SDL_RWops * src, int len, int height, int,
 Image *
 IMG_LoadGIF_RW(SDL_RWops *src)
 {
-    int start;
+    Sint64 start;
     unsigned char buf[16];
     unsigned char c;
     unsigned char localColorMap[3][MAXCOLORMAPSIZE];
@@ -173,14 +173,14 @@ IMG_LoadGIF_RW(SDL_RWops *src)
 	RWSetMsg("error reading magic number");
         goto done;
     }
-    if (strncmp((char *) buf, "GIF", 3) != 0) {
+    if (SDL_strncmp((char *) buf, "GIF", 3) != 0) {
 	RWSetMsg("not a GIF file");
         goto done;
     }
-    memcpy(version, (char *) buf + 3, 3);
+    SDL_memcpy(version, (char *) buf + 3, 3);
     version[3] = '\0';
 
-    if ((strcmp(version, "87a") != 0) && (strcmp(version, "89a") != 0)) {
+    if ((SDL_strcmp(version, "87a") != 0) && (SDL_strcmp(version, "89a") != 0)) {
 	RWSetMsg("bad version number, not '87a' or '89a'");
         goto done;
     }
@@ -337,7 +337,7 @@ DoExtension(SDL_RWops *src, int label)
 	return FALSE;
     default:
 	str = (char *)buf;
-	sprintf(str, "UNKNOWN (0x%02x)", label);
+	SDL_snprintf(str, 256, "UNKNOWN (0x%02x)", label);
 	break;
     }
 
@@ -439,8 +439,9 @@ LWZReadByte(SDL_RWops *src, int flag, int input_code_size)
 	    table[0][i] = 0;
 	    table[1][i] = i;
 	}
+	table[1][0] = 0;
 	for (; i < (1 << MAX_LWZ_BITS); ++i)
-	    table[0][i] = table[1][0] = 0;
+	    table[0][i] = 0;
 
 	sp = stack;
 
@@ -493,12 +494,22 @@ LWZReadByte(SDL_RWops *src, int flag, int input_code_size)
 	    code = oldcode;
 	}
 	while (code >= clear_code) {
+		/* Guard against buffer overruns */
+		if (code < 0 || code >= (1 << MAX_LWZ_BITS)) {
+			RWSetMsg("invalid LWZ data");
+			return -3;
+		}
 	    *sp++ = table[1][code];
 	    if (code == table[0][code])
 		RWSetMsg("circular table entry BIG ERROR");
 	    code = table[0][code];
 	}
 
+	/* Guard against buffer overruns */
+	if (code < 0 || code >= (1 << MAX_LWZ_BITS)) {
+		RWSetMsg("invalid LWZ data");
+		return -4;
+	}
 	*sp++ = firstcode = table[1][code];
 
 	if ((code = max_code) < (1 << MAX_LWZ_BITS)) {

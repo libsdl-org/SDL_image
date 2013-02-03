@@ -123,7 +123,7 @@ void IMG_Quit()
 SDL_Surface *IMG_Load(const char *file)
 {
     SDL_RWops *src = SDL_RWFromFile(file, "rb");
-    char *ext = strrchr(file, '.');
+    const char *ext = strrchr(file, '.');
     if(ext) {
         ext++;
     }

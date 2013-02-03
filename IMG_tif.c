@@ -165,19 +165,19 @@ static void tiff_unmap(thandle_t fd, tdata_t base, toff_t size)
 
 static toff_t tiff_size(thandle_t fd)
 {
-	Uint32 save_pos;
+	Sint64 save_pos;
 	toff_t size;
 
 	save_pos = SDL_RWtell((SDL_RWops*)fd);
 	SDL_RWseek((SDL_RWops*)fd, 0, RW_SEEK_END);
-        size = SDL_RWtell((SDL_RWops*)fd);
+    size = SDL_RWtell((SDL_RWops*)fd);
 	SDL_RWseek((SDL_RWops*)fd, save_pos, RW_SEEK_SET);
 	return size;
 }
 
 int IMG_isTIF(SDL_RWops* src)
 {
-	int start;
+	Sint64 start;
 	int is_TIF;
 	Uint8 magic[4];
 
@@ -203,7 +203,7 @@ int IMG_isTIF(SDL_RWops* src)
 
 SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 {
-	int start;
+	Sint64 start;
 	TIFF* tiff;
 	SDL_Surface* surface = NULL;
 	Uint32 img_width, img_height;
@@ -240,7 +240,7 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 	if(!surface)
 		goto error;
 	
-	if(!lib.TIFFReadRGBAImage(tiff, img_width, img_height, surface->pixels, 0))
+	if(!lib.TIFFReadRGBAImage(tiff, img_width, img_height, (uint32 *)surface->pixels, 0))
 		goto error;
 
 	/* libtiff loads the image upside-down, flip it back */
