@@ -888,7 +888,7 @@ static int color_to_rgb(char *spec, int speclen, Uint32 *rgb)
 	} else {
 		int i;
 		for(i = 0; i < SDL_arraysize(known); i++)
-			if(SDL_strncmp(known[i].name, spec, speclen) == 0) {
+			if(SDL_strncasecmp(known[i].name, spec, speclen) == 0) {
 				*rgb = known[i].rgb;
 				return 1;
 			}
