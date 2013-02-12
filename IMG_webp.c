@@ -122,7 +122,7 @@ void IMG_QuitWEBP()
 #endif /* LOAD_WEBP_DYNAMIC */
 
 static int webp_getinfo( SDL_RWops *src, int *datasize ) {
-	int start;
+	Sint64 start;
 	int is_WEBP;
 	int data;
 	Uint8 magic[20];
@@ -162,7 +162,7 @@ int IMG_isWEBP(SDL_RWops *src)
 
 SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 {
-	int start;
+	Sint64 start;
 	const char *error = NULL;
 	SDL_Surface *volatile surface = NULL;
 	Uint32 Rmask;
@@ -171,7 +171,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 	Uint32 Amask;
 	WebPBitstreamFeatures features;
 	int raw_data_size;
-	uint8_t *raw_data;
+	uint8_t *raw_data = NULL;
 	int r;
 	uint8_t *ret;
 
@@ -196,7 +196,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 	// skip header
 	SDL_RWseek(src, start+20, RW_SEEK_SET );
 
-	raw_data = (uint8_t*) malloc( raw_data_size );
+	raw_data = (uint8_t*) SDL_malloc( raw_data_size );
 	if ( raw_data == NULL ) {
 		error = "Failed to allocate enought buffer for WEBP";
 		goto error;
@@ -219,7 +219,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 
 	if ( lib.webp_get_features_internal( raw_data, raw_data_size, &features, WEBP_DECODER_ABI_VERSION ) != VP8_STATUS_OK ) {
 		error = "WebPGetFeatures has failed";
-		return NULL;
+		goto error;
 	}
 
 	/* Check if it's ok !*/
@@ -238,9 +238,9 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 	}
 
 	if ( features.has_alpha ) {
-		ret = lib.webp_decode_rgba_into( raw_data, raw_data_size, surface->pixels, surface->pitch * surface->h,  surface->pitch );
+		ret = lib.webp_decode_rgba_into( raw_data, raw_data_size, (uint8_t *)surface->pixels, surface->pitch * surface->h,  surface->pitch );
 	} else {
-		ret = lib.webp_decode_rgb_into( raw_data, raw_data_size, surface->pixels, surface->pitch * surface->h,  surface->pitch );
+		ret = lib.webp_decode_rgb_into( raw_data, raw_data_size, (uint8_t *)surface->pixels, surface->pitch * surface->h,  surface->pitch );
 	}
 
 	if ( !ret ) {
@@ -258,7 +258,7 @@ error:
 	}
 
 	if ( raw_data ) {
-		free( raw_data );
+		SDL_free( raw_data );
 	}
 
 	if ( error ) {

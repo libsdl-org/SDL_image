@@ -39,7 +39,7 @@
 /* See if an image is contained in a data source */
 int IMG_isPNM(SDL_RWops *src)
 {
-	int start;
+	Sint64 start;
 	int is_PNM;
 	char magic[2];
 
@@ -105,7 +105,7 @@ static int ReadNumber(SDL_RWops *src)
 
 SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 {
-	int start;
+	Sint64 start;
 	SDL_Surface *surface = NULL;
 	int width, height;
 	int maxval, y, bpl;
@@ -177,13 +177,13 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 		c[1].r = c[1].g = c[1].b = 0;
 		surface->format->palette->ncolors = 2;
 		bpl = (width + 7) >> 3;
-		buf = malloc(bpl);
+		buf = (Uint8 *)SDL_malloc(bpl);
 		if(buf == NULL)
 			ERROR("Out of memory");
 	}
 
 	/* Read the image into the surface */
-	row = surface->pixels;
+	row = (Uint8 *)surface->pixels;
 	for(y = 0; y < height; y++) {
 		if(ascii) {
 			int i;

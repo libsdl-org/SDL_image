@@ -177,7 +177,7 @@ void IMG_QuitJPG()
 /* See if an image is contained in a data source */
 int IMG_isJPG(SDL_RWops *src)
 {
-	int start;
+	Sint64 start;
 	int is_JPG;
 	int in_scan;
 	Uint8 magic[4];
@@ -214,13 +214,13 @@ int IMG_isJPG(SDL_RWops *src)
 					is_JPG = 0;
 				} else {
 					/* Yes, it's big-endian */
-					Uint32 start;
+					Sint64 innerStart;
 					Uint32 size;
-					Uint32 end;
-					start = SDL_RWtell(src);
+					Sint64 end;
+					innerStart = SDL_RWtell(src);
 					size = (magic[2] << 8) + magic[3];
 					end = SDL_RWseek(src, size-2, RW_SEEK_CUR);
-					if ( end != start + size - 2 ) is_JPG = 0;
+					if ( end != innerStart + size - 2 ) is_JPG = 0;
 					if ( magic[1] == 0xDA ) {
 						/* Now comes the actual JPEG meat */
 #ifdef	FAST_IS_JPEG
@@ -374,7 +374,7 @@ static void output_no_message(j_common_ptr cinfo)
 /* Load a JPEG type image from an SDL datasource */
 SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 {
-	int start;
+	Sint64 start;
 	struct jpeg_decompress_struct cinfo;
 	JSAMPROW rowptr[1];
 	SDL_Surface *volatile surface = NULL;
