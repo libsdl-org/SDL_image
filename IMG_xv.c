@@ -57,19 +57,19 @@ static int get_header(SDL_RWops *src, int *w, int *h)
 
 	/* Check the header magic */
 	if ( (get_line(src, line, sizeof(line)) < 0) ||
-	     (memcmp(line, "P7 332", 6) != 0) ) {
+	     (SDL_memcmp(line, "P7 332", 6) != 0) ) {
 		return -1;
 	}
 
 	/* Read the header */
 	while ( get_line(src, line, sizeof(line)) == 0 ) {
-		if ( memcmp(line, "#BUILTIN:", 9) == 0 ) {
+		if ( SDL_memcmp(line, "#BUILTIN:", 9) == 0 ) {
 			/* Builtin image, no data */
 			break;
 		}
-		if ( memcmp(line, "#END_OF_COMMENTS", 16) == 0 ) {
+		if ( SDL_memcmp(line, "#END_OF_COMMENTS", 16) == 0 ) {
 			if ( get_line(src, line, sizeof(line)) == 0 ) {
-				sscanf(line, "%d %d", w, h);
+				SDL_sscanf(line, "%d %d", w, h);
 				if ( *w >= 0 && *h >= 0 ) {
 					return 0;
 				}
@@ -84,7 +84,7 @@ static int get_header(SDL_RWops *src, int *w, int *h)
 /* See if an image is contained in a data source */
 int IMG_isXV(SDL_RWops *src)
 {
-	int start;
+	Sint64 start;
 	int is_XV;
 	int w, h;
 
@@ -102,7 +102,7 @@ int IMG_isXV(SDL_RWops *src)
 /* Load a XV thumbnail image from an SDL datasource */
 SDL_Surface *IMG_LoadXV_RW(SDL_RWops *src)
 {
-	int start;
+	Sint64 start;
 	const char *error = NULL;
 	SDL_Surface *surface = NULL;
 	int w, h;

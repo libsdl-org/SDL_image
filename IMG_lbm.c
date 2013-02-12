@@ -61,7 +61,7 @@ typedef struct
 
 int IMG_isLBM( SDL_RWops *src )
 {
-	int start;
+	Sint64 start;
 	int   is_LBM;
 	Uint8 magic[4+4+4];
 
@@ -71,9 +71,9 @@ int IMG_isLBM( SDL_RWops *src )
 	is_LBM = 0;
 	if ( SDL_RWread( src, magic, sizeof(magic), 1 ) )
 	{
-		if ( !memcmp( magic, "FORM", 4 ) &&
-			( !memcmp( magic + 8, "PBM ", 4 ) ||
-			  !memcmp( magic + 8, "ILBM", 4 ) ) )
+		if ( !SDL_memcmp( magic, "FORM", 4 ) &&
+			( !SDL_memcmp( magic + 8, "PBM ", 4 ) ||
+			  !SDL_memcmp( magic + 8, "ILBM", 4 ) ) )
 		{
 			is_LBM = 1;
 		}
@@ -84,7 +84,7 @@ int IMG_isLBM( SDL_RWops *src )
 
 SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 {
-	int start;
+	Sint64 start;
 	SDL_Surface *Image;
 	Uint8       id[4], pbm, colormap[MAXCOLORS*3], *MiniBuf, *ptr, count, color, msk;
 	Uint32      size, bytesloaded, nbcolors;
@@ -135,8 +135,8 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 	pbm = 0;
 
 	/* File format : PBM=Packed Bitmap, ILBM=Interleaved Bitmap */
-	if ( !memcmp( id, "PBM ", 4 ) ) pbm = 1;
-	else if ( memcmp( id, "ILBM", 4 ) )
+	if ( !SDL_memcmp( id, "PBM ", 4 ) ) pbm = 1;
+	else if ( SDL_memcmp( id, "ILBM", 4 ) )
 	{
 		error="not a IFF picture";
 		goto done;
@@ -144,11 +144,11 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
 	nbcolors = 0;
 
-	memset( &bmhd, 0, sizeof( BMHD ) );
+	SDL_memset( &bmhd, 0, sizeof( BMHD ) );
 	flagHAM = 0;
 	flagEHB = 0;
 
-	while ( memcmp( id, "BODY", 4 ) != 0 )
+	while ( SDL_memcmp( id, "BODY", 4 ) != 0 )
 	{
 		if ( !SDL_RWread( src, id, 4, 1 ) ) 
 		{
@@ -166,7 +166,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
 		size = SDL_SwapBE32( size );
 
-		if ( !memcmp( id, "BMHD", 4 ) ) /* Bitmap header */
+		if ( !SDL_memcmp( id, "BMHD", 4 ) ) /* Bitmap header */
 		{
 			if ( !SDL_RWread( src, &bmhd, sizeof( BMHD ), 1 ) )
 			{
@@ -185,7 +185,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 			bmhd.Hpage 	= SDL_SwapBE16( bmhd.Hpage );
 		}
 
-		if ( !memcmp( id, "CMAP", 4 ) ) /* palette ( Color Map ) */
+		if ( !SDL_memcmp( id, "CMAP", 4 ) ) /* palette ( Color Map ) */
 		{
 			if ( !SDL_RWread( src, &colormap, size, 1 ) )
 			{
@@ -214,7 +214,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 				flagEHB = 1;
 		}
 
-		if ( memcmp( id, "BODY", 4 ) )
+		if ( SDL_memcmp( id, "BODY", 4 ) )
 		{
 			if ( size & 1 )	++size;  	/* padding ! */
 			size -= bytesloaded;
@@ -242,7 +242,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 	/* Allocate memory for a temporary buffer ( used for
            decompression/deinterleaving ) */
 
-	MiniBuf = (void *)malloc( bytesperline * (nbplanes + stencil) );
+	MiniBuf = (Uint8 *)SDL_malloc( bytesperline * (nbplanes + stencil) );
 	if ( MiniBuf == NULL )
 	{
 		error="no enough memory for temporary buffer";
@@ -335,7 +335,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 							error="error reading BODY chunk";
 							goto done;
 						}
-						memset( ptr, color, count );
+						SDL_memset( ptr, color, count );
 					}
 					else
 					{
@@ -365,7 +365,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
 		/* One line has been read, store it ! */
 
-		ptr = Image->pixels;
+		ptr = (Uint8 *)Image->pixels;
 		if ( nbplanes==24 || flagHAM==1 )
 			ptr += h * width * 3;
 		else
@@ -449,19 +449,15 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 						{
 							finalcolor = pixelcolor;
 						}
-						if ( SDL_BYTEORDER == SDL_LIL_ENDIAN )
-						{
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
 							*ptr++ = (Uint8)(finalcolor>>16);
 							*ptr++ = (Uint8)(finalcolor>>8);
 							*ptr++ = (Uint8)(finalcolor);
-						}
-						else
-						{
-							*ptr++ = (Uint8)(finalcolor);
+#else
+						    *ptr++ = (Uint8)(finalcolor);
 							*ptr++ = (Uint8)(finalcolor>>8);
 							*ptr++ = (Uint8)(finalcolor>>16);
-						}
-
+#endif
 						maskBit = maskBit>>1;
 					}
 				}

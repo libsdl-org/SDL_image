@@ -35,7 +35,7 @@
 /* See if an image is contained in a data source */
 int IMG_isBMP(SDL_RWops *src)
 {
-	int start;
+	Sint64 start;
 	int is_BMP;
 	char magic[2];
 
@@ -44,7 +44,7 @@ int IMG_isBMP(SDL_RWops *src)
 	start = SDL_RWtell(src);
 	is_BMP = 0;
 	if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
-		if ( strncmp(magic, "BM", 2) == 0 ) {
+		if ( SDL_strncmp(magic, "BM", 2) == 0 ) {
 			is_BMP = 1;
 		}
 	}
@@ -54,7 +54,7 @@ int IMG_isBMP(SDL_RWops *src)
 
 static int IMG_isICOCUR(SDL_RWops *src, int type)
 {
-	int start;
+	Sint64 start;
 	int is_ICOCUR;
 
 	/* The Win32 ICO file header (14 bytes) */
@@ -187,7 +187,7 @@ static int readRlePixels(SDL_Surface * surface, SDL_RWops * src, int isRle8)
 static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 {
 	SDL_bool was_error;
-	long fp_offset;
+	Sint64 fp_offset;
 	int bmpPitch;
 	int i, pad;
 	SDL_Surface *surface;
@@ -237,7 +237,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 		was_error = SDL_TRUE;
 		goto done;
 	}
-	if ( strncmp(magic, "BM", 2) != 0 ) {
+	if ( SDL_strncmp(magic, "BM", 2) != 0 ) {
 		IMG_SetError("File is not a Windows BMP file");
 		was_error = SDL_TRUE;
 		goto done;
@@ -404,7 +404,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 		goto done;
 	}
 	if ((biCompression == BI_RLE4) || (biCompression == BI_RLE8)) {
-		was_error = readRlePixels(surface, src, biCompression == BI_RLE8);
+		was_error = (SDL_bool)readRlePixels(surface, src, biCompression == BI_RLE8);
 		if (was_error) IMG_SetError("Error reading from BMP");
 		goto done;
 	}
@@ -520,7 +520,7 @@ static SDL_Surface *
 LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
 {
     SDL_bool was_error;
-    long fp_offset;
+    Sint64 fp_offset;
     int bmpPitch;
     int i, pad;
     SDL_Surface *surface;

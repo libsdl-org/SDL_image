@@ -208,7 +208,7 @@ typedef unsigned char * (* load_tile_type) (SDL_RWops *, Uint32, int, int, int);
 /* See if an image is contained in a data source */
 int IMG_isXCF(SDL_RWops *src)
 {
-	int start;
+	Sint64 start;
 	int is_XCF;
 	char magic[14];
 
@@ -217,7 +217,7 @@ int IMG_isXCF(SDL_RWops *src)
 	start = SDL_RWtell(src);
 	is_XCF = 0;
 	if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
-		if (strncmp(magic, "gimp xcf ", 9) == 0) {
+		if (SDL_strncmp(magic, "gimp xcf ", 9) == 0) {
 			is_XCF = 1;
 		}
 	}
@@ -311,12 +311,12 @@ static xcf_header * read_xcf_header (SDL_RWops * src) {
   do {
     xcf_read_property (src, &prop);
     if (prop.id == PROP_COMPRESSION)
-      h->compr = prop.data.compression;
+      h->compr = (xcf_compr_type)prop.data.compression;
     else if (prop.id == PROP_COLORMAP) {
       // unused var: int i;
 
       h->cm_num = prop.data.colormap.num;
-      h->cm_map = (unsigned char *) malloc (sizeof (unsigned char) * 3 * h->cm_num);
+      h->cm_map = (unsigned char *) SDL_malloc (sizeof (unsigned char) * 3 * h->cm_num);
       memcpy (h->cm_map, prop.data.colormap.cmap, 3*sizeof (char)*h->cm_num);
       free (prop.data.colormap.cmap);
     }
@@ -366,7 +366,7 @@ static xcf_channel * read_xcf_channel (SDL_RWops * src) {
   xcf_channel * l;
   xcf_prop    prop;
 
-  l = (xcf_channel *) malloc (sizeof (xcf_channel));
+  l = (xcf_channel *) SDL_malloc (sizeof (xcf_channel));
   l->width  = SDL_ReadBE32 (src);
   l->height = SDL_ReadBE32 (src);
 
@@ -433,14 +433,14 @@ static xcf_level * read_xcf_level (SDL_RWops * src) {
   xcf_level * l;
   int i;
 
-  l = (xcf_level *) malloc (sizeof (xcf_level));
+  l = (xcf_level *) SDL_malloc (sizeof (xcf_level));
   l->width  = SDL_ReadBE32 (src);
   l->height = SDL_ReadBE32 (src);
 
   l->tile_file_offsets = NULL;
   i = 0;
   do {
-    l->tile_file_offsets = (Uint32 *) realloc (l->tile_file_offsets, sizeof (Uint32) * (i+1));
+    l->tile_file_offsets = (Uint32 *) SDL_realloc (l->tile_file_offsets, sizeof (Uint32) * (i+1));
     l->tile_file_offsets [i] = SDL_ReadBE32 (src);
   } while (l->tile_file_offsets [i++]);
 
@@ -454,7 +454,7 @@ static void free_xcf_tile (unsigned char * t) {
 static unsigned char * load_xcf_tile_none (SDL_RWops * src, Uint32 len, int bpp, int x, int y) {
   unsigned char * load;
 
-  load = (unsigned char *) malloc (len); // expect this is okay
+  load = (unsigned char *) SDL_malloc (len); // expect this is okay
   SDL_RWread (src, load, len, 1);
 
   return load;
@@ -466,7 +466,7 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
   int i, size, count, j, length;
   unsigned char val;
 
-  t = load = (unsigned char *) malloc (len);
+  t = load = (unsigned char *) SDL_malloc (len);
   reallen = SDL_RWread (src, t, 1, len);
 
   data = (unsigned char *) malloc (x*y*bpp);
@@ -514,15 +514,15 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
     }
   }
 
-  free (load);
+  SDL_free (load);
   return (data);
 }
 
 static Uint32 rgb2grey (Uint32 a) {
   Uint8 l;
-  l = 0.2990 * ((a && 0x00FF0000) >> 16)
+  l = (Uint8)(0.2990 * ((a && 0x00FF0000) >> 16)
     + 0.5870 * ((a && 0x0000FF00) >>  8)
-    + 0.1140 * ((a && 0x000000FF));
+    + 0.1140 * ((a && 0x000000FF)));
 
   return (l << 16) | (l << 8) | l;
 }
@@ -549,7 +549,8 @@ static int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header 
   Uint8  * p8;
   Uint16 * p16;
   Uint32 * p;
-  int x, y, tx, ty, ox, oy, i, j;
+  int i, j;
+  Uint32 x, y, tx, ty, ox, oy;
   Uint32 *row;
 
   SDL_RWseek (src, layer->hierarchy_file_offset, RW_SEEK_SET);
@@ -673,14 +674,14 @@ static int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header 
 
 SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
 {
-  int start;
+  Sint64 start;
   const char *error = NULL;
   SDL_Surface *surface, *lays;
   xcf_header * head;
   xcf_layer  * layer;
   xcf_channel ** channel;
   int chnls, i, offsets;
-  Uint32 offset, fp;
+  Sint64 offset, fp;
 
   unsigned char * (* load_tile) (SDL_RWops *, Uint32, int, int, int);
 
@@ -722,7 +723,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
 
   while ((offset = SDL_ReadBE32 (src))) {
     head->layer_file_offsets = (Uint32 *) realloc (head->layer_file_offsets, sizeof (Uint32) * (offsets+1));
-    head->layer_file_offsets [offsets] = offset;
+    head->layer_file_offsets [offsets] = (Uint32)offset;
     offsets++;
   }
   fp = SDL_RWtell (src);
@@ -764,7 +765,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
   channel = NULL;
   chnls   = 0;
   while ((offset = SDL_ReadBE32 (src))) {
-    channel = (xcf_channel **) realloc (channel, sizeof (xcf_channel *) * (chnls+1));
+    channel = (xcf_channel **) SDL_realloc (channel, sizeof (xcf_channel *) * (chnls+1));
     fp = SDL_RWtell (src);
     SDL_RWseek (src, offset, RW_SEEK_SET);
     channel [chnls++] = (read_xcf_channel (src));
@@ -784,7 +785,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
     for (i = 0; i < chnls; i++) {
       //      printf ("CNLBLT %i\n", i);
       if (!channel [i]->selection && channel [i]->visible) {
-	create_channel_surface (chs, head->image_type, channel [i]->color, channel [i]->opacity);
+	create_channel_surface (chs, (xcf_image_type)head->image_type, channel [i]->color, channel [i]->opacity);
 	SDL_BlitSurface (chs, NULL, surface, NULL);
       }
       free_xcf_channel (channel [i]);

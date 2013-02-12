@@ -303,7 +303,7 @@ void IMG_QuitPNG()
 /* See if an image is contained in a data source */
 int IMG_isPNG(SDL_RWops *src)
 {
-	int start;
+	Sint64 start;
 	int is_PNG;
 	Uint8 magic[4];
 
@@ -333,7 +333,7 @@ static void png_read_data(png_structp ctx, png_bytep area, png_size_t size)
 }
 SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 {
-	int start;
+	Sint64 start;
 	const char *error;
 	SDL_Surface *volatile surface;
 	png_structp png_ptr;
@@ -423,15 +423,15 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 			     &transv);
 		if(color_type == PNG_COLOR_TYPE_PALETTE) {
 		    /* Check if all tRNS entries are opaque except one */
-		    int i, t = -1;
-		    for(i = 0; i < num_trans; i++)
-			if(trans[i] == 0) {
+		    int j, t = -1;
+		    for(j = 0; j < num_trans; j++)
+			if(trans[j] == 0) {
 			    if(t >= 0)
 				break;
 			    t = i;
-			} else if(trans[i] != 255)
+			} else if(trans[j] != 255)
 			    break;
-		    if(i == num_trans) {
+		    if(j == num_trans) {
 			/* exactly one transparent index */
 			ckey = t;
 		    } else {
@@ -454,18 +454,18 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	Rmask = Gmask = Bmask = Amask = 0 ;
 	num_channels = lib.png_get_channels(png_ptr, info_ptr);
 	if ( color_type != PNG_COLOR_TYPE_PALETTE ) {
-		if ( SDL_BYTEORDER == SDL_LIL_ENDIAN ) {
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
 			Rmask = 0x000000FF;
 			Gmask = 0x0000FF00;
 			Bmask = 0x00FF0000;
 			Amask = (num_channels == 4) ? 0xFF000000 : 0;
-		} else {
+#else
 			int s = (num_channels == 4) ? 0 : 8;
 			Rmask = 0xFF000000 >> s;
 			Gmask = 0x00FF0000 >> s;
 			Bmask = 0x0000FF00 >> s;
 			Amask = 0x000000FF >> s;
-		}
+#endif
 	}
 	surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height,
 			bit_depth*num_channels, Rmask,Gmask,Bmask,Amask);
@@ -485,7 +485,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	}
 
 	/* Create the array of pointers to image data */
-	row_pointers = (png_bytep*) malloc(sizeof(png_bytep)*height);
+	row_pointers = (png_bytep*) SDL_malloc(sizeof(png_bytep)*height);
 	if ( (row_pointers == NULL) ) {
 		error = "Out of memory";
 		goto done;
@@ -536,7 +536,7 @@ done:	/* Clean up and return */
 								(png_infopp)0);
 	}
 	if ( row_pointers ) {
-		free(row_pointers);
+		SDL_free(row_pointers);
 	}
 	if ( error ) {
 		SDL_RWseek(src, start, RW_SEEK_SET);
