@@ -65,14 +65,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
@@ -105,7 +105,6 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>.\Debug/showimage.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
@@ -118,7 +117,6 @@
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\Debug/showimage.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
@@ -128,7 +126,7 @@
     </Bscmake>
     <PostBuildEvent>
       <Command>copy /Y "..\..\..\SDL\VisualC\SDL\$(Platform)\$(Configuration)\SDL.dll" "$(TargetDir)\SDL.dll"
-copy /Y "..\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
+copy /Y "..\$(Platform)\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
 </Command>
       <Message>Copy SDL and data files</Message>
     </PostBuildEvent>
@@ -149,7 +147,6 @@ copy /Y "..\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>.\Debug/showimage.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -162,7 +159,6 @@ copy /Y "..\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\Debug/showimage.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
@@ -172,7 +168,7 @@ copy /Y "..\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
     </Bscmake>
     <PostBuildEvent>
       <Command>copy /Y "..\..\..\SDL\VisualC\SDL\$(Platform)\$(Configuration)\SDL.dll" "$(TargetDir)\SDL.dll"
-copy /Y "..\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
+copy /Y "..\$(Platform)\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
 </Command>
       <Message>Copy SDL and data files</Message>
     </PostBuildEvent>
@@ -195,7 +191,6 @@ copy /Y "..\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeaderOutputFile>.\Release/showimage.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <CompileAs>Default</CompileAs>
@@ -206,7 +201,6 @@ copy /Y "..\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <ProgramDatabaseFile>.\Release/showimage.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
@@ -216,7 +210,7 @@ copy /Y "..\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
     </Bscmake>
     <PostBuildEvent>
       <Command>copy /Y "..\..\..\SDL\VisualC\SDL\$(Platform)\$(Configuration)\SDL.dll" "$(TargetDir)\SDL.dll"
-copy /Y "..\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
+copy /Y "..\$(Platform)\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
 </Command>
       <Message>Copy SDL and data files</Message>
     </PostBuildEvent>
@@ -239,7 +233,6 @@ copy /Y "..\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeaderOutputFile>.\Release/showimage.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <CompileAs>Default</CompileAs>
@@ -250,7 +243,6 @@ copy /Y "..\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <ProgramDatabaseFile>.\Release/showimage.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
@@ -260,7 +252,7 @@ copy /Y "..\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
     </Bscmake>
     <PostBuildEvent>
       <Command>copy /Y "..\..\..\SDL\VisualC\SDL\$(Platform)\$(Configuration)\SDL.dll" "$(TargetDir)\SDL.dll"
-copy /Y "..\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
+copy /Y "..\$(Platform)\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
 </Command>
       <Message>Copy SDL and data files</Message>
     </PostBuildEvent>
@@ -274,7 +266,7 @@ copy /Y "..\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SDL_image_VS2010.vcxproj">
+    <ProjectReference Include="..\SDL_image_VS2012.vcxproj">
       <Project>{2bd5534e-00e2-4bea-ac96-d9a92ea24696}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
