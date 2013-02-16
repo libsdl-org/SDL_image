@@ -1,4 +1,4 @@
-Source: sdl2-image
+Source: libsdl2-image
 Maintainer: Debian SDL packages maintainers <pkg-sdl-maintainers@lists.alioth.debian.org>
 Uploaders: Barry deFreese <bdefreese@debian.org>,
            Aurelien Jarno <aurel32@debian.org>,
