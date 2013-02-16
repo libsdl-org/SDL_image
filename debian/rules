@@ -1,19 +1,18 @@
 #!/usr/bin/make -f
 
+confflags = --disable-webp --disable-jpg-shared --disable-png-shared --disable-tif-shared
+
 %:
-	dh $@ --parallel
+	dh $@ --with autoreconf --parallel
+
+override_dh_autoreconf:
+	dh_autoreconf ./autogen.sh
 
 override_dh_auto_configure:
-	dh_auto_configure -- --disable-webp --disable-jpg-shared --disable-png-shared --disable-tif-shared
+	dh_auto_configure -- $(confflags)
 
-override_dh_install:
-	dh_install --fail-missing -XlibSDL2_image.la
-
-override_dh_install_changelogs:
-	dh_installchangelogs CHANGES
-
-override_dh_makeshlibs:
-	dh_makeshlibs -V 'libsdl2-image (>= 1.2.10)'
+override_dh_auto_installchangelogs:
+	dh_auto_installchangelogs -- CHANGES
 
 override_dh_compress:
 	dh_compress -Xshowimage.c

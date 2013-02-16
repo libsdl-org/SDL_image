@@ -1,30 +1,32 @@
 Source: libsdl2-image
+Section: libs
+Priority: optional
 Maintainer: Debian SDL packages maintainers <pkg-sdl-maintainers@lists.alioth.debian.org>
 Uploaders: Barry deFreese <bdefreese@debian.org>,
            Aurelien Jarno <aurel32@debian.org>,
            Felix Geyer <debfx-pkg@fobos.de>,
            Sam Lantinga <slouken@libsdl.org>
-Section: libs
-Priority: optional
+Standards-Version: 3.9.2
 Build-Depends: debhelper (>= 8.9.0~),
                libsdl2-dev (>= 2.0.0),
                libjpeg-dev,
                libpng-dev,
                libtiff4-dev,
                zlib1g-dev
-Standards-Version: 3.9.2
 Homepage: http://www.libsdl.org/projects/SDL_image/
 
 Package: libsdl2-image
 Architecture: any
 Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends},
          ${misc:Depends}
-Pre-Depends: ${misc:Pre-Depends}
-Description: image loading library for Simple DirectMedia Layer 2.0
+Description: Image loading library for Simple DirectMedia Layer 2.0
  This is a simple library to load images of various formats as SDL surfaces.
  This library currently supports BMP, PPM, PCX, GIF, JPEG, PNG, TIFF, and XPM
  formats.
+ .
+ This package contains the shared library.
 
 Package: libsdl2-image-dev
 Architecture: any
