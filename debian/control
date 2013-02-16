@@ -41,5 +41,5 @@ Description: development files for SDL 2.0 image loading library
  This library currently supports BMP, PPM, PCX, GIF, JPEG, PNG, TIFF, and XPM
  formats.
  .
- This package contains the include files and static libraries required to
- support development using the SDL 2.0 image loading library.
+ This package contains files needed if you wish to use the SDL image
+ library in your own programs.
