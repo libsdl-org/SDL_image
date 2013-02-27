@@ -1,4 +1,4 @@
-usr/include/SDL2
-usr/lib/*/libSDL2_image.a
-usr/lib/*/libSDL2_image.so
-usr/lib/*/pkgconfig/SDL2_image.pc
+usr/include
+usr/lib/*/lib*.a
+usr/lib/*/lib*.so
+usr/lib/*/pkgconfig
