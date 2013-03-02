@@ -224,10 +224,17 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 
 	/* Check if it's ok !*/
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-	Bmask = 0xFF000000;
-	Gmask = 0x00FF0000;
-	Rmask = 0x0000FF00;
-	Amask = features.has_alpha?0x000000FF:0;
+	if ( features.has_alpha ) {
+		Bmask = 0xFF000000;
+		Gmask = 0x00FF0000;
+		Rmask = 0x0000FF00;
+		Amask = 0x000000FF;
+	} else {
+		Bmask = 0x00FF0000;
+		Gmask = 0x0000FF00;
+		Rmask = 0x000000FF;
+		Amask = 0x00000000;
+	}
 #else
 	Rmask = 0x000000FF;
 	Gmask = 0x0000FF00;
