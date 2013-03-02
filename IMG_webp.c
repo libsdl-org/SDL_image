@@ -223,10 +223,17 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 	}
 
 	/* Check if it's ok !*/
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	Bmask = 0xFF000000;
+	Gmask = 0x00FF0000;
+	Rmask = 0x0000FF00;
+	Amask = features.has_alpha?0x000000FF:0;
+#else
 	Rmask = 0x000000FF;
 	Gmask = 0x0000FF00;
 	Bmask = 0x00FF0000;
-	Amask = features.has_alpha?0xFF000001:0;
+	Amask = features.has_alpha?0xFF000000:0;
+#endif
 
 	surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
             features.width, features.height,
