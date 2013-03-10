@@ -1,3 +1,7 @@
+2.0.0:
+Torsten Stremlau - Sun Mar 10 10:19:25 PDT 2013
+ * Added support for alpha and lossless WEBP images
+
 1.2.12:
 mscott - 2012-02-06 19:40:23 PST
  * Fixed image corruption when using ImageIO framework

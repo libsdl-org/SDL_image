@@ -78,7 +78,7 @@ int IMG_InitWEBP()
 
 		lib.webp_decode_rgba_into = 
 			( uint8_t* (*) (const uint8_t*, uint32_t, uint8_t*, int, int ) )
-			SDL_LoadFunction(lib.handle, "WebPDecodeRGBInto" );
+			SDL_LoadFunction(lib.handle, "WebPDecodeRGBAInto" );
 		if ( lib.webp_decode_rgba_into == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
@@ -124,7 +124,6 @@ void IMG_QuitWEBP()
 static int webp_getinfo( SDL_RWops *src, int *datasize ) {
 	Sint64 start;
 	int is_WEBP;
-	int data;
 	Uint8 magic[20];
 
 	if ( !src )
@@ -143,11 +142,15 @@ static int webp_getinfo( SDL_RWops *src, int *datasize ) {
 										 magic[12] == 'V' &&
 										 magic[13] == 'P' &&
 										 magic[14] == '8' &&
-										 magic[15] == ' '  ) {
+#if WEBP_DECODER_ABI_VERSION < 0x0003 /* old versions don't support WEBPVP8X and WEBPVP8L */
+										 magic[15] == ' ') {
+#else
+										 (magic[15] == ' ' || magic[15] == 'X' || magic[15] == 'L')) {
+#endif
 			is_WEBP = 1;
-			data = magic[16] | magic[17]<<8 | magic[18]<<16 | magic[19]<<24;
-			if ( datasize )
-				*datasize = data;
+			if ( datasize ) {
+				*datasize = SDL_RWseek(src, 0, SEEK_END);
+			}
 		}
 	}
 	SDL_RWseek(src, start, RW_SEEK_SET);
@@ -192,8 +195,8 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 		goto error;
 	}
 
-	// skip header
-	SDL_RWseek(src, start+20, RW_SEEK_SET );
+	// seek to start of file
+	SDL_RWseek(src, 0, RW_SEEK_SET );
 
 	raw_data = (uint8_t*) SDL_malloc( raw_data_size );
 	if ( raw_data == NULL ) {
