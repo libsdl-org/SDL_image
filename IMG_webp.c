@@ -172,7 +172,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 	WebPBitstreamFeatures features;
 	int raw_data_size;
 	uint8_t *raw_data = NULL;
-	int r;
+	int r, s;
 	uint8_t *ret;
 
 	if ( !src ) {
@@ -185,7 +185,6 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 	if ( !IMG_Init(IMG_INIT_WEBP) ) {
 		goto error;
 	}
-
 
 	raw_data_size = -1;
 	if ( !webp_getinfo( src, &raw_data_size ) ) {
@@ -223,27 +222,21 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 	}
 
 	/* Check if it's ok !*/
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-	if ( features.has_alpha ) {
-		Bmask = 0xFF000000;
-		Gmask = 0x00FF0000;
-		Rmask = 0x0000FF00;
-		Amask = 0x000000FF;
-	} else {
-		Bmask = 0x00FF0000;
-		Gmask = 0x0000FF00;
-		Rmask = 0x000000FF;
-		Amask = 0x00000000;
-	}
-#else
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
 	Rmask = 0x000000FF;
 	Gmask = 0x0000FF00;
 	Bmask = 0x00FF0000;
-	Amask = features.has_alpha?0xFF000000:0;
+	Amask = (features.has_alpha) ? 0xFF000000 : 0;
+#else
+	s = (features.has_alpha) ? 0 : 8;
+	Rmask = 0xFF000000 >> s;
+	Gmask = 0x00FF0000 >> s;
+	Bmask = 0x0000FF00 >> s;
+	Amask = 0x000000FF >> s;
 #endif
 
 	surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
-            features.width, features.height,
+			features.width, features.height,
 			features.has_alpha?32:24, Rmask,Gmask,Bmask,Amask);
 
 	if ( surface == NULL ) {
