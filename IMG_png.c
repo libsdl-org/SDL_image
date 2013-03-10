@@ -410,7 +410,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	lib.png_set_packing(png_ptr);
 
 	/* scale greyscale values to the range 0..255 */
-	if(color_type == PNG_COLOR_TYPE_GRAY)
+	if (color_type == PNG_COLOR_TYPE_GRAY)
 		lib.png_set_expand(png_ptr);
 
 	/* For images with a single "transparent colour", set colour key;
@@ -421,17 +421,17 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 		Uint8 *trans;
 		lib.png_get_tRNS(png_ptr, info_ptr, &trans, &num_trans,
 			     &transv);
-		if(color_type == PNG_COLOR_TYPE_PALETTE) {
+		if (color_type == PNG_COLOR_TYPE_PALETTE) {
 		    /* Check if all tRNS entries are opaque except one */
 		    int j, t = -1;
-		    for(j = 0; j < num_trans; j++)
-			if(trans[j] == 0) {
-			    if(t >= 0)
+		    for (j = 0; j < num_trans; j++)
+			if (trans[j] == 0) {
+			    if (t >= 0)
 				break;
 			    t = i;
-			} else if(trans[j] != 255)
+			} else if (trans[j] != 255)
 			    break;
-		    if(j == num_trans) {
+		    if (j == num_trans) {
 			/* exactly one transparent index */
 			ckey = t;
 		    } else {
@@ -453,7 +453,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	/* Allocate the SDL surface to hold the image */
 	Rmask = Gmask = Bmask = Amask = 0 ;
 	num_channels = lib.png_get_channels(png_ptr, info_ptr);
-	if ( color_type != PNG_COLOR_TYPE_PALETTE ) {
+	if ( num_channels >= 3 ) {
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
 			Rmask = 0x000000FF;
 			Gmask = 0x0000FF00;
@@ -470,12 +470,12 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height,
 			bit_depth*num_channels, Rmask,Gmask,Bmask,Amask);
 	if ( surface == NULL ) {
-		error = "Out of memory";
+		error = SDL_GetError();
 		goto done;
 	}
 
-	if(ckey != -1) {
-	        if(color_type != PNG_COLOR_TYPE_PALETTE)
+	if (ckey != -1) {
+	        if (color_type != PNG_COLOR_TYPE_PALETTE)
 			/* FIXME: Should these be truncated or shifted down? */
 		        ckey = SDL_MapRGB(surface->format,
 			                 (Uint8)transv->red,
@@ -512,16 +512,16 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	    int png_num_palette;
 	    png_colorp png_palette;
 	    lib.png_get_PLTE(png_ptr, info_ptr, &png_palette, &png_num_palette);
-	    if(color_type == PNG_COLOR_TYPE_GRAY) {
+	    if (color_type == PNG_COLOR_TYPE_GRAY) {
 		palette->ncolors = 256;
-		for(i = 0; i < 256; i++) {
+		for (i = 0; i < 256; i++) {
 		    palette->colors[i].r = i;
 		    palette->colors[i].g = i;
 		    palette->colors[i].b = i;
 		}
 	    } else if (png_num_palette > 0 ) {
 		palette->ncolors = png_num_palette; 
-		for( i=0; i<png_num_palette; ++i ) {
+		for ( i=0; i<png_num_palette; ++i ) {
 		    palette->colors[i].b = png_palette[i].blue;
 		    palette->colors[i].g = png_palette[i].green;
 		    palette->colors[i].r = png_palette[i].red;
