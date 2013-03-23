@@ -424,13 +424,16 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 		if (color_type == PNG_COLOR_TYPE_PALETTE) {
 		    /* Check if all tRNS entries are opaque except one */
 		    int j, t = -1;
-		    for (j = 0; j < num_trans; j++)
+		    for (j = 0; j < num_trans; j++) {
 			if (trans[j] == 0) {
-			    if (t >= 0)
+			    if (t >= 0) {
 				break;
-			    t = i;
-			} else if (trans[j] != 255)
+                            }
+			    t = j;
+			} else if (trans[j] != 255) {
 			    break;
+                        }
+                    }
 		    if (j == num_trans) {
 			/* exactly one transparent index */
 			ckey = t;
