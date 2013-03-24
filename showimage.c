@@ -43,7 +43,7 @@ static void draw_background(SDL_Renderer *renderer, int w, int h)
         for (x = 0; x < w; x += rect.w) {
             /* use an 8x8 checkerboard pattern */
             i = (((x ^ y) >> 3) & 1);
-            SDL_SetRenderDrawColor(renderer, col[i].r, col[i].g, col[i].b, col[i].unused);
+            SDL_SetRenderDrawColor(renderer, col[i].r, col[i].g, col[i].b, col[i].a);
 
             rect.x = x;
             rect.y = y;
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
         return(1);
     }
 
-    flags = SDL_WINDOW_HIDDEN;
+    flags = 0;//SDL_WINDOW_HIDDEN;
     for ( i=1; argv[i]; ++i ) {
         if ( strcmp(argv[i], "-fullscreen") == 0 ) {
             SDL_ShowCursor(0);

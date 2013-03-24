@@ -384,14 +384,14 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 				SDL_RWread(src, &palette->colors[i].b, 1, 1);
 				SDL_RWread(src, &palette->colors[i].g, 1, 1);
 				SDL_RWread(src, &palette->colors[i].r, 1, 1);
-				palette->colors[i].unused = 0;
+				palette->colors[i].a = SDL_ALPHA_OPAQUE;
 			}	
 		} else {
 			for ( i = 0; i < (int)biClrUsed; ++i ) {
 				SDL_RWread(src, &palette->colors[i].b, 1, 1);
 				SDL_RWread(src, &palette->colors[i].g, 1, 1);
 				SDL_RWread(src, &palette->colors[i].r, 1, 1);
-				SDL_RWread(src, &palette->colors[i].unused, 1, 1);
+				SDL_RWread(src, &palette->colors[i].a, 1, 1);
 			}	
 		}
 		palette->ncolors = biClrUsed;
