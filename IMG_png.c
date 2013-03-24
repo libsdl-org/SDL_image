@@ -347,7 +347,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	SDL_Palette *palette;
 	png_bytep *volatile row_pointers;
 	int row, i;
-	volatile int ckey = -1;
+	int ckey = -1;
 	png_color_16 *transv;
 
 	if ( !src ) {
