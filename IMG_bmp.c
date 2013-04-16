@@ -392,6 +392,12 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 				SDL_RWread(src, &palette->colors[i].g, 1, 1);
 				SDL_RWread(src, &palette->colors[i].r, 1, 1);
 				SDL_RWread(src, &palette->colors[i].a, 1, 1);
+
+				/* According to Microsoft documentation, the fourth element
+				   is reserved and must be zero, so we shouldn't treat it as
+				   alpha.
+				*/
+				palette->colors[i].a = SDL_ALPHA_OPAQUE;
 			}	
 		}
 		palette->ncolors = biClrUsed;
