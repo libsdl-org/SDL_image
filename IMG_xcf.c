@@ -520,9 +520,9 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
 
 static Uint32 rgb2grey (Uint32 a) {
   Uint8 l;
-  l = (Uint8)(0.2990 * ((a && 0x00FF0000) >> 16)
-    + 0.5870 * ((a && 0x0000FF00) >>  8)
-    + 0.1140 * ((a && 0x000000FF)));
+  l = (Uint8)(0.2990 * ((a & 0x00FF0000) >> 16)
+    + 0.5870 * ((a & 0x0000FF00) >>  8)
+    + 0.1140 * ((a & 0x000000FF)));
 
   return (l << 16) | (l << 8) | l;
 }
