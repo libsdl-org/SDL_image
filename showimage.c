@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
         return(1);
     }
 
-    flags = 0;//SDL_WINDOW_HIDDEN;
+    flags = SDL_WINDOW_HIDDEN;
     for ( i=1; argv[i]; ++i ) {
         if ( strcmp(argv[i], "-fullscreen") == 0 ) {
             SDL_ShowCursor(0);
