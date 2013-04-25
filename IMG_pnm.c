@@ -229,7 +229,7 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 		row += surface->pitch;
 	}
 done:
-	free(buf);
+	SDL_free(buf);
 	if(error) {
 		SDL_RWseek(src, start, RW_SEEK_SET);
 		if ( surface ) {

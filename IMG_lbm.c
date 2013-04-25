@@ -467,7 +467,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
 done:
 
-	if ( MiniBuf ) free( MiniBuf );
+	if ( MiniBuf ) SDL_free( MiniBuf );
 
 	if ( error )
 	{
