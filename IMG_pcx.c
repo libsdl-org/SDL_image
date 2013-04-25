@@ -149,7 +149,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 	if (bpl > surface->pitch) {
 		error = "bytes per line is too large (corrupt?)";
 	}
-	buf = (Uint8 *)malloc(bpl);
+	buf = (Uint8 *)SDL_malloc(bpl);
 	row = (Uint8 *)surface->pixels;
 	for ( y=0; y<surface->h; ++y ) {
 		/* decode a scan line to a temporary buffer first */
@@ -247,7 +247,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 	}
 
 done:
-	free(buf);
+	SDL_free(buf);
 	if ( error ) {
 		SDL_RWseek(src, start, RW_SEEK_SET);
 		if ( surface ) {

@@ -231,7 +231,7 @@ static char * read_string (SDL_RWops * src) {
 
   tmp = SDL_ReadBE32 (src);
   if (tmp > 0) {
-    data = (char *) malloc (sizeof (char) * tmp);
+    data = (char *) SDL_malloc (sizeof (char) * tmp);
     SDL_RWread (src, data, tmp, 1);
   }
   else {
@@ -261,7 +261,7 @@ static void xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
   switch (prop->id) {
   case PROP_COLORMAP:
     prop->data.colormap.num = SDL_ReadBE32 (src);
-    prop->data.colormap.cmap = (char *) malloc (sizeof (char) * prop->data.colormap.num * 3);
+    prop->data.colormap.cmap = (char *) SDL_malloc (sizeof (char) * prop->data.colormap.num * 3);
     SDL_RWread (src, prop->data.colormap.cmap, prop->data.colormap.num*3, 1);
     break;
 
@@ -287,16 +287,16 @@ static void xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
 
 static void free_xcf_header (xcf_header * h) {
   if (h->cm_num)
-    free (h->cm_map);
+    SDL_free (h->cm_map);
 
-  free (h);
+  SDL_free (h);
 }
 
 static xcf_header * read_xcf_header (SDL_RWops * src) {
   xcf_header * h;
   xcf_prop prop;
 
-  h = (xcf_header *) malloc (sizeof (xcf_header));
+  h = (xcf_header *) SDL_malloc (sizeof (xcf_header));
   SDL_RWread (src, h->sign, 14, 1);
   h->width       = SDL_ReadBE32 (src);
   h->height      = SDL_ReadBE32 (src);
@@ -318,7 +318,7 @@ static xcf_header * read_xcf_header (SDL_RWops * src) {
       h->cm_num = prop.data.colormap.num;
       h->cm_map = (unsigned char *) SDL_malloc (sizeof (unsigned char) * 3 * h->cm_num);
       memcpy (h->cm_map, prop.data.colormap.cmap, 3*sizeof (char)*h->cm_num);
-      free (prop.data.colormap.cmap);
+      SDL_free (prop.data.colormap.cmap);
     }
   } while (prop.id != PROP_END);
 
@@ -326,15 +326,15 @@ static xcf_header * read_xcf_header (SDL_RWops * src) {
 }
 
 static void free_xcf_layer (xcf_layer * l) {
-  free (l->name);
-  free (l);
+  SDL_free (l->name);
+  SDL_free (l);
 }
 
 static xcf_layer * read_xcf_layer (SDL_RWops * src) {
   xcf_layer * l;
   xcf_prop    prop;
 
-  l = (xcf_layer *) malloc (sizeof (xcf_layer));
+  l = (xcf_layer *) SDL_malloc (sizeof (xcf_layer));
   l->width  = SDL_ReadBE32 (src);
   l->height = SDL_ReadBE32 (src);
   l->layer_type = SDL_ReadBE32 (src);
@@ -358,8 +358,8 @@ static xcf_layer * read_xcf_layer (SDL_RWops * src) {
 }
 
 static void free_xcf_channel (xcf_channel * c) {
-  free (c->name);
-  free (c);
+  SDL_free (c->name);
+  SDL_free (c);
 }
 
 static xcf_channel * read_xcf_channel (SDL_RWops * src) {
@@ -401,15 +401,15 @@ static xcf_channel * read_xcf_channel (SDL_RWops * src) {
 }
 
 static void free_xcf_hierarchy (xcf_hierarchy * h) {
-  free (h->level_file_offsets);
-  free (h);
+  SDL_free (h->level_file_offsets);
+  SDL_free (h);
 }
 
 static xcf_hierarchy * read_xcf_hierarchy (SDL_RWops * src) {
   xcf_hierarchy * h;
   int i;
 
-  h = (xcf_hierarchy *) malloc (sizeof (xcf_hierarchy));
+  h = (xcf_hierarchy *) SDL_malloc (sizeof (xcf_hierarchy));
   h->width  = SDL_ReadBE32 (src);
   h->height = SDL_ReadBE32 (src);
   h->bpp    = SDL_ReadBE32 (src);
@@ -425,8 +425,8 @@ static xcf_hierarchy * read_xcf_hierarchy (SDL_RWops * src) {
 }
 
 static void free_xcf_level (xcf_level * l) {
-  free (l->tile_file_offsets);
-  free (l);
+  SDL_free (l->tile_file_offsets);
+  SDL_free (l);
 }
 
 static xcf_level * read_xcf_level (SDL_RWops * src) {
@@ -448,7 +448,7 @@ static xcf_level * read_xcf_level (SDL_RWops * src) {
 }
 
 static void free_xcf_tile (unsigned char * t) {
-  free (t);
+  SDL_free (t);
 }
 
 static unsigned char * load_xcf_tile_none (SDL_RWops * src, Uint32 len, int bpp, int x, int y) {
@@ -469,7 +469,7 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
   t = load = (unsigned char *) SDL_malloc (len);
   reallen = SDL_RWread (src, t, 1, len);
 
-  data = (unsigned char *) malloc (x*y*bpp);
+  data = (unsigned char *) SDL_malloc (x*y*bpp);
   for (i = 0; i < bpp; i++) {
     d    = data + i;
     size = x*y;
