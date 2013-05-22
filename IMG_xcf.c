@@ -208,21 +208,21 @@ typedef unsigned char * (* load_tile_type) (SDL_RWops *, Uint32, int, int, int);
 /* See if an image is contained in a data source */
 int IMG_isXCF(SDL_RWops *src)
 {
-	Sint64 start;
-	int is_XCF;
-	char magic[14];
+    Sint64 start;
+    int is_XCF;
+    char magic[14];
 
-	if ( !src )
-		return 0;
-	start = SDL_RWtell(src);
-	is_XCF = 0;
-	if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
-		if (SDL_strncmp(magic, "gimp xcf ", 9) == 0) {
-			is_XCF = 1;
-		}
-	}
-	SDL_RWseek(src, start, RW_SEEK_SET);
-	return(is_XCF);
+    if ( !src )
+        return 0;
+    start = SDL_RWtell(src);
+    is_XCF = 0;
+    if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
+        if (SDL_strncmp(magic, "gimp xcf ", 9) == 0) {
+            is_XCF = 1;
+        }
+    }
+    SDL_RWseek(src, start, RW_SEEK_SET);
+    return(is_XCF);
 }
 
 static char * read_string (SDL_RWops * src) {
@@ -381,8 +381,8 @@ static xcf_channel * read_xcf_channel (SDL_RWops * src) {
       break;
     case PROP_COLOR:
       l->color = ((Uint32) prop.data.color[0] << 16)
-	| ((Uint32) prop.data.color[1] << 8)
-	| ((Uint32) prop.data.color[2]);
+    | ((Uint32) prop.data.color[1] << 8)
+    | ((Uint32) prop.data.color[2]);
       break;
     case PROP_SELECTION:
       l->selection = 1;
@@ -474,42 +474,42 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
     d    = data + i;
     size = x*y;
     count = 0;
- 
+
     while (size > 0) {
       val = *t++;
 
       length = val;
       if (length >= 128) {
-	length = 255 - (length - 1);
-	if (length == 128) {
-	  length = (*t << 8) + t[1];
-	  t += 2;
-	}
+    length = 255 - (length - 1);
+    if (length == 128) {
+      length = (*t << 8) + t[1];
+      t += 2;
+    }
 
-	count += length;
-	size -= length;
+    count += length;
+    size -= length;
 
-	while (length-- > 0) {
-	  *d = *t++;
-	  d += bpp;
-	}
+    while (length-- > 0) {
+      *d = *t++;
+      d += bpp;
+    }
       }
       else {
-	length += 1;
-	if (length == 128) {
-	  length = (*t << 8) + t[1];
-	  t += 2;
-	}
+    length += 1;
+    if (length == 128) {
+      length = (*t << 8) + t[1];
+      t += 2;
+    }
 
-	count += length;
-	size -= length;
+    count += length;
+    size -= length;
 
-	val = *t++;
+    val = *t++;
 
-	for (j = 0; j < length; j++) {
-	  *d = val;
-	  d += bpp;
-	}
+    for (j = 0; j < length; j++) {
+      *d = val;
+      d += bpp;
+    }
       }
     }
   }
@@ -568,98 +568,98 @@ static int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header 
       oy = ty+64 > level->height ? level->height % 64 : 64;
 
       if (level->tile_file_offsets [j+1]) {
-	tile = load_tile
-	  (src,
-	   level->tile_file_offsets [j+1] - level->tile_file_offsets [j],
-	   hierarchy->bpp,
-	   ox, oy);
+    tile = load_tile
+      (src,
+       level->tile_file_offsets [j+1] - level->tile_file_offsets [j],
+       hierarchy->bpp,
+       ox, oy);
       }
       else {
-	tile = load_tile
-	  (src,
-	   ox*oy*6,
-	   hierarchy->bpp,
-	   ox, oy);
+    tile = load_tile
+      (src,
+       ox*oy*6,
+       hierarchy->bpp,
+       ox, oy);
       }
 
       p8  = tile;
       p16 = (Uint16 *) p8;
       p   = (Uint32 *) p8;
       for (y=ty; y < ty+oy; y++) {
-	row = (Uint32 *)((Uint8 *)surface->pixels + y*surface->pitch + tx*4);
-	switch (hierarchy->bpp) {
-	case 4:
-	  for (x=tx; x < tx+ox; x++)
-	    *row++ = Swap32 (*p++);
-	  break;
-	case 3:
-	  for (x=tx; x < tx+ox; x++) {
-	    *row = 0xFF000000;
-	    *row |= ((Uint32) *(p8++) << 16);
-	    *row |= ((Uint32) *(p8++) << 8);
-	    *row |= ((Uint32) *(p8++) << 0);
-	    row++;
-	  }
-	  break;
-	case 2: // Indexed/Greyscale + Alpha
-	  switch (head->image_type) {
-	  case IMAGE_INDEXED:
-	    for (x=tx; x < tx+ox; x++) {
-	      *row =  ((Uint32) (head->cm_map [*p8*3])     << 16);
-	      *row |= ((Uint32) (head->cm_map [*p8*3+1])   << 8);
-	      *row |= ((Uint32) (head->cm_map [*p8++*3+2]) << 0);
-	      *row |= ((Uint32) *p8++ << 24);;
-	      row++;
-	    }
-	    break;
-	  case IMAGE_GREYSCALE:
-	    for (x=tx; x < tx+ox; x++) {
-	      *row = ((Uint32) *p8 << 16);
-	      *row |= ((Uint32) *p8 << 8);
-	      *row |= ((Uint32) *p8++ << 0);
-	      *row |= ((Uint32) *p8++ << 24);;
-	      row++;
-	    }
-	    break;	    
-	  default:
-	    fprintf (stderr, "Unknown Gimp image type (%d)\n", head->image_type);
-	    return 1;
-	  }
-	  break;
-	case 1: // Indexed/Greyscale
-	  switch (head->image_type) {
-	  case IMAGE_INDEXED:
-	    for (x = tx; x < tx+ox; x++) {
-	      *row++ = 0xFF000000
-		| ((Uint32) (head->cm_map [*p8*3]) << 16)
-		| ((Uint32) (head->cm_map [*p8*3+1]) << 8)
-		| ((Uint32) (head->cm_map [*p8*3+2]) << 0);
-	      p8++;
-	    }
-	    break;
-	  case IMAGE_GREYSCALE:
-	    for (x=tx; x < tx+ox; x++) {
-	      *row++ = 0xFF000000
-		| (((Uint32) (*p8)) << 16)
-		| (((Uint32) (*p8)) << 8)
-		| (((Uint32) (*p8)) << 0);
-			++p8;
-	    }
-	    break;	    
-	  default:
-	    fprintf (stderr, "Unknown Gimp image type (%d)\n", head->image_type);
-	    return 1;
-	  }
-	  break;
-	}
+    row = (Uint32 *)((Uint8 *)surface->pixels + y*surface->pitch + tx*4);
+    switch (hierarchy->bpp) {
+    case 4:
+      for (x=tx; x < tx+ox; x++)
+        *row++ = Swap32 (*p++);
+      break;
+    case 3:
+      for (x=tx; x < tx+ox; x++) {
+        *row = 0xFF000000;
+        *row |= ((Uint32) *(p8++) << 16);
+        *row |= ((Uint32) *(p8++) << 8);
+        *row |= ((Uint32) *(p8++) << 0);
+        row++;
+      }
+      break;
+    case 2: // Indexed/Greyscale + Alpha
+      switch (head->image_type) {
+      case IMAGE_INDEXED:
+        for (x=tx; x < tx+ox; x++) {
+          *row =  ((Uint32) (head->cm_map [*p8*3])     << 16);
+          *row |= ((Uint32) (head->cm_map [*p8*3+1])   << 8);
+          *row |= ((Uint32) (head->cm_map [*p8++*3+2]) << 0);
+          *row |= ((Uint32) *p8++ << 24);;
+          row++;
+        }
+        break;
+      case IMAGE_GREYSCALE:
+        for (x=tx; x < tx+ox; x++) {
+          *row = ((Uint32) *p8 << 16);
+          *row |= ((Uint32) *p8 << 8);
+          *row |= ((Uint32) *p8++ << 0);
+          *row |= ((Uint32) *p8++ << 24);;
+          row++;
+        }
+        break;
+      default:
+        fprintf (stderr, "Unknown Gimp image type (%d)\n", head->image_type);
+        return 1;
+      }
+      break;
+    case 1: // Indexed/Greyscale
+      switch (head->image_type) {
+      case IMAGE_INDEXED:
+        for (x = tx; x < tx+ox; x++) {
+          *row++ = 0xFF000000
+        | ((Uint32) (head->cm_map [*p8*3]) << 16)
+        | ((Uint32) (head->cm_map [*p8*3+1]) << 8)
+        | ((Uint32) (head->cm_map [*p8*3+2]) << 0);
+          p8++;
+        }
+        break;
+      case IMAGE_GREYSCALE:
+        for (x=tx; x < tx+ox; x++) {
+          *row++ = 0xFF000000
+        | (((Uint32) (*p8)) << 16)
+        | (((Uint32) (*p8)) << 8)
+        | (((Uint32) (*p8)) << 0);
+            ++p8;
+        }
+        break;
+      default:
+        fprintf (stderr, "Unknown Gimp image type (%d)\n", head->image_type);
+        return 1;
+      }
+      break;
+    }
       }
       tx += 64;
       if (tx >= level->width) {
-	tx = 0;
-	ty += 64;
+    tx = 0;
+    ty += 64;
       }
       if (ty >= level->height) {
-	break;
+    break;
       }
 
       free_xcf_tile (tile);
@@ -668,7 +668,7 @@ static int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header 
   }
 
   free_xcf_hierarchy (hierarchy);
-  
+
   return 0;
 }
 
@@ -711,7 +711,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
 
   /* Create the surface of the appropriate type */
   surface = SDL_CreateRGBSurface(SDL_SWSURFACE, head->width, head->height, 32,
-			     0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
+                 0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
 
   if ( surface == NULL ) {
     error = "Out of memory";
@@ -727,9 +727,9 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
     offsets++;
   }
   fp = SDL_RWtell (src);
- 
+
   lays = SDL_CreateRGBSurface(SDL_SWSURFACE, head->width, head->height, 32,
-			  0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
+              0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
 
   if ( lays == NULL ) {
     error = "Out of memory";
@@ -769,14 +769,14 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
     fp = SDL_RWtell (src);
     SDL_RWseek (src, offset, RW_SEEK_SET);
     channel [chnls++] = (read_xcf_channel (src));
-    SDL_RWseek (src, fp, RW_SEEK_SET);    
+    SDL_RWseek (src, fp, RW_SEEK_SET);
   }
 
   if (chnls) {
     SDL_Surface * chs;
 
     chs = SDL_CreateRGBSurface(SDL_SWSURFACE, head->width, head->height, 32,
-			   0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
+               0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
 
     if (chs == NULL) {
       error = "Out of memory";
@@ -785,8 +785,8 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
     for (i = 0; i < chnls; i++) {
       //      printf ("CNLBLT %i\n", i);
       if (!channel [i]->selection && channel [i]->visible) {
-	create_channel_surface (chs, (xcf_image_type)head->image_type, channel [i]->color, channel [i]->opacity);
-	SDL_BlitSurface (chs, NULL, surface, NULL);
+    create_channel_surface (chs, (xcf_image_type)head->image_type, channel [i]->color, channel [i]->opacity);
+    SDL_BlitSurface (chs, NULL, surface, NULL);
       }
       free_xcf_channel (channel [i]);
     }

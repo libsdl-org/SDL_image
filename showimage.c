@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
             flags |= SDL_WINDOW_FULLSCREEN;
         }
     }
-    
+
     if (SDL_CreateWindowAndRenderer(0, 0, flags, &window, &renderer) < 0) {
         fprintf(stderr, "SDL_CreateWindowAndRenderer() failed: %s\n", SDL_GetError());
         return(2);
