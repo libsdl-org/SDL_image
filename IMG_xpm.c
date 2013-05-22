@@ -118,12 +118,15 @@ static struct color_hash *create_colorhash(int maxnum)
     bytes = hash->size * sizeof(struct hash_entry **);
     hash->entries = NULL;   /* in case malloc fails */
     hash->table = (struct hash_entry **)SDL_malloc(bytes);
-    if(!hash->table)
+    if(!hash->table) {
+        SDL_free(hash);
         return NULL;
+    }
     memset(hash->table, 0, bytes);
     hash->entries = (struct hash_entry *)SDL_malloc(maxnum * sizeof(struct hash_entry));
     if(!hash->entries) {
         SDL_free(hash->table);
+        SDL_free(hash);
         return NULL;
     }
     hash->next_free = hash->entries;
