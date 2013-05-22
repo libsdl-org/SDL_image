@@ -35,18 +35,18 @@ extern "C" {
 
 /* Printable format: "%d.%d.%d", MAJOR, MINOR, PATCHLEVEL
 */
-#define SDL_IMAGE_MAJOR_VERSION	2
-#define SDL_IMAGE_MINOR_VERSION	0
-#define SDL_IMAGE_PATCHLEVEL	0
+#define SDL_IMAGE_MAJOR_VERSION 2
+#define SDL_IMAGE_MINOR_VERSION 0
+#define SDL_IMAGE_PATCHLEVEL    0
 
 /* This macro can be used to fill a version structure with the compile-time
  * version of the SDL_image library.
  */
-#define SDL_IMAGE_VERSION(X)						\
-{									\
-	(X)->major = SDL_IMAGE_MAJOR_VERSION;				\
-	(X)->minor = SDL_IMAGE_MINOR_VERSION;				\
-	(X)->patch = SDL_IMAGE_PATCHLEVEL;				\
+#define SDL_IMAGE_VERSION(X)                        \
+{                                                   \
+    (X)->major = SDL_IMAGE_MAJOR_VERSION;           \
+    (X)->minor = SDL_IMAGE_MINOR_VERSION;           \
+    (X)->patch = SDL_IMAGE_PATCHLEVEL;              \
 }
 
 /* This function gets the version of the dynamically linked SDL_image library.
@@ -78,7 +78,7 @@ extern DECLSPEC void SDLCALL IMG_Quit(void);
    If the image format supports a transparent pixel, SDL will set the
    colorkey for the surface.  You can enable RLE acceleration on the
    surface afterwards by calling:
-	SDL_SetColorKey(image, SDL_RLEACCEL, image->format->colorkey);
+    SDL_SetColorKey(image, SDL_RLEACCEL, image->format->colorkey);
  */
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, const char *type);
 /* Convenience functions */
@@ -132,8 +132,8 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadWEBP_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArray(char **xpm);
 
 /* We'll use SDL for reporting errors */
-#define IMG_SetError	SDL_SetError
-#define IMG_GetError	SDL_GetError
+#define IMG_SetError    SDL_SetError
+#define IMG_GetError    SDL_GetError
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
