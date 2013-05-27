@@ -45,17 +45,17 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/SDL_image.tlb"
+				TypeLibraryName=".\Debug/SDL2_image.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="external\include"
-				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JPG_DYNAMIC=\&quot;libjpeg-8.dll\&quot;;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNG_DYNAMIC=\&quot;libpng15-15.dll\&quot;;LOAD_PNM;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC=\&quot;libtiff-5.dll\&quot;;LOAD_WEBP;LOAD_WEBP_DYNAMIC=\&quot;libwebp-2.dll\&quot;;LOAD_XPM;LOAD_XV;PNG_USE_DLL;ZLIB_DLL"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JPG_DYNAMIC=\&quot;libjpeg-9.dll\&quot;;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNG_DYNAMIC=\&quot;libpng16-16.dll\&quot;;LOAD_PNM;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC=\&quot;libtiff-5.dll\&quot;;LOAD_WEBP;LOAD_WEBP_DYNAMIC=\&quot;libwebp-4.dll\&quot;;LOAD_XPM;LOAD_XV;PNG_USE_DLL;ZLIB_DLL"
 				MinimalRebuild="true"
 				RuntimeLibrary="2"
-				PrecompiledHeaderFile=".\Debug/SDL_image.pch"
+				PrecompiledHeaderFile=".\Debug/SDL2_image.pch"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
@@ -76,7 +76,7 @@
 				AdditionalDependencies="SDL2.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/SDL_image.pdb"
+				ProgramDatabaseFile=".\Debug/SDL2_image.pdb"
 				SubSystem="2"
 				TargetMachine="1"
 			/>
@@ -92,7 +92,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Debug/SDL_image.bsc"
+				OutputFile=".\Debug/SDL2_image.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -131,17 +131,17 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="3"
-				TypeLibraryName=".\Debug/SDL_image.tlb"
+				TypeLibraryName=".\Debug/SDL2_image.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="external\include"
-				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JPG_DYNAMIC=\&quot;libjpeg-8.dll\&quot;;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNG_DYNAMIC=\&quot;libpng15-15.dll\&quot;;LOAD_PNM;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC=\&quot;libtiff-5.dll\&quot;;LOAD_WEBP;LOAD_WEBP_DYNAMIC=\&quot;libwebp-2.dll\&quot;;LOAD_XPM;LOAD_XV;PNG_USE_DLL;ZLIB_DLL"
+				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JPG_DYNAMIC=\&quot;libjpeg-9.dll\&quot;;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNG_DYNAMIC=\&quot;libpng16-16.dll\&quot;;LOAD_PNM;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC=\&quot;libtiff-5.dll\&quot;;LOAD_WEBP;LOAD_WEBP_DYNAMIC=\&quot;libwebp-4.dll\&quot;;LOAD_XPM;LOAD_XV;PNG_USE_DLL;ZLIB_DLL"
 				MinimalRebuild="true"
 				RuntimeLibrary="2"
-				PrecompiledHeaderFile=".\Debug/SDL_image.pch"
+				PrecompiledHeaderFile=".\Debug/SDL2_image.pch"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
@@ -159,10 +159,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="SDL.lib"
+				AdditionalDependencies="SDL2.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/SDL_image.pdb"
+				ProgramDatabaseFile=".\Debug/SDL2_image.pdb"
 				SubSystem="2"
 				TargetMachine="17"
 			/>
@@ -178,7 +178,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Debug/SDL_image.bsc"
+				OutputFile=".\Debug/SDL2_image.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -217,7 +217,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Release/SDL_image.tlb"
+				TypeLibraryName=".\Release/SDL2_image.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -225,11 +225,11 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="external\include"
-				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JPG_DYNAMIC=\&quot;libjpeg-8.dll\&quot;;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNG_DYNAMIC=\&quot;libpng15-15.dll\&quot;;LOAD_PNM;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC=\&quot;libtiff-5.dll\&quot;;LOAD_WEBP;LOAD_WEBP_DYNAMIC=\&quot;libwebp-2.dll\&quot;;LOAD_XPM;LOAD_XV;PNG_USE_DLL;ZLIB_DLL"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JPG_DYNAMIC=\&quot;libjpeg-9.dll\&quot;;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNG_DYNAMIC=\&quot;libpng16-16.dll\&quot;;LOAD_PNM;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC=\&quot;libtiff-5.dll\&quot;;LOAD_WEBP;LOAD_WEBP_DYNAMIC=\&quot;libwebp-4.dll\&quot;;LOAD_XPM;LOAD_XV;PNG_USE_DLL;ZLIB_DLL"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\Release/SDL_image.pch"
+				PrecompiledHeaderFile=".\Release/SDL2_image.pch"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 			/>
@@ -248,7 +248,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="SDL2.lib"
 				LinkIncremental="1"
-				ProgramDatabaseFile=".\Release/SDL_image.pdb"
+				ProgramDatabaseFile=".\Release/SDL2_image.pdb"
 				SubSystem="2"
 				TargetMachine="1"
 			/>
@@ -264,7 +264,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Release/SDL_image.bsc"
+				OutputFile=".\Release/SDL2_image.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -303,7 +303,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="3"
-				TypeLibraryName=".\Release/SDL_image.tlb"
+				TypeLibraryName=".\Release/SDL2_image.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -311,11 +311,11 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="external\include"
-				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JPG_DYNAMIC=\&quot;libjpeg-8.dll\&quot;;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNG_DYNAMIC=\&quot;libpng15-15.dll\&quot;;LOAD_PNM;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC=\&quot;libtiff-5.dll\&quot;;LOAD_WEBP;LOAD_WEBP_DYNAMIC=\&quot;libwebp-2.dll\&quot;;LOAD_XPM;LOAD_XV;PNG_USE_DLL;ZLIB_DLL"
+				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JPG_DYNAMIC=\&quot;libjpeg-9.dll\&quot;;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNG_DYNAMIC=\&quot;libpng16-16.dll\&quot;;LOAD_PNM;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC=\&quot;libtiff-5.dll\&quot;;LOAD_WEBP;LOAD_WEBP_DYNAMIC=\&quot;libwebp-4.dll\&quot;;LOAD_XPM;LOAD_XV;PNG_USE_DLL;ZLIB_DLL"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\Release/SDL_image.pch"
+				PrecompiledHeaderFile=".\Release/SDL2_image.pch"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 			/>
@@ -332,8 +332,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="SDL.lib"
-				ProgramDatabaseFile=".\Release/SDL_image.pdb"
+				AdditionalDependencies="SDL2.lib"
+				ProgramDatabaseFile=".\Release/SDL2_image.pdb"
 				SubSystem="2"
 				TargetMachine="17"
 			/>
@@ -349,7 +349,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Release/SDL_image.bsc"
+				OutputFile=".\Release/SDL2_image.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
