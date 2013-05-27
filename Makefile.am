@@ -30,7 +30,6 @@ libSDL2_image_la_SOURCES =	\
 EXTRA_DIST =			\
 	Android.mk		\
 	debian			\
-	CHANGES			\
 	version.rc		\
 	VisualC			\
 	VisualCE		\
@@ -40,7 +39,8 @@ EXTRA_DIST =			\
 	IMG_UIImage.m		\
 	SDL2_image.spec		\
 	gcc-fat.sh		\
-	autogen.sh
+	autogen.sh		\
+	*.txt
 
 if USE_VERSION_RC
 libSDL2_image_la_LDFLAGS = 	\
