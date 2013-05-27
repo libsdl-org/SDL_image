@@ -404,7 +404,7 @@ EXTRA_DIST = \
 	SDL2_image.spec		\
 	gcc-fat.sh		\
 	autogen.sh		\
-	*.txt
+	$(srcdir)/*.txt
 
 @USE_VERSION_RC_FALSE@libSDL2_image_la_LDFLAGS = \
 @USE_VERSION_RC_FALSE@	-no-undefined		\
