@@ -156,7 +156,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="SDL.lib SDLmain.lib"
+				AdditionalDependencies="SDL2.lib SDLmain.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/showimage.pdb"
@@ -327,7 +327,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="SDL.lib SDLmain.lib"
+				AdditionalDependencies="SDL2.lib SDLmain.lib"
 				ProgramDatabaseFile=".\Release/showimage.pdb"
 				SubSystem="2"
 				TargetMachine="17"

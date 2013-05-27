@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDL_image", "SDL_image.vcproj", "{2BD5534E-00E2-4BEA-AC96-D9A92EA24696}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDL_image", "SDL_image_VS2008.vcproj", "{2BD5534E-00E2-4BEA-AC96-D9A92EA24696}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "showimage", "showimage\showimage.vcproj", "{FEE80C5D-762E-4E57-9BCB-928749E8203F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "showimage", "showimage\showimage_VS2008.vcproj", "{FEE80C5D-762E-4E57-9BCB-928749E8203F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2BD5534E-00E2-4BEA-AC96-D9A92EA24696} = {2BD5534E-00E2-4BEA-AC96-D9A92EA24696}
 	EndProjectSection
