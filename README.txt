@@ -1,5 +1,5 @@
 
-SDL_image 1.2
+SDL_image 2.0
 
 The latest version of this library is available from:
 http://www.libsdl.org/projects/SDL_image/
