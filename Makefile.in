@@ -62,8 +62,8 @@ subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
 	$(srcdir)/SDL2_image.spec.in $(srcdir)/SDL2_image.pc.in \
-	depcomp $(libSDL2_imageinclude_HEADERS) COPYING README \
-	config.guess config.sub install-sh missing ltmain.sh
+	depcomp $(libSDL2_imageinclude_HEADERS) config.guess \
+	config.sub install-sh missing ltmain.sh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude/libtool.m4 \
 	$(top_srcdir)/acinclude/ltoptions.m4 \
@@ -394,7 +394,6 @@ libSDL2_image_la_SOURCES = \
 EXTRA_DIST = \
 	Android.mk		\
 	debian			\
-	CHANGES			\
 	version.rc		\
 	VisualC			\
 	VisualCE		\
@@ -404,7 +403,8 @@ EXTRA_DIST = \
 	IMG_UIImage.m		\
 	SDL2_image.spec		\
 	gcc-fat.sh		\
-	autogen.sh
+	autogen.sh		\
+	*.txt
 
 @USE_VERSION_RC_FALSE@libSDL2_image_la_LDFLAGS = \
 @USE_VERSION_RC_FALSE@	-no-undefined		\
