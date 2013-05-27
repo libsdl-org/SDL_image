@@ -277,7 +277,7 @@ copy /Y "..\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\..\..\SDL\VisualC\SDL\$(Platform)\$(Configuration)\SDL2.lib" />
-    <Library Include="..\..\..\SDL\VisualC\SDLmain\$(Platform)\$(Configuration)\SDLmain.lib" />
+    <Library Include="..\..\..\SDL\VisualC\SDLmain\$(Platform)\$(Configuration)\SDL2main.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
