@@ -47,9 +47,9 @@
 static struct {
     int loaded;
     void *handle;
-    int/*VP8StatuCode*/ (*webp_get_features_internal) (const uint8_t *data, uint32_t data_size, WebPBitstreamFeatures* const features, int decoder_abi_version);
-    uint8_t*    (*webp_decode_rgb_into) (const uint8_t* data, uint32_t data_size, uint8_t* output_buffer, int output_buffer_size, int output_stride);
-    uint8_t*    (*webp_decode_rgba_into) (const uint8_t* data, uint32_t data_size, uint8_t* output_buffer, int output_buffer_size, int output_stride);
+    VP8StatusCode (*webp_get_features_internal) (const uint8_t *data, size_t data_size, WebPBitstreamFeatures* features, int decoder_abi_version);
+    uint8_t*    (*webp_decode_rgb_into) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride);
+    uint8_t*    (*webp_decode_rgba_into) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride);
 } lib;
 
 #ifdef LOAD_WEBP_DYNAMIC
@@ -60,8 +60,9 @@ int IMG_InitWEBP()
         if ( lib.handle == NULL ) {
             return -1;
         }
+
         lib.webp_get_features_internal =
-            ( int (*) (const uint8_t *, uint32_t, WebPBitstreamFeatures* const, int) )
+            ( VP8StatusCode (*) (const uint8_t *, size_t, WebPBitstreamFeatures*, int) )
             SDL_LoadFunction(lib.handle, "WebPGetFeaturesInternal" );
         if ( lib.webp_get_features_internal == NULL ) {
             SDL_UnloadObject(lib.handle);
@@ -69,7 +70,7 @@ int IMG_InitWEBP()
         }
 
         lib.webp_decode_rgb_into =
-            ( uint8_t* (*) (const uint8_t*, uint32_t, uint8_t*, int, int ) )
+            ( uint8_t* (*) (const uint8_t*, size_t, uint8_t*, size_t, int ) )
             SDL_LoadFunction(lib.handle, "WebPDecodeRGBInto" );
         if ( lib.webp_decode_rgb_into == NULL ) {
             SDL_UnloadObject(lib.handle);
@@ -77,7 +78,7 @@ int IMG_InitWEBP()
         }
 
         lib.webp_decode_rgba_into =
-            ( uint8_t* (*) (const uint8_t*, uint32_t, uint8_t*, int, int ) )
+            ( uint8_t* (*) (const uint8_t*, size_t, uint8_t*, size_t, int ) )
             SDL_LoadFunction(lib.handle, "WebPDecodeRGBAInto" );
         if ( lib.webp_decode_rgba_into == NULL ) {
             SDL_UnloadObject(lib.handle);
