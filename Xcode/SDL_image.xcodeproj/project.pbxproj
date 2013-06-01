@@ -54,7 +54,7 @@
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = BE1FA71807AF4C44004B6283;
-			remoteInfo = "Framework (Upgraded)";
+			remoteInfo = "Framework";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -93,7 +93,7 @@
 		AA579DF0161C07E6005F809B /* IMG_xxx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_xxx.c; path = ../IMG_xxx.c; sourceTree = "<group>"; };
 		AA579DF1161C07E6005F809B /* IMG.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG.c; path = ../IMG.c; sourceTree = "<group>"; };
 		AA9EE77514B27A62008773C0 /* webp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = webp.framework; path = Frameworks/webp.framework; sourceTree = "<group>"; };
-		BE1FA72D07AF4C44004B6283 /* Info-Framework__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Framework__Upgraded_.plist"; sourceTree = "<group>"; };
+		BE1FA72D07AF4C44004B6283 /* Info-Framework.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Framework.plist"; sourceTree = "<group>"; };
 		BE1FA72E07AF4C45004B6283 /* SDL2_image.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDL2_image.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1FA74107AF4C45004B6283 /* libSDL2_image.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSDL2_image.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1FA74507AF4C45004B6283 /* Create DMG */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Create DMG"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -153,7 +153,7 @@
 				08FB77ACFE841707C02AAC07 /* Library Source */,
 				BE1FA76107AF72F5004B6283 /* Frameworks */,
 				034768DDFF38A45A11DB9C8B /* Products */,
-				BE1FA72D07AF4C44004B6283 /* Info-Framework__Upgraded_.plist */,
+				BE1FA72D07AF4C44004B6283 /* Info-Framework.plist */,
 			);
 			name = SDL_imageFramework;
 			sourceTree = "<group>";
@@ -510,7 +510,7 @@
 					"\"$(SRCROOT)/Frameworks\"",
 				);
 				FRAMEWORK_VERSION = A;
-				INFOPLIST_FILE = "Info-Framework__Upgraded_.plist";
+				INFOPLIST_FILE = "Info-Framework.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/Frameworks";
 				WRAPPER_EXTENSION = framework;
@@ -627,7 +627,7 @@
 					"\"$(SRCROOT)/Frameworks\"",
 				);
 				FRAMEWORK_VERSION = A;
-				INFOPLIST_FILE = "Info-Framework__Upgraded_.plist";
+				INFOPLIST_FILE = "Info-Framework.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/Frameworks";
 				WRAPPER_EXTENSION = framework;
