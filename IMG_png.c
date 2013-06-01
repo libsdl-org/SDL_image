@@ -71,11 +71,15 @@
 #include <png.h>
 
 /* Check for the older version of libpng */
-#if (PNG_LIBPNG_VER_MAJOR == 1) && (PNG_LIBPNG_VER_MINOR < 4)
+#if (PNG_LIBPNG_VER_MAJOR == 1) 
+#if (PNG_LIBPNG_VER_MINOR < 4)
 #define LIBPNG_VERSION_12
+typedef png_bytep png_const_bytep;
+#endif
+#if (PNG_LIBPNG_VER_MINOR < 6)
 typedef png_structp png_const_structrp;
 typedef png_infop png_const_inforp;
-typedef png_bytep png_const_bytep;
+#endif
 #endif
 
 static struct {
