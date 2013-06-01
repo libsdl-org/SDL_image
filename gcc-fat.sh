@@ -4,29 +4,21 @@
 #
 # Usage: ./configure CC="sh gcc-fat.sh" && make && rm -rf x86 x64
 
-# Intel 32-bit compiler flags (10.4 runtime compatibility)
-GCC_COMPILE_X86="gcc-4.0 -arch i386 -mmacosx-version-min=10.4 \
+DEVELOPER="`xcode-select -print-path`/Platforms/MacOSX.platform/Developer"
+
+# Intel 32-bit compiler flags (10.6 runtime compatibility)
+GCC_COMPILE_X86="gcc -arch i386 -mmacosx-version-min=10.6 \
 -DMAC_OS_X_VERSION_MIN_REQUIRED=1040 \
--nostdinc \
--F/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks \
--I/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/include \
--isystem /Developer/SDKs/MacOSX10.4u.sdk/usr/include"
+-I/usr/local/include"
 
-GCC_LINK_X86="\
--L/Developer/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1 \
--Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk"
+GCC_LINK_X86="-mmacosx-version-min=10.6"
 
-# Intel 64-bit compiler flags (10.5 runtime compatibility)
-GCC_COMPILE_X64="gcc-4.0 -arch x86_64 -mmacosx-version-min=10.5 \
+# Intel 64-bit compiler flags (10.6 runtime compatibility)
+GCC_COMPILE_X64="gcc -arch x86_64 -mmacosx-version-min=10.6 \
 -DMAC_OS_X_VERSION_MIN_REQUIRED=1050 \
--nostdinc \
--F/Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks \
--I/Developer/SDKs/MacOSX10.5.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/include \
--isystem /Developer/SDKs/MacOSX10.5.sdk/usr/include"
+-I/usr/local/include"
 
-GCC_LINK_X64="\
--L/Developer/SDKs/MacOSX10.5.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/x86_64 \
--Wl,-syslibroot,/Developer/SDKs/MacOSX10.5.sdk"
+GCC_LINK_X64="-mmacosx-version-min=10.6"
 
 # Output both PowerPC and Intel object files
 args="$*"
