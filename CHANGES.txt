@@ -1,4 +1,6 @@
 2.0.0:
+Sam Lantinga - Sat Jun  1 19:11:26 PDT 2013
+ * Updated for SDL 2.0 release
 Sam Lantinga - Sat Mar 23 13:36:51 PDT 2013
  * Fixed bug setting colorkey for indexed PNG images
 Torsten Stremlau - Sun Mar 10 10:19:25 PDT 2013
