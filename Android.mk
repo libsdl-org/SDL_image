@@ -19,9 +19,10 @@ PNG_LIBRARY_PATH := external/libpng-1.6.2
 SUPPORT_WEBP := true
 WEBP_LIBRARY_PATH := external/libwebp-0.3.0
 
-LOCAL_CFLAGS := -I$(LOCAL_PATH)/../SDL/include \
-	-DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM \
-    -DLOAD_TGA -DLOAD_XCF -DLOAD_XPM -DLOAD_XV
+
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/../SDL/include
+LOCAL_CFLAGS := -DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM \
+                -DLOAD_TGA -DLOAD_XCF -DLOAD_XPM -DLOAD_XV
 LOCAL_CFLAGS += -O3 -fstrict-aliasing -fprefetch-loop-arrays
 
 LOCAL_SRC_FILES := $(notdir $(filter-out %/showimage.c, $(wildcard $(LOCAL_PATH)/*.c)))
@@ -31,7 +32,8 @@ LOCAL_STATIC_LIBRARIES :=
 LOCAL_SHARED_LIBRARIES := SDL2
 
 ifeq ($(SUPPORT_JPG),true)
-    LOCAL_CFLAGS += -DLOAD_JPG -I$(LOCAL_PATH)/$(JPG_LIBRARY_PATH)
+    LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(JPG_LIBRARY_PATH)
+    LOCAL_CFLAGS += -DLOAD_JPG
     # We can include the sources directly so the user doesn't have to...
     #LOCAL_STATIC_LIBRARIES += jpeg
     LOCAL_CFLAGS += -DAVOID_TABLES
@@ -85,7 +87,8 @@ ifeq ($(SUPPORT_JPG),true)
 endif
 
 ifeq ($(SUPPORT_PNG),true)
-    LOCAL_CFLAGS += -DLOAD_PNG -I$(LOCAL_PATH)/$(PNG_LIBRARY_PATH)
+    LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(PNG_LIBRARY_PATH)
+    LOCAL_CFLAGS += -DLOAD_PNG
     # We can include the sources directly so the user doesn't have to...
     #LOCAL_STATIC_LIBRARIES += png
     LOCAL_SRC_FILES += \
@@ -108,7 +111,8 @@ ifeq ($(SUPPORT_PNG),true)
 endif
 
 ifeq ($(SUPPORT_WEBP),true)
-    LOCAL_CFLAGS += -DLOAD_WEBP -I$(LOCAL_PATH)/$(WEBP_LIBRARY_PATH)/src
+    LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(WEBP_LIBRARY_PATH)/src
+    LOCAL_CFLAGS += -DLOAD_WEBP
     LOCAL_STATIC_LIBRARIES += webp
 endif
 
