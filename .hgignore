@@ -11,5 +11,8 @@ libtool
 *.o
 *.la
 *.lai
+*.xcworkspacedata
+*.xcuserdatad
+.DS_Store
 SDL2_image.pc
 showimage
