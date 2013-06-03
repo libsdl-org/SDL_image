@@ -25,7 +25,6 @@ libSDL2_image_la_SOURCES =	\
 	IMG_xpm.c		\
 	IMG_xv.c		\
 	IMG_webp.c		\
-    miniz.c			\
 	$(IMAGEIO_SOURCE)
 
 EXTRA_DIST =			\
@@ -36,6 +35,7 @@ EXTRA_DIST =			\
 	VisualCE		\
 	Xcode			\
 	Xcode-iOS		\
+    miniz.c			\
 	IMG_xxx.c		\
 	IMG_UIImage.m		\
 	SDL2_image.spec		\
