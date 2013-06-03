@@ -103,6 +103,16 @@ void IMG_QuitWEBP()
 int IMG_InitWEBP()
 {
     if ( lib.loaded == 0 ) {
+#ifdef __MACOSX__
+        extern VP8StatusCode WebPGetFeaturesInternal(const uint8_t*, size_t, WebPBitstreamFeatures*, int) __attribute__((weak_import));
+        if ( WebPGetFeaturesInternal == NULL )
+        {
+            /* Missing weakly linked framework */
+            IMG_SetError("Missing webp.framework");
+            return -1;
+        }
+#endif // __MACOSX__
+
         lib.webp_get_features_internal = WebPGetFeaturesInternal;
         lib.webp_decode_rgb_into = WebPDecodeRGBInto;
         lib.webp_decode_rgba_into = WebPDecodeRGBAInto;
