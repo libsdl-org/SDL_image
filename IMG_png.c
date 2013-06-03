@@ -314,15 +314,17 @@ int IMG_isPNG(SDL_RWops *src)
     int is_PNG;
     Uint8 magic[4];
 
-    if ( !src )
+    if ( !src ) {
         return 0;
+    }
+
     start = SDL_RWtell(src);
     is_PNG = 0;
     if ( SDL_RWread(src, magic, 1, sizeof(magic)) == sizeof(magic) ) {
-                if ( magic[0] == 0x89 &&
-                     magic[1] == 'P' &&
-                     magic[2] == 'N' &&
-                     magic[3] == 'G' ) {
+        if ( magic[0] == 0x89 &&
+             magic[1] == 'P' &&
+             magic[2] == 'N' &&
+             magic[3] == 'G' ) {
             is_PNG = 1;
         }
     }
@@ -424,32 +426,32 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
        if more than one index has transparency, or if partially transparent
        entries exist, use full alpha channel */
     if (lib.png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) {
-            int num_trans;
+        int num_trans;
         Uint8 *trans;
-        lib.png_get_tRNS(png_ptr, info_ptr, &trans, &num_trans,
-                 &transv);
+        lib.png_get_tRNS(png_ptr, info_ptr, &trans, &num_trans, &transv);
         if (color_type == PNG_COLOR_TYPE_PALETTE) {
             /* Check if all tRNS entries are opaque except one */
             int j, t = -1;
             for (j = 0; j < num_trans; j++) {
-            if (trans[j] == 0) {
-                if (t >= 0) {
-                break;
-                            }
-                t = j;
-            } else if (trans[j] != 255) {
-                break;
-                        }
+                if (trans[j] == 0) {
+                    if (t >= 0) {
+                        break;
                     }
-            if (j == num_trans) {
-            /* exactly one transparent index */
-            ckey = t;
-            } else {
-            /* more than one transparent index, or translucency */
-            lib.png_set_expand(png_ptr);
+                    t = j;
+                } else if (trans[j] != 255) {
+                    break;
+                }
             }
-        } else
+            if (j == num_trans) {
+                /* exactly one transparent index */
+                ckey = t;
+            } else {
+                /* more than one transparent index, or translucency */
+                lib.png_set_expand(png_ptr);
+            }
+        } else {
             ckey = 0; /* actual value will be set later */
+        }
     }
 
     if ( color_type == PNG_COLOR_TYPE_GRAY_ALPHA )
@@ -465,16 +467,16 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
     num_channels = lib.png_get_channels(png_ptr, info_ptr);
     if ( num_channels >= 3 ) {
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
-            Rmask = 0x000000FF;
-            Gmask = 0x0000FF00;
-            Bmask = 0x00FF0000;
-            Amask = (num_channels == 4) ? 0xFF000000 : 0;
+        Rmask = 0x000000FF;
+        Gmask = 0x0000FF00;
+        Bmask = 0x00FF0000;
+        Amask = (num_channels == 4) ? 0xFF000000 : 0;
 #else
-            int s = (num_channels == 4) ? 0 : 8;
-            Rmask = 0xFF000000 >> s;
-            Gmask = 0x00FF0000 >> s;
-            Bmask = 0x0000FF00 >> s;
-            Amask = 0x000000FF >> s;
+        int s = (num_channels == 4) ? 0 : 8;
+        Rmask = 0xFF000000 >> s;
+        Gmask = 0x00FF0000 >> s;
+        Bmask = 0x0000FF00 >> s;
+        Amask = 0x000000FF >> s;
 #endif
     }
     surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height,
@@ -485,13 +487,14 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
     }
 
     if (ckey != -1) {
-            if (color_type != PNG_COLOR_TYPE_PALETTE)
+        if (color_type != PNG_COLOR_TYPE_PALETTE) {
             /* FIXME: Should these be truncated or shifted down? */
-                ckey = SDL_MapRGB(surface->format,
-                             (Uint8)transv->red,
-                             (Uint8)transv->green,
-                             (Uint8)transv->blue);
-            SDL_SetColorKey(surface, SDL_TRUE, ckey);
+            ckey = SDL_MapRGB(surface->format,
+                         (Uint8)transv->red,
+                         (Uint8)transv->green,
+                         (Uint8)transv->blue);
+        }
+        SDL_SetColorKey(surface, SDL_TRUE, ckey);
     }
 
     /* Create the array of pointers to image data */
@@ -523,19 +526,19 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
         png_colorp png_palette;
         lib.png_get_PLTE(png_ptr, info_ptr, &png_palette, &png_num_palette);
         if (color_type == PNG_COLOR_TYPE_GRAY) {
-        palette->ncolors = 256;
-        for (i = 0; i < 256; i++) {
-            palette->colors[i].r = i;
-            palette->colors[i].g = i;
-            palette->colors[i].b = i;
-        }
+            palette->ncolors = 256;
+            for (i = 0; i < 256; i++) {
+                palette->colors[i].r = i;
+                palette->colors[i].g = i;
+                palette->colors[i].b = i;
+            }
         } else if (png_num_palette > 0 ) {
-        palette->ncolors = png_num_palette;
-        for ( i=0; i<png_num_palette; ++i ) {
-            palette->colors[i].b = png_palette[i].blue;
-            palette->colors[i].g = png_palette[i].green;
-            palette->colors[i].r = png_palette[i].red;
-        }
+            palette->ncolors = png_num_palette;
+            for ( i=0; i<png_num_palette; ++i ) {
+                palette->colors[i].b = png_palette[i].blue;
+                palette->colors[i].g = png_palette[i].green;
+                palette->colors[i].r = png_palette[i].red;
+            }
         }
     }
 
