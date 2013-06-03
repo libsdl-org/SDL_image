@@ -1,4 +1,7 @@
 2.0.0:
+Sam Lantinga - Sun Jun  2 22:25:31 PDT 2013
+ * Added PNG save support based on miniz.c by Rich Geldreich
+       IMG_SavePNG(), IMG_SavePNG_RW()
 Sam Lantinga - Sat Jun  1 19:11:26 PDT 2013
  * Updated for SDL 2.0 release
 Sam Lantinga - Sat Mar 23 13:36:51 PDT 2013

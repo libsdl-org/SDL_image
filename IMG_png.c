@@ -19,14 +19,11 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
-
 /* This is a PNG image file loading framework */
 
-#include <stdlib.h>
-#include <stdio.h>
-
 #include "SDL_image.h"
+
+#if !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
 
 #ifdef LOAD_PNG
 
@@ -589,3 +586,61 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 #endif /* LOAD_PNG */
 
 #endif /* !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND) */
+
+/* We'll always have PNG save support */
+#define SAVE_PNG
+
+#ifdef SAVE_PNG
+
+#include "miniz.c"
+
+int IMG_SavePNG(SDL_Surface *surface, const char *file)
+{
+    SDL_RWops *dst = SDL_RWFromFile(file, "wb");
+    if (dst) {
+        return IMG_SavePNG_RW(surface, dst, 1);
+    } else {
+        return -1;
+    }
+}
+
+int IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
+{
+    int result = -1;
+
+    if (dst) {
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+        static const Uint32 png_format = SDL_PIXELFORMAT_ABGR8888;
+#else
+        static const Uint32 png_format = SDL_PIXELFORMAT_RGBA8888;
+#endif
+        size_t size;
+        void *png;
+
+        if (surface->format->format == png_format) {
+            png = tdefl_write_image_to_png_file_in_memory(surface->pixels, surface->w, surface->h, surface->pitch, surface->format->BytesPerPixel, &size);
+        } else {
+            SDL_Surface *cvt = SDL_ConvertSurfaceFormat(surface, png_format, 0);
+            if (cvt) {
+                png = tdefl_write_image_to_png_file_in_memory(cvt->pixels, cvt->w, cvt->h, cvt->pitch, cvt->format->BytesPerPixel, &size);
+                SDL_FreeSurface(cvt);
+            }
+        }
+        if (png) {
+            if (SDL_RWwrite(dst, png, size, 1)) {
+                result = 0;
+            }
+            SDL_free(png);
+        } else {
+            SDL_SetError("Failed to convert and save image");
+        }
+        if (freedst) {
+            SDL_RWclose(dst);
+        }
+    } else {
+        SDL_SetError("Passed NULL dst");
+    }
+    return result;
+}
+
+#endif /* SAVE_PNG */

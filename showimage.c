@@ -60,10 +60,11 @@ int main(int argc, char *argv[])
     Uint32 flags;
     int i, w, h, done;
     SDL_Event event;
+    const char *saveFile = NULL;
 
     /* Check command line usage */
     if ( ! argv[1] ) {
-        fprintf(stderr, "Usage: %s [-fullscreen] <image_file> ...\n", argv[0]);
+        fprintf(stderr, "Usage: %s [-fullscreen] [-save file.png] <image_file> ...\n", argv[0]);
         return(1);
     }
 
@@ -85,6 +86,12 @@ int main(int argc, char *argv[])
             continue;
         }
 
+        if ( strcmp(argv[i], "-save") == 0 && argv[i+1] ) {
+            ++i;
+            saveFile = argv[i];
+            continue;
+        }
+
         /* Open the image file */
         texture = IMG_LoadTexture(renderer, argv[i]);
         if (!texture) {
@@ -92,6 +99,18 @@ int main(int argc, char *argv[])
             continue;
         }
         SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+
+        /* Save the image file, if desired */
+        if ( saveFile ) {
+            SDL_Surface *surface = IMG_Load(argv[i]);
+            if (surface) {
+                if ( IMG_SavePNG(surface, saveFile) < 0 ) {
+                    fprintf(stderr, "Couldn't save %s: %s\n", saveFile, SDL_GetError());
+                }
+            } else {
+                fprintf(stderr, "Couldn't load %s: %s\n", argv[i], SDL_GetError());
+            }
+        }
 
         /* Show the window */
         SDL_SetWindowTitle(window, argv[i]);
