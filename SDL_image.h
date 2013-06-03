@@ -93,11 +93,6 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_RW(SDL_Renderer *renderer,
 extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_RW(SDL_Renderer *renderer, SDL_RWops *src, int freesrc, const char *type);
 #endif /* SDL 2.0 */
 
-/* Invert the alpha of a surface for use with OpenGL
-   This function is now a no-op, and only provided for backwards compatibility.
-*/
-extern DECLSPEC int SDLCALL IMG_InvertAlpha(int on);
-
 /* Functions to detect a file type, given a seekable source */
 extern DECLSPEC int SDLCALL IMG_isICO(SDL_RWops *src);
 extern DECLSPEC int SDLCALL IMG_isCUR(SDL_RWops *src);

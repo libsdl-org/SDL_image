@@ -237,11 +237,3 @@ SDL_Texture *IMG_LoadTextureTyped_RW(SDL_Renderer *renderer, SDL_RWops *src, int
     return texture;
 }
 #endif /* SDL 2.0 */
-
-/* Invert the alpha of a surface for use with OpenGL
-   This function is a no-op and only kept for backwards compatibility.
- */
-int IMG_InvertAlpha(int on)
-{
-    return 1;
-}
