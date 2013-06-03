@@ -7,9 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		007288A70F0DA79800C302A9 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007288A60F0DA79800C302A9 /* ApplicationServices.framework */; };
 		007288A80F0DA79800C302A9 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007288A60F0DA79800C302A9 /* ApplicationServices.framework */; };
-		61F8544A145A19BC002CA294 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F85449145A19BC002CA294 /* Foundation.framework */; };
 		AA579DF2161C07E6005F809B /* IMG_bmp.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE2161C07E6005F809B /* IMG_bmp.c */; };
 		AA579DF3161C07E7005F809B /* IMG_bmp.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE2161C07E6005F809B /* IMG_bmp.c */; };
 		AA579DF4161C07E7005F809B /* IMG_gif.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE3161C07E6005F809B /* IMG_gif.c */; };
@@ -42,8 +40,9 @@
 		AA579E0F161C07E7005F809B /* IMG_xxx.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DF0161C07E6005F809B /* IMG_xxx.c */; };
 		AA579E10161C07E7005F809B /* IMG.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DF1161C07E6005F809B /* IMG.c */; };
 		AA579E11161C07E7005F809B /* IMG.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DF1161C07E6005F809B /* IMG.c */; };
-		AA9EE77614B27A62008773C0 /* webp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA9EE77514B27A62008773C0 /* webp.framework */; };
-		AA9EE77714B27A6C008773C0 /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = AA9EE77514B27A62008773C0 /* webp.framework */; };
+		AADBAC88175C6AAB004F8ED2 /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = AA9EE77514B27A62008773C0 /* webp.framework */; };
+		AADBAC89175C6B4C004F8ED2 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007288A60F0DA79800C302A9 /* ApplicationServices.framework */; };
+		AADBAC8A175C6B4F004F8ED2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F85449145A19BC002CA294 /* Foundation.framework */; };
 		BE1FA71A07AF4C44004B6283 /* SDL_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 1014BAEA010A4B677F000001 /* SDL_image.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BE1FA76307AF7335004B6283 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE1FA76207AF7335004B6283 /* SDL2.framework */; };
 /* End PBXBuildFile section */
@@ -54,7 +53,7 @@
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = BE1FA71807AF4C44004B6283;
-			remoteInfo = "Framework";
+			remoteInfo = Framework;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -65,7 +64,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				AA9EE77714B27A6C008773C0 /* webp.framework in Copy Frameworks */,
+				AADBAC88175C6AAB004F8ED2 /* webp.framework in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -108,10 +107,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AADBAC89175C6B4C004F8ED2 /* ApplicationServices.framework in Frameworks */,
+				AADBAC8A175C6B4F004F8ED2 /* Foundation.framework in Frameworks */,
 				BE1FA76307AF7335004B6283 /* SDL2.framework in Frameworks */,
-				007288A70F0DA79800C302A9 /* ApplicationServices.framework in Frameworks */,
-				61F8544A145A19BC002CA294 /* Foundation.framework in Frameworks */,
-				AA9EE77614B27A62008773C0 /* webp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,9 +189,10 @@
 		BE1FA76007AF72B1004B6283 /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				AA9EE77514B27A62008773C0 /* webp.framework */,
 				007288A60F0DA79800C302A9 /* ApplicationServices.framework */,
+				61F85449145A19BC002CA294 /* Foundation.framework */,
 				BE1FA76207AF7335004B6283 /* SDL2.framework */,
+				AA9EE77514B27A62008773C0 /* webp.framework */,
 			);
 			name = "Linked Frameworks";
 			sourceTree = "<group>";
@@ -202,7 +201,6 @@
 			isa = PBXGroup;
 			children = (
 				BE1FA76007AF72B1004B6283 /* Linked Frameworks */,
-				61F85449145A19BC002CA294 /* Foundation.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -513,6 +511,10 @@
 				INFOPLIST_FILE = "Info-Framework.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-weak_framework",
+					webp,
+				);
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
@@ -630,6 +632,10 @@
 				INFOPLIST_FILE = "Info-Framework.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-weak_framework",
+					webp,
+				);
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
