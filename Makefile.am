@@ -25,6 +25,7 @@ libSDL2_image_la_SOURCES =	\
 	IMG_xpm.c		\
 	IMG_xv.c		\
 	IMG_webp.c		\
+    miniz.c			\
 	$(IMAGEIO_SOURCE)
 
 EXTRA_DIST =			\
