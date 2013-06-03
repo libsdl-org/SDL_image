@@ -169,7 +169,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
     alpha = 1;
     /* fallthrough */
     case 24:
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
         {
         int s = alpha ? 0 : 8;
         amask = 0x000000ff >> s;
