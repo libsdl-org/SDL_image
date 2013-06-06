@@ -25,7 +25,8 @@ libSDL2_image_la_SOURCES =	\
 	IMG_xpm.c		\
 	IMG_xv.c		\
 	IMG_webp.c		\
-	$(IMAGEIO_SOURCE)
+	$(IMAGEIO_SOURCE)	\
+	miniz.h
 
 EXTRA_DIST =			\
 	Android.mk		\
@@ -35,9 +36,8 @@ EXTRA_DIST =			\
 	VisualCE		\
 	Xcode			\
 	Xcode-iOS		\
-    miniz.c			\
 	IMG_xxx.c		\
-	IMG_UIImage.m		\
+	*.m			\
 	SDL2_image.spec		\
 	gcc-fat.sh		\
 	autogen.sh		\
