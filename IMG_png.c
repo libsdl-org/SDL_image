@@ -592,7 +592,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 
 #ifdef SAVE_PNG
 
-#include "miniz.c"
+#include "miniz.h"
 
 int IMG_SavePNG(SDL_Surface *surface, const char *file)
 {
