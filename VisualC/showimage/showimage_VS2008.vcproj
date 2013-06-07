@@ -101,7 +101,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy DLLs"
-				CommandLine="copy $(SolutionDir)\external\lib\x86\*.* $(SolutionDir)$(ConfigurationName)\"
+				CommandLine="copy $(SolutionDir)\external\lib\x86\*.* $(OutDir)"
 			/>
 		</Configuration>
 		<Configuration
@@ -188,7 +188,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy DLLs"
-				CommandLine="copy $(SolutionDir)\external\lib\x64\*.* $(SolutionDir)$(PlatformName)\$(ConfigurationName)\"
+				CommandLine="copy $(SolutionDir)\external\lib\x64\*.* $(OutDir)"
 			/>
 		</Configuration>
 		<Configuration
@@ -275,7 +275,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy DLLs"
-				CommandLine="copy $(SolutionDir)\external\lib\x86\*.* $(SolutionDir)$(ConfigurationName)\"
+				CommandLine="copy $(SolutionDir)\external\lib\x86\*.* $(OutDir)"
 			/>
 		</Configuration>
 		<Configuration
@@ -361,7 +361,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy DLLs"
-				CommandLine="copy $(SolutionDir)\external\lib\x64\*.* $(SolutionDir)$(PlatformName)\$(ConfigurationName)\"
+				CommandLine="copy $(SolutionDir)\external\lib\x64\*.* $(OutDir)"
 			/>
 		</Configuration>
 	</Configurations>
