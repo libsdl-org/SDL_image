@@ -31,6 +31,7 @@ libSDL2_image_la_SOURCES =	\
 EXTRA_DIST =			\
 	Android.mk		\
 	debian			\
+	external		\
 	version.rc		\
 	VisualC			\
 	VisualCE		\
