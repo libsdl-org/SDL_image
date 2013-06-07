@@ -38,7 +38,7 @@ EXTRA_DIST =			\
 	Xcode			\
 	Xcode-iOS		\
 	IMG_xxx.c		\
-	*.m			\
+	$(srcdir)/*.m		\
 	SDL2_image.spec		\
 	gcc-fat.sh		\
 	autogen.sh		\
