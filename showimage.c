@@ -117,16 +117,9 @@ int main(int argc, char *argv[])
         SDL_SetWindowSize(window, w, h);
         SDL_ShowWindow(window);
 
-        /* Draw a background pattern in case the image has transparency */
-        draw_background(renderer, w, h);
-
-        /* Display the image */
-        SDL_RenderCopy(renderer, texture, NULL, NULL);
-        SDL_RenderPresent(renderer);
-
         done = 0;
         while ( ! done ) {
-            if ( SDL_PollEvent(&event) ) {
+            while ( SDL_PollEvent(&event) ) {
                 switch (event.type) {
                     case SDL_KEYUP:
                         switch (event.key.keysym.sym) {
@@ -163,9 +156,15 @@ int main(int argc, char *argv[])
                     default:
                         break;
                 }
-            } else {
-                SDL_Delay(10);
             }
+            /* Draw a background pattern in case the image has transparency */
+            draw_background(renderer, w, h);
+
+            /* Display the image */
+            SDL_RenderCopy(renderer, texture, NULL, NULL);
+            SDL_RenderPresent(renderer);
+
+            SDL_Delay(100);
         }
         SDL_DestroyTexture(texture);
     }
