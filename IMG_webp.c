@@ -160,7 +160,7 @@ static int webp_getinfo( SDL_RWops *src, int *datasize ) {
 #endif
             is_WEBP = 1;
             if ( datasize ) {
-                *datasize = SDL_RWseek(src, 0, SEEK_END);
+                *datasize = (int)SDL_RWseek(src, 0, SEEK_END);
             }
         }
     }
@@ -186,7 +186,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
     WebPBitstreamFeatures features;
     int raw_data_size;
     uint8_t *raw_data = NULL;
-    int r, s;
+    int r;
     uint8_t *ret;
 
     if ( !src ) {
