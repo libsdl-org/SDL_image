@@ -125,7 +125,7 @@
       <OutputFile>.\Debug/showimage.bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
-      <Command>copy /Y "..\..\..\SDL\VisualC\SDL\$(Platform)\$(Configuration)\SDL.dll" "$(TargetDir)\SDL.dll"
+      <Command>copy /Y "..\..\..\SDL\VisualC\SDL\$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)\SDL2.dll"
 copy /Y "..\$(Platform)\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
 </Command>
       <Message>Copy SDL and data files</Message>
@@ -167,7 +167,7 @@ copy /Y "..\$(Platform)\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_imag
       <OutputFile>.\Debug/showimage.bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
-      <Command>copy /Y "..\..\..\SDL\VisualC\SDL\$(Platform)\$(Configuration)\SDL.dll" "$(TargetDir)\SDL.dll"
+      <Command>copy /Y "..\..\..\SDL\VisualC\SDL\$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)\SDL2.dll"
 copy /Y "..\$(Platform)\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
 </Command>
       <Message>Copy SDL and data files</Message>
@@ -209,7 +209,7 @@ copy /Y "..\$(Platform)\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_imag
       <OutputFile>.\Release/showimage.bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
-      <Command>copy /Y "..\..\..\SDL\VisualC\SDL\$(Platform)\$(Configuration)\SDL.dll" "$(TargetDir)\SDL.dll"
+      <Command>copy /Y "..\..\..\SDL\VisualC\SDL\$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)\SDL2.dll"
 copy /Y "..\$(Platform)\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
 </Command>
       <Message>Copy SDL and data files</Message>
@@ -251,7 +251,7 @@ copy /Y "..\$(Platform)\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_imag
       <OutputFile>.\Release/showimage.bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
-      <Command>copy /Y "..\..\..\SDL\VisualC\SDL\$(Platform)\$(Configuration)\SDL.dll" "$(TargetDir)\SDL.dll"
+      <Command>copy /Y "..\..\..\SDL\VisualC\SDL\$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)\SDL2.dll"
 copy /Y "..\$(Platform)\$(Configuration)\SDL2_image.dll" "$(TargetDir)\SDL2_image.dll"
 </Command>
       <Message>Copy SDL and data files</Message>
