@@ -323,7 +323,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 #endif
                         break;
                     case 32:
-                        Amask = (biSize < 56 ? 0 : 0xFF000000); /* no alpha before BITMAPV3INFOHEADER */
+                        Amask = 0xFF000000;
                         Rmask = 0x00FF0000;
                         Gmask = 0x0000FF00;
                         Bmask = 0x000000FF;
