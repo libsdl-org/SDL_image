@@ -21,9 +21,14 @@
 
 #if (!defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)) || !defined(BMP_USES_IMAGEIO)
 
-/* This is a BMP image file loading framework */
-/* ICO/CUR file support is here as well since it uses similar internal
- * representation */
+/* This is a BMP image file loading framework
+ *
+ * ICO/CUR file support is here as well since it uses similar internal
+ * representation
+ *
+ * A good test suite of BMP images is available at:
+ * http://entropymine.com/jason/bmpsuite/bmpsuite/html/bmpsuite.html
+ */
 
 #include <stdio.h>
 #include <string.h>
@@ -184,6 +189,35 @@ static int readRlePixels(SDL_Surface * surface, SDL_RWops * src, int isRle8)
     }
 }
 
+static void CorrectAlphaChannel(SDL_Surface *surface)
+{
+    /* Check to see if there is any alpha channel data */
+    SDL_bool hasAlpha = SDL_FALSE;
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    int alphaChannelOffset = 0;
+#else
+    int alphaChannelOffset = 3;
+#endif
+    Uint8 *alpha = ((Uint8*)surface->pixels) + alphaChannelOffset;
+    Uint8 *end = alpha + surface->h * surface->pitch;
+
+    while (alpha < end) {
+        if (*alpha != 0) {
+            hasAlpha = SDL_TRUE;
+            break;
+        }
+        alpha += 4;
+    }
+
+    if (!hasAlpha) {
+        alpha = ((Uint8*)surface->pixels) + alphaChannelOffset;
+        while (alpha < end) {
+            *alpha = SDL_ALPHA_OPAQUE;
+            alpha += 4;
+        }
+    }
+}
+
 static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 {
     SDL_bool was_error;
@@ -200,6 +234,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
     Uint8 *top, *end;
     SDL_bool topDown;
     int ExpandBMP;
+    SDL_bool correctAlpha = SDL_FALSE;
 
     /* The Win32 BMP file header (14 bytes) */
     char   magic[2];
@@ -313,9 +348,9 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
                         break;
                     case 24:
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-                            Rmask = 0x000000FF;
-                            Gmask = 0x0000FF00;
-                            Bmask = 0x00FF0000;
+                        Rmask = 0x000000FF;
+                        Gmask = 0x0000FF00;
+                        Bmask = 0x00FF0000;
 #else
                         Rmask = 0x00FF0000;
                         Gmask = 0x0000FF00;
@@ -323,6 +358,8 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 #endif
                         break;
                     case 32:
+                        /* We don't know if this has alpha channel or not */
+                        correctAlpha = SDL_TRUE;
                         Amask = 0xFF000000;
                         Rmask = 0x00FF0000;
                         Gmask = 0x0000FF00;
@@ -444,8 +481,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
             for ( i=0; i<surface->w; ++i ) {
                 if ( i%(8/ExpandBMP) == 0 ) {
                     if ( !SDL_RWread(src, &pixel, 1, 1) ) {
-                        IMG_SetError(
-                    "Error reading from BMP");
+                        IMG_SetError("Error reading from BMP");
                         was_error = SDL_TRUE;
                         goto done;
                     }
@@ -456,8 +492,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
             break;
 
             default:
-            if ( SDL_RWread(src, bits, 1, surface->pitch)
-                             != surface->pitch ) {
+            if ( SDL_RWread(src, bits, 1, surface->pitch) != surface->pitch ) {
                 SDL_Error(SDL_EFREAD);
                 was_error = SDL_TRUE;
                 goto done;
@@ -468,16 +503,16 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
             switch(biBitCount) {
                 case 15:
                 case 16: {
-                        Uint16 *pix = (Uint16 *)bits;
+                    Uint16 *pix = (Uint16 *)bits;
                     for(i = 0; i < surface->w; i++)
-                            pix[i] = SDL_Swap16(pix[i]);
+                        pix[i] = SDL_Swap16(pix[i]);
                     break;
                 }
 
                 case 32: {
-                        Uint32 *pix = (Uint32 *)bits;
+                    Uint32 *pix = (Uint32 *)bits;
                     for(i = 0; i < surface->w; i++)
-                            pix[i] = SDL_Swap32(pix[i]);
+                        pix[i] = SDL_Swap32(pix[i]);
                     break;
                 }
             }
@@ -496,6 +531,9 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
         } else {
             bits -= surface->pitch;
         }
+    }
+    if (correctAlpha) {
+        CorrectAlphaChannel(surface);
     }
 done:
     if ( was_error ) {
