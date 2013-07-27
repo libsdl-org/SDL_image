@@ -288,7 +288,8 @@ static void xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
 static void free_xcf_header (xcf_header * h) {
   if (h->cm_num)
     SDL_free (h->cm_map);
-
+  if (h->layer_file_offsets)
+	  SDL_free (h->layer_file_offsets);
   SDL_free (h);
 }
 
@@ -303,6 +304,7 @@ static xcf_header * read_xcf_header (SDL_RWops * src) {
   h->image_type  = SDL_ReadBE32 (src);
 
   h->properties = NULL;
+  h->layer_file_offsets = NULL;
   h->compr      = COMPR_NONE;
   h->cm_num = 0;
   h->cm_map = NULL;
@@ -317,7 +319,7 @@ static xcf_header * read_xcf_header (SDL_RWops * src) {
 
       h->cm_num = prop.data.colormap.num;
       h->cm_map = (unsigned char *) SDL_malloc (sizeof (unsigned char) * 3 * h->cm_num);
-      memcpy (h->cm_map, prop.data.colormap.cmap, 3*sizeof (char)*h->cm_num);
+      SDL_memcpy (h->cm_map, prop.data.colormap.cmap, 3*sizeof (char)*h->cm_num);
       SDL_free (prop.data.colormap.cmap);
     }
   } while (prop.id != PROP_END);
@@ -417,7 +419,7 @@ static xcf_hierarchy * read_xcf_hierarchy (SDL_RWops * src) {
   h->level_file_offsets = NULL;
   i = 0;
   do {
-    h->level_file_offsets = (Uint32 *) realloc (h->level_file_offsets, sizeof (Uint32) * (i+1));
+    h->level_file_offsets = (Uint32 *) SDL_realloc (h->level_file_offsets, sizeof (Uint32) * (i+1));
     h->level_file_offsets [i] = SDL_ReadBE32 (src);
   } while (h->level_file_offsets [i++]);
 
@@ -718,11 +720,10 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
     goto done;
   }
 
-  head->layer_file_offsets = NULL;
   offsets = 0;
 
   while ((offset = SDL_ReadBE32 (src))) {
-    head->layer_file_offsets = (Uint32 *) realloc (head->layer_file_offsets, sizeof (Uint32) * (offsets+1));
+    head->layer_file_offsets = (Uint32 *) SDL_realloc (head->layer_file_offsets, sizeof (Uint32) * (offsets+1));
     head->layer_file_offsets [offsets] = (Uint32)offset;
     offsets++;
   }
