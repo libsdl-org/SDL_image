@@ -120,7 +120,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
     /* As size is not used here, no need to swap it */
 
-    if ( memcmp( id, "FORM", 4 ) != 0 )
+    if ( SDL_memcmp( id, "FORM", 4 ) != 0 )
     {
         error="not a IFF file";
         goto done;
@@ -197,7 +197,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
             nbcolors = size / 3;
         }
 
-        if ( !memcmp( id, "CAMG", 4 ) ) /* Amiga ViewMode  */
+        if ( !SDL_memcmp( id, "CAMG", 4 ) ) /* Amiga ViewMode  */
         {
             Uint32 viewmodes;
             if ( !SDL_RWread( src, &viewmodes, sizeof(viewmodes), 1 ) )
@@ -373,7 +373,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
         if ( pbm )                 /* File format : 'Packed Bitmap' */
         {
-           memcpy( ptr, MiniBuf, width );
+           SDL_memcpy( ptr, MiniBuf, width );
         }
         else        /* We have to un-interlace the bits ! */
         {
