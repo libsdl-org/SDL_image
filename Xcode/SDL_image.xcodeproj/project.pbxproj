@@ -524,7 +524,7 @@
 				);
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "Info-Framework.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
+				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"-weak_framework",
@@ -645,7 +645,7 @@
 				);
 				FRAMEWORK_VERSION = A;
 				INFOPLIST_FILE = "Info-Framework.plist";
-				INSTALL_PATH = "@executable_path/../Frameworks";
+				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"-weak_framework",
