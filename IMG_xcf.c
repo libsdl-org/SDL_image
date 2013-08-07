@@ -289,7 +289,7 @@ static void free_xcf_header (xcf_header * h) {
   if (h->cm_num)
     SDL_free (h->cm_map);
   if (h->layer_file_offsets)
-	  SDL_free (h->layer_file_offsets);
+    SDL_free (h->layer_file_offsets);
   SDL_free (h);
 }
 
@@ -625,6 +625,15 @@ static int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header 
         break;
       default:
         fprintf (stderr, "Unknown Gimp image type (%d)\n", head->image_type);
+        if (hierarchy)
+        {
+          if (hierarchy->level_file_offsets)
+            SDL_free(hierarchy->level_file_offsets);
+         
+          free_xcf_hierarchy(hierarchy);
+        }
+        if (level)     
+          free_xcf_level (level);
         return 1;
       }
       break;
@@ -650,6 +659,12 @@ static int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header 
         break;
       default:
         fprintf (stderr, "Unknown Gimp image type (%d)\n", head->image_type);
+        if (tile)
+          free_xcf_tile (tile);
+        if (level)
+          free_xcf_level (level);
+        if (hierarchy)
+          free_xcf_hierarchy (hierarchy);
         return 1;
       }
       break;
