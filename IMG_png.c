@@ -496,7 +496,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 
     /* Create the array of pointers to image data */
     row_pointers = (png_bytep*) SDL_malloc(sizeof(png_bytep)*height);
-    if ( (row_pointers == NULL) ) {
+    if (!row_pointers) {
         error = "Out of memory";
         goto done;
     }
