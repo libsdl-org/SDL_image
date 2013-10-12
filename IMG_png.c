@@ -69,7 +69,7 @@
 
 /* Check for the older version of libpng */
 #if (PNG_LIBPNG_VER_MAJOR == 1) 
-#if (PNG_LIBPNG_VER_MINOR < 4)
+#if (PNG_LIBPNG_VER_MINOR < 5)
 #define LIBPNG_VERSION_12
 typedef png_bytep png_const_bytep;
 #endif
