@@ -618,11 +618,11 @@ int IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
         void *png = NULL;
 
         if (surface->format->format == png_format) {
-            png = tdefl_write_image_to_png_file_in_memory(surface->pixels, surface->w, surface->h, surface->pitch, surface->format->BytesPerPixel, &size);
+            png = tdefl_write_image_to_png_file_in_memory(surface->pixels, surface->w, surface->h, surface->format->BytesPerPixel, surface->pitch, &size);
         } else {
             SDL_Surface *cvt = SDL_ConvertSurfaceFormat(surface, png_format, 0);
             if (cvt) {
-                png = tdefl_write_image_to_png_file_in_memory(cvt->pixels, cvt->w, cvt->h, cvt->pitch, cvt->format->BytesPerPixel, &size);
+                png = tdefl_write_image_to_png_file_in_memory(cvt->pixels, cvt->w, cvt->h, cvt->format->BytesPerPixel, cvt->pitch, &size);
                 SDL_FreeSurface(cvt);
             }
         }
