@@ -240,7 +240,7 @@ extern "C" {
 typedef unsigned long mz_ulong;
 
 // mz_free() internally uses the MZ_FREE() macro (which by default calls free() unless you've modified the MZ_MALLOC macro) to release a block allocated from the heap.
-void mz_free(void *p);
+MINIZ_STATIC void mz_free(void *p);
 
 #define MZ_ADLER32_INIT (1)
 // mz_adler32() returns the initial adler-32 value to use when called with ptr==NULL.
@@ -1015,7 +1015,7 @@ mz_ulong mz_crc32(mz_ulong crc, const mz_uint8 *ptr, size_t buf_len)
   return ~crcu32;
 }
 
-void mz_free(void *p)
+MINIZ_STATIC void mz_free(void *p)
 {
   MZ_FREE(p);
 }
