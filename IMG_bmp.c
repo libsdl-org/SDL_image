@@ -296,7 +296,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
         biClrUsed   = 0;
         biClrImportant  = 0;
     } else {
-        const int headerSize = 40;
+        const unsigned int headerSize = 40;
 
         biWidth     = SDL_ReadLE32(src);
         biHeight    = SDL_ReadLE32(src);
