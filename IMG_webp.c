@@ -271,17 +271,21 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
         goto error;
     }
 
+    if ( raw_data ) {
+        SDL_free( raw_data );
+    }
+
     return surface;
 
 
 error:
 
-    if ( surface ) {
-        SDL_FreeSurface( surface );
-    }
-
     if ( raw_data ) {
         SDL_free( raw_data );
+    }
+
+    if ( surface ) {
+        SDL_FreeSurface( surface );
     }
 
     if ( error ) {
