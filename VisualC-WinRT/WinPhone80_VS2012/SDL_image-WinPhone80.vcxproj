@@ -23,7 +23,7 @@
     <RootNamespace>SDL2_image_WinPhone</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
-    <ProjectName>SDL2_image-WinPhone</ProjectName>
+    <ProjectName>SDL2_image-WinPhone80</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -83,7 +83,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>..\..\SDL\include;..\external\libpng-1.6.2;..\external\jpeg-9</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.2;..\..\external\jpeg-9</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -99,7 +99,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>..\..\SDL\include;..\external\libpng-1.6.2;..\external\jpeg-9</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.2;..\..\external\jpeg-9</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -115,7 +115,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>..\..\SDL\include;..\external\libpng-1.6.2;..\external\jpeg-9</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.2;..\..\external\jpeg-9</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,7 +131,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>..\..\SDL\include;..\external\libpng-1.6.2;..\external\jpeg-9</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.2;..\..\external\jpeg-9</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,30 +150,30 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\IMG.c" />
-    <ClCompile Include="..\IMG_bmp.c" />
-    <ClCompile Include="..\IMG_gif.c" />
-    <ClCompile Include="..\IMG_jpg.c" />
-    <ClCompile Include="..\IMG_lbm.c" />
-    <ClCompile Include="..\IMG_pcx.c" />
-    <ClCompile Include="..\IMG_png.c" />
-    <ClCompile Include="..\IMG_pnm.c" />
-    <ClCompile Include="..\IMG_tga.c" />
-    <ClCompile Include="..\IMG_tif.c" />
-    <ClCompile Include="..\IMG_webp.c" />
-    <ClCompile Include="..\IMG_xcf.c" />
-    <ClCompile Include="..\IMG_xpm.c" />
-    <ClCompile Include="..\IMG_xv.c" />
-    <ClCompile Include="..\IMG_xxx.c" />
+    <ClCompile Include="..\..\IMG.c" />
+    <ClCompile Include="..\..\IMG_bmp.c" />
+    <ClCompile Include="..\..\IMG_gif.c" />
+    <ClCompile Include="..\..\IMG_jpg.c" />
+    <ClCompile Include="..\..\IMG_lbm.c" />
+    <ClCompile Include="..\..\IMG_pcx.c" />
+    <ClCompile Include="..\..\IMG_png.c" />
+    <ClCompile Include="..\..\IMG_pnm.c" />
+    <ClCompile Include="..\..\IMG_tga.c" />
+    <ClCompile Include="..\..\IMG_tif.c" />
+    <ClCompile Include="..\..\IMG_webp.c" />
+    <ClCompile Include="..\..\IMG_xcf.c" />
+    <ClCompile Include="..\..\IMG_xpm.c" />
+    <ClCompile Include="..\..\IMG_xv.c" />
+    <ClCompile Include="..\..\IMG_xxx.c" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SDL\VisualC-WinPhone\SDL\SDL-WinPhone_VS2012.vcxproj">
+    <ProjectReference Include="..\..\..\SDL\VisualC-WinPhone\SDL\SDL-WinPhone_VS2012.vcxproj">
       <Project>{33048af1-031a-4ce6-b61e-fad2db832e9e}</Project>
     </ProjectReference>
-    <ProjectReference Include="jpeg-WinPhone_VS2012.vcxproj">
+    <ProjectReference Include="jpeg-WinPhone80.vcxproj">
       <Project>{10cabd6e-bd1a-4705-be35-a34ce1edf6fb}</Project>
     </ProjectReference>
-    <ProjectReference Include="libpng-WinPhone_VS2012.vcxproj">
+    <ProjectReference Include="libpng-WinPhone80.vcxproj">
       <Project>{af7120b3-ecf6-464d-a4a6-e56b91e81b50}</Project>
     </ProjectReference>
   </ItemGroup>
