@@ -19,11 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{af7120b3-ecf6-464d-a4a6-e56b91e81b50}</ProjectGuid>
-    <RootNamespace>libpng_WinPhone</RootNamespace>
+    <ProjectGuid>{10cabd6e-bd1a-4705-be35-a34ce1edf6fb}</ProjectGuid>
+    <RootNamespace>jpeg_WinPhone</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
-    <ProjectName>libpng-WinPhone</ProjectName>
+    <ProjectName>jpeg-WinPhone80</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -61,83 +61,83 @@
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <TargetName>libpng</TargetName>
     <IntDir>Objs\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
+    <TargetName>jpeg</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <TargetName>libpng</TargetName>
     <IntDir>Objs\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
+    <TargetName>jpeg</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <TargetName>libpng</TargetName>
     <IntDir>Objs\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
+    <TargetName>jpeg</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetName>libpng</TargetName>
     <IntDir>Objs\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
+    <TargetName>jpeg</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>_USRDLL;_CRT_SECURE_NO_WARNINGS;PNG_ABORT=abort;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_USRDLL;_CRT_SECURE_NO_WARNINGS;NO_GETENV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>..\external\zlib-1.2.8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>..\jpeg.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>_USRDLL;_CRT_SECURE_NO_WARNINGS;PNG_ABORT=abort;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_USRDLL;_CRT_SECURE_NO_WARNINGS;NO_GETENV;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>..\external\zlib-1.2.8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>..\jpeg.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_USRDLL;_CRT_SECURE_NO_WARNINGS;PNG_ABORT=abort;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_USRDLL;_CRT_SECURE_NO_WARNINGS;NO_GETENV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>..\external\zlib-1.2.8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>..\jpeg.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>_USRDLL;_CRT_SECURE_NO_WARNINGS;PNG_ABORT=abort;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_USRDLL;_CRT_SECURE_NO_WARNINGS;NO_GETENV;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>..\external\zlib-1.2.8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>..\jpeg.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -150,36 +150,69 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\external\libpng-1.6.2\png.c" />
-    <ClCompile Include="..\external\libpng-1.6.2\pngerror.c" />
-    <ClCompile Include="..\external\libpng-1.6.2\pngget.c" />
-    <ClCompile Include="..\external\libpng-1.6.2\pngmem.c" />
-    <ClCompile Include="..\external\libpng-1.6.2\pngpread.c" />
-    <ClCompile Include="..\external\libpng-1.6.2\pngread.c" />
-    <ClCompile Include="..\external\libpng-1.6.2\pngrio.c" />
-    <ClCompile Include="..\external\libpng-1.6.2\pngrtran.c" />
-    <ClCompile Include="..\external\libpng-1.6.2\pngrutil.c" />
-    <ClCompile Include="..\external\libpng-1.6.2\pngset.c" />
-    <ClCompile Include="..\external\libpng-1.6.2\pngtest.c" />
-    <ClCompile Include="..\external\libpng-1.6.2\pngtrans.c" />
-    <ClCompile Include="..\external\libpng-1.6.2\pngwio.c" />
-    <ClCompile Include="..\external\libpng-1.6.2\pngwrite.c" />
-    <ClCompile Include="..\external\libpng-1.6.2\pngwtran.c" />
-    <ClCompile Include="..\external\libpng-1.6.2\pngwutil.c" />
+    <None Include="..\VisualC-WinRT\jpeg.def" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\external\libpng-1.6.2\png.h" />
-    <ClInclude Include="..\external\libpng-1.6.2\pngconf.h" />
-    <ClInclude Include="..\external\libpng-1.6.2\pngdebug.h" />
-    <ClInclude Include="..\external\libpng-1.6.2\pnginfo.h" />
-    <ClInclude Include="..\external\libpng-1.6.2\pnglibconf.h" />
-    <ClInclude Include="..\external\libpng-1.6.2\pngpriv.h" />
-    <ClInclude Include="..\external\libpng-1.6.2\pngstruct.h" />
+    <ClCompile Include="..\..\external\jpeg-9\jaricom.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jcapimin.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jcapistd.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jcarith.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jccoefct.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jccolor.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jcdctmgr.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jchuff.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jcinit.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jcmainct.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jcmarker.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jcmaster.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jcomapi.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jcparam.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jcprepct.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jcsample.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jctrans.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jdapimin.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jdapistd.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jdarith.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jdatadst.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jdatasrc.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jdcoefct.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jdcolor.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jddctmgr.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jdhuff.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jdinput.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jdmainct.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jdmarker.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jdmaster.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jdmerge.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jdpostct.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jdsample.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jdtrans.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jerror.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jfdctflt.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jfdctfst.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jfdctint.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jidctflt.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jidctfst.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jidctint.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jmemansi.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jmemmgr.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jquant1.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jquant2.c" />
+    <ClCompile Include="..\..\external\jpeg-9\jutils.c" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="zlib-WinPhone_VS2012.vcxproj">
-      <Project>{c9c04f20-60b6-42b7-a802-fa6ec1357e87}</Project>
-    </ProjectReference>
+    <ClInclude Include="..\..\external\jpeg-9\cderror.h" />
+    <ClInclude Include="..\..\external\jpeg-9\cdjpeg.h" />
+    <ClInclude Include="..\..\external\jpeg-9\jconfig.h" />
+    <ClInclude Include="..\..\external\jpeg-9\jdct.h" />
+    <ClInclude Include="..\..\external\jpeg-9\jerror.h" />
+    <ClInclude Include="..\..\external\jpeg-9\jinclude.h" />
+    <ClInclude Include="..\..\external\jpeg-9\jmemsys.h" />
+    <ClInclude Include="..\..\external\jpeg-9\jmorecfg.h" />
+    <ClInclude Include="..\..\external\jpeg-9\jpegint.h" />
+    <ClInclude Include="..\..\external\jpeg-9\jpeglib.h" />
+    <ClInclude Include="..\..\external\jpeg-9\jversion.h" />
+    <ClInclude Include="..\..\external\jpeg-9\transupp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />

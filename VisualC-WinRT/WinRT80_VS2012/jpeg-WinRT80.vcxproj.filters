@@ -9,180 +9,180 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\external\jpeg-9\cderror.h">
+    <ClInclude Include="..\..\external\jpeg-9\cderror.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\external\jpeg-9\cdjpeg.h">
+    <ClInclude Include="..\..\external\jpeg-9\cdjpeg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\external\jpeg-9\jconfig.h">
+    <ClInclude Include="..\..\external\jpeg-9\jconfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\external\jpeg-9\jdct.h">
+    <ClInclude Include="..\..\external\jpeg-9\jdct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\external\jpeg-9\jerror.h">
+    <ClInclude Include="..\..\external\jpeg-9\jerror.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\external\jpeg-9\jinclude.h">
+    <ClInclude Include="..\..\external\jpeg-9\jinclude.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\external\jpeg-9\jmemsys.h">
+    <ClInclude Include="..\..\external\jpeg-9\jmemsys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\external\jpeg-9\jmorecfg.h">
+    <ClInclude Include="..\..\external\jpeg-9\jmorecfg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\external\jpeg-9\jpegint.h">
+    <ClInclude Include="..\..\external\jpeg-9\jpegint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\external\jpeg-9\jpeglib.h">
+    <ClInclude Include="..\..\external\jpeg-9\jpeglib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\external\jpeg-9\jversion.h">
+    <ClInclude Include="..\..\external\jpeg-9\jversion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\external\jpeg-9\transupp.h">
+    <ClInclude Include="..\..\external\jpeg-9\transupp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\external\jpeg-9\jaricom.c">
+    <ClCompile Include="..\..\external\jpeg-9\jaricom.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jcapimin.c">
+    <ClCompile Include="..\..\external\jpeg-9\jcapimin.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jcapistd.c">
+    <ClCompile Include="..\..\external\jpeg-9\jcapistd.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jcarith.c">
+    <ClCompile Include="..\..\external\jpeg-9\jcarith.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jccoefct.c">
+    <ClCompile Include="..\..\external\jpeg-9\jccoefct.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jccolor.c">
+    <ClCompile Include="..\..\external\jpeg-9\jccolor.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jcdctmgr.c">
+    <ClCompile Include="..\..\external\jpeg-9\jcdctmgr.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jchuff.c">
+    <ClCompile Include="..\..\external\jpeg-9\jchuff.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jcinit.c">
+    <ClCompile Include="..\..\external\jpeg-9\jcinit.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jcmainct.c">
+    <ClCompile Include="..\..\external\jpeg-9\jcmainct.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jcmarker.c">
+    <ClCompile Include="..\..\external\jpeg-9\jcmarker.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jcmaster.c">
+    <ClCompile Include="..\..\external\jpeg-9\jcmaster.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jcomapi.c">
+    <ClCompile Include="..\..\external\jpeg-9\jcomapi.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jcparam.c">
+    <ClCompile Include="..\..\external\jpeg-9\jcparam.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jcprepct.c">
+    <ClCompile Include="..\..\external\jpeg-9\jcprepct.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jcsample.c">
+    <ClCompile Include="..\..\external\jpeg-9\jcsample.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jctrans.c">
+    <ClCompile Include="..\..\external\jpeg-9\jctrans.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jdapimin.c">
+    <ClCompile Include="..\..\external\jpeg-9\jdapimin.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jdapistd.c">
+    <ClCompile Include="..\..\external\jpeg-9\jdapistd.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jdarith.c">
+    <ClCompile Include="..\..\external\jpeg-9\jdarith.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jdatadst.c">
+    <ClCompile Include="..\..\external\jpeg-9\jdatadst.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jdatasrc.c">
+    <ClCompile Include="..\..\external\jpeg-9\jdatasrc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jdcoefct.c">
+    <ClCompile Include="..\..\external\jpeg-9\jdcoefct.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jdcolor.c">
+    <ClCompile Include="..\..\external\jpeg-9\jdcolor.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jddctmgr.c">
+    <ClCompile Include="..\..\external\jpeg-9\jddctmgr.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jdhuff.c">
+    <ClCompile Include="..\..\external\jpeg-9\jdhuff.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jdinput.c">
+    <ClCompile Include="..\..\external\jpeg-9\jdinput.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jdmainct.c">
+    <ClCompile Include="..\..\external\jpeg-9\jdmainct.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jdmarker.c">
+    <ClCompile Include="..\..\external\jpeg-9\jdmarker.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jdmaster.c">
+    <ClCompile Include="..\..\external\jpeg-9\jdmaster.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jdmerge.c">
+    <ClCompile Include="..\..\external\jpeg-9\jdmerge.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jdpostct.c">
+    <ClCompile Include="..\..\external\jpeg-9\jdpostct.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jdsample.c">
+    <ClCompile Include="..\..\external\jpeg-9\jdsample.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jdtrans.c">
+    <ClCompile Include="..\..\external\jpeg-9\jdtrans.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jerror.c">
+    <ClCompile Include="..\..\external\jpeg-9\jerror.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jfdctflt.c">
+    <ClCompile Include="..\..\external\jpeg-9\jfdctflt.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jfdctfst.c">
+    <ClCompile Include="..\..\external\jpeg-9\jfdctfst.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jfdctint.c">
+    <ClCompile Include="..\..\external\jpeg-9\jfdctint.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jidctflt.c">
+    <ClCompile Include="..\..\external\jpeg-9\jidctflt.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jidctfst.c">
+    <ClCompile Include="..\..\external\jpeg-9\jidctfst.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jidctint.c">
+    <ClCompile Include="..\..\external\jpeg-9\jidctint.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jmemansi.c">
+    <ClCompile Include="..\..\external\jpeg-9\jmemansi.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jmemmgr.c">
+    <ClCompile Include="..\..\external\jpeg-9\jmemmgr.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jquant1.c">
+    <ClCompile Include="..\..\external\jpeg-9\jquant1.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jquant2.c">
+    <ClCompile Include="..\..\external\jpeg-9\jquant2.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\external\jpeg-9\jutils.c">
+    <ClCompile Include="..\..\external\jpeg-9\jutils.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

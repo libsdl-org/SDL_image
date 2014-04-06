@@ -27,46 +27,42 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\external\zlib-1.2.8\adler32.c" />
-    <ClCompile Include="..\external\zlib-1.2.8\compress.c" />
-    <ClCompile Include="..\external\zlib-1.2.8\crc32.c" />
-    <ClCompile Include="..\external\zlib-1.2.8\deflate.c" />
-    <ClCompile Include="..\external\zlib-1.2.8\gzclose.c" />
-    <ClCompile Include="..\external\zlib-1.2.8\gzlib.c" />
-    <ClCompile Include="..\external\zlib-1.2.8\gzread.c" />
-    <ClCompile Include="..\external\zlib-1.2.8\gzwrite.c" />
-    <ClCompile Include="..\external\zlib-1.2.8\infback.c" />
-    <ClCompile Include="..\external\zlib-1.2.8\inffast.c" />
-    <ClCompile Include="..\external\zlib-1.2.8\inflate.c" />
-    <ClCompile Include="..\external\zlib-1.2.8\inftrees.c" />
-    <ClCompile Include="..\external\zlib-1.2.8\trees.c" />
-    <ClCompile Include="..\external\zlib-1.2.8\uncompr.c" />
-    <ClCompile Include="..\external\zlib-1.2.8\zutil.c" />
+    <ClCompile Include="..\..\IMG.c" />
+    <ClCompile Include="..\..\IMG_bmp.c" />
+    <ClCompile Include="..\..\IMG_gif.c" />
+    <ClCompile Include="..\..\IMG_jpg.c" />
+    <ClCompile Include="..\..\IMG_lbm.c" />
+    <ClCompile Include="..\..\IMG_pcx.c" />
+    <ClCompile Include="..\..\IMG_png.c" />
+    <ClCompile Include="..\..\IMG_pnm.c" />
+    <ClCompile Include="..\..\IMG_tga.c" />
+    <ClCompile Include="..\..\IMG_tif.c" />
+    <ClCompile Include="..\..\IMG_webp.c" />
+    <ClCompile Include="..\..\IMG_xcf.c" />
+    <ClCompile Include="..\..\IMG_xpm.c" />
+    <ClCompile Include="..\..\IMG_xv.c" />
+    <ClCompile Include="..\..\IMG_xxx.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\external\zlib-1.2.8\crc32.h" />
-    <ClInclude Include="..\external\zlib-1.2.8\deflate.h" />
-    <ClInclude Include="..\external\zlib-1.2.8\gzguts.h" />
-    <ClInclude Include="..\external\zlib-1.2.8\inffast.h" />
-    <ClInclude Include="..\external\zlib-1.2.8\inffixed.h" />
-    <ClInclude Include="..\external\zlib-1.2.8\inflate.h" />
-    <ClInclude Include="..\external\zlib-1.2.8\inftrees.h" />
-    <ClInclude Include="..\external\zlib-1.2.8\trees.h" />
-    <ClInclude Include="..\external\zlib-1.2.8\zconf.h" />
-    <ClInclude Include="..\external\zlib-1.2.8\zlib.h" />
-    <ClInclude Include="..\external\zlib-1.2.8\zutil.h" />
+    <ClInclude Include="..\miniz.h" />
+    <ClInclude Include="..\SDL_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\external\zlib-1.2.8\win32\zlib.def" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="..\external\zlib-1.2.8\win32\zlib1.rc" />
+    <ProjectReference Include="..\..\..\SDL\VisualC-WinRT\SDL\SDL-WinRT_VS2012.vcxproj">
+      <Project>{aeaea3a2-d4e6-45b1-8ec6-53d84287fc14}</Project>
+    </ProjectReference>
+    <ProjectReference Include="jpeg-WinRT80.vcxproj">
+      <Project>{cc6cf4c7-bd07-4738-854c-a6c5bae62ea9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="libpng-WinRT80.vcxproj">
+      <Project>{b43d3823-d0c0-4017-9153-c4cbc9a4f9d0}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{09ab7e08-81aa-460f-b50a-68fc839ef575}</ProjectGuid>
+    <ProjectGuid>{9dc0b681-4702-4968-9c30-16112dae4e9e}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>zlib-WinRT</ProjectName>
-    <RootNamespace>zlib</RootNamespace>
+    <ProjectName>SDL2_image-WinRT80</ProjectName>
+    <RootNamespace>SDL_image_WinRT_VS2012</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
@@ -129,133 +125,115 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <TargetName>zlib</TargetName>
+    <TargetName>SDL2_image</TargetName>
     <IntDir>Objs\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <TargetName>zlib</TargetName>
+    <TargetName>SDL2_image</TargetName>
     <IntDir>Objs\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <TargetName>zlib</TargetName>
+    <TargetName>SDL2_image</TargetName>
     <IntDir>Objs\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <TargetName>zlib</TargetName>
+    <TargetName>SDL2_image</TargetName>
     <IntDir>Objs\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <TargetName>zlib</TargetName>
+    <TargetName>SDL2_image</TargetName>
     <IntDir>Objs\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <TargetName>zlib</TargetName>
+    <TargetName>SDL2_image</TargetName>
     <IntDir>Objs\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.2;..\..\external\jpeg-9;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;LOAD_BMP;LOAD_PNG;LOAD_PNG_DYNAMIC="libpng.dll";LOAD_JPG;LOAD_JPG_DYNAMIC="jpeg.dll";%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <MapFileName>
-      </MapFileName>
-      <ModuleDefinitionFile>..\external\zlib-1.2.8\win32\zlib.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.2;..\..\external\jpeg-9;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;LOAD_BMP;LOAD_PNG;LOAD_PNG_DYNAMIC="libpng.dll";LOAD_JPG;LOAD_JPG_DYNAMIC="jpeg.dll";%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <MapFileName>
-      </MapFileName>
-      <ModuleDefinitionFile>..\external\zlib-1.2.8\win32\zlib.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.2;..\..\external\jpeg-9;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;LOAD_BMP;LOAD_PNG;LOAD_PNG_DYNAMIC="libpng.dll";LOAD_JPG;LOAD_JPG_DYNAMIC="jpeg.dll";%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <MapFileName>
-      </MapFileName>
-      <ModuleDefinitionFile>..\external\zlib-1.2.8\win32\zlib.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.2;..\..\external\jpeg-9;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;LOAD_BMP;LOAD_PNG;LOAD_PNG_DYNAMIC="libpng.dll";LOAD_JPG;LOAD_JPG_DYNAMIC="jpeg.dll";%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <MapFileName>
-      </MapFileName>
-      <ModuleDefinitionFile>..\external\zlib-1.2.8\win32\zlib.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.2;..\..\external\jpeg-9;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;LOAD_BMP;LOAD_PNG;LOAD_PNG_DYNAMIC="libpng.dll";LOAD_JPG;LOAD_JPG_DYNAMIC="jpeg.dll";%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <MapFileName>
-      </MapFileName>
-      <ModuleDefinitionFile>..\external\zlib-1.2.8\win32\zlib.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.2;..\..\external\jpeg-9;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;LOAD_BMP;LOAD_PNG;LOAD_PNG_DYNAMIC="libpng.dll";LOAD_JPG;LOAD_JPG_DYNAMIC="jpeg.dll";%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <MapFileName>
-      </MapFileName>
-      <ModuleDefinitionFile>..\external\zlib-1.2.8\win32\zlib.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
