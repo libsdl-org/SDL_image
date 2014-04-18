@@ -107,24 +107,24 @@ static struct color_hash *create_colorhash(int maxnum)
     /* we know how many entries we need, so we can allocate
        everything here */
     hash = (struct color_hash *)SDL_malloc(sizeof *hash);
-    if(!hash)
+    if (!hash)
         return NULL;
 
     /* use power-of-2 sized hash table for decoding speed */
-    for(s = STARTING_HASH_SIZE; s < maxnum; s <<= 1)
+    for (s = STARTING_HASH_SIZE; s < maxnum; s <<= 1)
         ;
     hash->size = s;
     hash->maxnum = maxnum;
     bytes = hash->size * sizeof(struct hash_entry **);
     hash->entries = NULL;   /* in case malloc fails */
     hash->table = (struct hash_entry **)SDL_malloc(bytes);
-    if(!hash->table) {
+    if (!hash->table) {
         SDL_free(hash);
         return NULL;
     }
     memset(hash->table, 0, bytes);
     hash->entries = (struct hash_entry *)SDL_malloc(maxnum * sizeof(struct hash_entry));
-    if(!hash->entries) {
+    if (!hash->entries) {
         SDL_free(hash->table);
         SDL_free(hash);
         return NULL;
@@ -151,8 +151,8 @@ static int add_colorhash(struct color_hash *hash,
 static Uint32 get_colorhash(struct color_hash *hash, const char *key, int cpp)
 {
     struct hash_entry *entry = hash->table[hash_key(key, cpp, hash->size)];
-    while(entry) {
-        if(SDL_memcmp(key, entry->key, cpp) == 0)
+    while (entry) {
+        if (SDL_memcmp(key, entry->key, cpp) == 0)
             return entry->color;
         entry = entry->next;
     }
@@ -161,10 +161,10 @@ static Uint32 get_colorhash(struct color_hash *hash, const char *key, int cpp)
 
 static void free_colorhash(struct color_hash *hash)
 {
-    if(hash) {
-        if(hash->table)
+    if (hash) {
+        if (hash->table)
             SDL_free(hash->table);
-        if(hash->entries)
+        if (hash->entries)
             SDL_free(hash->entries);
         SDL_free(hash);
     }
@@ -867,7 +867,7 @@ static int color_to_rgb(char *spec, int speclen, Uint32 *rgb)
         {"none",                  0xFFFFFF}
     };
 
-    if(spec[0] == '#') {
+    if (spec[0] == '#') {
         char buf[7];
         switch(speclen) {
         case 4:
@@ -892,8 +892,8 @@ static int color_to_rgb(char *spec, int speclen, Uint32 *rgb)
         return 1;
     } else {
         int i;
-        for(i = 0; i < SDL_arraysize(known); i++)
-            if(SDL_strncasecmp(known[i].name, spec, speclen) == 0) {
+        for (i = 0; i < SDL_arraysize(known); i++)
+            if (SDL_strncasecmp(known[i].name, spec, speclen) == 0) {
                 *rgb = known[i].rgb;
                 return 1;
             }
@@ -918,30 +918,30 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
 {
     char *linebufnew;
 
-    if(lines) {
+    if (lines) {
         return *(*lines)++;
     } else {
         char c;
         int n;
         do {
-            if(SDL_RWread(src, &c, 1, 1) <= 0) {
+            if (SDL_RWread(src, &c, 1, 1) <= 0) {
                 error = "Premature end of data";
                 return NULL;
             }
-        } while(c != '"');
-        if(len) {
+        } while (c != '"');
+        if (len) {
             len += 4;   /* "\",\n\0" */
-            if(len > buflen){
+            if (len > buflen){
                 buflen = len;
                 linebufnew = (char *)SDL_realloc(linebuf, buflen);
-                if(!linebufnew) {
+                if (!linebufnew) {
                     SDL_free(linebuf);
                     error = "Out of memory";
                     return NULL;
                 }
                 linebuf = linebufnew;
             }
-            if(SDL_RWread(src, linebuf, len - 1, 1) <= 0) {
+            if (SDL_RWread(src, linebuf, len - 1, 1) <= 0) {
                 error = "Premature end of data";
                 return NULL;
             }
@@ -949,23 +949,23 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
         } else {
             n = 0;
             do {
-                if(n >= buflen - 1) {
-                    if(buflen == 0)
+                if (n >= buflen - 1) {
+                    if (buflen == 0)
                         buflen = 16;
                     buflen *= 2;
                     linebufnew = (char *)SDL_realloc(linebuf, buflen);
-                    if(!linebufnew) {
+                    if (!linebufnew) {
                         SDL_free(linebuf);
                         error = "Out of memory";
                         return NULL;
                     }
                     linebuf = linebufnew;
                 }
-                if(SDL_RWread(src, linebuf + n, 1, 1) <= 0) {
+                if (SDL_RWread(src, linebuf + n, 1, 1) <= 0) {
                     error = "Premature end of data";
                     return NULL;
                 }
-            } while(linebuf[n++] != '"');
+            } while (linebuf[n++] != '"');
             n--;
         }
         linebuf[n] = '\0';
@@ -975,15 +975,15 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
 
 #define SKIPSPACE(p)                \
 do {                        \
-    while(SDL_isspace((unsigned char)*(p))) \
+    while (SDL_isspace((unsigned char)*(p))) \
           ++(p);                \
-} while(0)
+} while (0)
 
 #define SKIPNONSPACE(p)                 \
 do {                            \
-    while(!SDL_isspace((unsigned char)*(p)) && *p)  \
+    while (!SDL_isspace((unsigned char)*(p)) && *p)  \
           ++(p);                    \
-} while(0)
+} while (0)
 
 /* read XPM from either array or RWops */
 static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
@@ -1006,14 +1006,14 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
     linebuf = NULL;
     buflen = 0;
 
-    if ( src )
+    if (src)
         start = SDL_RWtell(src);
 
-    if(xpm)
+    if (xpm)
         xpmlines = &xpm;
 
     line = get_next_line(xpmlines, src, 0);
-    if(!line)
+    if (!line)
         goto done;
     /*
      * The header string of an XPMv3 image has the format
@@ -1024,21 +1024,21 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
      * Right now we don't use the hotspots but it should be handled
      * one day.
      */
-    if(SDL_sscanf(line, "%d %d %d %d", &w, &h, &ncolors, &cpp) != 4
+    if (SDL_sscanf(line, "%d %d %d %d", &w, &h, &ncolors, &cpp) != 4
        || w <= 0 || h <= 0 || ncolors <= 0 || cpp <= 0) {
         error = "Invalid format description";
         goto done;
     }
 
     keystrings = (char *)SDL_malloc(ncolors * cpp);
-    if(!keystrings) {
+    if (!keystrings) {
         error = "Out of memory";
         goto done;
     }
     nextkey = keystrings;
 
     /* Create the new surface */
-    if(ncolors <= 256) {
+    if (ncolors <= 256) {
         indexed = 1;
         image = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 8,
                          0, 0, 0, 0);
@@ -1049,7 +1049,7 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
         image = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 32,
                          0xff0000, 0x00ff00, 0x0000ff, 0);
     }
-    if(!image) {
+    if (!image) {
         /* Hmm, some SDL error (out of memory?) */
         goto done;
     }
@@ -1060,22 +1060,22 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
         error = "Out of memory";
         goto done;
     }
-    for(index = 0; index < ncolors; ++index ) {
+    for (index = 0; index < ncolors; ++index ) {
         char *p;
         line = get_next_line(xpmlines, src, 0);
-        if(!line)
+        if (!line)
             goto done;
 
         p = line + cpp + 1;
 
         /* parse a colour definition */
-        for(;;) {
+        for (;;) {
             char nametype;
             char *colname;
             Uint32 rgb, pixel;
 
             SKIPSPACE(p);
-            if(!*p) {
+            if (!*p) {
                 error = "colour parse error";
                 goto done;
             }
@@ -1084,14 +1084,14 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
             SKIPSPACE(p);
             colname = p;
             SKIPNONSPACE(p);
-            if(nametype == 's')
+            if (nametype == 's')
                 continue;      /* skip symbolic colour names */
 
-            if(!color_to_rgb(colname, p - colname, &rgb))
+            if (!color_to_rgb(colname, p - colname, &rgb))
                 continue;
 
             SDL_memcpy(nextkey, line, cpp);
-            if(indexed) {
+            if (indexed) {
                 SDL_Color *c = im_colors + index;
                 c->r = (Uint8)(rgb >> 16);
                 c->g = (Uint8)(rgb >> 8);
@@ -1101,7 +1101,7 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
                 pixel = rgb;
             add_colorhash(colors, nextkey, cpp, pixel);
             nextkey += cpp;
-            if(rgb == 0xffffffff)
+            if (rgb == 0xffffffff)
                 SDL_SetColorKey(image, SDL_TRUE, pixel);
             break;
         }
@@ -1110,16 +1110,19 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
     /* Read the pixels */
     pixels_len = w * cpp;
     dst = (Uint8 *)image->pixels;
-    for(y = 0; y < h; y++) {
+    for (y = 0; y < h; y++) {
         line = get_next_line(xpmlines, src, pixels_len);
-        if(indexed) {
+        if (!line)
+            goto done;
+
+        if (indexed) {
             /* optimization for some common cases */
-            if(cpp == 1)
-                for(x = 0; x < w; x++)
+            if (cpp == 1)
+                for (x = 0; x < w; x++)
                     dst[x] = (Uint8)QUICK_COLORHASH(colors,
                                  line + x);
             else
-                for(x = 0; x < w; x++)
+                for (x = 0; x < w; x++)
                     dst[x] = (Uint8)get_colorhash(colors,
                                    line + x * cpp,
                                    cpp);
@@ -1133,7 +1136,7 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
     }
 
 done:
-    if(error) {
+    if (error) {
         if ( src )
             SDL_RWseek(src, start, RW_SEEK_SET);
         if ( image ) {
