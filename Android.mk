@@ -79,13 +79,19 @@ ifeq ($(SUPPORT_JPG),true)
         $(JPG_LIBRARY_PATH)/jfdctfst.c \
         $(JPG_LIBRARY_PATH)/jfdctint.c \
         $(JPG_LIBRARY_PATH)/jidctflt.c \
-        $(JPG_LIBRARY_PATH)/jidctfst.S \
         $(JPG_LIBRARY_PATH)/jidctint.c \
         $(JPG_LIBRARY_PATH)/jquant1.c \
         $(JPG_LIBRARY_PATH)/jquant2.c \
         $(JPG_LIBRARY_PATH)/jutils.c \
         $(JPG_LIBRARY_PATH)/jmemmgr.c \
         $(JPG_LIBRARY_PATH)/jmem-android.c
+
+    # assembler support is available for arm
+    ifeq ($(TARGET_ARCH),arm)
+        LOCAL_SRC_FILES += $(JPG_LIBRARY_PATH)/jidctfst.S
+    else
+        LOCAL_SRC_FILES += $(JPG_LIBRARY_PATH)/jidctfst.c
+    endif
 endif
 
 ifeq ($(SUPPORT_PNG),true)
