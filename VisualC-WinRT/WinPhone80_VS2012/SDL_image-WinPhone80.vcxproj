@@ -167,7 +167,7 @@
     <ClCompile Include="..\..\IMG_xxx.c" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\SDL\VisualC-WinPhone\SDL\SDL-WinPhone_VS2012.vcxproj">
+    <ProjectReference Include="..\..\..\SDL\VisualC-WinRT\WinPhone80_VS2012\SDL-WinPhone80.vcxproj">
       <Project>{33048af1-031a-4ce6-b61e-fad2db832e9e}</Project>
     </ProjectReference>
     <ProjectReference Include="jpeg-WinPhone80.vcxproj">
