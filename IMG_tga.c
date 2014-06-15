@@ -323,7 +323,7 @@ error:
     if ( img ) {
         SDL_FreeSurface(img);
     }
-    IMG_SetError(error);
+    IMG_SetError("%s", error);
     return NULL;
 }
 
