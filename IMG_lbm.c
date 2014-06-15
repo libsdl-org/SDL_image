@@ -476,7 +476,7 @@ done:
             SDL_FreeSurface( Image );
             Image = NULL;
         }
-        IMG_SetError( error );
+        IMG_SetError( "%s", error );
     }
 
     return( Image );

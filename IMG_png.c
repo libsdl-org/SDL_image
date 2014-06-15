@@ -554,7 +554,7 @@ done:   /* Clean up and return */
             SDL_FreeSurface(surface);
             surface = NULL;
         }
-        IMG_SetError(error);
+        IMG_SetError("%s", error);
     }
     return(surface);
 }
