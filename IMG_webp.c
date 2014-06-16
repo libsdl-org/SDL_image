@@ -289,7 +289,7 @@ error:
     }
 
     if ( error ) {
-        IMG_SetError( error );
+        IMG_SetError( "%s", error );
     }
 
     SDL_RWseek(src, start, RW_SEEK_SET);
