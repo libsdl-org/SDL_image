@@ -15,7 +15,7 @@ echo "Will create the package $PACKAGE.pkg"
 
 # create a copy of the framework
 mkdir -p build/pkg-tmp
-/Developer/Tools/CpMac -r "build/$FRAMEWORK.framework" build/pkg-tmp/
+xcrun CpMac -r "build/$FRAMEWORK.framework" build/pkg-tmp/
 
 ./package build/pkg-tmp "pkg-support/$PACKAGE.info" -d  build -r "$PACKAGE_RESOURCES" 
 

@@ -412,7 +412,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# clean up the framework, remove headers, extra files\nPRODUCT_NAME=SDL2_image\nmkdir -p build/dmg-tmp\n`xcode-select -print-path`/Tools/CpMac -r $TARGET_BUILD_DIR/$PRODUCT_NAME.framework build/dmg-tmp/\ncp pkg-support/resources/ReadMe.txt build/dmg-tmp\n\n# remove the .DS_Store files if any (we may want to provide one in the future for fancy .dmgs)\nrm -rf build/dmg-tmp/.DS_Store\n\n# create the dmg\nhdiutil create -ov -fs HFS+ -volname $PRODUCT_NAME -srcfolder build/dmg-tmp build/$PRODUCT_NAME.dmg\n\n# clean up\nrm -rf build/dmg-tmp";
+			shellScript = "# clean up the framework, remove headers, extra files\nPRODUCT_NAME=SDL2_image\nmkdir -p build/dmg-tmp\nxcrun CpMac -r $TARGET_BUILD_DIR/$PRODUCT_NAME.framework build/dmg-tmp/\ncp pkg-support/resources/ReadMe.txt build/dmg-tmp\n\n# remove the .DS_Store files if any (we may want to provide one in the future for fancy .dmgs)\nrm -rf build/dmg-tmp/.DS_Store\n\n# create the dmg\nhdiutil create -ov -fs HFS+ -volname $PRODUCT_NAME -srcfolder build/dmg-tmp build/$PRODUCT_NAME.dmg\n\n# clean up\nrm -rf build/dmg-tmp";
 		};
 /* End PBXShellScriptBuildPhase section */
 
