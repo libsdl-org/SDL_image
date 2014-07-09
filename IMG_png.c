@@ -76,6 +76,7 @@ typedef png_bytep png_const_bytep;
 #if (PNG_LIBPNG_VER_MINOR < 6)
 typedef png_structp png_const_structrp;
 typedef png_infop png_const_inforp;
+typedef png_bytep png_const_bytep;
 #endif
 #endif
 
