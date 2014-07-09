@@ -391,6 +391,22 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
                     Gmask = SDL_ReadLE32(src);
                     Bmask = SDL_ReadLE32(src);
                     Amask = SDL_ReadLE32(src);
+
+                    /* ImageMagick seems to put out bogus masks here. Pick a default. */
+                    if ((Rmask == 0xFFFFFF) && (Gmask == 0xFFFFFF) &&
+                        (Bmask == 0xFFFFFF) && (Amask == 0xFFFFFF) ) {
+                        Amask = 0xFF000000;
+                        Rmask = 0x00FF0000;
+                        Gmask = 0x0000FF00;
+                        Bmask = 0x000000FF;
+                    } else if ((Rmask == 0xFFFFFF00) && (Gmask == 0xFFFFFF00) &&
+                               (Bmask == 0xFFFFFF00) && (Amask == 0xFFFFFF00) ) {
+                        /* argh, The Gimp seems to put out different bogus masks! */
+                        Amask = 0x000000FF;
+                        Rmask = 0xFF000000;
+                        Gmask = 0x00FF0000;
+                        Bmask = 0x0000FF00;
+                    }
                     break;
                 default:
                     break;
