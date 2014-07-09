@@ -71,7 +71,6 @@
 #if (PNG_LIBPNG_VER_MAJOR == 1) 
 #if (PNG_LIBPNG_VER_MINOR < 5)
 #define LIBPNG_VERSION_12
-typedef png_bytep png_const_bytep;
 #endif
 #if (PNG_LIBPNG_VER_MINOR < 6)
 typedef png_structp png_const_structrp;
