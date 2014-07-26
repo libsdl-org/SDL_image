@@ -76,6 +76,11 @@ int IMG_Init(int flags)
 {
     int result = 0;
 
+    /* Passing 0 returns the currently initialized loaders */
+    if (!flags) {
+        return initialized;
+    }
+
     if (flags & IMG_INIT_JPG) {
         if ((initialized & IMG_INIT_JPG) || IMG_InitJPG() == 0) {
             result |= IMG_INIT_JPG;
@@ -98,7 +103,7 @@ int IMG_Init(int flags)
     }
     initialized |= result;
 
-    return (initialized);
+    return result;
 }
 
 void IMG_Quit()
