@@ -211,24 +211,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_RGB(CGImageRef image_ref)
 
     CGContextRef bitmap_context;
     CGBitmapInfo bitmap_info;
-
-    /* This sets up a color space that results in identical values
-     * as the image data itself, which is the same as the standalone
-     * libpng loader.
-     * Thanks to Allegro. :)
-     */
-    CGFloat whitePoint[3] = { 0.950, 1.000, 1.089 };
-    CGFloat blackPoint[3] = { 0.000, 0.000, 0.000 };
-    CGFloat gamma[3] = { 2.2, 2.2, 2.2 };
-    CGFloat matrix[9] = {
-        0.412, 0.213, 0.019,
-        0.358, 0.715, 0.119,
-        0.180, 0.072, 0.950
-    };
-    CGColorSpaceRef color_space =
-        CGColorSpaceCreateCalibratedRGB(
-                                    whitePoint, blackPoint, gamma, matrix
-                                    );
+    CGColorSpaceRef color_space = CGColorSpaceCreateDeviceRGB();
 
     if (alpha == kCGImageAlphaNone ||
         alpha == kCGImageAlphaNoneSkipFirst ||
