@@ -40,7 +40,7 @@
 		AA579E0F161C07E7005F809B /* IMG_xxx.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DF0161C07E6005F809B /* IMG_xxx.c */; };
 		AA579E10161C07E7005F809B /* IMG.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DF1161C07E6005F809B /* IMG.c */; };
 		AA579E11161C07E7005F809B /* IMG.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DF1161C07E6005F809B /* IMG.c */; };
-		AADBAC88175C6AAB004F8ED2 /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = AA9EE77514B27A62008773C0 /* webp.framework */; };
+		AADBAC88175C6AAB004F8ED2 /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = AA9EE77514B27A62008773C0 /* webp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		AADBAC89175C6B4C004F8ED2 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007288A60F0DA79800C302A9 /* ApplicationServices.framework */; };
 		AADBAC8A175C6B4F004F8ED2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F85449145A19BC002CA294 /* Foundation.framework */; };
 		BE1FA71A07AF4C44004B6283 /* SDL_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 1014BAEA010A4B677F000001 /* SDL_image.h */; settings = {ATTRIBUTES = (Public, ); }; };
