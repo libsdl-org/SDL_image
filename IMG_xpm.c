@@ -335,12 +335,8 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
 	linebuf = NULL;
 	buflen = 0;
 
-	if(src) {
+	if ( src ) 
 		start = SDL_RWtell(src);
-	} else {
-		error = "src is NULL";
-		goto done;
-	}
 
 	if(xpm)
 		xpmlines = &xpm;
