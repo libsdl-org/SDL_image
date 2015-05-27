@@ -1166,6 +1166,10 @@ SDL_Surface *IMG_LoadXPM_RW(SDL_RWops *src)
 
 SDL_Surface *IMG_ReadXPMFromArray(char **xpm)
 {
+    if (!xpm) {
+        IMG_SetError("array is NULL");
+        return NULL;
+    }
     return load_xpm(xpm, NULL);
 }
 
