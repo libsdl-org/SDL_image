@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\IMG.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IMG_bmp.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IMG_gif.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IMG_jpg.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IMG_lbm.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IMG_pcx.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IMG_png.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IMG_pnm.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IMG_tga.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IMG_tif.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IMG_webp.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IMG_xcf.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IMG_xpm.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IMG_xv.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\IMG_xxx.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{0255e6e4-e99b-4247-832b-195b30522bb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{5637eea3-915c-4451-8db1-ea75e89d664a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\SDL_image.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Version.rc">
+      <Filter>Sources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

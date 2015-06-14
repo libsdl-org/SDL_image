@@ -20,8 +20,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)\"
 			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
@@ -53,12 +53,9 @@
 				Optimization="0"
 				AdditionalIncludeDirectories="external\include"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JPG_DYNAMIC=\&quot;libjpeg-9.dll\&quot;;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNG_DYNAMIC=\&quot;libpng16-16.dll\&quot;;LOAD_PNM;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC=\&quot;libtiff-5.dll\&quot;;LOAD_WEBP;LOAD_WEBP_DYNAMIC=\&quot;libwebp-4.dll\&quot;;LOAD_XPM;LOAD_XV;PNG_USE_DLL;ZLIB_DLL"
-				MinimalRebuild="true"
 				RuntimeLibrary="2"
-				PrecompiledHeaderFile=".\Debug/SDL2_image.pch"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
-				DebugInformationFormat="4"
+				DebugInformationFormat="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -66,7 +63,6 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -74,9 +70,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="SDL2.lib"
-				LinkIncremental="2"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/SDL2_image.pdb"
 				SubSystem="2"
 				TargetMachine="1"
 			/>
@@ -91,8 +85,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\Debug/SDL2_image.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -106,8 +98,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)\"
 			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
@@ -139,12 +131,9 @@
 				Optimization="0"
 				AdditionalIncludeDirectories="external\include"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JPG_DYNAMIC=\&quot;libjpeg-9.dll\&quot;;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNG_DYNAMIC=\&quot;libpng16-16.dll\&quot;;LOAD_PNM;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC=\&quot;libtiff-5.dll\&quot;;LOAD_WEBP;LOAD_WEBP_DYNAMIC=\&quot;libwebp-4.dll\&quot;;LOAD_XPM;LOAD_XV;PNG_USE_DLL;ZLIB_DLL"
-				MinimalRebuild="true"
 				RuntimeLibrary="2"
-				PrecompiledHeaderFile=".\Debug/SDL2_image.pch"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
-				DebugInformationFormat="3"
+				DebugInformationFormat="1"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -152,7 +141,6 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -160,9 +148,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="SDL2.lib"
-				LinkIncremental="2"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/SDL2_image.pdb"
 				SubSystem="2"
 				TargetMachine="17"
 			/>
@@ -177,8 +163,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\Debug/SDL2_image.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -192,8 +176,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)\"
 			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
@@ -222,16 +206,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
-				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="external\include"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JPG_DYNAMIC=\&quot;libjpeg-9.dll\&quot;;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNG_DYNAMIC=\&quot;libpng16-16.dll\&quot;;LOAD_PNM;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC=\&quot;libtiff-5.dll\&quot;;LOAD_WEBP;LOAD_WEBP_DYNAMIC=\&quot;libwebp-4.dll\&quot;;LOAD_XPM;LOAD_XV;PNG_USE_DLL;ZLIB_DLL"
-				StringPooling="true"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\Release/SDL2_image.pch"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -239,7 +217,6 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -247,8 +224,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="SDL2.lib"
-				LinkIncremental="1"
-				ProgramDatabaseFile=".\Release/SDL2_image.pdb"
 				SubSystem="2"
 				TargetMachine="1"
 			/>
@@ -263,8 +238,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\Release/SDL2_image.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -278,8 +251,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)\"
 			ConfigurationType="2"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
@@ -308,16 +281,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
-				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="external\include"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JPG_DYNAMIC=\&quot;libjpeg-9.dll\&quot;;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNG_DYNAMIC=\&quot;libpng16-16.dll\&quot;;LOAD_PNM;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC=\&quot;libtiff-5.dll\&quot;;LOAD_WEBP;LOAD_WEBP_DYNAMIC=\&quot;libwebp-4.dll\&quot;;LOAD_XPM;LOAD_XV;PNG_USE_DLL;ZLIB_DLL"
-				StringPooling="true"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\Release/SDL2_image.pch"
 				WarningLevel="3"
-				SuppressStartupBanner="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -325,7 +292,6 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -333,7 +299,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="SDL2.lib"
-				ProgramDatabaseFile=".\Release/SDL2_image.pdb"
 				SubSystem="2"
 				TargetMachine="17"
 			/>
@@ -348,8 +313,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
-				OutputFile=".\Release/SDL2_image.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -366,7 +329,7 @@
 	</References>
 	<Files>
 		<Filter
-			Name="SDL_image Sources"
+			Name="Sources"
 			>
 			<File
 				RelativePath="..\IMG.c"
@@ -970,7 +933,7 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="SDL_image Headers"
+			Name="Headers"
 			>
 			<File
 				RelativePath="..\SDL_image.h"
