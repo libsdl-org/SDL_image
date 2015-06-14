@@ -933,11 +933,499 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Headers"
+			Name="Public Headers"
 			>
 			<File
 				RelativePath="..\SDL_image.h"
 				>
+			</File>
+		</Filter>
+		<Filter
+			Name="x64"
+			>
+			<File
+				RelativePath=".\external\lib\x64\libjpeg-9.dll"
+				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x64\libpng16-16.dll"
+				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x64\libtiff-5.dll"
+				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x64\libwebp-4.dll"
+				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x64\LICENSE.jpeg.txt"
+				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x64\LICENSE.png.txt"
+				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x64\LICENSE.tiff.txt"
+				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x64\LICENSE.webp.txt"
+				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x64\LICENSE.zlib.txt"
+				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x64\zlib1.dll"
+				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+		</Filter>
+		<Filter
+			Name="x86"
+			>
+			<File
+				RelativePath=".\external\lib\x86\libjpeg-9.dll"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x86\libpng16-16.dll"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x86\libtiff-5.dll"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x86\libwebp-4.dll"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x86\LICENSE.jpeg.txt"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x86\LICENSE.png.txt"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x86\LICENSE.tiff.txt"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x86\LICENSE.webp.txt"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x86\LICENSE.zlib.txt"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\external\lib\x86\zlib1.dll"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Copying $(InputFileName)"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 	</Files>
