@@ -72,7 +72,6 @@
 				AdditionalDependencies="SDL2.lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -150,7 +149,6 @@
 				AdditionalDependencies="SDL2.lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
-				TargetMachine="17"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -225,7 +223,6 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="SDL2.lib"
 				SubSystem="2"
-				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -300,7 +297,6 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="SDL2.lib"
 				SubSystem="2"
-				TargetMachine="17"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -952,7 +948,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -962,7 +958,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -976,7 +972,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -986,7 +982,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1000,7 +996,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1010,7 +1006,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1024,7 +1020,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1034,7 +1030,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1048,7 +1044,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1058,7 +1054,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1072,7 +1068,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1082,7 +1078,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1096,7 +1092,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1106,7 +1102,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1120,7 +1116,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1130,7 +1126,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1144,7 +1140,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1154,7 +1150,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1168,7 +1164,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1178,7 +1174,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1196,7 +1192,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1206,7 +1202,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1220,7 +1216,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1230,7 +1226,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1244,7 +1240,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1254,7 +1250,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1268,7 +1264,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1278,7 +1274,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1292,7 +1288,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1302,7 +1298,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1316,7 +1312,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1326,7 +1322,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1340,7 +1336,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1350,7 +1346,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1364,7 +1360,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1374,7 +1370,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1388,7 +1384,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1398,7 +1394,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1412,7 +1408,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
@@ -1422,7 +1418,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Copying $(InputFileName)"
-						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\"
+						CommandLine="copy $(InputPath) $(SolutionDir)\$(PlatformName)\$(ConfigurationName)\&#x0D;&#x0A;"
 						Outputs="$(SolutionDir)\$(PlatformName)\$(ConfigurationName)\$(InputFileName)"
 					/>
 				</FileConfiguration>
