@@ -947,7 +947,12 @@ typedef unsigned char mz_validate_uint64[sizeof(mz_uint64)==8 ? 1 : -1];
 #include <string.h>
 #include <assert.h>
 
-#define MZ_ASSERT(x) assert(x)
+// Defines to remove C runtime dependency
+#define memset SDL_memset
+#define memcpy SDL_memcpy
+
+//#define MZ_ASSERT(x) assert(x)
+#define MZ_ASSERT(x) SDL_assert(x)
 
 #ifdef MINIZ_NO_MALLOC
   #define MZ_MALLOC(x) NULL
