@@ -54,6 +54,7 @@
 				AdditionalIncludeDirectories="external\include"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JPG_DYNAMIC=\&quot;libjpeg-9.dll\&quot;;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNG_DYNAMIC=\&quot;libpng16-16.dll\&quot;;LOAD_PNM;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC=\&quot;libtiff-5.dll\&quot;;LOAD_WEBP;LOAD_WEBP_DYNAMIC=\&quot;libwebp-4.dll\&quot;;LOAD_XPM;LOAD_XV;PNG_USE_DLL;ZLIB_DLL"
 				RuntimeLibrary="2"
+				EnableEnhancedInstructionSet="1"
 				WarningLevel="3"
 				DebugInformationFormat="1"
 			/>
@@ -131,6 +132,7 @@
 				AdditionalIncludeDirectories="external\include"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JPG_DYNAMIC=\&quot;libjpeg-9.dll\&quot;;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNG_DYNAMIC=\&quot;libpng16-16.dll\&quot;;LOAD_PNM;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC=\&quot;libtiff-5.dll\&quot;;LOAD_WEBP;LOAD_WEBP_DYNAMIC=\&quot;libwebp-4.dll\&quot;;LOAD_XPM;LOAD_XV;PNG_USE_DLL;ZLIB_DLL"
 				RuntimeLibrary="2"
+				EnableEnhancedInstructionSet="1"
 				WarningLevel="3"
 				DebugInformationFormat="1"
 			/>
@@ -207,6 +209,7 @@
 				AdditionalIncludeDirectories="external\include"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JPG_DYNAMIC=\&quot;libjpeg-9.dll\&quot;;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNG_DYNAMIC=\&quot;libpng16-16.dll\&quot;;LOAD_PNM;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC=\&quot;libtiff-5.dll\&quot;;LOAD_WEBP;LOAD_WEBP_DYNAMIC=\&quot;libwebp-4.dll\&quot;;LOAD_XPM;LOAD_XV;PNG_USE_DLL;ZLIB_DLL"
 				RuntimeLibrary="2"
+				EnableEnhancedInstructionSet="1"
 				WarningLevel="3"
 			/>
 			<Tool
@@ -281,6 +284,7 @@
 				AdditionalIncludeDirectories="external\include"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JPG_DYNAMIC=\&quot;libjpeg-9.dll\&quot;;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNG_DYNAMIC=\&quot;libpng16-16.dll\&quot;;LOAD_PNM;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC=\&quot;libtiff-5.dll\&quot;;LOAD_WEBP;LOAD_WEBP_DYNAMIC=\&quot;libwebp-4.dll\&quot;;LOAD_XPM;LOAD_XV;PNG_USE_DLL;ZLIB_DLL"
 				RuntimeLibrary="2"
+				EnableEnhancedInstructionSet="1"
 				WarningLevel="3"
 			/>
 			<Tool
