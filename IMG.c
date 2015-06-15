@@ -128,7 +128,7 @@ void IMG_Quit()
 SDL_Surface *IMG_Load(const char *file)
 {
     SDL_RWops *src = SDL_RWFromFile(file, "rb");
-    const char *ext = strrchr(file, '.');
+    const char *ext = SDL_strrchr(file, '.');
     if(ext) {
         ext++;
     }
@@ -150,8 +150,8 @@ SDL_Surface *IMG_Load_RW(SDL_RWops *src, int freesrc)
 static int IMG_string_equals(const char *str1, const char *str2)
 {
     while ( *str1 && *str2 ) {
-        if ( toupper((unsigned char)*str1) !=
-             toupper((unsigned char)*str2) )
+        if ( SDL_toupper((unsigned char)*str1) !=
+             SDL_toupper((unsigned char)*str2) )
             break;
         ++str1;
         ++str2;

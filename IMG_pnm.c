@@ -88,7 +88,7 @@ static int ReadNumber(SDL_RWops *src)
                 }
             } while ( (ch != '\r') && (ch != '\n') );
         }
-    } while ( isspace(ch) );
+    } while ( SDL_isspace(ch) );
 
     /* Add up the number */
     do {
@@ -98,7 +98,7 @@ static int ReadNumber(SDL_RWops *src)
         if ( !SDL_RWread(src, &ch, 1, 1) ) {
             return -1;
         }
-    } while ( isdigit(ch) );
+    } while ( SDL_isdigit(ch) );
 
     return(number);
 }
