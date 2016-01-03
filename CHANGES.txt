@@ -1,3 +1,19 @@
+2.0.1:
+Jeffrey Carpenter - Sat Nov 29 12:06:05 2014
+ * Fixed image colorspace issue on iOS and Mac OS X
+Sam Lantinga - Sun Jun 15 17:33:46 2014
+ * Fixed support for transparency in XPM files
+Davide Coppola - Thu Apr 17 17:30:12 2014
+ * Fixed building JPEG support on Android
+David Ludwig - Tue Apr 01 19:40:35 2014
+ * Added support for building for Windows RT and Windows Phone
+Timur - Wed Dec 11 21:24:36 2013
+ * Fixed memory leak in webp image loading
+Patrice Mandin - Thu Nov 07 19:15:28 2013
+ * Fixed loading BMP files with large BITMAPINFOHEADER structures
+Sam Lantinga - Fri Oct 11 21:54:20 2013
+ * Fixed building with libpng 1.4
+
 2.0.0:
 Sam Lantinga - Sun Jun  2 22:25:31 PDT 2013
  * Added PNG save support based on miniz.c by Rich Geldreich
