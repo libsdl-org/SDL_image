@@ -196,7 +196,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 
     start = SDL_RWtell(src);
 
-    if ( !IMG_Init(IMG_INIT_WEBP) ) {
+    if ( (IMG_Init(IMG_INIT_WEBP) & IMG_INIT_WEBP) == 0 ) {
         goto error;
     }
 

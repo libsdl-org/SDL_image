@@ -362,7 +362,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
     }
     start = SDL_RWtell(src);
 
-    if ( !IMG_Init(IMG_INIT_PNG) ) {
+    if ( (IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) == 0 ) {
         return NULL;
     }
 
