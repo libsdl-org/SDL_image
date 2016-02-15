@@ -12795,7 +12795,10 @@ fi
 $as_echo "no" >&6; }
                         ac_fn_c_check_header_mongrel "$LINENO" "png.h" "ac_cv_header_png_h" "$ac_includes_default"
 if test "x$ac_cv_header_png_h" = xyes; then :
-  have_png_hdr=yes
+
+            have_png_hdr=yes
+            LIBPNG_CFLAGS=""
+
 fi
 
 
@@ -12836,14 +12839,20 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_png_png_create_read_struct" >&5
 $as_echo "$ac_cv_lib_png_png_create_read_struct" >&6; }
 if test "x$ac_cv_lib_png_png_create_read_struct" = xyes; then :
-  have_png_lib=yes
+
+            have_png_lib=yes
+            LIBPNG_LIBS="-lpng -lz"
+
 fi
 
 
 elif test $pkg_failed = untried; then
 	        ac_fn_c_check_header_mongrel "$LINENO" "png.h" "ac_cv_header_png_h" "$ac_includes_default"
 if test "x$ac_cv_header_png_h" = xyes; then :
-  have_png_hdr=yes
+
+            have_png_hdr=yes
+            LIBPNG_CFLAGS=""
+
 fi
 
 
@@ -12884,7 +12893,10 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_png_png_create_read_struct" >&5
 $as_echo "$ac_cv_lib_png_png_create_read_struct" >&6; }
 if test "x$ac_cv_lib_png_png_create_read_struct" = xyes; then :
-  have_png_lib=yes
+
+            have_png_lib=yes
+            LIBPNG_LIBS="-lpng -lz"
+
 fi
 
 
@@ -12894,7 +12906,6 @@ else
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 	        have_png_hdr=yes
-        CFLAGS="$LIBPNG_CFLAGS $CFLAGS"
         have_png_lib=yes
 
 fi
@@ -13061,7 +13072,10 @@ fi
 $as_echo "no" >&6; }
                         ac_fn_c_check_header_mongrel "$LINENO" "webp/decode.h" "ac_cv_header_webp_decode_h" "$ac_includes_default"
 if test "x$ac_cv_header_webp_decode_h" = xyes; then :
-  have_webp_hdr=yes
+
+            have_webp_hdr=yes
+            LIBWEBP_CFLAGS=""
+
 fi
 
 
@@ -13102,14 +13116,20 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_webp_WebPGetDecoderVersion" >&5
 $as_echo "$ac_cv_lib_webp_WebPGetDecoderVersion" >&6; }
 if test "x$ac_cv_lib_webp_WebPGetDecoderVersion" = xyes; then :
-  have_webp_lib=yes
+
+            have_webp_lib=yes
+            LIBWEBP_LIBS="-lwebp"
+
 fi
 
 
 elif test $pkg_failed = untried; then
 	        ac_fn_c_check_header_mongrel "$LINENO" "webp/decode.h" "ac_cv_header_webp_decode_h" "$ac_includes_default"
 if test "x$ac_cv_header_webp_decode_h" = xyes; then :
-  have_webp_hdr=yes
+
+            have_webp_hdr=yes
+            LIBWEBP_CFLAGS=""
+
 fi
 
 
@@ -13150,7 +13170,10 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_webp_WebPGetDecoderVersion" >&5
 $as_echo "$ac_cv_lib_webp_WebPGetDecoderVersion" >&6; }
 if test "x$ac_cv_lib_webp_WebPGetDecoderVersion" = xyes; then :
-  have_webp_lib=yes
+
+            have_webp_lib=yes
+            LIBWEBP_LIBS="-lwebp"
+
 fi
 
 
@@ -13160,7 +13183,6 @@ else
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 	        have_webp_hdr=yes
-        CFLAGS="$LIBWEBP_CFLAGS $CFLAGS"
         have_webp_lib=yes
 
 fi
@@ -13236,6 +13258,7 @@ if test x$enable_xv = xyes; then
 fi
 
 if test x$enable_webp = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib = xyes; then
+    CFLAGS="$LIBWEBP_CFLAGS $CFLAGS"
     if test x$enable_webp_shared = xyes && test x$webp_lib != x; then
         echo "-- dynamic libwebp -> $webp_lib"
         cat >>confdefs.h <<_ACEOF
@@ -13243,7 +13266,7 @@ if test x$enable_webp = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib = xyes
 _ACEOF
 
     else
-        IMG_LIBS="-lwebp $IMG_LIBS"
+        IMG_LIBS="$LIBWEBP_LIBS $IMG_LIBS"
     fi
 fi
 
@@ -13274,6 +13297,7 @@ _ACEOF
     fi
 fi
 if test x$enable_png = xyes -a x$have_png_hdr = xyes -a x$have_png_lib = xyes; then
+    CFLAGS="$LIBPNG_CFLAGS $CFLAGS"
     if test x$enable_png_shared = xyes && test x$png_lib != x; then
         echo "-- dynamic libpng -> $png_lib"
         cat >>confdefs.h <<_ACEOF
@@ -13281,7 +13305,7 @@ if test x$enable_png = xyes -a x$have_png_hdr = xyes -a x$have_png_lib = xyes; t
 _ACEOF
 
     else
-        IMG_LIBS="-lpng -lz $IMG_LIBS"
+        IMG_LIBS="$LIBPNG_LIBS $IMG_LIBS"
     fi
 fi
 
