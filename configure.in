@@ -195,11 +195,16 @@ fi
 if test x$enable_png = xyes -a x$enable_imageio != xyes; then
     PKG_CHECK_MODULES([LIBPNG], [libpng], [dnl
         have_png_hdr=yes
-        CFLAGS="$LIBPNG_CFLAGS $CFLAGS"
         have_png_lib=yes
       ], [dnl
-        AC_CHECK_HEADER([png.h], [have_png_hdr=yes])
-        AC_CHECK_LIB([png], [png_create_read_struct], [have_png_lib=yes], [], [-lz])
+        AC_CHECK_HEADER([png.h], [
+            have_png_hdr=yes
+            LIBPNG_CFLAGS=""
+        ])
+        AC_CHECK_LIB([png], [png_create_read_struct], [
+            have_png_lib=yes
+            LIBPNG_LIBS="-lpng -lz"
+        ], [], [-lz])
       ])
     if test x$have_png_hdr = xyes -a x$have_png_lib = xyes; then
         AC_DEFINE([LOAD_PNG])
@@ -253,11 +258,16 @@ fi
 if test x$enable_webp = xyes; then
     PKG_CHECK_MODULES([LIBWEBP], [libwebp], [dnl
         have_webp_hdr=yes
-        CFLAGS="$LIBWEBP_CFLAGS $CFLAGS"
         have_webp_lib=yes
       ], [dnl
-        AC_CHECK_HEADER([webp/decode.h], [have_webp_hdr=yes])
-        AC_CHECK_LIB([webp], [WebPGetDecoderVersion], [have_webp_lib=yes], [], [-lm])
+        AC_CHECK_HEADER([webp/decode.h], [
+            have_webp_hdr=yes
+            LIBWEBP_CFLAGS=""
+        ])
+        AC_CHECK_LIB([webp], [WebPGetDecoderVersion], [
+            have_webp_lib=yes
+            LIBWEBP_LIBS="-lwebp"
+        ], [], [-lm])
       ])
     if test x$have_webp_hdr = xyes -a x$have_webp_lib = xyes; then
         AC_DEFINE([LOAD_WEBP])
@@ -319,11 +329,12 @@ if test x$enable_xv = xyes; then
 fi
 
 if test x$enable_webp = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib = xyes; then
+    CFLAGS="$LIBWEBP_CFLAGS $CFLAGS"
     if test x$enable_webp_shared = xyes && test x$webp_lib != x; then
         echo "-- dynamic libwebp -> $webp_lib"
         AC_DEFINE_UNQUOTED(LOAD_WEBP_DYNAMIC, "$webp_lib")
     else
-        IMG_LIBS="-lwebp $IMG_LIBS"
+        IMG_LIBS="$LIBWEBP_LIBS $IMG_LIBS"
     fi
 fi
 
@@ -348,11 +359,12 @@ if test x$enable_jpg = xyes -a x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; t
     fi
 fi
 if test x$enable_png = xyes -a x$have_png_hdr = xyes -a x$have_png_lib = xyes; then
+    CFLAGS="$LIBPNG_CFLAGS $CFLAGS"
     if test x$enable_png_shared = xyes && test x$png_lib != x; then
         echo "-- dynamic libpng -> $png_lib"
         AC_DEFINE_UNQUOTED(LOAD_PNG_DYNAMIC, "$png_lib")
     else
-        IMG_LIBS="-lpng -lz $IMG_LIBS"
+        IMG_LIBS="$LIBPNG_LIBS $IMG_LIBS"
     fi
 fi
 
