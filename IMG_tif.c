@@ -204,7 +204,7 @@ int IMG_isTIF(SDL_RWops* src)
 SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 {
     Sint64 start;
-    TIFF* tiff;
+    TIFF* tiff = NULL;
     SDL_Surface* surface = NULL;
     Uint32 img_width, img_height;
     Uint32 Rmask, Gmask, Bmask, Amask;
@@ -263,8 +263,11 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 
 error:
     SDL_RWseek(src, start, RW_SEEK_SET);
-    if ( surface ) {
+    if (surface) {
         SDL_FreeSurface(surface);
+    }
+    if (tiff) {
+        lib.TIFFClose(tiff);
     }
     return NULL;
 }
