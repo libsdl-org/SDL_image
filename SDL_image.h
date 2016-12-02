@@ -21,8 +21,8 @@
 
 /* A simple library to load images of various formats as SDL surfaces */
 
-#ifndef _SDL_IMAGE_H
-#define _SDL_IMAGE_H
+#ifndef SDL_IMAGE_H_
+#define SDL_IMAGE_H_
 
 #include "SDL.h"
 #include "SDL_version.h"
@@ -142,4 +142,4 @@ extern DECLSPEC int SDLCALL IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst,
 #endif
 #include "close_code.h"
 
-#endif /* _SDL_IMAGE_H */
+#endif /* SDL_IMAGE_H_ */
