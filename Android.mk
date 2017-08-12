@@ -86,8 +86,8 @@ ifeq ($(SUPPORT_JPG),true)
         $(JPG_LIBRARY_PATH)/jmemmgr.c \
         $(JPG_LIBRARY_PATH)/jmem-android.c
 
-    # assembler support is available for arm
-    ifeq ($(TARGET_ARCH),arm)
+    # starting with android-21, assembler support is available for armeabi-v7a
+    ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
         LOCAL_SRC_FILES += $(JPG_LIBRARY_PATH)/jidctfst.S
     else
         LOCAL_SRC_FILES += $(JPG_LIBRARY_PATH)/jidctfst.c
