@@ -736,6 +736,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\IMG_WindowsImagingComponent.c"
+				>
+			</File>
+			<File
 				RelativePath="..\IMG_xcf.c"
 				>
 				<FileConfiguration

@@ -19,7 +19,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
+#if !(defined(__APPLE__) || defined(SDL_IMAGE_USE_WIC_BACKEND)) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
 
 /* This is a TIFF image file loading framework */
 

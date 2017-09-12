@@ -23,7 +23,7 @@
 
 #include "SDL_image.h"
 
-#if !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
+#if !(defined(__APPLE__) || defined(SDL_IMAGE_USE_WIC_BACKEND)) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
 
 #ifdef LOAD_PNG
 
