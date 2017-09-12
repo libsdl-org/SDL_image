@@ -1,4 +1,6 @@
 2.0.2:
+Fabian Greffrath - Tue Sep 12 00:15:56 PDT 2017
+ * Added libpng save support for much smaller 8-bit images
 Alexey - Mon Sep 11 23:50:31 PDT 2017
  * Added JPG save support when built with jpeglib
 	IMG_SaveJPG() and IMG_SaveJPG_RW()
