@@ -76,6 +76,11 @@ int main(int argc, char *argv[])
         }
     }
 
+    if (SDL_Init(SDL_INIT_VIDEO) == -1) {
+        fprintf(stderr, "SDL_Init(SDL_INIT_VIDEO) failed: %s\n", SDL_GetError());
+        return(2);
+    }
+
     if (SDL_CreateWindowAndRenderer(0, 0, flags, &window, &renderer) < 0) {
         fprintf(stderr, "SDL_CreateWindowAndRenderer() failed: %s\n", SDL_GetError());
         return(2);
@@ -168,6 +173,10 @@ int main(int argc, char *argv[])
         }
         SDL_DestroyTexture(texture);
     }
+
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
 
     /* We're done! */
     SDL_Quit();
