@@ -16,3 +16,12 @@ xcuserdata
 *.xcworkspace
 SDL2_image.pc
 showimage
+
+# for Visual C++
+Debug
+Release
+*.user
+*.ncb
+*.suo
+*.sdf
+*.opensdf

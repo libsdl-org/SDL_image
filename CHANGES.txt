@@ -1,4 +1,6 @@
 2.0.2:
+Alexey - Tue Sep 12 00:41:53 PDT 2017
+ * Added optional support for loading images using Windows Imaging Component
 Fabian Greffrath - Tue Sep 12 00:15:56 PDT 2017
  * Added libpng save support for much smaller 8-bit images
 Alexey - Mon Sep 11 23:50:31 PDT 2017
