@@ -301,7 +301,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
         } else {
             SDL_RWread(src, dst, w * bpp, 1);
         }
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
         if (bpp == 2) {
             /* swap byte order */
             int x;
