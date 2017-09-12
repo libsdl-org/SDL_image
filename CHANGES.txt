@@ -1,3 +1,8 @@
+2.0.2:
+Alexey - Mon Sep 11 23:50:31 PDT 2017
+ * Added JPG save support when built with jpeglib
+	IMG_SaveJPG() and IMG_SaveJPG_RW()
+
 2.0.1:
 Jeffrey Carpenter - Sat Nov 29 12:06:05 2014
  * Fixed image colorspace issue on iOS and Mac OS X
