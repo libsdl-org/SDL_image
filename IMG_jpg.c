@@ -31,6 +31,8 @@
 
 #ifdef LOAD_JPG
 
+#define USE_JPEGLIB
+
 #include <jpeglib.h>
 
 #ifdef JPEG_TRUE  /* MinGW version of jpeg-8.x renamed TRUE to JPEG_TRUE etc. */
@@ -529,16 +531,6 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
     return(surface);
 }
 
-int IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality)
-{
-    SDL_RWops *dst = SDL_RWFromFile(file, "wb");
-    if (dst) {
-        return IMG_SaveJPG_RW(surface, dst, 1, quality);
-    } else {
-        return -1;
-    }
-}
-
 #define OUTPUT_BUFFER_SIZE   4096
 typedef struct {
     struct jpeg_destination_mgr pub;
@@ -593,21 +585,21 @@ static void jpeg_SDL_RW_dest(j_compress_ptr cinfo, SDL_RWops *ctx)
     dest->pub.free_in_buffer = OUTPUT_BUFFER_SIZE;
 }
 
-int IMG_SaveJPG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quality)
+static int IMG_SaveJPG_RW_jpeglib(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quality)
 {
     struct jpeg_compress_struct cinfo;
     struct my_error_mgr jerr;
     JSAMPROW row_pointer[1];
     SDL_Surface* jpeg_surface = surface;
-	int result = -1;
+    int result = -1;
 
     if (!dst) {
         SDL_SetError("Passed NULL dst");
-		goto done;
+        goto done;
     }
 
     if (!IMG_Init(IMG_INIT_JPG)) {
-		goto done;
+        goto done;
     }
 
     /* Convert surface to format we can save */
@@ -620,7 +612,7 @@ int IMG_SaveJPG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst, int qualit
     if (surface->format->format != jpg_format) {
         jpeg_surface = SDL_ConvertSurfaceFormat(surface, jpg_format, 0);
         if (!jpeg_surface) {
-			goto done;
+            goto done;
         }
     }
 
@@ -654,7 +646,7 @@ int IMG_SaveJPG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst, int qualit
         SDL_FreeSurface(jpeg_surface);
     }
 
-	result = 0;
+    result = 0;
 
 done:
     if (freedst) {
@@ -687,16 +679,32 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
     return(NULL);
 }
 
+#endif /* LOAD_JPG */
+
+#endif /* !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND) */
+
+/* We'll always have JPG save support */
+#define SAVE_JPG
+
+#ifdef SAVE_JPG
+
 int IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality)
 {
-    return IMG_SetError("JPEG images are not supported");
+    SDL_RWops *dst = SDL_RWFromFile(file, "wb");
+    if (dst) {
+        return IMG_SaveJPG_RW(surface, dst, 1, quality);
+    } else {
+        return -1;
+    }
 }
 
 int IMG_SaveJPG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quality)
 {
-    return IMG_SetError("JPEG images are not supported");
+#ifdef USE_JPEGLIB
+    return IMG_SaveJPG_RW_jpeglib(surface, dst, freedst, quality);
+#else
+    return IMG_SetError("SDL_image not built with jpeglib, saving not supported");
+#endif
 }
 
-#endif /* LOAD_JPG */
-
-#endif /* !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND) */
+#endif /* SAVE_JPG */
