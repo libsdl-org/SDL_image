@@ -31,7 +31,7 @@
 
 /* Table of image detection and loading functions */
 static struct {
-    char *type;
+    const char *type;
     int (SDLCALL *is)(SDL_RWops *src);
     SDL_Surface *(SDLCALL *load)(SDL_RWops *src);
 } supported[] = {
