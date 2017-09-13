@@ -261,3 +261,6 @@ SDL_Surface *IMG_LoadTIF_RW(SDL_RWops *src)
 {
     return WIC_LoadImage(src);
 }
+
+#endif /* SDL_IMAGE_USE_WIC_BACKEND */
+
