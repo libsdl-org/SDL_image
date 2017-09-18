@@ -19,8 +19,6 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !(defined(__APPLE__) || defined(SDL_IMAGE_USE_WIC_BACKEND)) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
-
 /* This is a JPEG image file loading framework */
 
 #include <stdio.h>
@@ -28,6 +26,8 @@
 #include <setjmp.h>
 
 #include "SDL_image.h"
+
+#if !(defined(__APPLE__) || defined(SDL_IMAGE_USE_WIC_BACKEND)) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
 
 #ifdef LOAD_JPG
 
