@@ -587,6 +587,11 @@ static void jpeg_SDL_RW_dest(j_compress_ptr cinfo, SDL_RWops *ctx)
 
 static int IMG_SaveJPG_RW_jpeglib(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quality)
 {
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+    static const Uint32 jpg_format = SDL_PIXELFORMAT_RGB24;
+#else
+    static const Uint32 jpg_format = SDL_PIXELFORMAT_BGR24;
+#endif
     struct jpeg_compress_struct cinfo;
     struct my_error_mgr jerr;
     JSAMPROW row_pointer[1];
@@ -603,12 +608,6 @@ static int IMG_SaveJPG_RW_jpeglib(SDL_Surface *surface, SDL_RWops *dst, int free
     }
 
     /* Convert surface to format we can save */
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-    static const Uint32 jpg_format = SDL_PIXELFORMAT_RGB24;
-#else
-    static const Uint32 jpg_format = SDL_PIXELFORMAT_BGR24;
-#endif
-
     if (surface->format->format != jpg_format) {
         jpeg_surface = SDL_ConvertSurfaceFormat(surface, jpg_format, 0);
         if (!jpeg_surface) {
