@@ -1,4 +1,6 @@
 2.0.2:
+Yves Younan - Fri, Oct  6, 2017  3:38:38 PM
+ * Fixed security vulnerability in XCF image loader
 Alexey - Tue Sep 12 00:41:53 PDT 2017
  * Added optional support for loading images using Windows Imaging Component
 Fabian Greffrath - Tue Sep 12 00:15:56 PDT 2017
