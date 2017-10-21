@@ -49,6 +49,18 @@ extern "C" {
     (X)->patch = SDL_IMAGE_PATCHLEVEL;              \
 }
 
+/**
+ *  This is the version number macro for the current SDL_image version.
+ */
+#define SDL_IMAGE_COMPILEDVERSION \
+    SDL_VERSIONNUM(SDL_IMAGE_MAJOR_VERSION, SDL_IMAGE_MINOR_VERSION, SDL_IMAGE_PATCHLEVEL)
+
+/**
+ *  This macro will evaluate to true if compiled with SDL_image at least X.Y.Z.
+ */
+#define SDL_IMAGE_VERSION_ATLEAST(X, Y, Z) \
+    (SDL_IMAGE_COMPILEDVERSION >= SDL_VERSIONNUM(X, Y, Z))
+
 /* This function gets the version of the dynamically linked SDL_image library.
    it should NOT be used to fill a version structure, instead you should
    use the SDL_IMAGE_VERSION() macro.
