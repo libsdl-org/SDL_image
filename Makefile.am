@@ -27,7 +27,9 @@ libSDL2_image_la_SOURCES =	\
 	IMG_xv.c		\
 	IMG_webp.c		\
 	$(IMAGEIO_SOURCE)	\
-	miniz.h
+	miniz.h			\
+	nanosvg.h		\
+	nanosvgrast.h
 
 EXTRA_DIST =			\
 	Android.mk		\
