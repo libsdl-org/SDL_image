@@ -554,7 +554,7 @@ static boolean empty_output_buffer(j_compress_ptr cinfo)
     dest->pub.next_output_byte = dest->buffer;
     dest->pub.free_in_buffer = OUTPUT_BUFFER_SIZE;
 
-    return SDL_TRUE;
+    return TRUE;
 }
 
 static void term_destination(j_compress_ptr cinfo)
@@ -629,8 +629,8 @@ static int IMG_SaveJPG_RW_jpeglib(SDL_Surface *surface, SDL_RWops *dst, int free
     cinfo.input_components = 3;
 
     lib.jpeg_set_defaults(&cinfo);
-    lib.jpeg_set_quality(&cinfo, quality, SDL_TRUE);
-    lib.jpeg_start_compress(&cinfo, SDL_TRUE);
+    lib.jpeg_set_quality(&cinfo, quality, TRUE);
+    lib.jpeg_start_compress(&cinfo, TRUE);
 
     while (cinfo.next_scanline < cinfo.image_height) {
         int offset = cinfo.next_scanline * surface->pitch;

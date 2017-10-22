@@ -87,7 +87,7 @@
     <CustomBuild Include="external\lib\x64\LICENSE.jpeg.txt">
       <Filter>x64</Filter>
     </CustomBuild>
-    <CustomBuild Include="external\lib\x64\libwebp-4.dll">
+    <CustomBuild Include="external\lib\x64\libwebp-7.dll">
       <Filter>x64</Filter>
     </CustomBuild>
     <CustomBuild Include="external\lib\x64\libtiff-5.dll">
@@ -117,7 +117,7 @@
     <CustomBuild Include="external\lib\x86\LICENSE.jpeg.txt">
       <Filter>x86</Filter>
     </CustomBuild>
-    <CustomBuild Include="external\lib\x86\libwebp-4.dll">
+    <CustomBuild Include="external\lib\x86\libwebp-7.dll">
       <Filter>x86</Filter>
     </CustomBuild>
     <CustomBuild Include="external\lib\x86\libtiff-5.dll">
