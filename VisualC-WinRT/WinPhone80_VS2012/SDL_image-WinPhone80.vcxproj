@@ -158,6 +158,7 @@
     <ClCompile Include="..\..\IMG_pcx.c" />
     <ClCompile Include="..\..\IMG_png.c" />
     <ClCompile Include="..\..\IMG_pnm.c" />
+    <ClCompile Include="..\..\IMG_svg.c" />
     <ClCompile Include="..\..\IMG_tga.c" />
     <ClCompile Include="..\..\IMG_tif.c" />
     <ClCompile Include="..\..\IMG_webp.c" />
