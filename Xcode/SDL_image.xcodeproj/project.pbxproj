@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		007288A80F0DA79800C302A9 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007288A60F0DA79800C302A9 /* ApplicationServices.framework */; };
+		AA50AA471F9C7C50003B9C0C /* IMG_svg.c in Sources */ = {isa = PBXBuildFile; fileRef = AA50AA461F9C7C50003B9C0C /* IMG_svg.c */; };
 		AA579DF2161C07E6005F809B /* IMG_bmp.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE2161C07E6005F809B /* IMG_bmp.c */; };
 		AA579DF3161C07E7005F809B /* IMG_bmp.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE2161C07E6005F809B /* IMG_bmp.c */; };
 		AA579DF4161C07E7005F809B /* IMG_gif.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE3161C07E6005F809B /* IMG_gif.c */; };
@@ -75,6 +76,7 @@
 		007288A60F0DA79800C302A9 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 		1014BAEA010A4B677F000001 /* SDL_image.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SDL_image.h; path = ../SDL_image.h; sourceTree = SOURCE_ROOT; };
 		61F85449145A19BC002CA294 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		AA50AA461F9C7C50003B9C0C /* IMG_svg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_svg.c; path = ../IMG_svg.c; sourceTree = "<group>"; };
 		AA579DE2161C07E6005F809B /* IMG_bmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_bmp.c; path = ../IMG_bmp.c; sourceTree = "<group>"; };
 		AA579DE3161C07E6005F809B /* IMG_gif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_gif.c; path = ../IMG_gif.c; sourceTree = "<group>"; };
 		AA579DE4161C07E6005F809B /* IMG_ImageIO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IMG_ImageIO.m; path = ../IMG_ImageIO.m; sourceTree = "<group>"; };
@@ -166,14 +168,16 @@
 		08FB77ACFE841707C02AAC07 /* Library Source */ = {
 			isa = PBXGroup;
 			children = (
+				AA579DF1161C07E6005F809B /* IMG.c */,
+				AA579DE4161C07E6005F809B /* IMG_ImageIO.m */,
 				AA579DE2161C07E6005F809B /* IMG_bmp.c */,
 				AA579DE3161C07E6005F809B /* IMG_gif.c */,
-				AA579DE4161C07E6005F809B /* IMG_ImageIO.m */,
 				AA579DE5161C07E6005F809B /* IMG_jpg.c */,
 				AA579DE6161C07E6005F809B /* IMG_lbm.c */,
 				AA579DE7161C07E6005F809B /* IMG_pcx.c */,
 				AA579DE8161C07E6005F809B /* IMG_png.c */,
 				AA579DE9161C07E6005F809B /* IMG_pnm.c */,
+				AA50AA461F9C7C50003B9C0C /* IMG_svg.c */,
 				AA579DEA161C07E6005F809B /* IMG_tga.c */,
 				AA579DEB161C07E6005F809B /* IMG_tif.c */,
 				AA579DEC161C07E6005F809B /* IMG_webp.c */,
@@ -181,7 +185,6 @@
 				AA579DEE161C07E6005F809B /* IMG_xpm.c */,
 				AA579DEF161C07E6005F809B /* IMG_xv.c */,
 				AA579DF0161C07E6005F809B /* IMG_xxx.c */,
-				AA579DF1161C07E6005F809B /* IMG.c */,
 			);
 			name = "Library Source";
 			sourceTree = "<group>";
@@ -422,6 +425,7 @@
 				AA579E0C161C07E7005F809B /* IMG_xv.c in Sources */,
 				AA579E0E161C07E7005F809B /* IMG_xxx.c in Sources */,
 				AA579E10161C07E7005F809B /* IMG.c in Sources */,
+				AA50AA471F9C7C50003B9C0C /* IMG_svg.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -477,6 +481,7 @@
 					LOAD_PCX,
 					LOAD_PNG,
 					LOAD_PNM,
+					LOAD_SVG,
 					LOAD_TGA,
 					LOAD_TIF,
 					LOAD_WEBP,
@@ -512,6 +517,7 @@
 				INFOPLIST_FILE = "Info-Framework.plist";
 				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_LDFLAGS = (
 					"-weak_framework",
 					webp,
@@ -538,6 +544,7 @@
 					LOAD_PCX,
 					LOAD_PNG,
 					LOAD_PNM,
+					LOAD_SVG,
 					LOAD_TGA,
 					LOAD_TIF,
 					LOAD_WEBP,
@@ -598,6 +605,7 @@
 					LOAD_PCX,
 					LOAD_PNG,
 					LOAD_PNM,
+					LOAD_SVG,
 					LOAD_TGA,
 					LOAD_TIF,
 					LOAD_WEBP,
@@ -634,6 +642,7 @@
 				INFOPLIST_FILE = "Info-Framework.plist";
 				INSTALL_PATH = "@rpath";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_LDFLAGS = (
 					"-weak_framework",
 					webp,
@@ -658,6 +667,7 @@
 					LOAD_PCX,
 					LOAD_PNG,
 					LOAD_PNM,
+					LOAD_SVG,
 					LOAD_TGA,
 					LOAD_TIF,
 					LOAD_WEBP,

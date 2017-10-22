@@ -142,6 +142,8 @@ AC_ARG_ENABLE([png-shared], AC_HELP_STRING([--enable-png-shared], [dynamically l
  [], [enable_png_shared=yes])
 AC_ARG_ENABLE([pnm], [AC_HELP_STRING([--enable-pnm], [support loading PNM images [default=yes]])],
  [], [enable_pnm=yes])
+AC_ARG_ENABLE([svg], [AC_HELP_STRING([--enable-svg], [support loading SVG images [default=yes]])],
+ [], [enable_svg=yes])
 AC_ARG_ENABLE([tga], [AC_HELP_STRING([--enable-tga], [support loading TGA images [default=yes]])],
  [], [enable_tga=yes])
 AC_ARG_ENABLE([tif], [AC_HELP_STRING([--enable-tif], [support loading TIFF images [default=yes]])],
@@ -310,6 +312,10 @@ fi
 
 if test x$enable_pnm = xyes; then
     AC_DEFINE([LOAD_PNM])
+fi
+
+if test x$enable_svg = xyes; then
+    AC_DEFINE([LOAD_SVG])
 fi
 
 if test x$enable_tga = xyes; then

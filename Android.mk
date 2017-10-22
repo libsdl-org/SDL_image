@@ -24,7 +24,7 @@ WEBP_LIBRARY_PATH := external/libwebp-0.6.0
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_CFLAGS := -DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM \
-                -DLOAD_TGA -DLOAD_XCF -DLOAD_XPM -DLOAD_XV
+                -DLOAD_SVG -DLOAD_TGA -DLOAD_XCF -DLOAD_XPM -DLOAD_XV
 LOCAL_CFLAGS += -O3 -fstrict-aliasing -fprefetch-loop-arrays
 
 LOCAL_SRC_FILES := $(notdir $(filter-out %/showimage.c, $(wildcard $(LOCAL_PATH)/*.c)))

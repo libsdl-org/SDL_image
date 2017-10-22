@@ -19,6 +19,7 @@ libSDL2_image_la_SOURCES =	\
 	IMG_pcx.c		\
 	IMG_png.c		\
 	IMG_pnm.c		\
+	IMG_svg.c		\
 	IMG_tga.c		\
 	IMG_tif.c		\
 	IMG_xcf.c		\

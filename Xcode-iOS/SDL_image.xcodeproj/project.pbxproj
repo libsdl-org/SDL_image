@@ -24,6 +24,7 @@
 		AA126AA81617A4A4005ABC8F /* IMG_xv.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A971617A4A4005ABC8F /* IMG_xv.c */; };
 		AA126AA91617A4A4005ABC8F /* IMG_xxx.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A981617A4A4005ABC8F /* IMG_xxx.c */; };
 		AA126AAA1617A4A4005ABC8F /* IMG.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A991617A4A4005ABC8F /* IMG.c */; };
+		AA50AA491F9C7DB6003B9C0C /* IMG_svg.c in Sources */ = {isa = PBXBuildFile; fileRef = AA50AA481F9C7DB6003B9C0C /* IMG_svg.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 		AA126A971617A4A4005ABC8F /* IMG_xv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_xv.c; path = ../IMG_xv.c; sourceTree = "<group>"; };
 		AA126A981617A4A4005ABC8F /* IMG_xxx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_xxx.c; path = ../IMG_xxx.c; sourceTree = "<group>"; };
 		AA126A991617A4A4005ABC8F /* IMG.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG.c; path = ../IMG.c; sourceTree = "<group>"; };
+		AA50AA481F9C7DB6003B9C0C /* IMG_svg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_svg.c; path = ../IMG_svg.c; sourceTree = "<group>"; };
 		BE1FA74107AF4C45004B6283 /* libSDL2_image.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSDL2_image.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -104,6 +106,7 @@
 				AA126A8E1617A4A4005ABC8F /* IMG_pcx.c */,
 				AA126A8F1617A4A4005ABC8F /* IMG_png.c */,
 				AA126A901617A4A4005ABC8F /* IMG_pnm.c */,
+				AA50AA481F9C7DB6003B9C0C /* IMG_svg.c */,
 				AA126A911617A4A4005ABC8F /* IMG_tga.c */,
 				AA126A921617A4A4005ABC8F /* IMG_tif.c */,
 				AA126A941617A4A4005ABC8F /* IMG_webp.c */,
@@ -207,6 +210,7 @@
 				AA126AA81617A4A4005ABC8F /* IMG_xv.c in Sources */,
 				AA126AA91617A4A4005ABC8F /* IMG_xxx.c in Sources */,
 				AA126AAA1617A4A4005ABC8F /* IMG.c in Sources */,
+				AA50AA491F9C7DB6003B9C0C /* IMG_svg.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -226,6 +230,7 @@
 					LOAD_PCX,
 					LOAD_PNG,
 					LOAD_PNM,
+					LOAD_SVG,
 					LOAD_TGA,
 					LOAD_TIF,
 					LOAD_XPM,
@@ -266,6 +271,7 @@
 					LOAD_PCX,
 					LOAD_PNG,
 					LOAD_PNM,
+					LOAD_SVG,
 					LOAD_TGA,
 					LOAD_TIF,
 					LOAD_XPM,

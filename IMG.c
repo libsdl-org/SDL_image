@@ -46,6 +46,7 @@ static struct {
     { "PCX", IMG_isPCX, IMG_LoadPCX_RW },
     { "PNG", IMG_isPNG, IMG_LoadPNG_RW },
     { "PNM", IMG_isPNM, IMG_LoadPNM_RW }, /* P[BGP]M share code */
+    { "SVG", IMG_isSVG, IMG_LoadSVG_RW },
     { "TIF", IMG_isTIF, IMG_LoadTIF_RW },
     { "XCF", IMG_isXCF, IMG_LoadXCF_RW },
     { "XPM", IMG_isXPM, IMG_LoadXPM_RW },
