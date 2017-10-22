@@ -40,48 +40,28 @@ static struct {
 } lib;
 
 #ifdef LOAD_TIF_DYNAMIC
+#define FUNCTION_LOADER(FUNC, SIG) \
+    lib.FUNC = (SIG) SDL_LoadFunction(lib.handle, #FUNC); \
+    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle); return -1; }
+#else
+#define FUNCTION_LOADER(FUNC, SIG) \
+    lib.FUNC = FUNC;
+#endif
+
 int IMG_InitTIF()
 {
     if ( lib.loaded == 0 ) {
+#ifdef LOAD_TIF_DYNAMIC
         lib.handle = SDL_LoadObject(LOAD_TIF_DYNAMIC);
         if ( lib.handle == NULL ) {
             return -1;
         }
-        lib.TIFFClientOpen =
-            (TIFF* (*)(const char*, const char*, thandle_t, TIFFReadWriteProc, TIFFReadWriteProc, TIFFSeekProc, TIFFCloseProc, TIFFSizeProc, TIFFMapFileProc, TIFFUnmapFileProc))
-            SDL_LoadFunction(lib.handle, "TIFFClientOpen");
-        if ( lib.TIFFClientOpen == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.TIFFClose =
-            (void (*)(TIFF*))
-            SDL_LoadFunction(lib.handle, "TIFFClose");
-        if ( lib.TIFFClose == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.TIFFGetField =
-            (int (*)(TIFF*, ttag_t, ...))
-            SDL_LoadFunction(lib.handle, "TIFFGetField");
-        if ( lib.TIFFGetField == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.TIFFReadRGBAImageOriented =
-            (int (*)(TIFF*, uint32, uint32, uint32*, int, int))
-            SDL_LoadFunction(lib.handle, "TIFFReadRGBAImageOriented");
-        if ( lib.TIFFReadRGBAImageOriented == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.TIFFSetErrorHandler =
-            (TIFFErrorHandler (*)(TIFFErrorHandler))
-            SDL_LoadFunction(lib.handle, "TIFFSetErrorHandler");
-        if ( lib.TIFFSetErrorHandler == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
+#endif
+        FUNCTION_LOADER(TIFFClientOpen, TIFF * (*)(const char*, const char*, thandle_t, TIFFReadWriteProc, TIFFReadWriteProc, TIFFSeekProc, TIFFCloseProc, TIFFSizeProc, TIFFMapFileProc, TIFFUnmapFileProc))
+        FUNCTION_LOADER(TIFFClose, void (*)(TIFF*))
+        FUNCTION_LOADER(TIFFGetField, int (*)(TIFF*, ttag_t, ...))
+        FUNCTION_LOADER(TIFFReadRGBAImageOriented, int (*)(TIFF*, uint32, uint32, uint32*, int, int))
+        FUNCTION_LOADER(TIFFSetErrorHandler, TIFFErrorHandler (*)(TIFFErrorHandler))
     }
     ++lib.loaded;
 
@@ -93,34 +73,12 @@ void IMG_QuitTIF()
         return;
     }
     if ( lib.loaded == 1 ) {
+#ifdef LOAD_TIF_DYNAMIC
         SDL_UnloadObject(lib.handle);
+#endif
     }
     --lib.loaded;
 }
-#else
-int IMG_InitTIF()
-{
-    if ( lib.loaded == 0 ) {
-        lib.TIFFClientOpen = TIFFClientOpen;
-        lib.TIFFClose = TIFFClose;
-        lib.TIFFGetField = TIFFGetField;
-        lib.TIFFReadRGBAImageOriented = TIFFReadRGBAImageOriented;
-        lib.TIFFSetErrorHandler = TIFFSetErrorHandler;
-    }
-    ++lib.loaded;
-
-    return 0;
-}
-void IMG_QuitTIF()
-{
-    if ( lib.loaded == 0 ) {
-        return;
-    }
-    if ( lib.loaded == 1 ) {
-    }
-    --lib.loaded;
-}
-#endif /* LOAD_TIF_DYNAMIC */
 
 /*
  * These are the thunking routine to use the SDL_RWops* routines from
@@ -129,7 +87,7 @@ void IMG_QuitTIF()
 
 static tsize_t tiff_read(thandle_t fd, tdata_t buf, tsize_t size)
 {
-    return SDL_RWread((SDL_RWops*)fd, buf, 1, size);
+    return (tsize_t)SDL_RWread((SDL_RWops*)fd, buf, 1, size);
 }
 
 static toff_t tiff_seek(thandle_t fd, toff_t offset, int origin)
@@ -139,7 +97,7 @@ static toff_t tiff_seek(thandle_t fd, toff_t offset, int origin)
 
 static tsize_t tiff_write(thandle_t fd, tdata_t buf, tsize_t size)
 {
-    return SDL_RWwrite((SDL_RWops*)fd, buf, 1, size);
+    return (tsize_t)SDL_RWwrite((SDL_RWops*)fd, buf, 1, size);
 }
 
 static int tiff_close(thandle_t fd)

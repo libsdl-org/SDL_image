@@ -28,8 +28,8 @@
 #ifdef LOAD_SVG
 
 /* Replace C runtime functions with SDL C runtime functions for building on Windows */
-#define strtoll	SDL_strtoll
-#define sscanf	SDL_sscanf
+#define strtoll SDL_strtoll
+#define sscanf  SDL_sscanf
 #ifndef FLT_MAX
 #define FLT_MAX     3.402823466e+38F
 #endif

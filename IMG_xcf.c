@@ -647,7 +647,7 @@ do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_
                     break;
                 case 1:
                     /* Indexed / Greyscale */
-					switch (head->image_type) {
+                    switch (head->image_type) {
                     case IMAGE_INDEXED:
                         for (x = tx; x < tx + ox; x++) {
                             *row++ = 0xFF000000

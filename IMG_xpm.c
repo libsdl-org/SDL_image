@@ -1083,7 +1083,7 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
             if (nametype == 's')
                 continue;      /* skip symbolic colour names */
 
-            if (!color_to_rgb(colname, p - colname, &rgb))
+            if (!color_to_rgb(colname, (int)(p - colname), &rgb))
                 continue;
 
             SDL_memcpy(nextkey, line, cpp);
