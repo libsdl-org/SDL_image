@@ -140,24 +140,24 @@ static int webp_getinfo( SDL_RWops *src, int *datasize ) {
     is_WEBP = 0;
     if ( SDL_RWread(src, magic, 1, sizeof(magic)) == sizeof(magic) ) {
         if ( magic[ 0] == 'R' &&
-                     magic[ 1] == 'I' &&
-                     magic[ 2] == 'F' &&
-                     magic[ 3] == 'F' &&
-                                         magic[ 8] == 'W' &&
-                                         magic[ 9] == 'E' &&
-                                         magic[10] == 'B' &&
-                                         magic[11] == 'P' &&
-                                         magic[12] == 'V' &&
-                                         magic[13] == 'P' &&
-                                         magic[14] == '8' &&
+             magic[ 1] == 'I' &&
+             magic[ 2] == 'F' &&
+             magic[ 3] == 'F' &&
+             magic[ 8] == 'W' &&
+             magic[ 9] == 'E' &&
+             magic[10] == 'B' &&
+             magic[11] == 'P' &&
+             magic[12] == 'V' &&
+             magic[13] == 'P' &&
+             magic[14] == '8' &&
 #if WEBP_DECODER_ABI_VERSION < 0x0003 /* old versions don't support WEBPVP8X and WEBPVP8L */
-                                         magic[15] == ' ') {
+             magic[15] == ' ') {
 #else
-                                         (magic[15] == ' ' || magic[15] == 'X' || magic[15] == 'L')) {
+             (magic[15] == ' ' || magic[15] == 'X' || magic[15] == 'L')) {
 #endif
             is_WEBP = 1;
             if ( datasize ) {
-                *datasize = (int)SDL_RWseek(src, 0, RW_SEEK_END);
+                *datasize = (int)SDL_RWseek(src, 0, RW_SEEK_END) - start;
             }
         }
     }
@@ -202,9 +202,6 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
         error = "Invalid WEBP";
         goto error;
     }
-
-    // seek to start of file
-    SDL_RWseek(src, 0, RW_SEEK_SET );
 
     raw_data = (uint8_t*) SDL_malloc( raw_data_size );
     if ( raw_data == NULL ) {
