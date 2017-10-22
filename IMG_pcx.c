@@ -32,8 +32,6 @@
  *  single-planar packed-pixel formats other than 8bpp
  *  4-plane 32bpp format with a fourth "intensity" plane
  */
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "SDL_endian.h"
 

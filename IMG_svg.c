@@ -27,13 +27,12 @@
 
 #ifdef LOAD_SVG
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <float.h>
-
 /* Replace C runtime functions with SDL C runtime functions for building on Windows */
 #define strtoll	SDL_strtoll
+#define sscanf	SDL_sscanf
+#ifndef FLT_MAX
+#define FLT_MAX     3.402823466e+38F
+#endif
 
 #define NANOSVG_IMPLEMENTATION
 #include "nanosvg.h"

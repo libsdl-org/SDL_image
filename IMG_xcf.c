@@ -21,11 +21,6 @@
 
 /* This is a XCF image file loading framework */
 
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include "SDL_endian.h"
 #include "SDL_image.h"
 

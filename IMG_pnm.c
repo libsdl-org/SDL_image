@@ -27,11 +27,6 @@
  * Does not support: maximum component value > 255
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-
 #include "SDL_image.h"
 
 #ifdef LOAD_PNM
