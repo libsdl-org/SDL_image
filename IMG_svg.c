@@ -66,7 +66,7 @@ SDL_Surface *IMG_LoadSVG_RW(SDL_RWops *src)
     struct NSVGimage *image;
     struct NSVGrasterizer *rasterizer;
     SDL_Surface *surface = NULL;
-    float scale = 3.0f;
+    float scale = 1.0f;
 
     data = (char *)SDL_LoadFile_RW(src, NULL, SDL_FALSE);
     if ( !data ) {
