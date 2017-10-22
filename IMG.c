@@ -21,10 +21,6 @@
 
 /* A simple library to load images of various formats as SDL surfaces */
 
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-
 #include "SDL_image.h"
 
 #define ARRAYSIZE(a) (sizeof(a) / sizeof((a)[0]))

@@ -23,8 +23,6 @@
 
 /* This is a TIFF image file loading framework */
 
-#include <stdio.h>
-
 #include "SDL_image.h"
 
 #ifdef LOAD_TIF
@@ -208,8 +206,6 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
     SDL_Surface* surface = NULL;
     Uint32 img_width, img_height;
     Uint32 Rmask, Gmask, Bmask, Amask;
-    Uint32 x, y;
-    Uint32 half;
 
     if ( !src ) {
         /* The error message has been set in SDL_RWFromFile */

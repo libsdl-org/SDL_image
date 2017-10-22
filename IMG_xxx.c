@@ -21,8 +21,6 @@
 
 /* This is a generic "format not supported" image framework */
 
-#include <stdio.h>
-
 #include "SDL_image.h"
 
 #ifdef LOAD_XXX

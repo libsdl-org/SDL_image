@@ -21,9 +21,6 @@
 
 /* This is a WEBP image file loading framework */
 
-#include <stdlib.h>
-#include <stdio.h>
-
 #include "SDL_image.h"
 
 #ifdef LOAD_WEBP
@@ -160,7 +157,7 @@ static int webp_getinfo( SDL_RWops *src, int *datasize ) {
 #endif
             is_WEBP = 1;
             if ( datasize ) {
-                *datasize = (int)SDL_RWseek(src, 0, SEEK_END);
+                *datasize = (int)SDL_RWseek(src, 0, RW_SEEK_END);
             }
         }
     }

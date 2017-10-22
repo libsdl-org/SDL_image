@@ -2981,6 +2981,7 @@ NSVGimage* nsvgParse(char* input, const char* units, float dpi)
 	return ret;
 }
 
+#ifdef HAVE_STDIO_H
 NSVGimage* nsvgParseFromFile(const char* filename, const char* units, float dpi)
 {
 	FILE* fp = NULL;
@@ -3009,6 +3010,7 @@ error:
 	if (image) nsvgDelete(image);
 	return NULL;
 }
+#endif /* HAVE_STDIO_H */
 
 void nsvgDelete(NSVGimage* image)
 {
