@@ -1,4 +1,6 @@
 2.0.2:
+Sam Lantinga - Sat Oct 21 22:14:34 PDT 2017
+ * Updated external libraries jpeg-9b, libpng-1.6.32, libwebp-0.6.0, tiff-4.0.8 and zlib-1.2.11
 Yves Younan - Fri, Oct  6, 2017  3:38:38 PM
  * Fixed security vulnerability in XCF image loader
 Alexey - Tue Sep 12 00:41:53 PDT 2017
