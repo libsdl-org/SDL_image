@@ -108,11 +108,11 @@ static struct {
     png_structp (*png_create_write_struct) (png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
     void (*png_destroy_write_struct) (png_structpp png_ptr_ptr, png_infopp info_ptr_ptr);
     void (*png_set_write_fn) (png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr write_data_fn, png_flush_ptr output_flush_fn);
-    void (*png_set_IHDR) (png_structrp png_ptr, png_inforp info_ptr, png_uint_32 width, png_uint_32 height, int bit_depth, int color_type, int interlace_type, int compression_type, int filter_type);
-    void (*png_write_info) (png_structrp png_ptr, png_inforp info_ptr);
-    void (*png_set_rows) (png_structrp png_ptr, png_inforp info_ptr, png_bytepp row_pointers);
+    void (*png_set_IHDR) (png_const_structrp png_ptr, png_inforp info_ptr, png_uint_32 width, png_uint_32 height, int bit_depth, int color_type, int interlace_type, int compression_type, int filter_type);
+    void (*png_write_info) (png_structrp png_ptr, png_const_inforp info_ptr);
+    void (*png_set_rows) (png_const_structrp png_ptr, png_inforp info_ptr, png_bytepp row_pointers);
     void (*png_write_png) (png_structrp png_ptr, png_inforp info_ptr, int transforms, png_voidp params);
-    void (*png_set_PLTE) (png_structrp png_ptr, png_inforp info_ptr, png_colorp palette, int num_palette);
+    void (*png_set_PLTE) (png_structrp png_ptr, png_inforp info_ptr, png_const_colorp palette, int num_palette);
 } lib;
 
 #ifdef LOAD_PNG_DYNAMIC
