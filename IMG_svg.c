@@ -29,6 +29,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+#include <float.h>
 
 /* Replace C runtime functions with SDL C runtime functions for building on Windows */
 #define strtoll	SDL_strtoll

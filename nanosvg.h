@@ -1116,7 +1116,7 @@ static double nsvg__atof(const char* s)
 	// Parse integer part
 	if (nsvg__isdigit(*cur)) {
 		// Parse digit sequence
-		intPart = (double)strtoll(cur, &end, 10);
+		intPart = strtoll(cur, &end, 10);
 		if (cur != end) {
 			res = (double)intPart;
 			hasIntPart = 1;
@@ -2823,8 +2823,8 @@ static void nsvg__content(void* ud, const char* s)
 static void nsvg__imageBounds(NSVGparser* p, float* bounds)
 {
 	NSVGshape* shape;
-	shape = p->image->shapes;
 	int count = 0;
+	shape = p->image->shapes;
 
 	bounds[0] = FLT_MAX;
 	bounds[1] = FLT_MAX;
