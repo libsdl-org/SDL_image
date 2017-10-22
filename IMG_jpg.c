@@ -68,125 +68,39 @@ static struct {
 } lib;
 
 #ifdef LOAD_JPG_DYNAMIC
+#define FUNCTION_LOADER(FUNC, SIG) \
+    lib.FUNC = (SIG) SDL_LoadFunction(lib.handle, #FUNC); \
+    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle); return -1; }
+#else
+#define FUNCTION_LOADER(FUNC, SIG) \
+    lib.FUNC = FUNC;
+#endif
+
 int IMG_InitJPG()
 {
     if ( lib.loaded == 0 ) {
+#ifdef LOAD_JPG_DYNAMIC
         lib.handle = SDL_LoadObject(LOAD_JPG_DYNAMIC);
         if ( lib.handle == NULL ) {
             return -1;
         }
-        lib.jpeg_calc_output_dimensions =
-            (void (*) (j_decompress_ptr))
-            SDL_LoadFunction(lib.handle, "jpeg_calc_output_dimensions");
-        if ( lib.jpeg_calc_output_dimensions == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.jpeg_CreateDecompress =
-            (void (*) (j_decompress_ptr, int, size_t))
-            SDL_LoadFunction(lib.handle, "jpeg_CreateDecompress");
-        if ( lib.jpeg_CreateDecompress == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.jpeg_destroy_decompress =
-            (void (*) (j_decompress_ptr))
-            SDL_LoadFunction(lib.handle, "jpeg_destroy_decompress");
-        if ( lib.jpeg_destroy_decompress == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.jpeg_finish_decompress =
-            (boolean (*) (j_decompress_ptr))
-            SDL_LoadFunction(lib.handle, "jpeg_finish_decompress");
-        if ( lib.jpeg_finish_decompress == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.jpeg_read_header =
-            (int (*) (j_decompress_ptr, boolean))
-            SDL_LoadFunction(lib.handle, "jpeg_read_header");
-        if ( lib.jpeg_read_header == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.jpeg_read_scanlines =
-            (JDIMENSION (*) (j_decompress_ptr, JSAMPARRAY, JDIMENSION))
-            SDL_LoadFunction(lib.handle, "jpeg_read_scanlines");
-        if ( lib.jpeg_read_scanlines == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.jpeg_resync_to_restart =
-            (boolean (*) (j_decompress_ptr, int))
-            SDL_LoadFunction(lib.handle, "jpeg_resync_to_restart");
-        if ( lib.jpeg_resync_to_restart == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.jpeg_start_decompress =
-            (boolean (*) (j_decompress_ptr))
-            SDL_LoadFunction(lib.handle, "jpeg_start_decompress");
-        if ( lib.jpeg_start_decompress == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.jpeg_CreateCompress =
-            (void (*) (j_compress_ptr, int, size_t))
-            SDL_LoadFunction(lib.handle, "jpeg_CreateCompress");
-        if ( lib.jpeg_CreateCompress == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.jpeg_start_compress =
-            (void (*) (j_compress_ptr cinfo, boolean write_all_tables))
-            SDL_LoadFunction(lib.handle, "jpeg_start_compress");
-        if ( lib.jpeg_start_compress == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.jpeg_set_quality =
-            (void(*) (j_compress_ptr cinfo, int quality, boolean force_baseline))
-            SDL_LoadFunction(lib.handle, "jpeg_set_quality");
-        if ( lib.jpeg_set_quality == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.jpeg_set_defaults =
-            (void(*) (j_compress_ptr cinfo))
-            SDL_LoadFunction(lib.handle, "jpeg_set_defaults");
-        if ( lib.jpeg_set_defaults == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.jpeg_write_scanlines = 
-            (JDIMENSION (*) (j_compress_ptr cinfo, JSAMPARRAY scanlines, JDIMENSION num_lines))
-            SDL_LoadFunction(lib.handle, "jpeg_write_scanlines");
-        if ( lib.jpeg_write_scanlines == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.jpeg_finish_compress =
-            (void (*) (j_compress_ptr cinfo))
-            SDL_LoadFunction(lib.handle, "jpeg_finish_compress");
-        if ( lib.jpeg_finish_compress == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.jpeg_destroy_compress = 
-            (void (*) (j_compress_ptr cinfo))
-            SDL_LoadFunction(lib.handle, "jpeg_destroy_compress");
-        if ( lib.jpeg_destroy_compress == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
-        lib.jpeg_std_error =
-            (struct jpeg_error_mgr * (*) (struct jpeg_error_mgr *))
-            SDL_LoadFunction(lib.handle, "jpeg_std_error");
-        if ( lib.jpeg_std_error == NULL ) {
-            SDL_UnloadObject(lib.handle);
-            return -1;
-        }
+#endif
+        FUNCTION_LOADER(jpeg_calc_output_dimensions, void (*) (j_decompress_ptr cinfo))
+        FUNCTION_LOADER(jpeg_CreateDecompress, void (*) (j_decompress_ptr cinfo, int version, size_t structsize))
+        FUNCTION_LOADER(jpeg_destroy_decompress, void (*) (j_decompress_ptr cinfo))
+        FUNCTION_LOADER(jpeg_finish_decompress, boolean (*) (j_decompress_ptr cinfo))
+        FUNCTION_LOADER(jpeg_read_header, int (*) (j_decompress_ptr cinfo, boolean require_image))
+        FUNCTION_LOADER(jpeg_read_scanlines, JDIMENSION (*) (j_decompress_ptr cinfo, JSAMPARRAY scanlines, JDIMENSION max_lines))
+        FUNCTION_LOADER(jpeg_resync_to_restart, boolean (*) (j_decompress_ptr cinfo, int desired))
+        FUNCTION_LOADER(jpeg_start_decompress, boolean (*) (j_decompress_ptr cinfo))
+        FUNCTION_LOADER(jpeg_CreateCompress, void (*) (j_compress_ptr cinfo, int version, size_t structsize))
+        FUNCTION_LOADER(jpeg_start_compress, void (*) (j_compress_ptr cinfo, boolean write_all_tables))
+        FUNCTION_LOADER(jpeg_set_quality, void (*) (j_compress_ptr cinfo, int quality, boolean force_baseline))
+        FUNCTION_LOADER(jpeg_set_defaults, void (*) (j_compress_ptr cinfo))
+        FUNCTION_LOADER(jpeg_write_scanlines, JDIMENSION (*) (j_compress_ptr cinfo, JSAMPARRAY scanlines, JDIMENSION num_lines))
+        FUNCTION_LOADER(jpeg_finish_compress, void (*) (j_compress_ptr cinfo))
+        FUNCTION_LOADER(jpeg_destroy_compress, void (*) (j_compress_ptr cinfo))
+        FUNCTION_LOADER(jpeg_std_error, struct jpeg_error_mgr * (*) (struct jpeg_error_mgr * err))
     }
     ++lib.loaded;
 
@@ -198,45 +112,12 @@ void IMG_QuitJPG()
         return;
     }
     if ( lib.loaded == 1 ) {
+#ifdef LOAD_JPG_DYNAMIC
         SDL_UnloadObject(lib.handle);
+#endif
     }
     --lib.loaded;
 }
-#else
-int IMG_InitJPG()
-{
-    if ( lib.loaded == 0 ) {
-        lib.jpeg_calc_output_dimensions = jpeg_calc_output_dimensions;
-        lib.jpeg_CreateDecompress = jpeg_CreateDecompress;
-        lib.jpeg_destroy_decompress = jpeg_destroy_decompress;
-        lib.jpeg_finish_decompress = jpeg_finish_decompress;
-        lib.jpeg_read_header = jpeg_read_header;
-        lib.jpeg_read_scanlines = jpeg_read_scanlines;
-        lib.jpeg_resync_to_restart = jpeg_resync_to_restart;
-        lib.jpeg_start_decompress = jpeg_start_decompress;
-        lib.jpeg_CreateCompress = jpeg_CreateCompress;
-        lib.jpeg_start_compress = jpeg_start_compress;
-        lib.jpeg_set_quality = jpeg_set_quality;
-        lib.jpeg_set_defaults = jpeg_set_defaults;
-        lib.jpeg_write_scanlines = jpeg_write_scanlines;
-        lib.jpeg_finish_compress = jpeg_finish_compress;
-        lib.jpeg_destroy_compress = jpeg_destroy_compress;
-        lib.jpeg_std_error = jpeg_std_error;
-    }
-    ++lib.loaded;
-
-    return 0;
-}
-void IMG_QuitJPG()
-{
-    if ( lib.loaded == 0 ) {
-        return;
-    }
-    if ( lib.loaded == 1 ) {
-    }
-    --lib.loaded;
-}
-#endif /* LOAD_JPG_DYNAMIC */
 
 /* See if an image is contained in a data source */
 int IMG_isJPG(SDL_RWops *src)
@@ -329,7 +210,7 @@ static boolean fill_input_buffer (j_decompress_ptr cinfo)
     my_source_mgr * src = (my_source_mgr *) cinfo->src;
     int nbytes;
 
-    nbytes = SDL_RWread(src->ctx, src->buffer, 1, INPUT_BUFFER_SIZE);
+    nbytes = (int)SDL_RWread(src->ctx, src->buffer, 1, INPUT_BUFFER_SIZE);
     if (nbytes <= 0) {
         /* Insert a fake EOI marker */
         src->buffer[0] = (Uint8) 0xFF;
