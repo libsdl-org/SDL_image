@@ -40,7 +40,24 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := SDL2_image
 
-LOCAL_SRC_FILES := $(notdir $(filter-out %/showimage.c, $(wildcard $(LOCAL_PATH)/*.c)))
+LOCAL_SRC_FILES :=  \
+    IMG.c           \
+    IMG_bmp.c       \
+    IMG_gif.c       \
+    IMG_jpg.c       \
+    IMG_lbm.c       \
+    IMG_pcx.c       \
+    IMG_png.c       \
+    IMG_pnm.c       \
+    IMG_svg.c       \
+    IMG_tga.c       \
+    IMG_tif.c       \
+    IMG_webp.c      \
+    IMG_WIC.c       \
+    IMG_xcf.c       \
+    IMG_xpm.c.arm   \
+    IMG_xv.c        \
+    IMG_xxx.c
 
 LOCAL_CFLAGS := -DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM \
                 -DLOAD_SVG -DLOAD_TGA -DLOAD_XCF -DLOAD_XPM -DLOAD_XV
