@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 
     flags = SDL_WINDOW_HIDDEN;
     for ( i=1; argv[i]; ++i ) {
-        if ( strcmp(argv[i], "-fullscreen") == 0 ) {
+        if ( SDL_strcmp(argv[i], "-fullscreen") == 0 ) {
             SDL_ShowCursor(0);
             flags |= SDL_WINDOW_FULLSCREEN;
         }
@@ -87,11 +87,11 @@ int main(int argc, char *argv[])
     }
 
     for ( i=1; argv[i]; ++i ) {
-        if ( strcmp(argv[i], "-fullscreen") == 0 ) {
+        if ( SDL_strcmp(argv[i], "-fullscreen") == 0 ) {
             continue;
         }
 
-        if ( strcmp(argv[i], "-save") == 0 && argv[i+1] ) {
+        if ( SDL_strcmp(argv[i], "-save") == 0 && argv[i+1] ) {
             ++i;
             saveFile = argv[i];
             continue;

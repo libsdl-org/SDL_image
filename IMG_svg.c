@@ -28,11 +28,37 @@
 #ifdef LOAD_SVG
 
 /* Replace C runtime functions with SDL C runtime functions for building on Windows */
-#define strtoll SDL_strtoll
+#define acosf   SDL_acosf
+#define atan2f  SDL_atan2f
+#define cosf    SDL_cosf
+#define fmodf   SDL_fmodf
+#define free    SDL_free
+#define malloc  SDL_malloc
+#undef memcpy
+#define memcpy  SDL_memcpy
+#undef memset
+#define memset  SDL_memset
+#define pow     SDL_pow
+#define qsort   SDL_qsort
+#define realloc SDL_realloc
+#define sinf    SDL_sinf
+#define sqrt    SDL_sqrt
+#define sqrtf   SDL_sqrtf
 #define sscanf  SDL_sscanf
+#define strchr  SDL_strchr
+#define strcmp  SDL_strcmp
+#define strncmp SDL_strncmp
+#undef strncpy
+#define strncpy SDL_strlcpy
+#define strlen  SDL_strlen
+#define strstr  SDL_strstr
+#define strtol  SDL_strtol
+#define strtoll SDL_strtoll
+#define tanf    SDL_tanf
 #ifndef FLT_MAX
 #define FLT_MAX     3.402823466e+38F
 #endif
+#undef HAVE_STDIO_H
 
 #define NANOSVG_IMPLEMENTATION
 #include "nanosvg.h"
