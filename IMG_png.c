@@ -598,6 +598,15 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
 
 #endif /* USE_LIBPNG */
 
+/* Replace C runtime functions with SDL C runtime functions for building on Windows */
+#define MINIZ_NO_STDIO
+#define MINIZ_NO_TIME
+#define MINIZ_SDL_MALLOC
+#define MZ_ASSERT(x) SDL_assert(x)
+#undef memset
+#define memset	SDL_memset
+#define strlen	SDL_strlen
+
 #include "miniz.h"
 
 static int IMG_SavePNG_RW_miniz(SDL_Surface *surface, SDL_RWops *dst, int freedst)

@@ -633,7 +633,7 @@ do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_
                         }
                         break;
                     default:
-                        fprintf(stderr, "Unknown Gimp image type (%d)\n", head->image_type);
+                        SDL_Log("Unknown Gimp image type (%d)\n", head->image_type);
                         if (hierarchy) {
                             if (hierarchy->level_file_offsets)
                                 SDL_free(hierarchy->level_file_offsets);
@@ -667,7 +667,7 @@ do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_
                         }
                         break;
                     default:
-                        fprintf(stderr, "Unknown Gimp image type (%d)\n", head->image_type);
+                        SDL_Log("Unknown Gimp image type (%d)\n", head->image_type);
                         if (tile)
                             free_xcf_tile(tile);
                         if (level)
@@ -733,7 +733,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
     load_tile = load_xcf_tile_rle;
     break;
   default:
-    fprintf (stderr, "Unsupported Compression.\n");
+    SDL_Log("Unsupported Compression.\n");
     free_xcf_header (head);
     return NULL;
   }

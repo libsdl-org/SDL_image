@@ -159,7 +159,7 @@
 #ifndef MINIZ_HEADER_INCLUDED
 #define MINIZ_HEADER_INCLUDED
 
-#include <stdlib.h>
+/*#include <stdlib.h>*/
 
 // Defines to completely disable specific portions of miniz.c:
 // If all macros here are defined the only functionality remaining will be CRC-32, adler-32, tinfl, and tdefl.
@@ -944,17 +944,12 @@ typedef unsigned char mz_validate_uint16[sizeof(mz_uint16)==2 ? 1 : -1];
 typedef unsigned char mz_validate_uint32[sizeof(mz_uint32)==4 ? 1 : -1];
 typedef unsigned char mz_validate_uint64[sizeof(mz_uint64)==8 ? 1 : -1];
 
-#include <string.h>
+/*#include <string.h>*/
+
+#ifndef MZ_ASSERT
 #include <assert.h>
-
-// Defines to remove C runtime dependency
-#undef memset
-#define memset SDL_memset
-#undef memcpy
-#define memcpy SDL_memcpy
-
-//#define MZ_ASSERT(x) assert(x)
-#define MZ_ASSERT(x) SDL_assert(x)
+#define MZ_ASSERT(x) assert(x)
+#endif
 
 #ifdef MINIZ_NO_MALLOC
   #define MZ_MALLOC(x) NULL
