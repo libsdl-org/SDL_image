@@ -109,7 +109,16 @@ int main(int argc, char *argv[])
         if ( saveFile ) {
             SDL_Surface *surface = IMG_Load(argv[i]);
             if (surface) {
-                if ( IMG_SavePNG(surface, saveFile) < 0 ) {
+                int result;
+                const char *ext = SDL_strrchr(saveFile, '.');
+                if ( ext && SDL_strcasecmp(ext, ".bmp") == 0 ) {
+                    result = SDL_SaveBMP(surface, saveFile);
+                } else if ( ext && SDL_strcasecmp(ext, ".jpg") == 0 ) {
+                    result = IMG_SaveJPG(surface, saveFile, 90);
+                } else {
+                    result = IMG_SavePNG(surface, saveFile);
+                }
+                if ( result < 0 ) {
                     fprintf(stderr, "Couldn't save %s: %s\n", saveFile, SDL_GetError());
                 }
             } else {
