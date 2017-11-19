@@ -503,8 +503,8 @@ static int IMG_SaveJPG_RW_jpeglib(SDL_Surface *surface, SDL_RWops *dst, int free
     lib.jpeg_create_compress(&cinfo);
     jpeg_SDL_RW_dest(&cinfo, dst);
 
-    cinfo.image_width = surface->w;
-    cinfo.image_height = surface->h;
+    cinfo.image_width = jpeg_surface->w;
+    cinfo.image_height = jpeg_surface->h;
     cinfo.in_color_space = JCS_RGB;
     cinfo.input_components = 3;
 
@@ -513,7 +513,7 @@ static int IMG_SaveJPG_RW_jpeglib(SDL_Surface *surface, SDL_RWops *dst, int free
     lib.jpeg_start_compress(&cinfo, TRUE);
 
     while (cinfo.next_scanline < cinfo.image_height) {
-        int offset = cinfo.next_scanline * surface->pitch;
+        int offset = cinfo.next_scanline * jpeg_surface->pitch;
         row_pointer[0] = ((Uint8*)jpeg_surface->pixels) + offset;
         lib.jpeg_write_scanlines(&cinfo, row_pointer, 1);
     }
