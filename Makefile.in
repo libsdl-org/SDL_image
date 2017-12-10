@@ -141,12 +141,12 @@ am__DEPENDENCIES_1 =
 am__libSDL2_image_la_SOURCES_DIST = IMG.c IMG_bmp.c IMG_gif.c \
 	IMG_jpg.c IMG_lbm.c IMG_pcx.c IMG_png.c IMG_pnm.c IMG_svg.c \
 	IMG_tga.c IMG_tif.c IMG_xcf.c IMG_xpm.c IMG_xv.c IMG_webp.c \
-	IMG_ImageIO.m miniz.h nanosvg.h nanosvgrast.h
+	IMG_WIC.c IMG_ImageIO.m miniz.h nanosvg.h nanosvgrast.h
 @USE_IMAGEIO_TRUE@am__objects_1 = IMG_ImageIO.lo
 am_libSDL2_image_la_OBJECTS = IMG.lo IMG_bmp.lo IMG_gif.lo IMG_jpg.lo \
 	IMG_lbm.lo IMG_pcx.lo IMG_png.lo IMG_pnm.lo IMG_svg.lo \
 	IMG_tga.lo IMG_tif.lo IMG_xcf.lo IMG_xpm.lo IMG_xv.lo \
-	IMG_webp.lo $(am__objects_1)
+	IMG_webp.lo IMG_WIC.lo $(am__objects_1)
 libSDL2_image_la_OBJECTS = $(am_libSDL2_image_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -418,6 +418,7 @@ libSDL2_image_la_SOURCES = \
 	IMG_xpm.c		\
 	IMG_xv.c		\
 	IMG_webp.c		\
+	IMG_WIC.c		\
 	$(IMAGEIO_SOURCE)	\
 	miniz.h			\
 	nanosvg.h		\
@@ -557,6 +558,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_ImageIO.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_WIC.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_bmp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_gif.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_jpg.Plo@am__quote@
