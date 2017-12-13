@@ -44,7 +44,7 @@ typedef struct NSVGrasterizer NSVGrasterizer;
 */
 
 // Allocated rasterizer context.
-NSVGrasterizer* nsvgCreateRasterizer();
+NSVGrasterizer* nsvgCreateRasterizer(void);
 
 // Rasterizes SVG image, returns RGBA image (non-premultiplied alpha)
 //   r - pointer to rasterizer context
