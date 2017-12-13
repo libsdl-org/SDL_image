@@ -57,15 +57,15 @@ const SDL_version *IMG_Linked_Version(void)
     return(&linked_version);
 }
 
-extern int IMG_InitJPG();
-extern void IMG_QuitJPG();
-extern int IMG_InitPNG();
-extern void IMG_QuitPNG();
-extern int IMG_InitTIF();
-extern void IMG_QuitTIF();
+extern int IMG_InitJPG(void);
+extern void IMG_QuitJPG(void);
+extern int IMG_InitPNG(void);
+extern void IMG_QuitPNG(void);
+extern int IMG_InitTIF(void);
+extern void IMG_QuitTIF(void);
 
-extern int IMG_InitWEBP();
-extern void IMG_QuitWEBP();
+extern int IMG_InitWEBP(void);
+extern void IMG_QuitWEBP(void);
 
 static int initialized = 0;
 

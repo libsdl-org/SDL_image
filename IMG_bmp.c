@@ -245,7 +245,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
     /* The Win32 BITMAPINFOHEADER struct (40 bytes) */
     Uint32 biSize;
     Sint32 biWidth;
-    Sint32 biHeight;
+    Sint32 biHeight = 0;
     Uint16 biPlanes;
     Uint16 biBitCount;
     Uint32 biCompression;
