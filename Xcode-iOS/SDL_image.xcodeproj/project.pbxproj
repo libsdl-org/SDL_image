@@ -6,6 +6,31 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		AA5314461FE0FB540025C9BE /* All (iOS) */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = AA5314471FE0FB540025C9BE /* Build configuration list for PBXAggregateTarget "All (iOS)" */;
+			buildPhases = (
+				AA53144A1FE0FB630025C9BE /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = "All (iOS)";
+			productName = "All (iOS)";
+		};
+		AA53144B1FE0FBF20025C9BE /* All (tvOS) */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = AA53144C1FE0FBF20025C9BE /* Build configuration list for PBXAggregateTarget "All (tvOS)" */;
+			buildPhases = (
+				AA53144F1FE0FBF90025C9BE /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = "All (tvOS)";
+			productName = "All (tvOS)";
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		00A06D7812FFBFD5009F1A11 /* SDL_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 1014BAEA010A4B677F000001 /* SDL_image.h */; };
 		AA126A9A1617A4A4005ABC8F /* IMG_bmp.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A891617A4A4005ABC8F /* IMG_bmp.c */; };
@@ -25,6 +50,24 @@
 		AA126AA91617A4A4005ABC8F /* IMG_xxx.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A981617A4A4005ABC8F /* IMG_xxx.c */; };
 		AA126AAA1617A4A4005ABC8F /* IMG.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A991617A4A4005ABC8F /* IMG.c */; };
 		AA50AA491F9C7DB6003B9C0C /* IMG_svg.c in Sources */ = {isa = PBXBuildFile; fileRef = AA50AA481F9C7DB6003B9C0C /* IMG_svg.c */; };
+		AA53142D1FE0FA910025C9BE /* SDL_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 1014BAEA010A4B677F000001 /* SDL_image.h */; };
+		AA53142F1FE0FA910025C9BE /* IMG_bmp.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A891617A4A4005ABC8F /* IMG_bmp.c */; };
+		AA5314301FE0FA910025C9BE /* IMG_gif.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A8A1617A4A4005ABC8F /* IMG_gif.c */; };
+		AA5314311FE0FA910025C9BE /* IMG_ImageIO.m in Sources */ = {isa = PBXBuildFile; fileRef = AA126A8B1617A4A4005ABC8F /* IMG_ImageIO.m */; };
+		AA5314321FE0FA910025C9BE /* IMG_jpg.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A8C1617A4A4005ABC8F /* IMG_jpg.c */; };
+		AA5314331FE0FA910025C9BE /* IMG_lbm.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A8D1617A4A4005ABC8F /* IMG_lbm.c */; };
+		AA5314341FE0FA910025C9BE /* IMG_pcx.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A8E1617A4A4005ABC8F /* IMG_pcx.c */; };
+		AA5314351FE0FA910025C9BE /* IMG_png.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A8F1617A4A4005ABC8F /* IMG_png.c */; };
+		AA5314361FE0FA910025C9BE /* IMG_pnm.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A901617A4A4005ABC8F /* IMG_pnm.c */; };
+		AA5314371FE0FA910025C9BE /* IMG_tga.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A911617A4A4005ABC8F /* IMG_tga.c */; };
+		AA5314381FE0FA910025C9BE /* IMG_tif.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A921617A4A4005ABC8F /* IMG_tif.c */; };
+		AA5314391FE0FA910025C9BE /* IMG_webp.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A941617A4A4005ABC8F /* IMG_webp.c */; };
+		AA53143A1FE0FA910025C9BE /* IMG_xcf.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A951617A4A4005ABC8F /* IMG_xcf.c */; };
+		AA53143B1FE0FA910025C9BE /* IMG_xpm.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A961617A4A4005ABC8F /* IMG_xpm.c */; };
+		AA53143C1FE0FA910025C9BE /* IMG_xv.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A971617A4A4005ABC8F /* IMG_xv.c */; };
+		AA53143D1FE0FA910025C9BE /* IMG_xxx.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A981617A4A4005ABC8F /* IMG_xxx.c */; };
+		AA53143E1FE0FA910025C9BE /* IMG.c in Sources */ = {isa = PBXBuildFile; fileRef = AA126A991617A4A4005ABC8F /* IMG.c */; };
+		AA53143F1FE0FA910025C9BE /* IMG_svg.c in Sources */ = {isa = PBXBuildFile; fileRef = AA50AA481F9C7DB6003B9C0C /* IMG_svg.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,10 +89,18 @@
 		AA126A981617A4A4005ABC8F /* IMG_xxx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_xxx.c; path = ../IMG_xxx.c; sourceTree = "<group>"; };
 		AA126A991617A4A4005ABC8F /* IMG.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG.c; path = ../IMG.c; sourceTree = "<group>"; };
 		AA50AA481F9C7DB6003B9C0C /* IMG_svg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_svg.c; path = ../IMG_svg.c; sourceTree = "<group>"; };
+		AA5314451FE0FA910025C9BE /* libSDL2_image.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSDL2_image.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1FA74107AF4C45004B6283 /* libSDL2_image.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSDL2_image.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		AA5314401FE0FA910025C9BE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BE1FA73F07AF4C45004B6283 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -73,6 +124,7 @@
 			children = (
 				089C1665FE841158C02AAC07 /* Resources */,
 				BE1FA74107AF4C45004B6283 /* libSDL2_image.a */,
+				AA5314451FE0FA910025C9BE /* libSDL2_image.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -121,6 +173,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		AA53142C1FE0FA910025C9BE /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA53142D1FE0FA910025C9BE /* SDL_image.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BE1FA73007AF4C45004B6283 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -132,9 +192,28 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		BE1FA72F07AF4C45004B6283 /* libSDL_image */ = {
+		AA53142B1FE0FA910025C9BE /* libSDL_image-tvOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 00B7E3AE097EB73D00826121 /* Build configuration list for PBXNativeTarget "libSDL_image" */;
+			buildConfigurationList = AA5314421FE0FA910025C9BE /* Build configuration list for PBXNativeTarget "libSDL_image-tvOS" */;
+			buildPhases = (
+				AA53142C1FE0FA910025C9BE /* Headers */,
+				AA53142E1FE0FA910025C9BE /* Sources */,
+				AA5314401FE0FA910025C9BE /* Frameworks */,
+				AA5314411FE0FA910025C9BE /* Rez */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "libSDL_image-tvOS";
+			productInstallPath = /usr/local/lib;
+			productName = "Static Library";
+			productReference = AA5314451FE0FA910025C9BE /* libSDL2_image.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		BE1FA72F07AF4C45004B6283 /* libSDL_image-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 00B7E3AE097EB73D00826121 /* Build configuration list for PBXNativeTarget "libSDL_image-iOS" */;
 			buildPhases = (
 				BE1FA73007AF4C45004B6283 /* Headers */,
 				BE1FA73107AF4C45004B6283 /* Sources */,
@@ -145,7 +224,7 @@
 			);
 			dependencies = (
 			);
-			name = libSDL_image;
+			name = "libSDL_image-iOS";
 			productInstallPath = /usr/local/lib;
 			productName = "Static Library";
 			productReference = BE1FA74107AF4C45004B6283 /* libSDL2_image.a */;
@@ -158,6 +237,16 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0900;
+				TargetAttributes = {
+					AA5314461FE0FB540025C9BE = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+					AA53144B1FE0FBF20025C9BE = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+					};
+				};
 			};
 			buildConfigurationList = 00B7E3B6097EB73D00826121 /* Build configuration list for PBXProject "SDL_image" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -174,12 +263,22 @@
 			projectDirPath = "";
 			projectRoot = ..;
 			targets = (
-				BE1FA72F07AF4C45004B6283 /* libSDL_image */,
+				BE1FA72F07AF4C45004B6283 /* libSDL_image-iOS */,
+				AA53142B1FE0FA910025C9BE /* libSDL_image-tvOS */,
+				AA5314461FE0FB540025C9BE /* All (iOS) */,
+				AA53144B1FE0FBF20025C9BE /* All (tvOS) */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXRezBuildPhase section */
+		AA5314411FE0FA910025C9BE /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BE1FA74007AF4C45004B6283 /* Rez */ = {
 			isa = PBXRezBuildPhase;
 			buildActionMask = 2147483647;
@@ -189,7 +288,64 @@
 		};
 /* End PBXRezBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		AA53144A1FE0FB630025C9BE /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+				output/iOS/debug/libSDL2_image.a,
+				output/iOS/release/libSDL2_image.a,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "TARGET=libSDL_image-iOS\nOUTPUT=libSDL2_image.a\n\nxcodebuild -target \"$TARGET\" -configuration Debug -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\nxcodebuild -target \"$TARGET\" -configuration Release -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\nxcodebuild -target \"$TARGET\" ONLY_ACTIVE_ARCH=NO -configuration Debug -sdk iphoneos  BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\nxcodebuild -target \"$TARGET\" ONLY_ACTIVE_ARCH=NO -configuration Release -sdk iphoneos  BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\n\n# make output folders\nmkdir -p output/iOS/debug\nmkdir -p output/iOS/release\n\n# combine lib files for various platforms into one\necho \"Creating output/iOS/debug/$OUTPUT\"\nlipo -create \"${TARGET_BUILD_DIR}/../Debug-iphoneos/$OUTPUT\" \"${TARGET_BUILD_DIR}/../Debug-iphonesimulator/$OUTPUT\" -output \"output/iOS/debug/$OUTPUT\"\necho \"Creating output/iOS/release/$OUTPUT\"\nlipo -create \"${TARGET_BUILD_DIR}/../Release-iphoneos/$OUTPUT\" \"${TARGET_BUILD_DIR}/../Release-iphonesimulator/$OUTPUT\" -output \"output/iOS/release/$OUTPUT\"\n";
+		};
+		AA53144F1FE0FBF90025C9BE /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+				output/tvOS/debug/libSDL2_image.a,
+				output/tvOS/release/libSDL2_image.a,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "TARGET=libSDL_image-tvOS\nOUTPUT=libSDL2_image.a\n\nxcodebuild -target \"$TARGET\" -configuration Debug -sdk appletvsimulator ONLY_ACTIVE_ARCH=NO BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\nxcodebuild -target \"$TARGET\" -configuration Release -sdk appletvsimulator ONLY_ACTIVE_ARCH=NO BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\nxcodebuild -target \"$TARGET\" ONLY_ACTIVE_ARCH=NO -configuration Debug -sdk appletvos  BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\nxcodebuild -target \"$TARGET\" ONLY_ACTIVE_ARCH=NO -configuration Release -sdk appletvos  BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\" clean build\n\n# make output folders\nmkdir -p output/tvOS/debug\nmkdir -p output/tvOS/release\n\n# combine lib files for various platforms into one\necho \"Creating output/tvOS/debug/$OUTPUT\"\nlipo -create \"${TARGET_BUILD_DIR}/../Debug-appletvos/$OUTPUT\" \"${TARGET_BUILD_DIR}/../Debug-appletvsimulator/$OUTPUT\" -output \"output/tvOS/debug/$OUTPUT\"\necho \"Creating output/tvOS/release/$OUTPUT\"\nlipo -create \"${TARGET_BUILD_DIR}/../Release-appletvos/$OUTPUT\" \"${TARGET_BUILD_DIR}/../Release-appletvsimulator/$OUTPUT\" -output \"output/tvOS/release/$OUTPUT\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
+		AA53142E1FE0FA910025C9BE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA53142F1FE0FA910025C9BE /* IMG_bmp.c in Sources */,
+				AA5314301FE0FA910025C9BE /* IMG_gif.c in Sources */,
+				AA5314311FE0FA910025C9BE /* IMG_ImageIO.m in Sources */,
+				AA5314321FE0FA910025C9BE /* IMG_jpg.c in Sources */,
+				AA5314331FE0FA910025C9BE /* IMG_lbm.c in Sources */,
+				AA5314341FE0FA910025C9BE /* IMG_pcx.c in Sources */,
+				AA5314351FE0FA910025C9BE /* IMG_png.c in Sources */,
+				AA5314361FE0FA910025C9BE /* IMG_pnm.c in Sources */,
+				AA5314371FE0FA910025C9BE /* IMG_tga.c in Sources */,
+				AA5314381FE0FA910025C9BE /* IMG_tif.c in Sources */,
+				AA5314391FE0FA910025C9BE /* IMG_webp.c in Sources */,
+				AA53143A1FE0FA910025C9BE /* IMG_xcf.c in Sources */,
+				AA53143B1FE0FA910025C9BE /* IMG_xpm.c in Sources */,
+				AA53143C1FE0FA910025C9BE /* IMG_xv.c in Sources */,
+				AA53143D1FE0FA910025C9BE /* IMG_xxx.c in Sources */,
+				AA53143E1FE0FA910025C9BE /* IMG.c in Sources */,
+				AA53143F1FE0FA910025C9BE /* IMG_svg.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BE1FA73107AF4C45004B6283 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -346,10 +502,74 @@
 			};
 			name = Release;
 		};
+		AA5314431FE0FA910025C9BE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1.1.0;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				LIBRARY_STYLE = STATIC;
+				PRODUCT_NAME = SDL2_image;
+				SDKROOT = appletvos;
+				SECTORDER_FLAGS = "";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
+			};
+			name = Debug;
+		};
+		AA5314441FE0FA910025C9BE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1.1.0;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				LIBRARY_STYLE = STATIC;
+				PRODUCT_NAME = SDL2_image;
+				SDKROOT = appletvos;
+				SECTORDER_FLAGS = "";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
+			};
+			name = Release;
+		};
+		AA5314481FE0FB540025C9BE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		AA5314491FE0FB540025C9BE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		AA53144D1FE0FBF20025C9BE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		AA53144E1FE0FBF20025C9BE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		00B7E3AE097EB73D00826121 /* Build configuration list for PBXNativeTarget "libSDL_image" */ = {
+		00B7E3AE097EB73D00826121 /* Build configuration list for PBXNativeTarget "libSDL_image-iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				007288130F0DA5BA00C302A9 /* Debug */,
@@ -363,6 +583,33 @@
 			buildConfigurations = (
 				007288110F0DA5BA00C302A9 /* Debug */,
 				007288150F0DA5C400C302A9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA5314421FE0FA910025C9BE /* Build configuration list for PBXNativeTarget "libSDL_image-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA5314431FE0FA910025C9BE /* Debug */,
+				AA5314441FE0FA910025C9BE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA5314471FE0FB540025C9BE /* Build configuration list for PBXAggregateTarget "All (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA5314481FE0FB540025C9BE /* Debug */,
+				AA5314491FE0FB540025C9BE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA53144C1FE0FBF20025C9BE /* Build configuration list for PBXAggregateTarget "All (tvOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA53144D1FE0FBF20025C9BE /* Debug */,
+				AA53144E1FE0FBF20025C9BE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
