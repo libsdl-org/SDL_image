@@ -229,7 +229,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_RGB(CGImageRef image_ref)
     Gmask = 0x0000FF00;
     Bmask = 0x000000FF;
 
-    surface = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 32, Rmask, Gmask, Bmask, Amask);
+    surface = SDL_CreateRGBSurface(SDL_SWSURFACE, (int)w, (int)h, 32, Rmask, Gmask, Bmask, Amask);
     if (surface)
     {
         // Sets up a context to be drawn to with surface->pixels as the area to be drawn to
@@ -306,7 +306,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_Index(CGImageRef image_ref)
     }
 
     CGColorSpaceGetColorTable(color_space, entries);
-    surface = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, bits_per_pixel, 0, 0, 0, 0);
+    surface = SDL_CreateRGBSurface(SDL_SWSURFACE, (int)w, (int)h, bits_per_pixel, 0, 0, 0, 0);
     if (surface) {
         uint8_t* pixels = (uint8_t*)surface->pixels;
         CGDataProviderRef provider = CGImageGetDataProvider(image_ref);

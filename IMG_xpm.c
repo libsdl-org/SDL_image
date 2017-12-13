@@ -883,7 +883,7 @@ static int color_to_rgb(char *spec, int speclen, Uint32 *rgb)
             break;
         }
         buf[6] = '\0';
-        *rgb = SDL_strtol(buf, NULL, 16);
+        *rgb = (Uint32)SDL_strtol(buf, NULL, 16);
         return 1;
     } else {
         int i;
