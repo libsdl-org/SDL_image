@@ -241,7 +241,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
     MiniBuf = (Uint8 *)SDL_malloc( bytesperline * (nbplanes + stencil) );
     if ( MiniBuf == NULL )
     {
-        error="no enough memory for temporary buffer";
+        error="not enough memory for temporary buffer";
         goto done;
     }
 
