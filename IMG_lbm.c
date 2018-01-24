@@ -233,6 +233,12 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
         nbplanes = 1;
     }
 
+    if ((nbplanes != 1) && (nbplanes != 4) && (nbplanes != 8) && (nbplanes != 24))
+    {
+        error="unsupported number of color planes";
+        goto done;
+    }
+
     stencil = (bmhd.mask & 1);   /* There is a mask ( 'stencil' ) */
 
     /* Allocate memory for a temporary buffer ( used for
