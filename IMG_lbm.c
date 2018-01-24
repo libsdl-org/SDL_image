@@ -183,6 +183,11 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
         if ( !SDL_memcmp( id, "CMAP", 4 ) ) /* palette ( Color Map ) */
         {
+            if (size > sizeof (colormap)) {
+                error="colormap size is too large";
+                goto done;
+            }
+
             if ( !SDL_RWread( src, &colormap, size, 1 ) )
             {
                 error="error reading CMAP chunk";
