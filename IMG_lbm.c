@@ -245,7 +245,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
         goto done;
     }
 
-    if ( ( Image = SDL_CreateRGBSurface( SDL_SWSURFACE, width, bmhd.h, (bmhd.planes==24 || flagHAM==1)?24:8, 0, 0, 0, 0 ) ) == NULL )
+    if ( ( Image = SDL_CreateRGBSurface( SDL_SWSURFACE, width, bmhd.h, (nbplanes==24 || flagHAM==1)?24:8, 0, 0, 0, 0 ) ) == NULL )
        goto done;
 
     if ( bmhd.mask & 2 )               /* There is a transparent color */
@@ -272,7 +272,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
         /* The 32 last colors are the same but divided by 2 */
         /* Some Amiga pictures save 64 colors with 32 last wrong colors, */
         /* they shouldn't !, and here we overwrite these 32 bad colors. */
-        if ( (nbcolors==32 || flagEHB ) && (1<<bmhd.planes)==64 )
+        if ( (nbcolors==32 || flagEHB ) && (1<<nbplanes)==64 )
         {
             nbcolors = 64;
             ptr = &colormap[0];
@@ -286,8 +286,8 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
         /* If nbcolors < 2^nbplanes, repeat the colormap */
         /* This happens when pictures have a stencil mask */
-        if ( nbrcolorsfinal > (1<<bmhd.planes) ) {
-            nbrcolorsfinal = (1<<bmhd.planes);
+        if ( nbrcolorsfinal > (1<<nbplanes) ) {
+            nbrcolorsfinal = (1<<nbplanes);
         }
         for ( i=nbcolors; i < (Uint32)nbrcolorsfinal; i++ )
         {
