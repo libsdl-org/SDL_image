@@ -735,6 +735,14 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
         goto done;
     }
 
+    /* sanity check image size, so we don't overflow integers, etc. */
+    if ((biWidth < 0) || (biWidth > 0xFFFFFF) ||
+        (biHeight < 0) || (biHeight > 0xFFFFFF)) {
+        IMG_SetError("Unsupported or invalid ICO dimensions");
+        was_error = SDL_TRUE;
+        goto done;
+    }
+
     /* Create a RGBA surface */
     biHeight = biHeight >> 1;
     //printf("%d x %d\n", biWidth, biHeight);
