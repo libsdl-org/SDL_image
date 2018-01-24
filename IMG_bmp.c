@@ -760,6 +760,11 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
         if (biClrUsed == 0) {
             biClrUsed = 1 << biBitCount;
         }
+        if (biClrUsed > SDL_arraysize(palette)) {
+            IMG_SetError("Unsupported or incorrect biClrUsed field");
+            was_error = SDL_TRUE;
+            goto done;
+        }
         for (i = 0; i < (int) biClrUsed; ++i) {
             SDL_RWread(src, &palette[i], 4, 1);
         }
