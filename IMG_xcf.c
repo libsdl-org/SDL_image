@@ -497,11 +497,11 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
 
       length = val;
       if (length >= 128) {
-    length = 255 - (length - 1);
-    if (length == 128) {
-      length = (*t << 8) + t[1];
-      t += 2;
-    }
+        length = 255 - (length - 1);
+        if (length == 128) {
+          length = (*t << 8) + t[1];
+          t += 2;
+        }
 
         if (((size_t) (t - load) + length) >= len) {
           break;  /* bogus data */
@@ -509,20 +509,19 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
           break;  /* bogus data */
         }
 
-    count += length;
-    size -= length;
+        count += length;
+        size -= length;
 
-    while (length-- > 0) {
-      *d = *t++;
-      d += bpp;
-    }
-      }
-      else {
-    length += 1;
-    if (length == 128) {
-      length = (*t << 8) + t[1];
-      t += 2;
-    }
+        while (length-- > 0) {
+          *d = *t++;
+          d += bpp;
+        }
+      } else {
+        length += 1;
+        if (length == 128) {
+          length = (*t << 8) + t[1];
+          t += 2;
+        }
 
         if (((size_t) (t - load)) >= len) {
           break;  /* bogus data */
@@ -530,15 +529,15 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
           break;  /* bogus data */
         }
 
-    count += length;
-    size -= length;
+        count += length;
+        size -= length;
 
-    val = *t++;
+        val = *t++;
 
-    for (j = 0; j < length; j++) {
-      *d = val;
-      d += bpp;
-    }
+        for (j = 0; j < length; j++) {
+          *d = val;
+          d += bpp;
+        }
       }
     }
 
