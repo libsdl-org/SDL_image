@@ -486,7 +486,7 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
   t = load = (unsigned char *) SDL_malloc (len);
   reallen = SDL_RWread (src, t, 1, len);
 
-  data = (unsigned char *) SDL_malloc (x*y*bpp);
+  data = (unsigned char *) SDL_calloc (1, x*y*bpp);
   for (i = 0; i < bpp; i++) {
     d    = data + i;
     size = x*y;
@@ -503,6 +503,12 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
       t += 2;
     }
 
+        if (((size_t) (t - load) + length) >= len) {
+          break;  /* bogus data */
+        } else if (length > size) {
+          break;  /* bogus data */
+        }
+
     count += length;
     size -= length;
 
@@ -518,6 +524,12 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
       t += 2;
     }
 
+        if (((size_t) (t - load)) >= len) {
+          break;  /* bogus data */
+        } else if (length > size) {
+          break;  /* bogus data */
+        }
+
     count += length;
     size -= length;
 
@@ -529,6 +541,11 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
     }
       }
     }
+
+    if (size > 0) {
+      break;  /* just drop out, untouched data initialized to zero. */
+    }
+
   }
 
   SDL_free (load);
