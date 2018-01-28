@@ -651,9 +651,6 @@ do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_
                     default:
                         SDL_Log("Unknown Gimp image type (%d)\n", head->image_type);
                         if (hierarchy) {
-                            if (hierarchy->level_file_offsets)
-                                SDL_free(hierarchy->level_file_offsets);
-
                             free_xcf_hierarchy(hierarchy);
                         }
                         if (level)
