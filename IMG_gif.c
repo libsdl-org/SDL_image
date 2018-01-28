@@ -497,8 +497,10 @@ LWZReadByte(SDL_RWops *src, int flag, int input_code_size)
             return -3;
         }
         *sp++ = table[1][code];
-        if (code == table[0][code])
-        RWSetMsg("circular table entry BIG ERROR");
+        if (code == table[0][code]) {
+            RWSetMsg("circular table entry BIG ERROR");
+            return -3;
+        }
         code = table[0][code];
     }
 
