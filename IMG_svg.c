@@ -31,6 +31,7 @@
 #define acosf   SDL_acosf
 #define atan2f  SDL_atan2f
 #define cosf    SDL_cosf
+#define fabs    SDL_fabs
 #define fabsf   SDL_fabsf
 #define fmodf   SDL_fmodf
 #define free    SDL_free
