@@ -104,6 +104,7 @@ static struct {
     void (*png_set_packing) (png_structrp png_ptr);
     void (*png_set_read_fn) (png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr read_data_fn);
     void (*png_set_strip_16) (png_structrp png_ptr);
+    int (*png_set_interlace_handling) (png_structrp png_ptr);
     int (*png_sig_cmp) (png_const_bytep sig, png_size_t start, png_size_t num_to_check);
 #ifndef LIBPNG_VERSION_12
     jmp_buf* (*png_set_longjmp_fn) (png_structrp, png_longjmp_ptr, size_t);
@@ -153,6 +154,7 @@ int IMG_InitPNG()
         FUNCTION_LOADER(png_set_packing, void (*) (png_structrp png_ptr))
         FUNCTION_LOADER(png_set_read_fn, void (*) (png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr read_data_fn))
         FUNCTION_LOADER(png_set_strip_16, void (*) (png_structrp png_ptr))
+        FUNCTION_LOADER(png_set_interlace_handling, int (*) (png_structrp png_ptr))
         FUNCTION_LOADER(png_sig_cmp, int (*) (png_const_bytep sig, png_size_t start, png_size_t num_to_check))
 #ifndef LIBPNG_VERSION_12
         FUNCTION_LOADER(png_set_longjmp_fn, jmp_buf* (*) (png_structrp, png_longjmp_ptr, size_t))
@@ -287,7 +289,10 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
             &color_type, &interlace_type, NULL, NULL);
 
     /* tell libpng to strip 16 bit/color files down to 8 bits/color */
-    lib.png_set_strip_16(png_ptr) ;
+    lib.png_set_strip_16(png_ptr);
+
+    /* tell libpng to de-interlace (if the image is interlaced) */
+    lib.png_set_interlace_handling(png_ptr);
 
     /* Extract multiple pixels with bit depths of 1, 2, and 4 from a single
      * byte into separate bytes (useful for paletted and grayscale images).
@@ -607,8 +612,8 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
 #define MINIZ_SDL_MALLOC
 #define MZ_ASSERT(x) SDL_assert(x)
 #undef memset
-#define memset	SDL_memset
-#define strlen	SDL_strlen
+#define memset  SDL_memset
+#define strlen  SDL_strlen
 
 #include "miniz.h"
 
