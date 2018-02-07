@@ -595,6 +595,18 @@ do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_
     SDL_RWseek(src, layer->hierarchy_file_offset, RW_SEEK_SET);
     hierarchy = read_xcf_hierarchy(src);
 
+    if (hierarchy->bpp > 4) {  /* unsupported. */
+        SDL_Log("Unknown Gimp image bpp (%u)\n", (unsigned int) hierarchy->bpp);
+        free_xcf_hierarchy(hierarchy);
+        return 1;
+    }
+
+    if ((hierarchy->width > 20000) || (hierarchy->height > 20000)) {  /* arbitrary limit to avoid integer overflow. */
+        SDL_Log("Gimp image too large (%ux%u)\n", (unsigned int) hierarchy->width, (unsigned int) hierarchy->height);
+        free_xcf_hierarchy(hierarchy);
+        return 1;
+    }
+
     level = NULL;
     for (i = 0; hierarchy->level_file_offsets[i]; i++) {
         SDL_RWseek(src, hierarchy->level_file_offsets[i], RW_SEEK_SET);
