@@ -147,7 +147,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
     if (bpl > surface->pitch) {
         error = "bytes per line is too large (corrupt?)";
     }
-    buf = (Uint8 *)SDL_malloc(bpl);
+    buf = (Uint8 *)SDL_calloc(SDL_max(bpl, surface->pitch), 1);
     row = (Uint8 *)surface->pixels;
     for ( y=0; y<surface->h; ++y ) {
         /* decode a scan line to a temporary buffer first */
