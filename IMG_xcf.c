@@ -483,6 +483,10 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
   int i, size, count, j, length;
   unsigned char val;
 
+  if (len == 0) {  /* probably bogus data. */
+    return NULL;
+  }
+
   t = load = (unsigned char *) SDL_malloc (len);
   reallen = SDL_RWread (src, t, 1, len);
 
@@ -606,6 +610,16 @@ do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_
                 tile = load_tile(src, level->tile_file_offsets[j + 1] - level->tile_file_offsets[j], hierarchy->bpp, ox, oy);
             } else {
                 tile = load_tile(src, ox * oy * 6, hierarchy->bpp, ox, oy);
+            }
+
+            if (!tile) {
+                if (hierarchy) {
+                    free_xcf_hierarchy(hierarchy);
+                }
+                if (level) {
+                    free_xcf_level(level);
+                }
+                return 1;
             }
 
             p8 = tile;
