@@ -553,7 +553,7 @@ static void nsvg__roundJoin(NSVGrasterizer* r, NSVGpoint* left, NSVGpoint* right
 	if (da < NSVG_PI) da += NSVG_PI*2;
 	if (da > NSVG_PI) da -= NSVG_PI*2;
 
-	n = (int)SDL_ceilf((nsvg__absf(da) / NSVG_PI) * (float)ncap);
+	n = (int)ceilf((nsvg__absf(da) / NSVG_PI) * (float)ncap);
 	if (n < 2) n = 2;
 	if (n > ncap) n = ncap;
 
@@ -596,7 +596,7 @@ static void nsvg__straightJoin(NSVGrasterizer* r, NSVGpoint* left, NSVGpoint* ri
 static int nsvg__curveDivs(float r, float arc, float tol)
 {
 	float da = acosf(r / (r + tol)) * 2.0f;
-	int divs = (int)SDL_ceilf(arc / da);
+	int divs = (int)ceilf(arc / da);
 	if (divs < 2) divs = 2;
 	return divs;
 }
@@ -868,10 +868,10 @@ static NSVGactiveEdge* nsvg__addActive(NSVGrasterizer* r, NSVGedge* e, float sta
 //	STBTT_assert(e->y0 <= start_point);
 	// round dx down to avoid going too far
 	if (dxdy < 0)
-		z->dx = (int)(-SDL_floorf(NSVG__FIX * -dxdy));
+		z->dx = (int)(-floorf(NSVG__FIX * -dxdy));
 	else
-		z->dx = (int)SDL_floorf(NSVG__FIX * dxdy);
-	z->x = (int)SDL_floorf(NSVG__FIX * (e->x0 + dxdy * (startPoint - e->y0)));
+		z->dx = (int)floorf(NSVG__FIX * dxdy);
+	z->x = (int)floorf(NSVG__FIX * (e->x0 + dxdy * (startPoint - e->y0)));
 //	z->x -= off_x * FIX;
 	z->ey = e->y1;
 	z->next = 0;
