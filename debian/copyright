@@ -4,7 +4,7 @@ Upstream-Contact: Sam Lantinga <slouken@libsdl.org>
 Source: downloaded from http://www.libsdl.org/projects/SDL_image/
 
 Files: *
-Copyright: 1997-2017  Sam Lantinga
+Copyright: 1997-2018  Sam Lantinga
            2009  Eric Wing
            1990, 1991, 1993  David Koblas
            1996  Torsten Martinsen
