@@ -49,8 +49,11 @@
 #define sqrt    SDL_sqrt
 #define sqrtf   SDL_sqrtf
 #define sscanf  SDL_sscanf
+#undef strchr
 #define strchr  SDL_strchr
+#undef strcmp
 #define strcmp  SDL_strcmp
+#undef strncmp
 #define strncmp SDL_strncmp
 #undef strncpy
 #define strncpy SDL_strlcpy
