@@ -860,6 +860,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
       }
       free_xcf_channel (channel [i]);
     }
+    SDL_free(channel);
 
     SDL_FreeSurface (chs);
   }
