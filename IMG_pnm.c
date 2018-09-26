@@ -73,7 +73,7 @@ static int ReadNumber(SDL_RWops *src)
     /* Skip leading whitespace */
     do {
         if ( ! SDL_RWread(src, &ch, 1, 1) ) {
-            return(0);
+            return(-1);
         }
         /* Eat comments as whitespace */
         if ( ch == '#' ) {  /* Comment is '#' to end of line */
