@@ -611,6 +611,8 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
 #define MINIZ_NO_TIME
 #define MINIZ_SDL_MALLOC
 #define MZ_ASSERT(x) SDL_assert(x)
+#undef memcpy
+#define memcpy  SDL_memcpy
 #undef memset
 #define memset  SDL_memset
 #define strlen  SDL_strlen
