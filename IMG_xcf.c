@@ -225,7 +225,8 @@ static char * read_string (SDL_RWops * src) {
   char * data;
 
   tmp = SDL_ReadBE32 (src);
-  if (tmp > 0) {
+  Sint64 remaining = SDL_RWsize(src) - SDL_RWtell(src);
+  if (tmp > 0 && tmp < remaining) {
     data = (char *) SDL_malloc (sizeof (char) * tmp);
     SDL_RWread (src, data, tmp, 1);
   }
