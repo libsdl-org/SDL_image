@@ -1,7 +1,7 @@
 diff -ruN libpng-1.6.32.orig/Android.mk libpng-1.6.32/Android.mk
 --- libpng-1.6.32.orig/Android.mk	1969-12-31 16:00:00.000000000 -0800
-+++ libpng-1.6.32/Android.mk	2017-10-22 10:52:42.000000000 -0700
-@@ -0,0 +1,28 @@
++++ libpng-1.6.32/Android.mk	2018-10-01 20:26:46.000000000 -0700
+@@ -0,0 +1,37 @@
 +LOCAL_PATH:= $(call my-dir)
 +
 +include $(CLEAR_VARS)
@@ -10,6 +10,15 @@ diff -ruN libpng-1.6.32.orig/Android.mk libpng-1.6.32/Android.mk
 +    png.c pngerror.c \
 +	pngget.c pngmem.c pngpread.c pngread.c pngrio.c pngrtran.c pngrutil.c \
 +	pngset.c pngtrans.c pngwio.c pngwrite.c pngwtran.c pngwutil.c
++
++ifeq ($(TARGET_ARCH_ABI),armeabi)
++common_SRC_FILES += \
++	arm/arm_init.c arm/filter_neon.S arm/filter_neon_intrinsics.c
++endif
++ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
++common_SRC_FILES += \
++	arm/arm_init.c arm/filter_neon.S arm/filter_neon_intrinsics.c
++endif
 +
 +common_CFLAGS := ## -fomit-frame-pointer
 +
@@ -32,7 +41,7 @@ diff -ruN libpng-1.6.32.orig/Android.mk libpng-1.6.32/Android.mk
 +
 diff -ruN libpng-1.6.32.orig/pnglibconf.h libpng-1.6.32/pnglibconf.h
 --- libpng-1.6.32.orig/pnglibconf.h	1969-12-31 16:00:00.000000000 -0800
-+++ libpng-1.6.32/pnglibconf.h	2017-10-22 10:52:50.000000000 -0700
++++ libpng-1.6.32/pnglibconf.h	2018-10-01 20:26:26.000000000 -0700
 @@ -0,0 +1,217 @@
 +/* libpng 1.6.2 STANDARD API DEFINITION */
 +
