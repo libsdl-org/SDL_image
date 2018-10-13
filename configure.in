@@ -104,7 +104,7 @@ find_lib()
         host_lib_path="/usr/$base_libdir /usr/local/$base_libdir"
     fi
     for path in $env_lib_path $gcc_bin_path $gcc_lib_path $host_lib_path; do
-        lib=[`ls -- $path/$1 2>/dev/null | sort | sed 's/.*\/\(.*\)/\1/; q'`]
+        lib=[`ls -- $path/$1 2>/dev/null | sed -e '/\.so\..*\./d' -e 's,.*/,,' | sort | tail -1`]
         if test x$lib != x; then
             echo $lib
             return
@@ -176,12 +176,9 @@ if test x$enable_jpg = xyes || test x$enable_tif = xyes; then
                 jpg_lib=[`find_lib "libjpeg*.dll"`]
                 ;;
             *)
-                jpg_lib=[`find_lib "libjpeg.so.[0-9]"`]
+                jpg_lib=[`find_lib "libjpeg[0-9]*.so.*"`]
                 if test x$jpg_lib = x; then
-                    jpg_lib=[`find_lib "libjpeg.so.[0-9][0-9]"`]
-                fi
-                if test x$jpg_lib = x; then
-                    jpg_lib=[`find_lib "libjpeg.so.[0-9]*"`]
+                    jpg_lib=[`find_lib "libjpeg.so.*"`]
                 fi
                 ;;
         esac
@@ -216,15 +213,9 @@ if test "x$enable_png" = xyes; then
                 png_lib=[`find_lib "libpng*.dll"`]
                 ;;
             *)
-                png_lib=[`find_lib "libpng.so.[0-9]"`]
+                png_lib=[`find_lib "libpng[0-9]*.so.*"`]
                 if test x$png_lib = x; then
-                    png_lib=[`find_lib "libpng.so.[0-9]*"`]
-                fi
-                if test x$png_lib = x; then
-                    png_lib=[`find_lib "libpng*.so.[0-9]"`]
-                fi
-                if test x$png_lib = x; then
-                    png_lib=[`find_lib "libpng*.so.[0-9]*"`]
+                    png_lib=[`find_lib "libpng.so.*"`]
                 fi
                 ;;
         esac
@@ -248,9 +239,9 @@ if test x$enable_tif = xyes; then
                 tif_lib=[`find_lib "libtiff-*.dll"`]
                 ;;
             *)
-                tif_lib=[`find_lib "libtiff.so.[0-9]"`]
+                tif_lib=[`find_lib "libtiff[0-9]*.so.*"`]
                 if test x$tif_lib = x; then
-                    tif_lib=[`find_lib "libtiff.so.[0-9]*"`]
+                    tif_lib=[`find_lib "libtiff.so.*"`]
                 fi
                 ;;
         esac
@@ -285,15 +276,9 @@ if test x$enable_webp = xyes; then
                 webp_lib=[`find_lib "libwebp*.dll"`]
                 ;;
             *)
-                webp_lib=[`find_lib "libwebp.so.[0-9]"`]
+                webp_lib=[`find_lib "libwebp[0-9]*.so.*"`]
                 if test x$webp_lib = x; then
-                    webp_lib=[`find_lib "libwebp.so.[0-9]*"`]
-                fi
-                if test x$webp_lib = x; then
-                    webp_lib=[`find_lib "libwebp*.so.[0-9]"`]
-                fi
-                if test x$webp_lib = x; then
-                    webp_lib=[`find_lib "libwebp*.so.[0-9]*"`]
+                    webp_lib=[`find_lib "libwebp.so.*"`]
                 fi
                 ;;
         esac
