@@ -12962,6 +12962,10 @@ else
   enable_imageio=yes
 fi
 
+                { $as_echo "$as_me:$LINENO: checking for ImageIO support" >&5
+$as_echo_n "checking for ImageIO support... " >&6; }
+        { $as_echo "$as_me:$LINENO: result: $enable_imageio" >&5
+$as_echo "$enable_imageio" >&6; }
         if test x$enable_imageio = xyes; then
             IMG_LIBS="-Wl,-framework,ApplicationServices -lobjc $IMG_LIBS"
         else
@@ -13657,11 +13661,6 @@ else
   enable_webp_shared=yes
 fi
 
-
-{ $as_echo "$as_me:$LINENO: checking for ImageIO support" >&5
-$as_echo_n "checking for ImageIO support... " >&6; }
-{ $as_echo "$as_me:$LINENO: result: $enable_imageio" >&5
-$as_echo "$enable_imageio" >&6; }
 
 if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_imageio != xyes; then
     if test "${ac_cv_header_jpeglib_h+set}" = set; then
