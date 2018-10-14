@@ -12963,7 +12963,7 @@ else
 fi
 
         if test x$enable_imageio = xyes; then
-            IMG_LIBS="-Wl,-framework,ApplicationServices $IMG_LIBS"
+            IMG_LIBS="-Wl,-framework,ApplicationServices -lobjc $IMG_LIBS"
         else
             CFLAGS="$CFLAGS -DSDL_IMAGE_USE_COMMON_BACKEND"
         fi
@@ -13658,7 +13658,12 @@ else
 fi
 
 
-if test x$enable_jpg = xyes || test x$enable_tif = xyes; then
+{ $as_echo "$as_me:$LINENO: checking for ImageIO support" >&5
+$as_echo_n "checking for ImageIO support... " >&6; }
+{ $as_echo "$as_me:$LINENO: result: $enable_imageio" >&5
+$as_echo "$enable_imageio" >&6; }
+
+if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_imageio != xyes; then
     if test "${ac_cv_header_jpeglib_h+set}" = set; then
   { $as_echo "$as_me:$LINENO: checking for jpeglib.h" >&5
 $as_echo_n "checking for jpeglib.h... " >&6; }
@@ -13891,7 +13896,7 @@ $as_echo "$as_me: WARNING: JPG image loading disabled" >&2;}
     fi
 fi
 
-if test "x$enable_png" = xyes; then
+if test x$enable_png = xyes -a x$enable_imageio != xyes; then
 
 pkg_failed=no
 { $as_echo "$as_me:$LINENO: checking for LIBPNG" >&5
@@ -14407,7 +14412,7 @@ $as_echo "$as_me: WARNING: PNG image loading disabled" >&2;}
     fi
 fi
 
-if test x$enable_tif = xyes; then
+if test x$enable_tif = xyes -a x$enable_imageio != xyes; then
     if test "${ac_cv_header_tiffio_h+set}" = set; then
   { $as_echo "$as_me:$LINENO: checking for tiffio.h" >&5
 $as_echo_n "checking for tiffio.h... " >&6; }

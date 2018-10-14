@@ -79,8 +79,11 @@ case "$host" in
     *-*-darwin*)
         AC_ARG_ENABLE([imageio], [AC_HELP_STRING([--enable-imageio], [use native Mac OS X frameworks for loading images [default=yes]])],
                       [], [enable_imageio=yes])
+        dnl Show a message when we use ImageIO support so it's not a surprise
+        AC_MSG_CHECKING([for ImageIO support])
+        AC_MSG_RESULT($enable_imageio)
         if test x$enable_imageio = xyes; then
-            IMG_LIBS="-Wl,-framework,ApplicationServices $IMG_LIBS"
+            IMG_LIBS="-Wl,-framework,ApplicationServices -lobjc $IMG_LIBS"
         else
             CFLAGS="$CFLAGS -DSDL_IMAGE_USE_COMMON_BACKEND"
         fi
@@ -159,7 +162,7 @@ AC_ARG_ENABLE([webp], [AC_HELP_STRING([--enable-webp], [support loading WEBP ima
 AC_ARG_ENABLE([webp-shared], AC_HELP_STRING([--enable-webp-shared], [dynamically load WEBP support [[default=yes]]]),
  [], [enable_webp_shared=yes])
 
-if test x$enable_jpg = xyes || test x$enable_tif = xyes; then
+if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_imageio != xyes; then
     AC_CHECK_HEADER([jpeglib.h], [have_jpg_hdr=yes])
     AC_CHECK_LIB([jpeg], [jpeg_CreateDecompress], [have_jpg_lib=yes])
     if test x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; then
@@ -188,7 +191,7 @@ if test x$enable_jpg = xyes || test x$enable_tif = xyes; then
     fi
 fi
 
-if test "x$enable_png" = xyes; then
+if test x$enable_png = xyes -a x$enable_imageio != xyes; then
     PKG_CHECK_MODULES([LIBPNG], [libpng], [dnl
         have_png_hdr=yes
         have_png_lib=yes
@@ -225,7 +228,7 @@ if test "x$enable_png" = xyes; then
     fi
 fi
 
-if test x$enable_tif = xyes; then
+if test x$enable_tif = xyes -a x$enable_imageio != xyes; then
     AC_CHECK_HEADER([tiffio.h], [have_tif_hdr=yes])
     AC_CHECK_LIB([tiff], [TIFFClientOpen], [have_tif_lib=yes], [], [-lz])
     if test x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; then
