@@ -71,33 +71,44 @@
 #include <png.h>
 
 /* Check for the older version of libpng */
-#if (PNG_LIBPNG_VER_MAJOR == 1) && (PNG_LIBPNG_VER_MINOR < 4)
+#if (PNG_LIBPNG_VER_MAJOR == 1) 
+#if (PNG_LIBPNG_VER_MINOR < 5)
 #define LIBPNG_VERSION_12
+typedef png_bytep png_const_bytep;
+typedef png_color *png_const_colorp;
+#endif
+#if (PNG_LIBPNG_VER_MINOR < 6)
+typedef png_structp png_const_structrp;
+typedef png_infop png_const_inforp;
+typedef png_structp png_structrp;
+typedef png_infop png_inforp;
+#endif
 #endif
 
 static struct {
 	int loaded;
 	void *handle;
-	png_infop (*png_create_info_struct) (png_structp png_ptr);
+	png_infop (*png_create_info_struct) (png_const_structrp png_ptr);
 	png_structp (*png_create_read_struct) (png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
 	void (*png_destroy_read_struct) (png_structpp png_ptr_ptr, png_infopp info_ptr_ptr, png_infopp end_info_ptr_ptr);
-	png_uint_32 (*png_get_IHDR) (png_structp png_ptr, png_infop info_ptr, png_uint_32 *width, png_uint_32 *height, int *bit_depth, int *color_type, int *interlace_method, int *compression_method, int *filter_method);
-	png_voidp (*png_get_io_ptr) (png_structp png_ptr);
-	png_byte (*png_get_channels) (png_structp png_ptr, png_infop info_ptr);
-	png_uint_32 (*png_get_PLTE) (png_structp png_ptr, png_infop info_ptr, png_colorp *palette, int *num_palette);
-	png_uint_32 (*png_get_tRNS) (png_structp png_ptr, png_infop info_ptr, png_bytep *trans, int *num_trans, png_color_16p *trans_values);
-	png_uint_32 (*png_get_valid) (png_structp png_ptr, png_infop info_ptr, png_uint_32 flag);
-	void (*png_read_image) (png_structp png_ptr, png_bytepp image);
-	void (*png_read_info) (png_structp png_ptr, png_infop info_ptr);
-	void (*png_read_update_info) (png_structp png_ptr, png_infop info_ptr);
-	void (*png_set_expand) (png_structp png_ptr);
-	void (*png_set_gray_to_rgb) (png_structp png_ptr);
-	void (*png_set_packing) (png_structp png_ptr);
-	void (*png_set_read_fn) (png_structp png_ptr, png_voidp io_ptr, png_rw_ptr read_data_fn);
-	void (*png_set_strip_16) (png_structp png_ptr);
-	int (*png_sig_cmp) (png_bytep sig, png_size_t start, png_size_t num_to_check);
+	png_uint_32 (*png_get_IHDR) (png_const_structrp png_ptr, png_const_inforp info_ptr, png_uint_32 *width, png_uint_32 *height, int *bit_depth, int *color_type, int *interlace_method, int *compression_method, int *filter_method);
+	png_voidp (*png_get_io_ptr) (png_const_structrp png_ptr);
+	png_byte (*png_get_channels) (png_const_structrp png_ptr, png_const_inforp info_ptr);
+	png_uint_32 (*png_get_PLTE) (png_const_structrp png_ptr, png_inforp info_ptr, png_colorp *palette, int *num_palette);
+	png_uint_32 (*png_get_tRNS) (png_const_structrp png_ptr, png_inforp info_ptr, png_bytep *trans, int *num_trans, png_color_16p *trans_values);
+	png_uint_32 (*png_get_valid) (png_const_structrp png_ptr, png_const_inforp info_ptr, png_uint_32 flag);
+	void (*png_read_image) (png_structrp png_ptr, png_bytepp image);
+	void (*png_read_info) (png_structrp png_ptr, png_inforp info_ptr);
+	void (*png_read_update_info) (png_structrp png_ptr, png_inforp info_ptr);
+	void (*png_set_expand) (png_structrp png_ptr);
+	void (*png_set_gray_to_rgb) (png_structrp png_ptr);
+	void (*png_set_packing) (png_structrp png_ptr);
+	void (*png_set_read_fn) (png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr read_data_fn);
+	void (*png_set_strip_16) (png_structrp png_ptr);
+	int (*png_set_interlace_handling) (png_structp png_ptr);
+	int (*png_sig_cmp) (png_const_bytep sig, png_size_t start, png_size_t num_to_check);
 #ifndef LIBPNG_VERSION_12
-	jmp_buf* (*png_set_longjmp_fn) (png_structp, png_longjmp_ptr, size_t);
+	jmp_buf* (*png_set_longjmp_fn) (png_structrp, png_longjmp_ptr, size_t);
 #endif
 } lib;
 
@@ -110,14 +121,14 @@ int IMG_InitPNG()
 			return -1;
 		}
 		lib.png_create_info_struct =
-			(png_infop (*) (png_structp))
+			(png_infop (*) (png_const_structrp))
 			SDL_LoadFunction(lib.handle, "png_create_info_struct");
 		if ( lib.png_create_info_struct == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
 		lib.png_create_read_struct =
-			(png_structp (*) (png_const_charp, png_voidp, png_error_ptr, png_error_ptr))
+			(png_structrp (*) (png_const_charp, png_voidp, png_error_ptr, png_error_ptr))
 			SDL_LoadFunction(lib.handle, "png_create_read_struct");
 		if ( lib.png_create_read_struct == NULL ) {
 			SDL_UnloadObject(lib.handle);
@@ -131,105 +142,112 @@ int IMG_InitPNG()
 			return -1;
 		}
 		lib.png_get_IHDR =
-			(png_uint_32 (*) (png_structp, png_infop, png_uint_32 *, png_uint_32 *, int *, int *, int *, int *, int *))
+			(png_uint_32 (*) (png_const_structrp, png_const_inforp, png_uint_32 *, png_uint_32 *, int *, int *, int *, int *, int *))
 			SDL_LoadFunction(lib.handle, "png_get_IHDR");
 		if ( lib.png_get_IHDR == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
 		lib.png_get_channels =
-			(png_byte (*) (png_structp, png_infop))
+			(png_byte (*) (png_const_structrp, png_const_inforp))
 			SDL_LoadFunction(lib.handle, "png_get_channels");
 		if ( lib.png_get_channels == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
 		lib.png_get_io_ptr =
-			(png_voidp (*) (png_structp))
+			(png_voidp (*) (png_const_structrp))
 			SDL_LoadFunction(lib.handle, "png_get_io_ptr");
 		if ( lib.png_get_io_ptr == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
 		lib.png_get_PLTE =
-			(png_uint_32 (*) (png_structp, png_infop, png_colorp *, int *))
+			(png_uint_32 (*) (png_const_structrp, png_inforp, png_colorp *, int *))
 			SDL_LoadFunction(lib.handle, "png_get_PLTE");
 		if ( lib.png_get_PLTE == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
 		lib.png_get_tRNS =
-			(png_uint_32 (*) (png_structp, png_infop, png_bytep *, int *, png_color_16p *))
+			(png_uint_32 (*) (png_const_structrp, png_inforp, png_bytep *, int *, png_color_16p *))
 			SDL_LoadFunction(lib.handle, "png_get_tRNS");
 		if ( lib.png_get_tRNS == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
 		lib.png_get_valid =
-			(png_uint_32 (*) (png_structp, png_infop, png_uint_32))
+			(png_uint_32 (*) (png_const_structrp, png_const_inforp, png_uint_32))
 			SDL_LoadFunction(lib.handle, "png_get_valid");
 		if ( lib.png_get_valid == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
 		lib.png_read_image =
-			(void (*) (png_structp, png_bytepp))
+			(void (*) (png_structrp, png_bytepp))
 			SDL_LoadFunction(lib.handle, "png_read_image");
 		if ( lib.png_read_image == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
 		lib.png_read_info =
-			(void (*) (png_structp, png_infop))
+			(void (*) (png_structrp, png_inforp))
 			SDL_LoadFunction(lib.handle, "png_read_info");
 		if ( lib.png_read_info == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
 		lib.png_read_update_info =
-			(void (*) (png_structp, png_infop))
+			(void (*) (png_structrp, png_inforp))
 			SDL_LoadFunction(lib.handle, "png_read_update_info");
 		if ( lib.png_read_update_info == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
 		lib.png_set_expand =
-			(void (*) (png_structp))
+			(void (*) (png_structrp))
 			SDL_LoadFunction(lib.handle, "png_set_expand");
 		if ( lib.png_set_expand == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
 		lib.png_set_gray_to_rgb =
-			(void (*) (png_structp))
+			(void (*) (png_structrp))
 			SDL_LoadFunction(lib.handle, "png_set_gray_to_rgb");
 		if ( lib.png_set_gray_to_rgb == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
 		lib.png_set_packing =
-			(void (*) (png_structp))
+			(void (*) (png_structrp))
 			SDL_LoadFunction(lib.handle, "png_set_packing");
 		if ( lib.png_set_packing == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
 		lib.png_set_read_fn =
-			(void (*) (png_structp, png_voidp, png_rw_ptr))
+			(void (*) (png_structrp, png_voidp, png_rw_ptr))
 			SDL_LoadFunction(lib.handle, "png_set_read_fn");
 		if ( lib.png_set_read_fn == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
 		lib.png_set_strip_16 =
-			(void (*) (png_structp))
+			(void (*) (png_structrp))
 			SDL_LoadFunction(lib.handle, "png_set_strip_16");
 		if ( lib.png_set_strip_16 == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
+		lib.png_set_interlace_handling =
+			(void (*) (png_structp))
+			SDL_LoadFunction(lib.handle, "png_set_interlace_handling");
+		if ( lib.png_set_interlace_handling == NULL ) {
+			SDL_UnloadObject(lib.handle);
+			return -1;
+		}
 		lib.png_sig_cmp =
-			(int (*) (png_bytep, png_size_t, png_size_t))
+			(int (*) (png_const_bytep, png_size_t, png_size_t))
 			SDL_LoadFunction(lib.handle, "png_sig_cmp");
 		if ( lib.png_sig_cmp == NULL ) {
 			SDL_UnloadObject(lib.handle);
@@ -237,7 +255,7 @@ int IMG_InitPNG()
 		}
 #ifndef LIBPNG_VERSION_12
 		lib.png_set_longjmp_fn =
-			(jmp_buf * (*) (png_structp, png_longjmp_ptr, size_t))
+			(jmp_buf * (*) (png_structrp, png_longjmp_ptr, size_t))
 			SDL_LoadFunction(lib.handle, "png_set_longjmp_fn");
 		if ( lib.png_set_longjmp_fn == NULL ) {
 			SDL_UnloadObject(lib.handle);
@@ -280,6 +298,7 @@ int IMG_InitPNG()
 		lib.png_set_packing = png_set_packing;
 		lib.png_set_read_fn = png_set_read_fn;
 		lib.png_set_strip_16 = png_set_strip_16;
+		lib.png_set_interlace_handling = png_set_interlace_handling;
 		lib.png_sig_cmp = png_sig_cmp;
 #ifndef LIBPNG_VERSION_12
 		lib.png_set_longjmp_fn = png_set_longjmp_fn;
@@ -404,6 +423,9 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	/* tell libpng to strip 16 bit/color files down to 8 bits/color */
 	lib.png_set_strip_16(png_ptr) ;
 
+	/* tell libpng to de-interlace (if the image is interlaced) */
+	lib.png_set_interlace_handling(png_ptr) ;
+
 	/* Extract multiple pixels with bit depths of 1, 2, and 4 from a single
 	 * byte into separate bytes (useful for paletted and grayscale images).
 	 */
@@ -515,9 +537,9 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	    if(color_type == PNG_COLOR_TYPE_GRAY) {
 		palette->ncolors = 256;
 		for(i = 0; i < 256; i++) {
-		    palette->colors[i].r = i;
-		    palette->colors[i].g = i;
-		    palette->colors[i].b = i;
+		    palette->colors[i].r = (Uint8)i;
+		    palette->colors[i].g = (Uint8)i;
+		    palette->colors[i].b = (Uint8)i;
 		}
 	    } else if (png_num_palette > 0 ) {
 		palette->ncolors = png_num_palette; 
