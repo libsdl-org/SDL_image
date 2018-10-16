@@ -239,7 +239,7 @@ int IMG_InitPNG()
 			return -1;
 		}
 		lib.png_set_interlace_handling =
-			(void (*) (png_structp))
+			(int (*) (png_structp))
 			SDL_LoadFunction(lib.handle, "png_set_interlace_handling");
 		if ( lib.png_set_interlace_handling == NULL ) {
 			SDL_UnloadObject(lib.handle);
@@ -507,7 +507,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 
 	/* Create the array of pointers to image data */
 	row_pointers = (png_bytep*) malloc(sizeof(png_bytep)*height);
-	if ( (row_pointers == NULL) ) {
+	if (row_pointers == NULL) {
 		error = "Out of memory";
 		goto done;
 	}
