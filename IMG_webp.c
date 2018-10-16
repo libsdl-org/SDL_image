@@ -44,9 +44,15 @@
 static struct {
     int loaded;
     void *handle;
+#if WEBP_DECODER_ABI_VERSION < 0x0100
+    VP8StatusCode (*WebPGetFeaturesInternal) (const uint8_t *data, uint32_t data_size, WebPBitstreamFeatures* const features, int decoder_abi_version);
+    uint8_t*    (*WebPDecodeRGBInto) (const uint8_t* data, uint32_t data_size, uint8_t* output_buffer, int output_buffer_size, int output_stride);
+    uint8_t*    (*WebPDecodeRGBAInto) (const uint8_t* data, uint32_t data_size, uint8_t* output_buffer, int output_buffer_size, int output_stride);
+#else
     VP8StatusCode (*WebPGetFeaturesInternal) (const uint8_t *data, size_t data_size, WebPBitstreamFeatures* features, int decoder_abi_version);
     uint8_t*    (*WebPDecodeRGBInto) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride);
     uint8_t*    (*WebPDecodeRGBAInto) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride);
+#endif
 } lib;
 
 #ifdef LOAD_WEBP_DYNAMIC
@@ -67,9 +73,15 @@ int IMG_InitWEBP()
             return -1;
         }
 #endif
+#if WEBP_DECODER_ABI_VERSION < 0x0100
+        FUNCTION_LOADER(WebPGetFeaturesInternal, VP8StatusCode (*) (const uint8_t *data, uint32_t data_size, WebPBitstreamFeatures* const features, int decoder_abi_version))
+        FUNCTION_LOADER(WebPDecodeRGBInto, uint8_t * (*) (const uint8_t* data, uint32_t data_size, uint8_t* output_buffer, int output_buffer_size, int output_stride))
+        FUNCTION_LOADER(WebPDecodeRGBAInto, uint8_t * (*) (const uint8_t* data, uint32_t data_size, uint8_t* output_buffer, int output_buffer_size, int output_stride))
+#else
         FUNCTION_LOADER(WebPGetFeaturesInternal, VP8StatusCode (*) (const uint8_t *data, size_t data_size, WebPBitstreamFeatures* features, int decoder_abi_version))
         FUNCTION_LOADER(WebPDecodeRGBInto, uint8_t * (*) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride))
         FUNCTION_LOADER(WebPDecodeRGBAInto, uint8_t * (*) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride))
+#endif
     }
     ++lib.loaded;
 
@@ -93,8 +105,9 @@ static int webp_getinfo( SDL_RWops *src, int *datasize ) {
     int is_WEBP;
     Uint8 magic[20];
 
-    if ( !src )
+    if ( !src ) {
         return 0;
+    }
     start = SDL_RWtell(src);
     is_WEBP = 0;
     if ( SDL_RWread(src, magic, 1, sizeof(magic)) == sizeof(magic) ) {
@@ -109,11 +122,13 @@ static int webp_getinfo( SDL_RWops *src, int *datasize ) {
              magic[12] == 'V' &&
              magic[13] == 'P' &&
              magic[14] == '8' &&
-#if WEBP_DECODER_ABI_VERSION < 0x0003 /* old versions don't support WEBPVP8X and WEBPVP8L */
-             magic[15] == ' ') {
-#else
-             (magic[15] == ' ' || magic[15] == 'X' || magic[15] == 'L')) {
-#endif
+         /* old versions don't support VP8X and VP8L */
+         #if (WEBP_DECODER_ABI_VERSION < 0x0003)
+             magic[15] == ' '
+         #else
+            (magic[15] == ' ' || magic[15] == 'X' || magic[15] == 'L')
+         #endif
+           ) {
             is_WEBP = 1;
             if ( datasize ) {
                 *datasize = (int)(SDL_RWseek(src, 0, RW_SEEK_END) - start);
