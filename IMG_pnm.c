@@ -27,6 +27,7 @@
  * Does not support: maximum component value > 255
  */
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -78,7 +79,7 @@ static int ReadNumber(SDL_RWops *src)
 	/* Skip leading whitespace */
 	do {
 		if ( ! SDL_RWread(src, &ch, 1, 1) ) {
-			return(0);
+			return(-1);
 		}
 		/* Eat comments as whitespace */
 		if ( ch == '#' ) {  /* Comment is '#' to end of line */
@@ -91,7 +92,14 @@ static int ReadNumber(SDL_RWops *src)
 	} while ( isspace(ch) );
 
 	/* Add up the number */
+	if (!isdigit(ch)) {
+		return -1;
+	}
 	do {
+		/* Protect from possible overflow */
+		if (number >= INT_MAX / 10) {
+			return -1;
+		}
 		number *= 10;
 		number += ch-'0';
 
@@ -177,13 +185,13 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 		c[1].r = c[1].g = c[1].b = 0;
 		surface->format->palette->ncolors = 2;
 		bpl = (width + 7) >> 3;
-		buf = malloc(bpl);
+		buf = (Uint8 *)malloc(bpl);
 		if(buf == NULL)
 			ERROR("Out of memory");
 	}
 
 	/* Read the image into the surface */
-	row = surface->pixels;
+	row = (Uint8 *)surface->pixels;
 	for(y = 0; y < height; y++) {
 		if(ascii) {
 			int i;

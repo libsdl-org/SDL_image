@@ -37,7 +37,7 @@ static struct {
 	TIFF* (*TIFFClientOpen)(const char*, const char*, thandle_t, TIFFReadWriteProc, TIFFReadWriteProc, TIFFSeekProc, TIFFCloseProc, TIFFSizeProc, TIFFMapFileProc, TIFFUnmapFileProc);
 	void (*TIFFClose)(TIFF*);
 	int (*TIFFGetField)(TIFF*, ttag_t, ...);
-	int (*TIFFReadRGBAImage)(TIFF*, uint32, uint32, uint32*, int);
+	int (*TIFFReadRGBAImageOriented)(TIFF*, uint32, uint32, uint32*, int, int);
 	TIFFErrorHandler (*TIFFSetErrorHandler)(TIFFErrorHandler);
 } lib;
 
@@ -70,10 +70,10 @@ int IMG_InitTIF()
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
-		lib.TIFFReadRGBAImage =
-			(int (*)(TIFF*, uint32, uint32, uint32*, int))
-			SDL_LoadFunction(lib.handle, "TIFFReadRGBAImage");
-		if ( lib.TIFFReadRGBAImage == NULL ) {
+		lib.TIFFReadRGBAImageOriented =
+			(int (*)(TIFF*, uint32, uint32, uint32*, int, int))
+			SDL_LoadFunction(lib.handle, "TIFFReadRGBAImageOriented");
+		if ( lib.TIFFReadRGBAImageOriented == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
 		}
@@ -106,7 +106,7 @@ int IMG_InitTIF()
 		lib.TIFFClientOpen = TIFFClientOpen;
 		lib.TIFFClose = TIFFClose;
 		lib.TIFFGetField = TIFFGetField;
-		lib.TIFFReadRGBAImage = TIFFReadRGBAImage;
+		lib.TIFFReadRGBAImageOriented = TIFFReadRGBAImageOriented;
 		lib.TIFFSetErrorHandler = TIFFSetErrorHandler;
 	}
 	++lib.loaded;
@@ -165,7 +165,7 @@ static void tiff_unmap(thandle_t fd, tdata_t base, toff_t size)
 
 static toff_t tiff_size(thandle_t fd)
 {
-	Uint32 save_pos;
+	Sint32 save_pos;
 	toff_t size;
 
 	save_pos = SDL_RWtell((SDL_RWops*)fd);
@@ -204,7 +204,7 @@ int IMG_isTIF(SDL_RWops* src)
 SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 {
 	int start;
-	TIFF* tiff;
+	TIFF* tiff = NULL;
 	SDL_Surface* surface = NULL;
 	Uint32 img_width, img_height;
 	Uint32 Rmask, Gmask, Bmask, Amask;
@@ -217,7 +217,7 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 	}
 	start = SDL_RWtell(src);
 
-	if ( !IMG_Init(IMG_INIT_TIF) ) {
+	if ( (IMG_Init(IMG_INIT_TIF) & IMG_INIT_TIF) == 0 ) {
 		return NULL;
 	}
 
@@ -240,31 +240,20 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 	if(!surface)
 		goto error;
 	
-	if(!lib.TIFFReadRGBAImage(tiff, img_width, img_height, surface->pixels, 0))
+	if(!lib.TIFFReadRGBAImageOriented(tiff, img_width, img_height, (uint32 *)surface->pixels, ORIENTATION_TOPLEFT, 0))
 		goto error;
 
-	/* libtiff loads the image upside-down, flip it back */
-	half = img_height / 2;
-	for(y = 0; y < half; y++)
-	{
-	        Uint32 *top = (Uint32 *)surface->pixels + y * surface->pitch/4;
-	        Uint32 *bot = (Uint32 *)surface->pixels
-		              + (img_height - y - 1) * surface->pitch/4;
-		for(x = 0; x < img_width; x++)
-		{
-		        Uint32 tmp = top[x];
-			top[x] = bot[x];
-			bot[x] = tmp;
-		}
-	}
 	lib.TIFFClose(tiff);
 	
 	return surface;
 
 error:
 	SDL_RWseek(src, start, RW_SEEK_SET);
-	if ( surface ) {
+	if (surface) {
 		SDL_FreeSurface(surface);
+	}
+	if (tiff) {
+		lib.TIFFClose(tiff);
 	}
 	return NULL;
 }

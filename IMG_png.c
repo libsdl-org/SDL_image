@@ -374,7 +374,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	}
 	start = SDL_RWtell(src);
 
-	if ( !IMG_Init(IMG_INIT_PNG) ) {
+	if ( (IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) == 0 ) {
 		return NULL;
 	}
 
@@ -444,15 +444,18 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 			     &transv);
 		if(color_type == PNG_COLOR_TYPE_PALETTE) {
 		    /* Check if all tRNS entries are opaque except one */
-		    int i, t = -1;
-		    for(i = 0; i < num_trans; i++)
-			if(trans[i] == 0) {
-			    if(t >= 0)
+		    int j, t = -1;
+		    for(j = 0; j < num_trans; j++) {
+			if(trans[j] == 0) {
+			    if (t >= 0) {
 				break;
-			    t = i;
-			} else if(trans[i] != 255)
+			    }
+			    t = j;
+			} else if(trans[j] != 255) {
 			    break;
-		    if(i == num_trans) {
+			}
+		    }
+		    if(j == num_trans) {
 			/* exactly one transparent index */
 			ckey = t;
 		    } else {

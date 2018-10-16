@@ -171,7 +171,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 	Uint32 Amask;
 	WebPBitstreamFeatures features;
 	int raw_data_size;
-	uint8_t *raw_data;
+	uint8_t *raw_data = NULL;
 	int r;
 	uint8_t *ret;
 
@@ -182,10 +182,9 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 
 	start = SDL_RWtell(src);
 
-	if ( !IMG_Init(IMG_INIT_WEBP) ) {
+	if ( (IMG_Init(IMG_INIT_WEBP) & IMG_INIT_WEBP) == 0 ) {
 		goto error;
 	}
-
 
 	raw_data_size = -1;
 	if ( !webp_getinfo( src, &raw_data_size ) ) {
@@ -219,14 +218,23 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 
 	if ( lib.webp_get_features_internal( raw_data, raw_data_size, &features, WEBP_DECODER_ABI_VERSION ) != VP8_STATUS_OK ) {
 		error = "WebPGetFeatures has failed";
-		return NULL;
+		goto error;
 	}
 
 	/* Check if it's ok !*/
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
 	Rmask = 0x000000FF;
 	Gmask = 0x0000FF00;
 	Bmask = 0x00FF0000;
-	Amask = features.has_alpha?0xFF000001:0;
+	Amask = (features.has_alpha) ? 0xFF000000 : 0;
+#else
+	{ int s = (features.has_alpha) ? 0 : 8;
+	Rmask = 0xFF000000 >> s;
+	Gmask = 0x00FF0000 >> s;
+	Bmask = 0x0000FF00 >> s;
+	Amask = 0x000000FF >> s;
+	}
+#endif
 
 	surface = SDL_AllocSurface(SDL_SWSURFACE, features.width, features.height,
 			features.has_alpha?32:24, Rmask,Gmask,Bmask,Amask);
@@ -237,9 +245,9 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 	}
 
 	if ( features.has_alpha ) {
-		ret = lib.webp_decode_rgba_into( raw_data, raw_data_size, surface->pixels, surface->pitch * surface->h,  surface->pitch );
+		ret = lib.webp_decode_rgba_into( raw_data, raw_data_size, (uint8_t *)surface->pixels, surface->pitch * surface->h,  surface->pitch );
 	} else {
-		ret = lib.webp_decode_rgb_into( raw_data, raw_data_size, surface->pixels, surface->pitch * surface->h,  surface->pitch );
+		ret = lib.webp_decode_rgb_into( raw_data, raw_data_size, (uint8_t *)surface->pixels, surface->pitch * surface->h,  surface->pitch );
 	}
 
 	if ( !ret ) {
@@ -247,17 +255,21 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 		goto error;
 	}
 
+	if ( raw_data ) {
+		free( raw_data );
+	}
+
 	return surface;
 
 
 error:
 
-	if ( surface ) {
-		SDL_FreeSurface( surface );
-	}
-
 	if ( raw_data ) {
 		free( raw_data );
+	}
+
+	if ( surface ) {
+		SDL_FreeSurface( surface );
 	}
 
 	if ( error ) {

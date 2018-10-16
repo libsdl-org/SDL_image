@@ -662,6 +662,22 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
         goto done;
     }
 
+    /* sanity check image size, so we don't overflow integers, etc. */
+    if ((biWidth < 0) || (biWidth > 0xFFFFFF) ||
+        (biHeight < 0) || (biHeight > 0xFFFFFF)) {
+        IMG_SetError("Unsupported or invalid ICO dimensions");
+        was_error = SDL_TRUE;
+        goto done;
+    }
+
+    /* sanity check image size, so we don't overflow integers, etc. */
+    if ((biWidth < 0) || (biWidth > 0xFFFFFF) ||
+        (biHeight < 0) || (biHeight > 0xFFFFFF)) {
+        IMG_SetError("Unsupported or invalid ICO dimensions");
+        was_error = SDL_TRUE;
+        goto done;
+    }
+
     /* Create a RGBA surface */
     biHeight = biHeight >> 1;
     //printf("%d x %d\n", biWidth, biHeight);
@@ -678,6 +694,11 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
     if (biBitCount <= 8) {
         if (biClrUsed == 0) {
             biClrUsed = 1 << biBitCount;
+        }
+        if (biClrUsed > (sizeof(palette)/sizeof(palette[0]))) {
+            IMG_SetError("Unsupported or incorrect biClrUsed field");
+            was_error = SDL_TRUE;
+            goto done;
         }
         for (i = 0; i < (int) biClrUsed; ++i) {
             SDL_RWread(src, &palette[i], 4, 1);
