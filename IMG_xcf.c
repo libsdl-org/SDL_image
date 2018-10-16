@@ -221,18 +221,20 @@ int IMG_isXCF(SDL_RWops *src)
 }
 
 static char * read_string (SDL_RWops * src) {
+  Sint64 remaining;
   Uint32 tmp;
   char * data;
 
   tmp = SDL_ReadBE32(src);
-  Sint64 remaining = SDL_RWsize(src) - SDL_RWtell(src);
-  if (tmp > 0 && tmp <= remaining) {
+  remaining = SDL_RWsize(src) - SDL_RWtell(src);
+  if (tmp > 0 && (Sint32)tmp <= remaining) {
     data = (char *) SDL_malloc (sizeof (char) * tmp);
     if (data) {
       SDL_RWread(src, data, tmp, 1);
       data[tmp - 1] = '\0';
     }
-  } else {
+  }
+  else {
     data = NULL;
   }
   return data;
