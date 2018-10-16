@@ -47,9 +47,15 @@
 static struct {
 	int loaded;
 	void *handle;
+#if WEBP_DECODER_ABI_VERSION < 0x0100
 	int/*VP8StatuCode*/ (*webp_get_features_internal) (const uint8_t *data, uint32_t data_size, WebPBitstreamFeatures* const features, int decoder_abi_version);
 	uint8_t*	(*webp_decode_rgb_into) (const uint8_t* data, uint32_t data_size, uint8_t* output_buffer, int output_buffer_size, int output_stride);
 	uint8_t*	(*webp_decode_rgba_into) (const uint8_t* data, uint32_t data_size, uint8_t* output_buffer, int output_buffer_size, int output_stride);
+#else
+	VP8StatusCode (*webp_get_features_internal) (const uint8_t *data, size_t data_size, WebPBitstreamFeatures* features, int decoder_abi_version);
+	uint8_t*	(*webp_decode_rgb_into) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride);
+	uint8_t*	(*webp_decode_rgba_into) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride);
+#endif
 } lib;
 
 #ifdef LOAD_WEBP_DYNAMIC
@@ -60,8 +66,13 @@ int IMG_InitWEBP()
 		if ( lib.handle == NULL ) {
 			return -1;
 		}
+
 		lib.webp_get_features_internal = 
+			#if WEBP_DECODER_ABI_VERSION < 0x0100
 			( int (*) (const uint8_t *, uint32_t, WebPBitstreamFeatures* const, int) )
+			#else
+			( VP8StatusCode (*) (const uint8_t *, size_t, WebPBitstreamFeatures*, int) )
+			#endif
 			SDL_LoadFunction(lib.handle, "WebPGetFeaturesInternal" );
 		if ( lib.webp_get_features_internal == NULL ) {
 			SDL_UnloadObject(lib.handle);
@@ -69,7 +80,11 @@ int IMG_InitWEBP()
 		}
 
 		lib.webp_decode_rgb_into = 
+			#if WEBP_DECODER_ABI_VERSION < 0x0100
 			( uint8_t* (*) (const uint8_t*, uint32_t, uint8_t*, int, int ) )
+			#else
+			( uint8_t* (*) (const uint8_t*, size_t, uint8_t*, size_t, int ) )
+			#endif
 			SDL_LoadFunction(lib.handle, "WebPDecodeRGBInto" );
 		if ( lib.webp_decode_rgb_into == NULL ) {
 			SDL_UnloadObject(lib.handle);
@@ -77,8 +92,12 @@ int IMG_InitWEBP()
 		}
 
 		lib.webp_decode_rgba_into = 
+			#if WEBP_DECODER_ABI_VERSION < 0x0100
 			( uint8_t* (*) (const uint8_t*, uint32_t, uint8_t*, int, int ) )
-			SDL_LoadFunction(lib.handle, "WebPDecodeRGBInto" );
+			#else
+			( uint8_t* (*) (const uint8_t*, size_t, uint8_t*, size_t, int ) )
+			#endif
+			SDL_LoadFunction(lib.handle, "WebPDecodeRGBAInto" );
 		if ( lib.webp_decode_rgba_into == NULL ) {
 			SDL_UnloadObject(lib.handle);
 			return -1;
@@ -124,30 +143,36 @@ void IMG_QuitWEBP()
 static int webp_getinfo( SDL_RWops *src, int *datasize ) {
 	int start;
 	int is_WEBP;
-	int data;
 	Uint8 magic[20];
 
-	if ( !src )
+	if ( !src ) {
 		return 0;
+	}
 	start = SDL_RWtell(src);
 	is_WEBP = 0;
 	if ( SDL_RWread(src, magic, 1, sizeof(magic)) == sizeof(magic) ) {
 		if ( magic[ 0] == 'R' &&
-                     magic[ 1] == 'I' &&
-                     magic[ 2] == 'F' &&
-                     magic[ 3] == 'F' &&
-										 magic[ 8] == 'W' &&
-										 magic[ 9] == 'E' &&
-										 magic[10] == 'B' &&
-										 magic[11] == 'P' &&
-										 magic[12] == 'V' &&
-										 magic[13] == 'P' &&
-										 magic[14] == '8' &&
-										 magic[15] == ' '  ) {
+		     magic[ 1] == 'I' &&
+		     magic[ 2] == 'F' &&
+		     magic[ 3] == 'F' &&
+		     magic[ 8] == 'W' &&
+		     magic[ 9] == 'E' &&
+		     magic[10] == 'B' &&
+		     magic[11] == 'P' &&
+		     magic[12] == 'V' &&
+		     magic[13] == 'P' &&
+		     magic[14] == '8' &&
+		/* old versions don't support VP8X and VP8L */
+		#if (WEBP_DECODER_ABI_VERSION < 0x0003)
+		     magic[15] == ' '
+		#else
+		    (magic[15] == ' ' || magic[15] == 'X' || magic[15] == 'L')
+		#endif
+		 ) {
 			is_WEBP = 1;
-			data = magic[16] | magic[17]<<8 | magic[18]<<16 | magic[19]<<24;
-			if ( datasize )
-				*datasize = data;
+			if ( datasize ) {
+				*datasize = SDL_RWseek(src, 0, RW_SEEK_END) - start;
+			}
 		}
 	}
 	SDL_RWseek(src, start, RW_SEEK_SET);
@@ -192,12 +217,9 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 		goto error;
 	}
 
-	// skip header
-	SDL_RWseek(src, start+20, RW_SEEK_SET );
-
 	raw_data = (uint8_t*) malloc( raw_data_size );
 	if ( raw_data == NULL ) {
-		error = "Failed to allocate enought buffer for WEBP";
+		error = "Failed to allocate enough buffer for WEBP";
 		goto error;
 	}
 
