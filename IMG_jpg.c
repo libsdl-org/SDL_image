@@ -214,13 +214,13 @@ int IMG_isJPG(SDL_RWops *src)
 					is_JPG = 0;
 				} else {
 					/* Yes, it's big-endian */
-					Uint32 start;
+					Sint32 innerStart;
 					Uint32 size;
-					Uint32 end;
-					start = SDL_RWtell(src);
+					Sint32 end;
+					innerStart = SDL_RWtell(src);
 					size = (magic[2] << 8) + magic[3];
 					end = SDL_RWseek(src, size-2, RW_SEEK_CUR);
-					if ( end != start + size - 2 ) is_JPG = 0;
+					if ( end != innerStart + size - 2 ) is_JPG = 0;
 					if ( magic[1] == 0xDA ) {
 						/* Now comes the actual JPEG meat */
 #ifdef	FAST_IS_JPEG
@@ -386,7 +386,7 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 	}
 	start = SDL_RWtell(src);
 
-	if ( !IMG_Init(IMG_INIT_JPG) ) {
+	if ( (IMG_Init(IMG_INIT_JPG) & IMG_INIT_JPG) == 0 ) {
 		return NULL;
 	}
 

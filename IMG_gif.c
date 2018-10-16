@@ -320,7 +320,7 @@ DoExtension(SDL_RWops *src, int label)
 	break;
     case 0xfe:			/* Comment Extension */
 	str = "Comment Extension";
-	while (GetDataBlock(src, (unsigned char *) buf) != 0)
+	while (GetDataBlock(src, (unsigned char *) buf) > 0)
 	    ;
 	return FALSE;
     case 0xf9:			/* Graphic Control Extension */
@@ -332,7 +332,7 @@ DoExtension(SDL_RWops *src, int label)
 	if ((buf[0] & 0x1) != 0)
 	    Gif89.transparent = buf[3];
 
-	while (GetDataBlock(src, (unsigned char *) buf) != 0)
+	while (GetDataBlock(src, (unsigned char *) buf) > 0)
 	    ;
 	return FALSE;
     default:
@@ -341,7 +341,7 @@ DoExtension(SDL_RWops *src, int label)
 	break;
     }
 
-    while (GetDataBlock(src, (unsigned char *) buf) != 0)
+    while (GetDataBlock(src, (unsigned char *) buf) > 0)
 	;
 
     return FALSE;
@@ -390,7 +390,7 @@ GetCode(SDL_RWops *src, int code_size, int flag)
 	buf[0] = buf[last_byte - 2];
 	buf[1] = buf[last_byte - 1];
 
-	if ((count = GetDataBlock(src, &buf[2])) == 0)
+	if ((count = GetDataBlock(src, &buf[2])) <= 0)
 	    done = TRUE;
 
 	last_byte = 2 + count;
@@ -439,8 +439,9 @@ LWZReadByte(SDL_RWops *src, int flag, int input_code_size)
 	    table[0][i] = 0;
 	    table[1][i] = i;
 	}
+	table[1][0] = 0;
 	for (; i < (1 << MAX_LWZ_BITS); ++i)
-	    table[0][i] = table[1][0] = 0;
+	    table[0][i] = 0;
 
 	sp = stack;
 
@@ -493,12 +494,24 @@ LWZReadByte(SDL_RWops *src, int flag, int input_code_size)
 	    code = oldcode;
 	}
 	while (code >= clear_code) {
+	    /* Guard against buffer overruns */
+	    if (code < 0 || code >= (1 << MAX_LWZ_BITS)) {
+		RWSetMsg("invalid LWZ data");
+		return -3;
+	    }
 	    *sp++ = table[1][code];
-	    if (code == table[0][code])
+	    if (code == table[0][code]) {
 		RWSetMsg("circular table entry BIG ERROR");
+		return -3;
+	    }
 	    code = table[0][code];
 	}
 
+	/* Guard against buffer overruns */
+	if (code < 0 || code >= (1 << MAX_LWZ_BITS)) {
+	    RWSetMsg("invalid LWZ data");
+	    return -4;
+	}
 	*sp++ = firstcode = table[1][code];
 
 	if ((code = max_code) < (1 << MAX_LWZ_BITS)) {

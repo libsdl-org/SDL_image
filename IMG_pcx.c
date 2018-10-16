@@ -149,8 +149,8 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 	if (bpl > surface->pitch) {
 		error = "bytes per line is too large (corrupt?)";
 	}
-	buf = malloc(bpl);
-	row = surface->pixels;
+	buf = (Uint8 *)calloc(SDL_max(bpl, surface->pitch), 1);
+	row = (Uint8 *)surface->pixels;
 	for ( y=0; y<surface->h; ++y ) {
 		/* decode a scan line to a temporary buffer first */
 		int i, count = 0;
@@ -184,16 +184,16 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 
 		if(src_bits <= 4) {
 			/* expand planes to 1 byte/pixel */
-			Uint8 *src = buf;
+			Uint8 *innerSrc = buf;
 			int plane;
 			for(plane = 0; plane < pcxh.NPlanes; plane++) {
-				int i, j, x = 0;
-				for(i = 0; i < pcxh.BytesPerLine; i++) {
-					Uint8 byte = *src++;
-					for(j = 7; j >= 0; j--) {
-						unsigned bit = (byte >> j) & 1;
+				int j, k, x = 0;
+				for(j = 0; j < pcxh.BytesPerLine; j++) {
+					Uint8 byte = *innerSrc++;
+					for(k = 7; k >= 0; k--) {
+						unsigned bit = (byte >> k) & 1;
 						/* skip padding bits */
-						if (i * 8 + j >= width)
+						if (j * 8 + k >= width)
 							continue;
 						row[x++] |= bit << plane;
 					}
@@ -201,13 +201,13 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 			}
  		} else if(src_bits == 24) {
 			/* de-interlace planes */
-			Uint8 *src = buf;
+			Uint8 *innerSrc = buf;
 			int plane;
 			for(plane = 0; plane < pcxh.NPlanes; plane++) {
 				int x;
 				dst = row + plane;
 				for(x = 0; x < width; x++) {
-					*dst = *src++;
+					*dst = *innerSrc++;
 					dst += pcxh.NPlanes;
 				}
 			}

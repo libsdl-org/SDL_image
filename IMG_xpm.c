@@ -106,7 +106,7 @@ static struct color_hash *create_colorhash(int maxnum)
 
 	/* we know how many entries we need, so we can allocate
 	   everything here */
-	hash = malloc(sizeof *hash);
+	hash = (struct color_hash *)malloc(sizeof *hash);
 	if(!hash)
 		return NULL;
 
@@ -117,13 +117,16 @@ static struct color_hash *create_colorhash(int maxnum)
 	hash->maxnum = maxnum;
 	bytes = hash->size * sizeof(struct hash_entry **);
 	hash->entries = NULL;	/* in case malloc fails */
-	hash->table = malloc(bytes);
-	if(!hash->table)
+	hash->table = (struct hash_entry **)malloc(bytes);
+	if(!hash->table) {
+		free(hash);
 		return NULL;
+	}
 	memset(hash->table, 0, bytes);
-	hash->entries = malloc(maxnum * sizeof(struct hash_entry));
+	hash->entries = (struct hash_entry *)malloc(maxnum * sizeof(struct hash_entry));
 	if(!hash->entries) {
 		free(hash->table);
+		free(hash);
 		return NULL;
 	}
 	hash->next_free = hash->entries;
@@ -158,7 +161,7 @@ static Uint32 get_colorhash(struct color_hash *hash, const char *key, int cpp)
 
 static void free_colorhash(struct color_hash *hash)
 {
-	if(hash && hash->table) {
+	if(hash) {
 		free(hash->table);
 		free(hash->entries);
 		free(hash);
@@ -262,7 +265,7 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
 			len += 4;	/* "\",\n\0" */
 			if(len > buflen){
 				buflen = len;
-				linebufnew = realloc(linebuf, buflen);
+				linebufnew = (char *)realloc(linebuf, buflen);
 				if(!linebufnew) {
 					free(linebuf);
 					error = "Out of memory";
@@ -282,7 +285,7 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
 					if(buflen == 0)
 						buflen = 16;
 					buflen *= 2;
-					linebufnew = realloc(linebuf, buflen);
+					linebufnew = (char *)realloc(linebuf, buflen);
 					if(!linebufnew) {
 						free(linebuf);
 						error = "Out of memory";
@@ -359,7 +362,7 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
 		goto done;
 	}
 
-	keystrings = malloc(ncolors * cpp);
+	keystrings = (char *)malloc(ncolors * cpp);
 	if(!keystrings) {
 		error = "Out of memory";
 		goto done;
@@ -438,9 +441,11 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
 
 	/* Read the pixels */
 	pixels_len = w * cpp;
-	dst = image->pixels;
+	dst = (Uint8 *)image->pixels;
 	for(y = 0; y < h; y++) {
 		line = get_next_line(xpmlines, src, pixels_len);
+		if (!line)
+			goto done;
 		if(indexed) {
 			/* optimization for some common cases */
 			if(cpp == 1)
@@ -489,6 +494,10 @@ SDL_Surface *IMG_LoadXPM_RW(SDL_RWops *src)
 
 SDL_Surface *IMG_ReadXPMFromArray(char **xpm)
 {
+	if ( !xpm ) {
+		IMG_SetError("array is NULL");
+		return NULL;
+	}
 	return load_xpm(xpm, NULL);
 }
 

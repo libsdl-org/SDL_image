@@ -225,19 +225,32 @@ int IMG_isXCF(SDL_RWops *src)
 	return(is_XCF);
 }
 
+/* SDL-1.2 doesn't have a SDL_RWsize(). sigh... */
+static Sint32 SDLCALL SDL12_RWsize(SDL_RWops *rw) {
+  Sint32 pos, size;
+  if ((pos=SDL_RWtell(rw))<0) return -1;
+  size = SDL_RWseek(rw, 0, RW_SEEK_END);
+  SDL_RWseek(rw, pos, RW_SEEK_SET);
+  return size;
+}
+
 static char * read_string (SDL_RWops * src) {
+  Sint32 remaining;
   Uint32 tmp;
   char * data;
 
   tmp = SDL_ReadBE32 (src);
-  if (tmp > 0) {
+  remaining = SDL12_RWsize(src) - SDL_RWtell(src);
+  if (tmp > 0 && tmp <= remaining) {
     data = (char *) malloc (sizeof (char) * tmp);
-    SDL_RWread (src, data, tmp, 1);
+    if (data) {
+      SDL_RWread(src, data, tmp, 1);
+      data[tmp - 1] = '\0';
+    }
   }
   else {
     data = NULL;
   }
-
   return data;
 }
 
@@ -251,6 +264,7 @@ static Uint32 Swap32 (Uint32 v) {
 }
 
 static void xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
+  Uint32 len;
   prop->id = SDL_ReadBE32 (src);
   prop->length = SDL_ReadBE32 (src);
 
@@ -274,7 +288,13 @@ static void xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
     break;
   case PROP_COMPRESSION:
   case PROP_COLOR:
-    SDL_RWread (src, &prop->data, prop->length, 1);
+    if (prop->length > sizeof(prop->data)) {
+      len = sizeof(prop->data);
+    }
+    else {
+      len = prop->length;
+    }
+    SDL_RWread(src, &prop->data, len, 1);
     break;
   case PROP_VISIBLE:
     prop->data.visible = SDL_ReadBE32 (src);
@@ -288,7 +308,8 @@ static void xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
 static void free_xcf_header (xcf_header * h) {
   if (h->cm_num)
     free (h->cm_map);
-
+  if (h->layer_file_offsets)
+    free (h->layer_file_offsets);
   free (h);
 }
 
@@ -297,12 +318,16 @@ static xcf_header * read_xcf_header (SDL_RWops * src) {
   xcf_prop prop;
 
   h = (xcf_header *) malloc (sizeof (xcf_header));
+  if (!h) {
+    return NULL;
+  }
   SDL_RWread (src, h->sign, 14, 1);
   h->width       = SDL_ReadBE32 (src);
   h->height      = SDL_ReadBE32 (src);
   h->image_type  = SDL_ReadBE32 (src);
 
   h->properties = NULL;
+  h->layer_file_offsets = NULL;
   h->compr      = COMPR_NONE;
   h->cm_num = 0;
   h->cm_map = NULL;
@@ -311,14 +336,25 @@ static xcf_header * read_xcf_header (SDL_RWops * src) {
   do {
     xcf_read_property (src, &prop);
     if (prop.id == PROP_COMPRESSION)
-      h->compr = prop.data.compression;
+      h->compr = (xcf_compr_type)prop.data.compression;
     else if (prop.id == PROP_COLORMAP) {
       // unused var: int i;
+      Uint32 cm_num;
+      unsigned char *cm_map;
 
-      h->cm_num = prop.data.colormap.num;
-      h->cm_map = (unsigned char *) malloc (sizeof (unsigned char) * 3 * h->cm_num);
+      cm_num = prop.data.colormap.num;
+      cm_map = (unsigned char *) realloc(h->cm_map, sizeof (unsigned char) * 3 * cm_num);
+      if (cm_map) {
+        h->cm_num = cm_num;
+        h->cm_map = cm_map;
       memcpy (h->cm_map, prop.data.colormap.cmap, 3*sizeof (char)*h->cm_num);
+      }
       free (prop.data.colormap.cmap);
+
+      if (!cm_map) {
+        free_xcf_header(h);
+        return NULL;
+      }
     }
   } while (prop.id != PROP_END);
 
@@ -466,15 +502,19 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
   int i, size, count, j, length;
   unsigned char val;
 
+  if (len == 0) {  /* probably bogus data. */
+    return NULL;
+  }
+
   t = load = (unsigned char *) malloc (len);
   reallen = SDL_RWread (src, t, 1, len);
 
-  data = (unsigned char *) malloc (x*y*bpp);
+  data = (unsigned char *) calloc (1, x*y*bpp);
   for (i = 0; i < bpp; i++) {
     d    = data + i;
     size = x*y;
     count = 0;
- 
+
     while (size > 0) {
       val = *t++;
 
@@ -484,6 +524,12 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
 	if (length == 128) {
 	  length = (*t << 8) + t[1];
 	  t += 2;
+	}
+
+	if (((size_t) (t - load) + length) >= len) {
+	  break;  /* bogus data */
+	} else if (length > size) {
+	  break;  /* bogus data */
 	}
 
 	count += length;
@@ -501,6 +547,13 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
 	  t += 2;
 	}
 
+	if (((size_t) (t - load)) >= len) {
+	  break;  /* bogus data */
+	}
+	else if (length > size) {
+	  break;  /* bogus data */
+	}
+
 	count += length;
 	size -= length;
 
@@ -511,6 +564,10 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
 	  d += bpp;
 	}
       }
+    }
+
+    if (size > 0) {
+      break;  /* just drop out, untouched data initialized to zero. */
     }
   }
 
@@ -542,18 +599,33 @@ static void create_channel_surface (SDL_Surface * surf, xcf_image_type itype, Ui
   SDL_FillRect (surf, NULL, c);
 }
 
-static int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_layer * layer, load_tile_type load_tile) {
+static int 
+do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_layer * layer, load_tile_type load_tile)
+{
   xcf_hierarchy * hierarchy;
   xcf_level     * level;
   unsigned char * tile;
   Uint8  * p8;
   Uint16 * p16;
   Uint32 * p;
-  int x, y, tx, ty, ox, oy, i, j;
+  int i, j;
+  Uint32 x, y, tx, ty, ox, oy;
   Uint32 *row;
 
   SDL_RWseek (src, layer->hierarchy_file_offset, RW_SEEK_SET);
   hierarchy = read_xcf_hierarchy (src);
+
+  if (hierarchy->bpp > 4) {  /* unsupported. */
+    fprintf (stderr, "Unknown Gimp image bpp (%u)\n", (unsigned int) hierarchy->bpp);
+    free_xcf_hierarchy(hierarchy);
+    return 1;
+  }
+
+  if ((hierarchy->width > 20000) || (hierarchy->height > 20000)) {  /* arbitrary limit to avoid integer overflow. */
+    fprintf (stderr, "Gimp image too large (%ux%u)\n", (unsigned int) hierarchy->width, (unsigned int) hierarchy->height);
+    free_xcf_hierarchy(hierarchy);
+    return 1;
+  }
 
   level = NULL;
   for (i = 0; hierarchy->level_file_offsets [i]; i++) {
@@ -580,11 +652,21 @@ static int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header 
 	   hierarchy->bpp,
 	   ox, oy);
       }
+      if (!tile) {
+	if (hierarchy)
+	  free_xcf_hierarchy(hierarchy);
+	if (level)
+	  free_xcf_level(level);
+	return 1;
+      }
 
       p8  = tile;
       p16 = (Uint16 *) p8;
       p   = (Uint32 *) p8;
       for (y=ty; y < ty+oy; y++) {
+	if ((ty >= surface->h) || ((tx+ox) > surface->w)) {
+	  break;
+	}
 	row = (Uint32 *)((Uint8 *)surface->pixels + y*surface->pitch + tx*4);
 	switch (hierarchy->bpp) {
 	case 4:
@@ -594,9 +676,9 @@ static int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header 
 	case 3:
 	  for (x=tx; x < tx+ox; x++) {
 	    *row = 0xFF000000;
-	    *row |= ((Uint32) *(p8++) << 16);
-	    *row |= ((Uint32) *(p8++) << 8);
-	    *row |= ((Uint32) *(p8++) << 0);
+	    *row |= ((Uint32)*p8++ << 16);
+	    *row |= ((Uint32)*p8++ << 8);
+	    *row |= ((Uint32)*p8++ << 0);
 	    row++;
 	  }
 	  break;
@@ -607,7 +689,7 @@ static int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header 
 	      *row =  ((Uint32) (head->cm_map [*p8*3])     << 16);
 	      *row |= ((Uint32) (head->cm_map [*p8*3+1])   << 8);
 	      *row |= ((Uint32) (head->cm_map [*p8++*3+2]) << 0);
-	      *row |= ((Uint32) *p8++ << 24);;
+	      *row |= ((Uint32) *p8++ << 24);
 	      row++;
 	    }
 	    break;
@@ -616,12 +698,16 @@ static int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header 
 	      *row = ((Uint32) *p8 << 16);
 	      *row |= ((Uint32) *p8 << 8);
 	      *row |= ((Uint32) *p8++ << 0);
-	      *row |= ((Uint32) *p8++ << 24);;
+	      *row |= ((Uint32) *p8++ << 24);
 	      row++;
 	    }
 	    break;	    
 	  default:
 	    fprintf (stderr, "Unknown Gimp image type (%d)\n", head->image_type);
+	    if (hierarchy)
+	      free_xcf_hierarchy(hierarchy);
+	    if (level)
+	      free_xcf_level (level);
 	    return 1;
 	  }
 	  break;
@@ -647,11 +733,19 @@ static int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header 
 	    break;	    
 	  default:
 	    fprintf (stderr, "Unknown Gimp image type (%d)\n", head->image_type);
+	    if (tile)
+	      free_xcf_tile (tile);
+	    if (level)
+	      free_xcf_level (level);
+	    if (hierarchy)
+	      free_xcf_hierarchy (hierarchy);
 	    return 1;
 	  }
 	  break;
 	}
       }
+      free_xcf_tile(tile);
+
       tx += 64;
       if (tx >= level->width) {
 	tx = 0;
@@ -660,8 +754,6 @@ static int do_layer_surface (SDL_Surface * surface, SDL_RWops * src, xcf_header 
       if (ty >= level->height) {
 	break;
       }
-
-      free_xcf_tile (tile);
     }
     free_xcf_level (level);
   }
@@ -680,7 +772,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
   xcf_layer  * layer;
   xcf_channel ** channel;
   int chnls, i, offsets;
-  Uint32 offset, fp;
+  Sint32 offset, fp;
 
   unsigned char * (* load_tile) (SDL_RWops *, Uint32, int, int, int);
 
@@ -694,6 +786,9 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
   surface = NULL;
 
   head = read_xcf_header (src);
+  if (!head) {
+    return NULL;
+  }
 
   switch (head->compr) {
   case COMPR_NONE:
@@ -717,16 +812,15 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
     goto done;
   }
 
-  head->layer_file_offsets = NULL;
   offsets = 0;
 
   while ((offset = SDL_ReadBE32 (src))) {
     head->layer_file_offsets = (Uint32 *) realloc (head->layer_file_offsets, sizeof (Uint32) * (offsets+1));
-    head->layer_file_offsets [offsets] = offset;
+    head->layer_file_offsets [offsets] = (Uint32)offset;
     offsets++;
   }
   fp = SDL_RWtell (src);
- 
+
   lays = SDL_AllocSurface(SDL_SWSURFACE, head->width, head->height, 32,
 			  0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
 
@@ -784,11 +878,12 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
     for (i = 0; i < chnls; i++) {
       //      printf ("CNLBLT %i\n", i);
       if (!channel [i]->selection && channel [i]->visible) {
-	create_channel_surface (chs, head->image_type, channel [i]->color, channel [i]->opacity);
+	create_channel_surface (chs, (xcf_image_type)head->image_type, channel [i]->color, channel [i]->opacity);
 	SDL_BlitSurface (chs, NULL, surface, NULL);
       }
       free_xcf_channel (channel [i]);
     }
+    free(channel);
 
     SDL_FreeSurface (chs);
   }

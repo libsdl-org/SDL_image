@@ -207,7 +207,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
     if(hdr.has_cmap) {
 	int palsiz = ncols * ((hdr.cmap_bits + 7) >> 3);
 	if(indexed && !grey) {
-	    Uint8 *pal = malloc(palsiz), *p = pal;
+	    Uint8 *pal = (Uint8 *)malloc(palsiz), *p = pal;
 	    SDL_Color *colors = img->format->palette->colors;
 	    img->format->palette->ncolors = ncols;
 	    SDL_RWread(src, pal, palsiz, 1);
@@ -251,7 +251,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 
     if(hdr.flags & TGA_ORIGIN_UPPER) {
 	lstep = img->pitch;
-	dst = img->pixels;
+	dst = (Uint8 *)img->pixels;
     } else {
 	lstep = -img->pitch;
 	dst = (Uint8 *)img->pixels + (h - 1) * img->pitch;
