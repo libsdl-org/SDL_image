@@ -75,7 +75,6 @@
 #if (PNG_LIBPNG_VER_MINOR < 5)
 #define LIBPNG_VERSION_12
 typedef png_bytep png_const_bytep;
-typedef png_color *png_const_colorp;
 #endif
 #if (PNG_LIBPNG_VER_MINOR < 6)
 typedef png_structp png_const_structrp;
@@ -542,7 +541,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 		    palette->colors[i].b = (Uint8)i;
 		}
 	    } else if (png_num_palette > 0 ) {
-		palette->ncolors = png_num_palette; 
+		palette->ncolors = png_num_palette;
 		for( i=0; i<png_num_palette; ++i ) {
 		    palette->colors[i].b = png_palette[i].blue;
 		    palette->colors[i].g = png_palette[i].green;
