@@ -70,30 +70,47 @@
 #include <png.h>
 
 /* Check for the older version of libpng */
-#if (PNG_LIBPNG_VER_MAJOR == 1) 
+#if (PNG_LIBPNG_VER_MAJOR == 1)
 #if (PNG_LIBPNG_VER_MINOR < 5)
 #define LIBPNG_VERSION_12
 typedef png_bytep png_const_bytep;
 typedef png_color *png_const_colorp;
 #endif
+#if (PNG_LIBPNG_VER_MINOR < 4)
+typedef png_structp png_const_structp;
+typedef png_infop png_const_infop;
+#endif
 #if (PNG_LIBPNG_VER_MINOR < 6)
-typedef png_structp png_const_structrp;
-typedef png_infop png_const_inforp;
 typedef png_structp png_structrp;
 typedef png_infop png_inforp;
+typedef png_const_structp png_const_structrp;
+typedef png_const_infop png_const_inforp;
+/* noconst15: version < 1.6 doesn't have const, >= 1.6 adds it */
+/* noconst16: version < 1.6 does have const, >= 1.6 removes it */
+typedef png_structp png_noconst15_structrp;
+typedef png_inforp png_noconst15_inforp;
+typedef png_const_inforp png_noconst16_inforp;
+#else
+typedef png_const_structp png_noconst15_structrp;
+typedef png_const_inforp png_noconst15_inforp;
+typedef png_inforp png_noconst16_inforp;
 #endif
+#else
+typedef png_const_structp png_noconst15_structrp;
+typedef png_const_inforp png_noconst15_inforp;
+typedef png_inforp png_noconst16_inforp;
 #endif
 
 static struct {
     int loaded;
     void *handle;
-    png_infop (*png_create_info_struct) (png_const_structrp png_ptr);
+    png_infop (*png_create_info_struct) (png_noconst15_structrp png_ptr);
     png_structp (*png_create_read_struct) (png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
     void (*png_destroy_read_struct) (png_structpp png_ptr_ptr, png_infopp info_ptr_ptr, png_infopp end_info_ptr_ptr);
-    png_uint_32 (*png_get_IHDR) (png_const_structrp png_ptr, png_const_inforp info_ptr, png_uint_32 *width, png_uint_32 *height, int *bit_depth, int *color_type, int *interlace_method, int *compression_method, int *filter_method);
-    png_voidp (*png_get_io_ptr) (png_const_structrp png_ptr);
+    png_uint_32 (*png_get_IHDR) (png_noconst15_structrp png_ptr, png_noconst15_inforp info_ptr, png_uint_32 *width, png_uint_32 *height, int *bit_depth, int *color_type, int *interlace_method, int *compression_method, int *filter_method);
+    png_voidp (*png_get_io_ptr) (png_noconst15_structrp png_ptr);
     png_byte (*png_get_channels) (png_const_structrp png_ptr, png_const_inforp info_ptr);
-    png_uint_32 (*png_get_PLTE) (png_const_structrp png_ptr, png_inforp info_ptr, png_colorp *palette, int *num_palette);
+    png_uint_32 (*png_get_PLTE) (png_const_structrp png_ptr, png_noconst16_inforp info_ptr, png_colorp *palette, int *num_palette);
     png_uint_32 (*png_get_tRNS) (png_const_structrp png_ptr, png_inforp info_ptr, png_bytep *trans, int *num_trans, png_color_16p *trans_values);
     png_uint_32 (*png_get_valid) (png_const_structrp png_ptr, png_const_inforp info_ptr, png_uint_32 flag);
     void (*png_read_image) (png_structrp png_ptr, png_bytepp image);
@@ -112,9 +129,9 @@ static struct {
     png_structp (*png_create_write_struct) (png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
     void (*png_destroy_write_struct) (png_structpp png_ptr_ptr, png_infopp info_ptr_ptr);
     void (*png_set_write_fn) (png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr write_data_fn, png_flush_ptr output_flush_fn);
-    void (*png_set_IHDR) (png_const_structrp png_ptr, png_inforp info_ptr, png_uint_32 width, png_uint_32 height, int bit_depth, int color_type, int interlace_type, int compression_type, int filter_type);
-    void (*png_write_info) (png_structrp png_ptr, png_const_inforp info_ptr);
-    void (*png_set_rows) (png_const_structrp png_ptr, png_inforp info_ptr, png_bytepp row_pointers);
+    void (*png_set_IHDR) (png_noconst15_structrp png_ptr, png_inforp info_ptr, png_uint_32 width, png_uint_32 height, int bit_depth, int color_type, int interlace_type, int compression_type, int filter_type);
+    void (*png_write_info) (png_structrp png_ptr, png_noconst15_inforp info_ptr);
+    void (*png_set_rows) (png_noconst15_structrp png_ptr, png_inforp info_ptr, png_bytepp row_pointers);
     void (*png_write_png) (png_structrp png_ptr, png_inforp info_ptr, int transforms, png_voidp params);
     void (*png_set_PLTE) (png_structrp png_ptr, png_inforp info_ptr, png_const_colorp palette, int num_palette);
 } lib;
@@ -137,13 +154,13 @@ int IMG_InitPNG()
             return -1;
         }
 #endif
-        FUNCTION_LOADER(png_create_info_struct, png_infop (*) (png_const_structrp png_ptr))
+        FUNCTION_LOADER(png_create_info_struct, png_infop (*) (png_noconst15_structrp png_ptr))
         FUNCTION_LOADER(png_create_read_struct, png_structp (*) (png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn))
         FUNCTION_LOADER(png_destroy_read_struct, void (*) (png_structpp png_ptr_ptr, png_infopp info_ptr_ptr, png_infopp end_info_ptr_ptr))
-        FUNCTION_LOADER(png_get_IHDR, png_uint_32 (*) (png_const_structrp png_ptr, png_const_inforp info_ptr, png_uint_32 *width, png_uint_32 *height, int *bit_depth, int *color_type, int *interlace_method, int *compression_method, int *filter_method))
-        FUNCTION_LOADER(png_get_io_ptr, png_voidp (*) (png_const_structrp png_ptr))
+        FUNCTION_LOADER(png_get_IHDR, png_uint_32 (*) (png_noconst15_structrp png_ptr, png_noconst15_inforp info_ptr, png_uint_32 *width, png_uint_32 *height, int *bit_depth, int *color_type, int *interlace_method, int *compression_method, int *filter_method))
+        FUNCTION_LOADER(png_get_io_ptr, png_voidp (*) (png_noconst15_structrp png_ptr))
         FUNCTION_LOADER(png_get_channels, png_byte (*) (png_const_structrp png_ptr, png_const_inforp info_ptr))
-        FUNCTION_LOADER(png_get_PLTE, png_uint_32 (*) (png_const_structrp png_ptr, png_inforp info_ptr, png_colorp *palette, int *num_palette))
+        FUNCTION_LOADER(png_get_PLTE, png_uint_32 (*) (png_const_structrp png_ptr, png_noconst16_inforp info_ptr, png_colorp *palette, int *num_palette))
         FUNCTION_LOADER(png_get_tRNS, png_uint_32 (*) (png_const_structrp png_ptr, png_inforp info_ptr, png_bytep *trans, int *num_trans, png_color_16p *trans_values))
         FUNCTION_LOADER(png_get_valid, png_uint_32 (*) (png_const_structrp png_ptr, png_const_inforp info_ptr, png_uint_32 flag))
         FUNCTION_LOADER(png_read_image, void (*) (png_structrp png_ptr, png_bytepp image))
@@ -162,9 +179,9 @@ int IMG_InitPNG()
         FUNCTION_LOADER(png_create_write_struct, png_structp (*) (png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn))
         FUNCTION_LOADER(png_destroy_write_struct, void (*) (png_structpp png_ptr_ptr, png_infopp info_ptr_ptr))
         FUNCTION_LOADER(png_set_write_fn, void (*) (png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr write_data_fn, png_flush_ptr output_flush_fn))
-        FUNCTION_LOADER(png_set_IHDR, void (*) (png_const_structrp png_ptr, png_inforp info_ptr, png_uint_32 width, png_uint_32 height, int bit_depth, int color_type, int interlace_type, int compression_type, int filter_type))
-        FUNCTION_LOADER(png_write_info, void (*) (png_structrp png_ptr, png_const_inforp info_ptr))
-        FUNCTION_LOADER(png_set_rows, void (*) (png_const_structrp png_ptr, png_inforp info_ptr, png_bytepp row_pointers))
+        FUNCTION_LOADER(png_set_IHDR, void (*) (png_noconst15_structrp png_ptr, png_inforp info_ptr, png_uint_32 width, png_uint_32 height, int bit_depth, int color_type, int interlace_type, int compression_type, int filter_type))
+        FUNCTION_LOADER(png_write_info, void (*) (png_structrp png_ptr, png_noconst15_inforp info_ptr))
+        FUNCTION_LOADER(png_set_rows, void (*) (png_noconst15_structrp png_ptr, png_inforp info_ptr, png_bytepp row_pointers))
         FUNCTION_LOADER(png_write_png, void (*) (png_structrp png_ptr, png_inforp info_ptr, int transforms, png_voidp params))
         FUNCTION_LOADER(png_set_PLTE, void (*) (png_structrp png_ptr, png_inforp info_ptr, png_const_colorp palette, int num_palette))
     }
