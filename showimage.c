@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 
     /* Check command line usage */
     if ( ! argv[1] ) {
-        fprintf(stderr, "Usage: %s [-fullscreen] [-save file.png] <image_file> ...\n", argv[0]);
+        SDL_Log("Usage: %s [-fullscreen] [-save file.png] <image_file> ...\n", argv[0]);
         return(1);
     }
 
@@ -77,12 +77,12 @@ int main(int argc, char *argv[])
     }
 
     if (SDL_Init(SDL_INIT_VIDEO) == -1) {
-        fprintf(stderr, "SDL_Init(SDL_INIT_VIDEO) failed: %s\n", SDL_GetError());
+        SDL_Log("SDL_Init(SDL_INIT_VIDEO) failed: %s\n", SDL_GetError());
         return(2);
     }
 
     if (SDL_CreateWindowAndRenderer(0, 0, flags, &window, &renderer) < 0) {
-        fprintf(stderr, "SDL_CreateWindowAndRenderer() failed: %s\n", SDL_GetError());
+        SDL_Log("SDL_CreateWindowAndRenderer() failed: %s\n", SDL_GetError());
         return(2);
     }
 
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
         /* Open the image file */
         texture = IMG_LoadTexture(renderer, argv[i]);
         if (!texture) {
-            fprintf(stderr, "Couldn't load %s: %s\n", argv[i], SDL_GetError());
+            SDL_Log("Couldn't load %s: %s\n", argv[i], SDL_GetError());
             continue;
         }
         SDL_QueryTexture(texture, NULL, NULL, &w, &h);
@@ -119,10 +119,10 @@ int main(int argc, char *argv[])
                     result = IMG_SavePNG(surface, saveFile);
                 }
                 if ( result < 0 ) {
-                    fprintf(stderr, "Couldn't save %s: %s\n", saveFile, SDL_GetError());
+                    SDL_Log("Couldn't save %s: %s\n", saveFile, SDL_GetError());
                 }
             } else {
-                fprintf(stderr, "Couldn't load %s: %s\n", argv[i], SDL_GetError());
+                SDL_Log("Couldn't load %s: %s\n", argv[i], SDL_GetError());
             }
         }
 
