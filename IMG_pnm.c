@@ -91,7 +91,7 @@ static int ReadNumber(SDL_RWops *src)
     }
     do {
         /* Protect from possible overflow */
-        if (number >= INT32_MAX / 10) {
+        if (number >= (SDL_MAX_SINT32 / 10)) {
             return -1;
         }
         number *= 10;
