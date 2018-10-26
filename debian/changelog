@@ -1,3 +1,9 @@
+libsdl2-image (2.0.4) UNRELEASED; urgency=low
+
+  * Updated to version 2.0.4
+
+ -- Sam Lantinga <slouken@libsdl.org>  Fri, 26 Oct 2018 10:01:54 -0800
+
 libsdl2-image (2.0.3) UNRELEASED; urgency=low
 
   * Updated to version 2.0.3

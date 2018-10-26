@@ -1,3 +1,9 @@
+2.0.4:
+Michał Janiszewski - Fri Sept 28 22:00:26 PST 2018
+ * Fixed memory issues in the XCF loader
+Ryan Gordon - Wed Sept 26 14:58:31 PST 2018
+ * Fixed a number of security issues, including TALOS-2018-0645
+
 2.0.3:
 Ryan Gordon - Sun Jan 28 21:28:16 PST 2018
  * Fixed a number of security issues:
