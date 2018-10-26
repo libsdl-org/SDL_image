@@ -13371,7 +13371,7 @@ fi
                 webp_lib=`find_lib libwebp.dylib`
                 ;;
             *-*-cygwin* | *-*-mingw32*)
-                webp_lib=`find_lib "libwebp*.dll"`
+                webp_lib=`find_lib "libwebp-*.dll"`
                 ;;
             *)
                 webp_lib=`find_lib "libwebp[0-9]*.so.*"`
