@@ -39,6 +39,7 @@ EXTRA_DIST =			\
 	version.rc		\
 	VisualC			\
 	VisualCE		\
+	VisualC-WinRT	\
 	Xcode			\
 	Xcode-iOS		\
 	IMG_xxx.c		\
