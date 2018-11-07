@@ -2,11 +2,11 @@
 
 confflags =
 
-# These flags can be used to create a package with runtime dependencies
-#           --disable-jpg-shared \
-#           --disable-png-shared \
-#           --disable-tif-shared \
-#           --disable-webp-shared
+# These flags can be used to create a package directly linking with external libraries and having the appropriate package dependencies
+#confflags += --disable-jpg-shared
+#confflags += --disable-png-shared
+#confflags += --disable-tif-shared
+#confflags += --disable-webp-shared
 
 %:
 	dh $@ --with autoreconf --parallel
