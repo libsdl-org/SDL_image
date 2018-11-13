@@ -516,6 +516,7 @@
 				SECTORDER_FLAGS = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
+				TARGETED_DEVICE_FAMILY = 3;
 			};
 			name = Debug;
 		};
@@ -531,6 +532,7 @@
 				SECTORDER_FLAGS = "";
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
+				TARGETED_DEVICE_FAMILY = 3;
 			};
 			name = Release;
 		};
