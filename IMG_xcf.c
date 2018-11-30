@@ -263,13 +263,13 @@ static Uint32 Swap32 (Uint32 v) {
     |  ((v & 0xFF000000));
 }
 
-static void xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
+static int xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
   Uint32 len;
   prop->id = SDL_ReadBE32 (src);
   prop->length = SDL_ReadBE32 (src);
 
 #if DEBUG
-  printf ("%.8X: %s: %d\n", SDL_RWtell (src), prop->id < 25 ? prop_names [prop->id] : "unknown", prop->length);
+  printf ("%.8X: %s(%u): %u\n", SDL_RWtell (src), prop->id < 25 ? prop_names [prop->id] : "unknown", prop->id, prop->length);
 #endif
 
   switch (prop->id) {
@@ -301,8 +301,10 @@ static void xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
     break;
   default:
     //    SDL_RWread (src, &prop->data, prop->length, 1);
-    SDL_RWseek (src, prop->length, RW_SEEK_CUR);
+    if (SDL_RWseek (src, prop->length, RW_SEEK_CUR) < 0)
+      return 0;  // ERROR
   }
+  return 1;  // OK
 }
 
 static void free_xcf_header (xcf_header * h) {
@@ -325,6 +327,10 @@ static xcf_header * read_xcf_header (SDL_RWops * src) {
   h->width       = SDL_ReadBE32 (src);
   h->height      = SDL_ReadBE32 (src);
   h->image_type  = SDL_ReadBE32 (src);
+#ifdef DEBUG
+  printf ("XCF signature : %.14s\n", h->sign);
+  printf (" (%u,%u) type=%u\n", h->width, h->height, h->image_type);
+#endif
 
   h->properties = NULL;
   h->layer_file_offsets = NULL;
@@ -334,7 +340,10 @@ static xcf_header * read_xcf_header (SDL_RWops * src) {
 
   // Just read, don't save
   do {
-    xcf_read_property (src, &prop);
+    if (!xcf_read_property (src, &prop)) {
+      free_xcf_header (h);
+      return NULL;
+    }
     if (prop.id == PROP_COMPRESSION)
       h->compr = (xcf_compr_type)prop.data.compression;
     else if (prop.id == PROP_COLORMAP) {
@@ -378,7 +387,10 @@ static xcf_layer * read_xcf_layer (SDL_RWops * src) {
   l->name = read_string (src);
 
   do {
-    xcf_read_property (src, &prop);
+    if (!xcf_read_property (src, &prop)) {
+      free_xcf_layer (l);
+      return NULL;
+    }
     if (prop.id == PROP_OFFSETS) {
       l->offset_x = prop.data.offset.x;
       l->offset_y = prop.data.offset.y;
@@ -410,7 +422,10 @@ static xcf_channel * read_xcf_channel (SDL_RWops * src) {
 
   l->selection = 0;
   do {
-    xcf_read_property (src, &prop);
+    if (!xcf_read_property (src, &prop)) {
+      free_xcf_channel (l);
+      return NULL;
+    }
     switch (prop.id) {
     case PROP_OPACITY:
       l->opacity = prop.data.opacity << 24;
