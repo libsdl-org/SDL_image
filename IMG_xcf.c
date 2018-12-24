@@ -886,7 +886,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
     channel = (xcf_channel **) SDL_realloc (channel, sizeof (xcf_channel *) * (chnls+1));
     fp = SDL_RWtell (src);
     SDL_RWseek (src, offset, RW_SEEK_SET);
-    channel [chnls] = (read_xcf_channel (src));
+    channel [chnls] = (read_xcf_channel (src, head));
     if (channel [chnls] != NULL)
       chnls++;
     SDL_RWseek (src, fp, RW_SEEK_SET);
