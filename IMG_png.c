@@ -23,6 +23,9 @@
 
 #include "SDL_image.h"
 
+/* We'll always have PNG save support */
+#define SAVE_PNG
+
 #if !(defined(__APPLE__) || defined(SDL_IMAGE_USE_WIC_BACKEND)) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
 
 #ifdef LOAD_PNG
@@ -123,9 +126,12 @@ static struct {
     void (*png_set_strip_16) (png_structrp png_ptr);
     int (*png_set_interlace_handling) (png_structrp png_ptr);
     int (*png_sig_cmp) (png_const_bytep sig, png_size_t start, png_size_t num_to_check);
+#ifdef PNG_SETJMP_SUPPORTED
 #ifndef LIBPNG_VERSION_12
     jmp_buf* (*png_set_longjmp_fn) (png_structrp, png_longjmp_ptr, size_t);
 #endif
+#endif
+#ifdef SAVE_PNG
     png_structp (*png_create_write_struct) (png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
     void (*png_destroy_write_struct) (png_structpp png_ptr_ptr, png_infopp info_ptr_ptr);
     void (*png_set_write_fn) (png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr write_data_fn, png_flush_ptr output_flush_fn);
@@ -134,6 +140,7 @@ static struct {
     void (*png_set_rows) (png_noconst15_structrp png_ptr, png_inforp info_ptr, png_bytepp row_pointers);
     void (*png_write_png) (png_structrp png_ptr, png_inforp info_ptr, int transforms, png_voidp params);
     void (*png_set_PLTE) (png_structrp png_ptr, png_inforp info_ptr, png_const_colorp palette, int num_palette);
+#endif
 } lib;
 
 #ifdef LOAD_PNG_DYNAMIC
@@ -173,9 +180,12 @@ int IMG_InitPNG()
         FUNCTION_LOADER(png_set_strip_16, void (*) (png_structrp png_ptr))
         FUNCTION_LOADER(png_set_interlace_handling, int (*) (png_structrp png_ptr))
         FUNCTION_LOADER(png_sig_cmp, int (*) (png_const_bytep sig, png_size_t start, png_size_t num_to_check))
+#ifdef PNG_SETJMP_SUPPORTED
 #ifndef LIBPNG_VERSION_12
         FUNCTION_LOADER(png_set_longjmp_fn, jmp_buf* (*) (png_structrp, png_longjmp_ptr, size_t))
 #endif
+#endif
+#ifdef SAVE_PNG
         FUNCTION_LOADER(png_create_write_struct, png_structp (*) (png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn))
         FUNCTION_LOADER(png_destroy_write_struct, void (*) (png_structpp png_ptr_ptr, png_infopp info_ptr_ptr))
         FUNCTION_LOADER(png_set_write_fn, void (*) (png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr write_data_fn, png_flush_ptr output_flush_fn))
@@ -184,6 +194,7 @@ int IMG_InitPNG()
         FUNCTION_LOADER(png_set_rows, void (*) (png_noconst15_structrp png_ptr, png_inforp info_ptr, png_bytepp row_pointers))
         FUNCTION_LOADER(png_write_png, void (*) (png_structrp png_ptr, png_inforp info_ptr, int transforms, png_voidp params))
         FUNCTION_LOADER(png_set_PLTE, void (*) (png_structrp png_ptr, png_inforp info_ptr, png_const_colorp palette, int num_palette))
+#endif
     }
     ++lib.loaded;
 
@@ -287,6 +298,8 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
      * the normal method of doing things with libpng).  REQUIRED unless you
      * set up your own error handlers in png_create_read_struct() earlier.
      */
+
+#ifdef PNG_SETJMP_SUPPORTED
 #ifndef LIBPNG_VERSION_12
     if ( setjmp(*lib.png_set_longjmp_fn(png_ptr, longjmp, sizeof (jmp_buf))) )
 #else
@@ -296,7 +309,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
         error = "Error reading the PNG file.";
         goto done;
     }
-
+#endif
     /* Set up the input control */
     lib.png_set_read_fn(png_ptr, src, png_read_data);
 
@@ -488,9 +501,6 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 
 #endif /* !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND) */
 
-/* We'll always have PNG save support */
-#define SAVE_PNG
-
 #ifdef SAVE_PNG
 
 int IMG_SavePNG(SDL_Surface *surface, const char *file)
@@ -543,11 +553,12 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
             SDL_SetError("Couldn't create image information for PNG file");
             return -1;
         }
-
+#ifdef PNG_SETJMP_SUPPORTED
 #ifndef LIBPNG_VERSION_12
         if (setjmp(*lib.png_set_longjmp_fn(png_ptr, longjmp, sizeof (jmp_buf))))
 #else
         if (setjmp(png_ptr->jmpbuf))
+#endif
 #endif
         {
             lib.png_destroy_write_struct(&png_ptr, &info_ptr);
