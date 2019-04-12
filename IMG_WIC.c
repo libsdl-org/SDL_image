@@ -22,19 +22,22 @@
 #if defined(SDL_IMAGE_USE_WIC_BACKEND)
 
 #include "SDL_image.h"
+#define COBJMACROS
+#include <initguid.h>
 #include <wincodec.h>
 
-extern "C" {
+static IWICImagingFactory* wicFactory = NULL;
 
-#define SAFE_RELEASE(X) if ((X)) { (X)->Release(); }
-#define DONE_IF_FAILED(X) if (FAILED((X))) { goto done; }
-
-IWICImagingFactory2* wicFactory = NULL;
-
-int WIC_Init()
+static int WIC_Init()
 {
     if (wicFactory == NULL) {
-        HRESULT hr = CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&wicFactory));
+        HRESULT hr = CoCreateInstance(
+            &CLSID_WICImagingFactory,
+            NULL,
+            CLSCTX_INPROC_SERVER,
+            &IID_IWICImagingFactory,
+            (void**)&wicFactory
+        );
         if (FAILED(hr)) {
             return -1;
         }
@@ -43,9 +46,11 @@ int WIC_Init()
     return 0;
 }
 
-void WIC_Quit()
+static void WIC_Quit()
 {
-    SAFE_RELEASE(wicFactory);
+    if (wicFactory) {
+        IWICImagingFactory_Release(wicFactory);
+    }
 }
 
 int IMG_InitPNG()
@@ -199,7 +204,7 @@ int IMG_isTIF(SDL_RWops* src)
     return(is_TIF);
 }
 
-SDL_Surface* WIC_LoadImage(SDL_RWops *src)
+static SDL_Surface* WIC_LoadImage(SDL_RWops *src)
 {
     SDL_Surface* surface = NULL;
 
@@ -207,6 +212,12 @@ SDL_Surface* WIC_LoadImage(SDL_RWops *src)
     IWICBitmapDecoder* bitmapDecoder = NULL;
     IWICBitmapFrameDecode* bitmapFrame = NULL;
     IWICFormatConverter* formatConverter = NULL;
+    UINT width, height;
+
+    if (wicFactory == NULL && (WIC_Init() < 0)) {
+        IMG_SetError("WIC failed to initialize!");
+        return NULL;
+    }
     
     Sint64 fileSize = SDL_RWsize(src);
     Uint8* memoryBuffer = (Uint8*)SDL_malloc(fileSize);
@@ -217,30 +228,61 @@ SDL_Surface* WIC_LoadImage(SDL_RWops *src)
 
     SDL_RWread(src, memoryBuffer, 1, fileSize);
 
-    DONE_IF_FAILED(wicFactory->CreateStream(&stream));
-    DONE_IF_FAILED(stream->InitializeFromMemory(memoryBuffer, fileSize));
-    DONE_IF_FAILED(wicFactory->CreateDecoderFromStream(stream, NULL, WICDecodeMetadataCacheOnDemand, &bitmapDecoder));
-    DONE_IF_FAILED(bitmapDecoder->GetFrame(0, &bitmapFrame));
-    DONE_IF_FAILED(wicFactory->CreateFormatConverter(&formatConverter));
-    DONE_IF_FAILED(formatConverter->Initialize(bitmapFrame, GUID_WICPixelFormat32bppPRGBA, WICBitmapDitherTypeNone, NULL, 0.0, WICBitmapPaletteTypeCustom));
-    
-    UINT width, height;
-    DONE_IF_FAILED(bitmapFrame->GetSize(&width, &height));
-    
-    Uint32 Amask = 0xFF000000;
-    Uint32 Rmask = 0x00FF0000;
-    Uint32 Gmask = 0x0000FF00;
-    Uint32 Bmask = 0x000000FF;
+#define DONE_IF_FAILED(X) if (FAILED((X))) { goto done; }
+    DONE_IF_FAILED(IWICImagingFactory_CreateStream(wicFactory, &stream));
+    DONE_IF_FAILED(IWICStream_InitializeFromMemory(stream, memoryBuffer, fileSize));
+    DONE_IF_FAILED(IWICImagingFactory_CreateDecoderFromStream(
+        wicFactory,
+        (IStream*)stream,
+        NULL,
+        WICDecodeMetadataCacheOnDemand,
+        &bitmapDecoder
+    ));
+    DONE_IF_FAILED(IWICBitmapDecoder_GetFrame(bitmapDecoder, 0, &bitmapFrame));
+    DONE_IF_FAILED(IWICImagingFactory_CreateFormatConverter(wicFactory, &formatConverter));
+    DONE_IF_FAILED(IWICFormatConverter_Initialize(
+        formatConverter,
+        (IWICBitmapSource*)bitmapFrame,
+        &GUID_WICPixelFormat32bppPRGBA,
+        WICBitmapDitherTypeNone,
+        NULL,
+        0.0,
+        WICBitmapPaletteTypeCustom
+    ));
+    DONE_IF_FAILED(IWICBitmapFrameDecode_GetSize(bitmapFrame, &width, &height));
+#undef DONE_IF_FAILED
 
-    surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 32, Rmask, Gmask, Bmask, Amask);
-
-    formatConverter->CopyPixels(NULL, width * 4, width * height * 4, (BYTE*)surface->pixels);
+    surface = SDL_CreateRGBSurface(
+        0,
+        width,
+        height,
+        32,
+        0x000000FF,
+        0x0000FF00,
+        0x00FF0000,
+        0xFF000000
+    );
+    IWICFormatConverter_CopyPixels(
+        formatConverter,
+        NULL,
+        width * 4,
+        width * height * 4,
+        (BYTE*)surface->pixels
+    );
 
 done:
-    SAFE_RELEASE(formatConverter);
-    SAFE_RELEASE(bitmapFrame);
-    SAFE_RELEASE(bitmapDecoder);
-    SAFE_RELEASE(stream);
+    if (formatConverter) {
+        IWICFormatConverter_Release(formatConverter);
+    }
+    if (bitmapFrame) {
+        IWICBitmapFrameDecode_Release(bitmapFrame);
+    }
+    if (bitmapDecoder) {
+        IWICBitmapDecoder_Release(bitmapDecoder);
+    }
+    if (stream) {
+        IWICStream_Release(stream);
+    }
 
  SDL_free(memoryBuffer);
 
