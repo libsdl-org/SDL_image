@@ -398,6 +398,8 @@ static xcf_layer * read_xcf_layer (SDL_RWops * src, const xcf_header * h) {
       l->offset_y = prop.data.offset.y;
     } else if (prop.id == PROP_VISIBLE) {
       l->visible = prop.data.visible ? 1 : 0;
+    } else if (prop.id == PROP_COLORMAP) {
+      SDL_free (prop.data.colormap.cmap);
     }
   } while (prop.id != PROP_END);
 
