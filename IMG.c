@@ -128,6 +128,22 @@ void IMG_Quit()
 /* Load an image from a file */
 SDL_Surface *IMG_Load(const char *file)
 {
+#if __EMSCRIPTEN__
+    int w, h;
+    char *data;
+    SDL_Surface *surf;
+
+    data = emscripten_get_preloaded_image_data(file, &w, &h);
+    if (data != NULL) {
+        surf = SDL_CreateRGBSurface(0, w, h, 32, 0xFF, 0xFF00, 0xFF0000, 0xFF000000);
+        if (surf != NULL) {
+            memcpy(surf->pixels, data, w * h * 4);
+        }
+        free(data);
+        return surf;
+    }
+#endif
+
     SDL_RWops *src = SDL_RWFromFile(file, "rb");
     const char *ext = SDL_strrchr(file, '.');
     if(ext) {
