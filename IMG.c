@@ -23,6 +23,10 @@
 
 #include "SDL_image.h"
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten/emscripten.h>
+#endif
+
 #define ARRAYSIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 /* Table of image detection and loading functions */
@@ -175,6 +179,29 @@ SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, const char *type)
             SDL_RWclose(src);
         return(NULL);
     }
+
+#ifdef __EMSCRIPTEN__
+    /*load through preloadedImages*/
+
+    if ( src->type == SDL_RWOPS_STDFILE ) {
+        int w, h, success;
+        char *data;
+        SDL_Surface *surf;
+
+        data = emscripten_get_preloaded_image_data_from_FILE(src->hidden.stdio.fp, &w, &h);
+
+        if(data)
+        {
+            surf = SDL_CreateRGBSurfaceFrom(data, w, h, 32, w * 4, 0xFF, 0xFF00, 0xFF0000, 0xFF000000);
+            free(data);
+
+            if(freesrc)
+                SDL_RWclose(src);
+
+            return surf;
+        }
+    }
+#endif
 
     /* Detect the type of image being loaded */
     image = NULL;
