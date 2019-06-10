@@ -98,6 +98,8 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
     Uint8 *row, *buf = NULL;
     char *error = NULL;
     int bits, src_bits;
+    int count = 0;
+    Uint8 ch;
 
     if ( !src ) {
         /* The error message has been set in SDL_RWFromFile */
@@ -105,7 +107,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
     }
     start = SDL_RWtell(src);
 
-    if ( ! SDL_RWread(src, &pcxh, sizeof(pcxh), 1) ) {
+    if ( !SDL_RWread(src, &pcxh, sizeof(pcxh), 1) ) {
         error = "file truncated";
         goto done;
     }
@@ -114,6 +116,20 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
     pcxh.Xmax = SDL_SwapLE16(pcxh.Xmax);
     pcxh.Ymax = SDL_SwapLE16(pcxh.Ymax);
     pcxh.BytesPerLine = SDL_SwapLE16(pcxh.BytesPerLine);
+
+#if 0
+    printf("Manufacturer = %d\n", pcxh.Manufacturer);
+    printf("Version = %d\n", pcxh.Version);
+    printf("Encoding = %d\n", pcxh.Encoding);
+    printf("BitsPerPixel = %d\n", pcxh.BitsPerPixel);
+    printf("Xmin = %d, Ymin = %d, Xmax = %d, Ymax = %d\n", pcxh.Xmin, pcxh.Ymin, pcxh.Xmax, pcxh.Ymax);
+    printf("HDpi = %d, VDpi = %d\n", pcxh.HDpi, pcxh.VDpi);
+    printf("NPlanes = %d\n", pcxh.NPlanes);
+    printf("BytesPerLine = %d\n", pcxh.BytesPerLine);
+    printf("PaletteInfo = %d\n", pcxh.PaletteInfo);
+    printf("HscreenSize = %d\n", pcxh.HscreenSize);
+    printf("VscreenSize = %d\n", pcxh.VscreenSize);
+#endif
 
     /* Create the surface of the appropriate type */
     width = (pcxh.Xmax - pcxh.Xmin) + 1;
@@ -144,51 +160,52 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
         goto done;
 
     bpl = pcxh.NPlanes * pcxh.BytesPerLine;
-    if (bpl > surface->pitch) {
+    if ( bpl > surface->pitch ) {
         error = "bytes per line is too large (corrupt?)";
+        goto done;
     }
-    buf = (Uint8 *)SDL_calloc(SDL_max(bpl, surface->pitch), 1);
+    buf = (Uint8 *)SDL_calloc(surface->pitch, 1);
     row = (Uint8 *)surface->pixels;
     for ( y=0; y<surface->h; ++y ) {
         /* decode a scan line to a temporary buffer first */
-        int i, count = 0;
-        Uint8 ch;
-        Uint8 *dst = (src_bits == 8) ? row : buf;
+        int i;
+        Uint8 *dst = buf;
         if ( pcxh.Encoding == 0 ) {
-            if(!SDL_RWread(src, dst, bpl, 1)) {
+            if ( !SDL_RWread(src, dst, bpl, 1) ) {
                 error = "file truncated";
                 goto done;
             }
         } else {
-            for(i = 0; i < bpl; i++) {
-                if(!count) {
-                    if(!SDL_RWread(src, &ch, 1, 1)) {
+            for ( i = 0; i < bpl; i++ ) {
+                if ( !count ) {
+                    if ( !SDL_RWread(src, &ch, 1, 1) ) {
                         error = "file truncated";
                         goto done;
                     }
-                    if( (ch & 0xc0) == 0xc0) {
-                        count = ch & 0x3f;
-                        if(!SDL_RWread(src, &ch, 1, 1)) {
+                    if ( ch < 0xc0 ) {
+                        count = 1;
+                    } else {
+                        count = ch - 0xc0;
+                        if( !SDL_RWread(src, &ch, 1, 1) ) {
                             error = "file truncated";
                             goto done;
                         }
-                    } else
-                        count = 1;
+                    }
                 }
                 dst[i] = ch;
                 count--;
             }
         }
 
-        if(src_bits <= 4) {
+        if ( src_bits <= 4 ) {
             /* expand planes to 1 byte/pixel */
             Uint8 *innerSrc = buf;
             int plane;
-            for(plane = 0; plane < pcxh.NPlanes; plane++) {
+            for ( plane = 0; plane < pcxh.NPlanes; plane++ ) {
                 int j, k, x = 0;
-                for(j = 0; j < pcxh.BytesPerLine; j++) {
+                for( j = 0; j < pcxh.BytesPerLine; j++ ) {
                     Uint8 byte = *innerSrc++;
-                    for(k = 7; k >= 0; k--) {
+                    for( k = 7; k >= 0; k-- ) {
                         unsigned bit = (byte >> k) & 1;
                         /* skip padding bits */
                         if (j * 8 + k >= width)
@@ -197,46 +214,53 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
                     }
                 }
             }
-        } else if(src_bits == 24) {
+        } else if ( src_bits == 24 ) {
             /* de-interlace planes */
             Uint8 *innerSrc = buf;
             int plane;
-            for(plane = 0; plane < pcxh.NPlanes; plane++) {
+            for ( plane = 0; plane < pcxh.NPlanes; plane++ ) {
                 int x;
                 dst = row + plane;
-                for(x = 0; x < width; x++) {
+                for ( x = 0; x < width; x++ ) {
+                    if ( dst >= row+surface->pitch ) {
+                        error = "decoding out of bounds (corrupt?)";
+                        goto done;
+                    }
                     *dst = *innerSrc++;
                     dst += pcxh.NPlanes;
                 }
             }
+        } else {
+            SDL_memcpy(row, buf, bpl);
         }
 
         row += surface->pitch;
     }
 
-    if(bits == 8) {
+    if ( bits == 8 ) {
         SDL_Color *colors = surface->format->palette->colors;
         int nc = 1 << src_bits;
         int i;
 
         surface->format->palette->ncolors = nc;
-        if(src_bits == 8) {
+        if ( src_bits == 8 ) {
             Uint8 ch;
             /* look for a 256-colour palette */
             do {
-                if ( !SDL_RWread(src, &ch, 1, 1)) {
-                    error = "file truncated";
-                    goto done;
+                if ( !SDL_RWread(src, &ch, 1, 1) ) {
+                    /* Couldn't find the palette, try the end of the file */
+                    SDL_RWseek(src, -768, RW_SEEK_END);
+                    break;
                 }
             } while ( ch != 12 );
 
-            for(i = 0; i < 256; i++) {
+            for ( i = 0; i < 256; i++ ) {
                 SDL_RWread(src, &colors[i].r, 1, 1);
                 SDL_RWread(src, &colors[i].g, 1, 1);
                 SDL_RWread(src, &colors[i].b, 1, 1);
             }
         } else {
-            for(i = 0; i < nc; i++) {
+            for ( i = 0; i < nc; i++ ) {
                 colors[i].r = pcxh.Colormap[i * 3];
                 colors[i].g = pcxh.Colormap[i * 3 + 1];
                 colors[i].b = pcxh.Colormap[i * 3 + 2];
