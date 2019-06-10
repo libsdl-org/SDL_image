@@ -215,13 +215,8 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
                 }
             }
         } else if ( src_bits == 8 ) {
-            /* directly copy buf content to row */
-            Uint8 *innerSrc = buf;
-            int x;
-            Uint8 *dst = row;
-            for ( x = 0; x < width; x++ ) {
-                *dst++ = *innerSrc++;
-            }
+            /* Copy the row directly */
+            SDL_memcpy(row, buf, SDL_min(width, bpl));
         } else if ( src_bits == 24 ) {
             /* de-interlace planes */
             Uint8 *innerSrc = buf;
