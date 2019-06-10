@@ -192,12 +192,16 @@ SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, const char *type)
 
         if(data)
         {
-            surf = SDL_CreateRGBSurfaceFrom(data, w, h, 32, w * 4, 0xFF, 0xFF00, 0xFF0000, 0xFF000000);
+            surf = SDL_CreateRGBSurface(0, w, h, 32, 0xFF, 0xFF00, 0xFF0000, 0xFF000000);
+            if (surf != NULL) {
+                memcpy(surf->pixels, data, w * h * 4);
+            }
             free(data);
 
             if(freesrc)
                 SDL_RWclose(src);
 
+            /* If SDL_CreateRGBSurface returns NULL, it has set the error message for us */
             return surf;
         }
     }
