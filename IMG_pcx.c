@@ -160,7 +160,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
         goto done;
 
     bpl = pcxh.NPlanes * pcxh.BytesPerLine;
-    if ( bpl > surface->pitch ) {
+    if ( bpl < 0 || bpl > surface->pitch ) {
         error = "bytes per line is too large (corrupt?)";
         goto done;
     }
