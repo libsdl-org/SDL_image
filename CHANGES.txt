@@ -1,3 +1,7 @@
+2.0.5:
+Sathyanarayanan Gunasekaran, Brian Palmer, Charlie Birks, Amadeus - Mon Jun 10 16:48:20 PDT 2019
+ * Ported SDL_image to emscripten
+
 2.0.4:
 Michał Janiszewski - Fri Sept 28 22:00:26 PST 2018
  * Fixed memory issues in the XCF loader
