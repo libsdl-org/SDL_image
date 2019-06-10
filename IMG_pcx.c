@@ -156,22 +156,22 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
     }
     surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height,
                    bits, Rmask, Gmask, Bmask, Amask);
-    if ( surface == NULL )
-        goto done;
-
-    bpl = pcxh.NPlanes * pcxh.BytesPerLine;
-    if ( bpl < 0 || bpl > surface->pitch ) {
-        error = "bytes per line is too large (corrupt?)";
+    if ( surface == NULL ) {
         goto done;
     }
-    buf = (Uint8 *)SDL_calloc(surface->pitch, 1);
+
+    bpl = pcxh.NPlanes * pcxh.BytesPerLine;
+    buf = (Uint8 *)SDL_calloc(bpl, 1);
+    if ( !buf ) {
+        error = "Out of memory";
+        goto done;
+    }
     row = (Uint8 *)surface->pixels;
     for ( y=0; y<surface->h; ++y ) {
         /* decode a scan line to a temporary buffer first */
         int i;
-        Uint8 *dst = buf;
         if ( pcxh.Encoding == 0 ) {
-            if ( !SDL_RWread(src, dst, bpl, 1) ) {
+            if ( !SDL_RWread(src, buf, bpl, 1) ) {
                 error = "file truncated";
                 goto done;
             }
@@ -192,7 +192,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
                         }
                     }
                 }
-                dst[i] = ch;
+                buf[i] = ch;
                 count--;
             }
         }
@@ -214,13 +214,21 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
                     }
                 }
             }
+        } else if ( src_bits == 8 ) {
+            /* directly copy buf content to row */
+            Uint8 *innerSrc = buf;
+            int x;
+            Uint8 *dst = row;
+            for ( x = 0; x < width; x++ ) {
+                *dst++ = *innerSrc++;
+            }
         } else if ( src_bits == 24 ) {
             /* de-interlace planes */
             Uint8 *innerSrc = buf;
             int plane;
             for ( plane = 0; plane < pcxh.NPlanes; plane++ ) {
                 int x;
-                dst = row + plane;
+                Uint8 *dst = row + plane;
                 for ( x = 0; x < width; x++ ) {
                     if ( dst >= row+surface->pitch ) {
                         error = "decoding out of bounds (corrupt?)";
@@ -230,8 +238,6 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
                     dst += pcxh.NPlanes;
                 }
             }
-        } else {
-            SDL_memcpy(row, buf, bpl);
         }
 
         row += surface->pitch;
