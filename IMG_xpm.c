@@ -101,7 +101,7 @@ static struct color_hash *create_colorhash(int maxnum)
 
     /* we know how many entries we need, so we can allocate
        everything here */
-    hash = (struct color_hash *)SDL_malloc(sizeof *hash);
+    hash = (struct color_hash *)SDL_calloc(1, sizeof(*hash));
     if (!hash)
         return NULL;
 
@@ -110,15 +110,29 @@ static struct color_hash *create_colorhash(int maxnum)
         ;
     hash->size = s;
     hash->maxnum = maxnum;
+
     bytes = hash->size * sizeof(struct hash_entry **);
-    hash->entries = NULL;   /* in case malloc fails */
-    hash->table = (struct hash_entry **)SDL_malloc(bytes);
+    /* Check for overflow */
+    if ((bytes / sizeof(struct hash_entry **)) != hash->size) {
+        IMG_SetError("memory allocation overflow");
+        SDL_free(hash);
+        return NULL;
+    }
+    hash->table = (struct hash_entry **)SDL_calloc(1, bytes);
     if (!hash->table) {
         SDL_free(hash);
         return NULL;
     }
-    SDL_memset(hash->table, 0, bytes);
-    hash->entries = (struct hash_entry *)SDL_malloc(maxnum * sizeof(struct hash_entry));
+
+    bytes = maxnum * sizeof(struct hash_entry);
+    /* Check for overflow */
+    if ((bytes / sizeof(struct hash_entry)) != maxnum) {
+        IMG_SetError("memory allocation overflow");
+        SDL_free(hash->table);
+        SDL_free(hash);
+        return NULL;
+    }
+    hash->entries = (struct hash_entry *)SDL_calloc(1, bytes);
     if (!hash->entries) {
         SDL_free(hash->table);
         SDL_free(hash);
