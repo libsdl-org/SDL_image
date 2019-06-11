@@ -1026,6 +1026,11 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
         goto done;
     }
 
+    /* Check for allocation overflow */
+    if ((size_t)(ncolors * cpp)/cpp != ncolors) {
+        error = "Invalid color specification";
+        goto done;
+    }
     keystrings = (char *)SDL_malloc(ncolors * cpp);
     if (!keystrings) {
         error = "Out of memory";
@@ -1093,8 +1098,9 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
                 c->g = (Uint8)(rgb >> 8);
                 c->b = (Uint8)(rgb);
                 pixel = index;
-            } else
+            } else {
                 pixel = rgb;
+            }
             add_colorhash(colors, nextkey, cpp, pixel);
             nextkey += cpp;
             if (rgb == 0xffffffff)
