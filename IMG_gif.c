@@ -178,6 +178,7 @@ IMG_LoadGIF_RW(SDL_RWops *src)
     State_t state;
     state.ZeroDataBlock = FALSE;
     state.fresh = FALSE;
+    state.last_byte = 0;
 
     if ( src == NULL ) {
     return NULL;
