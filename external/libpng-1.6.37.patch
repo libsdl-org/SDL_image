@@ -1,6 +1,6 @@
-diff -u /dev/null libpng-1.6.35/Android.mk
---- /dev/null	2018-11-01 16:27:41.501911077 +0300
-+++ libpng-1.6.35/Android.mk	2018-10-01 20:26:46.000000000 -0700
+diff -ruN libpng-1.6.37.orig/Android.mk libpng-1.6.37/Android.mk
+--- libpng-1.6.37.orig/Android.mk	1969-12-31 16:00:00.000000000 -0800
++++ libpng-1.6.37/Android.mk	2019-06-19 07:44:06.000000000 -0700
 @@ -0,0 +1,41 @@
 +LOCAL_PATH:= $(call my-dir)
 +
@@ -43,17 +43,16 @@ diff -u /dev/null libpng-1.6.35/Android.mk
 +include $(BUILD_STATIC_LIBRARY)
 +#include $(BUILD_SHARED_LIBRARY)
 +
-diff -u /dev/null libpng-1.6.35/pnglibconf.h
---- /dev/null	2018-11-01 16:27:41.501911077 +0300
-+++ libpng-1.6.35/pnglibconf.h	2018-07-16 06:58:00.000000000 +0300
-@@ -0,0 +1,220 @@
-+/* libpng 1.6.35 STANDARD API DEFINITION */
-+
+diff -ruN libpng-1.6.37.orig/pnglibconf.h libpng-1.6.37/pnglibconf.h
+--- libpng-1.6.37.orig/pnglibconf.h	1969-12-31 16:00:00.000000000 -0800
++++ libpng-1.6.37/pnglibconf.h	2019-06-19 07:45:35.000000000 -0700
+@@ -0,0 +1,219 @@
 +/* pnglibconf.h - library build configuration */
 +
-+/* Libpng version 1.6.35 - July 15, 2018 */
++/* libpng version 1.6.37 */
 +
-+/* Copyright (c) 1998-2018 Glenn Randers-Pehrson */
++/* Copyright (c) 2018-2019 Cosmin Truta */
++/* Copyright (c) 1998-2002,2004,2006-2018 Glenn Randers-Pehrson */
 +
 +/* This code is released under the libpng license. */
 +/* For conditions of distribution and use, see the disclaimer */
