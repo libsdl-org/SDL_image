@@ -1,4 +1,6 @@
 2.0.5:
+Sam Lantinga - Wed Jun 19 07:30:51 PDT 2019
+ * Updated external libraries libpng-1.6.32, libwebp-1.0.2
 Sam Lantinga - Tue Jun 11 00:17:01 PDT 2019
  * Fixed a number of security issues:
    TALOS-2019-0820
