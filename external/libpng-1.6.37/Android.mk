@@ -9,15 +9,15 @@ common_SRC_FILES := \
 
 ifeq ($(TARGET_ARCH_ABI),armeabi)
 common_SRC_FILES += \
-	arm/arm_init.c arm/filter_neon.S arm/filter_neon_intrinsics.c
+	arm/arm_init.c arm/filter_neon.S arm/filter_neon_intrinsics.c arm/palette_neon_intrinsics.c
 endif
 ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 common_SRC_FILES += \
-	arm/arm_init.c arm/filter_neon.S arm/filter_neon_intrinsics.c
+	arm/arm_init.c arm/filter_neon.S arm/filter_neon_intrinsics.c arm/palette_neon_intrinsics.c
 endif
 ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
 common_SRC_FILES += \
-	arm/arm_init.c arm/filter_neon.S arm/filter_neon_intrinsics.c
+	arm/arm_init.c arm/filter_neon.S arm/filter_neon_intrinsics.c arm/palette_neon_intrinsics.c
 endif
 
 common_CFLAGS := ## -fomit-frame-pointer
