@@ -121,33 +121,48 @@ int IMG_isGIF(SDL_RWops *src)
 
 #define LM_to_uint(a,b)			(((b)<<8)|(a))
 
-static struct {
-    unsigned int Width;
-    unsigned int Height;
-    unsigned char ColorMap[3][MAXCOLORMAPSIZE];
-    unsigned int BitPixel;
-    unsigned int ColorResolution;
-    unsigned int Background;
-    unsigned int AspectRatio;
-    int GrayScale;
-} GifScreen;
+typedef struct {
+    struct {
+        unsigned int Width;
+        unsigned int Height;
+        unsigned char ColorMap[3][MAXCOLORMAPSIZE];
+        unsigned int BitPixel;
+        unsigned int ColorResolution;
+        unsigned int Background;
+        unsigned int AspectRatio;
+        int GrayScale;
+    } GifScreen;
 
-static struct {
-    int transparent;
-    int delayTime;
-    int inputFlag;
-    int disposal;
-} Gif89;
+    struct {
+        int transparent;
+        int delayTime;
+        int inputFlag;
+        int disposal;
+    } Gif89;
+
+    unsigned char buf[280];
+    int curbit, lastbit, done, last_byte;
+
+    int fresh;
+    int code_size, set_code_size;
+    int max_code, max_code_size;
+    int firstcode, oldcode;
+    int clear_code, end_code;
+    int table[2][(1 << MAX_LWZ_BITS)];
+    int stack[(1 << (MAX_LWZ_BITS)) * 2], *sp;
+
+    int ZeroDataBlock;
+} State_t;
 
 static int ReadColorMap(SDL_RWops * src, int number,
 			unsigned char buffer[3][MAXCOLORMAPSIZE], int *flag);
-static int DoExtension(SDL_RWops * src, int label);
-static int GetDataBlock(SDL_RWops * src, unsigned char *buf);
-static int GetCode(SDL_RWops * src, int code_size, int flag);
-static int LWZReadByte(SDL_RWops * src, int flag, int input_code_size);
+static int DoExtension(SDL_RWops * src, int label, State_t * state);
+static int GetDataBlock(SDL_RWops * src, unsigned char *buf, State_t * state);
+static int GetCode(SDL_RWops * src, int code_size, int flag, State_t * state);
+static int LWZReadByte(SDL_RWops * src, int flag, int input_code_size, State_t * state);
 static Image *ReadImage(SDL_RWops * src, int len, int height, int,
 			unsigned char cmap[3][MAXCOLORMAPSIZE],
-			int gray, int interlace, int ignore);
+			int gray, int interlace, int ignore, State_t * state);
 
 Image *
 IMG_LoadGIF_RW(SDL_RWops *src)
@@ -163,6 +178,10 @@ IMG_LoadGIF_RW(SDL_RWops *src)
     char version[4];
     int imageNumber = 1;
     Image *image = NULL;
+    State_t state;
+    state.ZeroDataBlock = FALSE;
+    state.fresh = FALSE;
+    state.last_byte = 0;
 
     if ( src == NULL ) {
 	return NULL;
@@ -184,25 +203,25 @@ IMG_LoadGIF_RW(SDL_RWops *src)
 	RWSetMsg("bad version number, not '87a' or '89a'");
         goto done;
     }
-    Gif89.transparent = -1;
-    Gif89.delayTime = -1;
-    Gif89.inputFlag = -1;
-    Gif89.disposal = 0;
+    state.Gif89.transparent = -1;
+    state.Gif89.delayTime = -1;
+    state.Gif89.inputFlag = -1;
+    state.Gif89.disposal = 0;
 
     if (!ReadOK(src, buf, 7)) {
 	RWSetMsg("failed to read screen descriptor");
         goto done;
     }
-    GifScreen.Width = LM_to_uint(buf[0], buf[1]);
-    GifScreen.Height = LM_to_uint(buf[2], buf[3]);
-    GifScreen.BitPixel = 2 << (buf[4] & 0x07);
-    GifScreen.ColorResolution = (((buf[4] & 0x70) >> 3) + 1);
-    GifScreen.Background = buf[5];
-    GifScreen.AspectRatio = buf[6];
+    state.GifScreen.Width = LM_to_uint(buf[0], buf[1]);
+    state.GifScreen.Height = LM_to_uint(buf[2], buf[3]);
+    state.GifScreen.BitPixel = 2 << (buf[4] & 0x07);
+    state.GifScreen.ColorResolution = (((buf[4] & 0x70) >> 3) + 1);
+    state.GifScreen.Background = buf[5];
+    state.GifScreen.AspectRatio = buf[6];
 
     if (BitSet(buf[4], LOCALCOLORMAP)) {	/* Global Colormap */
-	if (ReadColorMap(src, GifScreen.BitPixel, GifScreen.ColorMap,
-			 &GifScreen.GrayScale)) {
+	if (ReadColorMap(src, state.GifScreen.BitPixel,
+			 state.GifScreen.ColorMap, &state.GifScreen.GrayScale)) {
 	    RWSetMsg("error reading global colormap");
             goto done;
 	}
@@ -224,7 +243,7 @@ IMG_LoadGIF_RW(SDL_RWops *src)
 		RWSetMsg("EOF / read error on extention function code");
                 goto done;
 	    }
-	    DoExtension(src, c);
+	    DoExtension(src, c, &state);
 	    continue;
 	}
 	if (c != ',') {		/* Not a valid start character */
@@ -249,19 +268,19 @@ IMG_LoadGIF_RW(SDL_RWops *src)
 			      LM_to_uint(buf[6], buf[7]),
 			      bitPixel, localColorMap, grayScale,
 			      BitSet(buf[8], INTERLACE),
-			      imageCount != imageNumber);
+			      imageCount != imageNumber, &state);
 	} else {
 	    image = ReadImage(src, LM_to_uint(buf[4], buf[5]),
 			      LM_to_uint(buf[6], buf[7]),
-			      GifScreen.BitPixel, GifScreen.ColorMap,
-			      GifScreen.GrayScale, BitSet(buf[8], INTERLACE),
-			      imageCount != imageNumber);
+			      state.GifScreen.BitPixel, state.GifScreen.ColorMap,
+			      state.GifScreen.GrayScale, BitSet(buf[8], INTERLACE),
+			      imageCount != imageNumber, &state);
 	}
     } while (image == NULL);
 
 #ifdef USED_BY_SDL
-    if ( Gif89.transparent >= 0 ) {
-        SDL_SetColorKey(image, SDL_SRCCOLORKEY, Gif89.transparent);
+    if ( state.Gif89.transparent >= 0 ) {
+        SDL_SetColorKey(image, SDL_SRCCOLORKEY, state.Gif89.transparent);
     }
 #endif
 
@@ -306,9 +325,9 @@ ReadColorMap(SDL_RWops *src, int number,
 }
 
 static int
-DoExtension(SDL_RWops *src, int label)
+DoExtension(SDL_RWops *src, int label, State_t * state)
 {
-    static unsigned char buf[256];
+    unsigned char buf[256];
     char *str;
 
     switch (label) {
@@ -320,19 +339,19 @@ DoExtension(SDL_RWops *src, int label)
 	break;
     case 0xfe:			/* Comment Extension */
 	str = "Comment Extension";
-	while (GetDataBlock(src, (unsigned char *) buf) > 0)
+	while (GetDataBlock(src, (unsigned char *) buf, state) > 0)
 	    ;
 	return FALSE;
     case 0xf9:			/* Graphic Control Extension */
 	str = "Graphic Control Extension";
-	(void) GetDataBlock(src, (unsigned char *) buf);
-	Gif89.disposal = (buf[0] >> 2) & 0x7;
-	Gif89.inputFlag = (buf[0] >> 1) & 0x1;
-	Gif89.delayTime = LM_to_uint(buf[1], buf[2]);
+	(void) GetDataBlock(src, (unsigned char *) buf, state);
+	state->Gif89.disposal = (buf[0] >> 2) & 0x7;
+	state->Gif89.inputFlag = (buf[0] >> 1) & 0x1;
+	state->Gif89.delayTime = LM_to_uint(buf[1], buf[2]);
 	if ((buf[0] & 0x1) != 0)
-	    Gif89.transparent = buf[3];
+	    state->Gif89.transparent = buf[3];
 
-	while (GetDataBlock(src, (unsigned char *) buf) > 0)
+	while (GetDataBlock(src, (unsigned char *) buf, state) > 0)
 	    ;
 	return FALSE;
     default:
@@ -341,16 +360,14 @@ DoExtension(SDL_RWops *src, int label)
 	break;
     }
 
-    while (GetDataBlock(src, (unsigned char *) buf) > 0)
+    while (GetDataBlock(src, (unsigned char *) buf, state) > 0)
 	;
 
     return FALSE;
 }
 
-static int ZeroDataBlock = FALSE;
-
 static int
-GetDataBlock(SDL_RWops *src, unsigned char *buf)
+GetDataBlock(SDL_RWops *src, unsigned char *buf, State_t * state)
 {
     unsigned char count;
 
@@ -358,7 +375,7 @@ GetDataBlock(SDL_RWops *src, unsigned char *buf)
 	/* pm_message("error in getting DataBlock size" ); */
 	return -1;
     }
-    ZeroDataBlock = count == 0;
+    state->ZeroDataBlock = count == 0;
 
     if ((count != 0) && (!ReadOK(src, buf, count))) {
 	/* pm_message("error in reading DataBlock" ); */
@@ -368,55 +385,46 @@ GetDataBlock(SDL_RWops *src, unsigned char *buf)
 }
 
 static int
-GetCode(SDL_RWops *src, int code_size, int flag)
+GetCode(SDL_RWops *src, int code_size, int flag, State_t * state)
 {
-    static unsigned char buf[280];
-    static int curbit, lastbit, done, last_byte;
     int i, j, ret;
     unsigned char count;
 
     if (flag) {
-	curbit = 0;
-	lastbit = 0;
-	done = FALSE;
+	state->curbit = 0;
+	state->lastbit = 0;
+	state->done = FALSE;
 	return 0;
     }
-    if ((curbit + code_size) >= lastbit) {
-	if (done) {
-	    if (curbit >= lastbit)
+    if ((state->curbit + code_size) >= state->lastbit) {
+	if (state->done) {
+	    if (state->curbit >= state->lastbit)
 		RWSetMsg("ran off the end of my bits");
 	    return -1;
 	}
-	buf[0] = buf[last_byte - 2];
-	buf[1] = buf[last_byte - 1];
+	state->buf[0] = state->buf[state->last_byte - 2];
+	state->buf[1] = state->buf[state->last_byte - 1];
 
-	if ((count = GetDataBlock(src, &buf[2])) <= 0)
-	    done = TRUE;
+	if ((count = GetDataBlock(src, &state->buf[2], state)) <= 0)
+	    state->done = TRUE;
 
-	last_byte = 2 + count;
-	curbit = (curbit - lastbit) + 16;
-	lastbit = (2 + count) * 8;
+	state->last_byte = 2 + count;
+	state->curbit = (state->curbit - state->lastbit) + 16;
+	state->lastbit = (2 + count) * 8;
     }
     ret = 0;
-    for (i = curbit, j = 0; j < code_size; ++i, ++j)
-	ret |= ((buf[i / 8] & (1 << (i % 8))) != 0) << j;
+    for (i = state->curbit, j = 0; j < code_size; ++i, ++j)
+	ret |= ((state->buf[i / 8] & (1 << (i % 8))) != 0) << j;
 
-    curbit += code_size;
+    state->curbit += code_size;
 
     return ret;
 }
 
 static int
-LWZReadByte(SDL_RWops *src, int flag, int input_code_size)
+LWZReadByte(SDL_RWops *src, int flag, int input_code_size, State_t * state)
 {
-    static int fresh = FALSE;
     int code, incode;
-    static int code_size, set_code_size;
-    static int max_code, max_code_size;
-    static int firstcode, oldcode;
-    static int clear_code, end_code;
-    static int table[2][(1 << MAX_LWZ_BITS)];
-    static int stack[(1 << (MAX_LWZ_BITS)) * 2], *sp;
     register int i;
 
     /* Fixed buffer overflow found by Michael Skladnikiewicz */
@@ -424,60 +432,60 @@ LWZReadByte(SDL_RWops *src, int flag, int input_code_size)
         return -1;
 
     if (flag) {
-	set_code_size = input_code_size;
-	code_size = set_code_size + 1;
-	clear_code = 1 << set_code_size;
-	end_code = clear_code + 1;
-	max_code_size = 2 * clear_code;
-	max_code = clear_code + 2;
+	state->set_code_size = input_code_size;
+	state->code_size = state->set_code_size + 1;
+	state->clear_code = 1 << state->set_code_size;
+	state->end_code = state->clear_code + 1;
+	state->max_code_size = 2 * state->clear_code;
+	state->max_code = state->clear_code + 2;
 
-	GetCode(src, 0, TRUE);
+	GetCode(src, 0, TRUE, state);
 
-	fresh = TRUE;
+	state->fresh = TRUE;
 
-	for (i = 0; i < clear_code; ++i) {
-	    table[0][i] = 0;
-	    table[1][i] = i;
+	for (i = 0; i < state->clear_code; ++i) {
+	    state->table[0][i] = 0;
+	    state->table[1][i] = i;
 	}
-	table[1][0] = 0;
+	state->table[1][0] = 0;
 	for (; i < (1 << MAX_LWZ_BITS); ++i)
-	    table[0][i] = 0;
+	    state->table[0][i] = 0;
 
-	sp = stack;
+	state->sp = state->stack;
 
 	return 0;
-    } else if (fresh) {
-	fresh = FALSE;
+    } else if (state->fresh) {
+	state->fresh = FALSE;
 	do {
-	    firstcode = oldcode = GetCode(src, code_size, FALSE);
-	} while (firstcode == clear_code);
-	return firstcode;
+	    state->firstcode = state->oldcode = GetCode(src, state->code_size, FALSE, state);
+	} while (state->firstcode == state->clear_code);
+	return state->firstcode;
     }
-    if (sp > stack)
-	return *--sp;
+    if (state->sp > state->stack)
+	return *--state->sp;
 
-    while ((code = GetCode(src, code_size, FALSE)) >= 0) {
-	if (code == clear_code) {
-	    for (i = 0; i < clear_code; ++i) {
-		table[0][i] = 0;
-		table[1][i] = i;
+    while ((code = GetCode(src, state->code_size, FALSE, state)) >= 0) {
+	if (code == state->clear_code) {
+	    for (i = 0; i < state->clear_code; ++i) {
+		state->table[0][i] = 0;
+		state->table[1][i] = i;
 	    }
 	    for (; i < (1 << MAX_LWZ_BITS); ++i)
-		table[0][i] = table[1][i] = 0;
-	    code_size = set_code_size + 1;
-	    max_code_size = 2 * clear_code;
-	    max_code = clear_code + 2;
-	    sp = stack;
-	    firstcode = oldcode = GetCode(src, code_size, FALSE);
-	    return firstcode;
-	} else if (code == end_code) {
+	    state->table[0][i] = state->table[1][i] = 0;
+	    state->code_size = state->set_code_size + 1;
+	    state->max_code_size = 2 * state->clear_code;
+	    state->max_code = state->clear_code + 2;
+	    state->sp = state->stack;
+	    state->firstcode = state->oldcode = GetCode(src, state->code_size, FALSE, state);
+	    return state->firstcode;
+	} else if (code == state->end_code) {
 	    int count;
 	    unsigned char buf[260];
 
-	    if (ZeroDataBlock)
+	    if (state->ZeroDataBlock)
 		return -2;
 
-	    while ((count = GetDataBlock(src, buf)) > 0)
+	    while ((count = GetDataBlock(src, buf, state)) > 0)
 		;
 
 	    if (count != 0) {
@@ -489,22 +497,22 @@ LWZReadByte(SDL_RWops *src, int flag, int input_code_size)
 	}
 	incode = code;
 
-	if (code >= max_code) {
-	    *sp++ = firstcode;
-	    code = oldcode;
+	if (code >= state->max_code) {
+	    *state->sp++ = state->firstcode;
+	    code = state->oldcode;
 	}
-	while (code >= clear_code) {
+	while (code >= state->clear_code) {
 	    /* Guard against buffer overruns */
 	    if (code < 0 || code >= (1 << MAX_LWZ_BITS)) {
 		RWSetMsg("invalid LWZ data");
 		return -3;
 	    }
-	    *sp++ = table[1][code];
-	    if (code == table[0][code]) {
+	    *state->sp++ = state->table[1][code];
+	    if (code == state->table[0][code]) {
 		RWSetMsg("circular table entry BIG ERROR");
 		return -3;
 	    }
-	    code = table[0][code];
+	    code = state->table[0][code];
 	}
 
 	/* Guard against buffer overruns */
@@ -512,22 +520,22 @@ LWZReadByte(SDL_RWops *src, int flag, int input_code_size)
 	    RWSetMsg("invalid LWZ data");
 	    return -4;
 	}
-	*sp++ = firstcode = table[1][code];
+	*state->sp++ = state->firstcode = state->table[1][code];
 
-	if ((code = max_code) < (1 << MAX_LWZ_BITS)) {
-	    table[0][code] = oldcode;
-	    table[1][code] = firstcode;
-	    ++max_code;
-	    if ((max_code >= max_code_size) &&
-		(max_code_size < (1 << MAX_LWZ_BITS))) {
-		max_code_size *= 2;
-		++code_size;
+	if ((code = state->max_code) < (1 << MAX_LWZ_BITS)) {
+	    state->table[0][code] = state->oldcode;
+	    state->table[1][code] = state->firstcode;
+	    ++state->max_code;
+	    if ((state->max_code >= state->max_code_size) &&
+		(state->max_code_size < (1 << MAX_LWZ_BITS))) {
+		state->max_code_size *= 2;
+		++state->code_size;
 	    }
 	}
-	oldcode = incode;
+	state->oldcode = incode;
 
-	if (sp > stack)
-	    return *--sp;
+	if (state->sp > state->stack)
+	    return *--state->sp;
     }
     return code;
 }
@@ -535,7 +543,7 @@ LWZReadByte(SDL_RWops *src, int flag, int input_code_size)
 static Image *
 ReadImage(SDL_RWops * src, int len, int height, int cmapSize,
 	  unsigned char cmap[3][MAXCOLORMAPSIZE],
-	  int gray, int interlace, int ignore)
+	  int gray, int interlace, int ignore, State_t * state)
 {
     Image *image;
     unsigned char c;
@@ -549,7 +557,7 @@ ReadImage(SDL_RWops * src, int len, int height, int cmapSize,
 	RWSetMsg("EOF / read error on image data");
 	return NULL;
     }
-    if (LWZReadByte(src, TRUE, c) < 0) {
+    if (LWZReadByte(src, TRUE, c, state) < 0) {
 	RWSetMsg("error reading image");
 	return NULL;
     }
@@ -557,7 +565,7 @@ ReadImage(SDL_RWops * src, int len, int height, int cmapSize,
     **	If this is an "uninteresting picture" ignore it.
      */
     if (ignore) {
-	while (LWZReadByte(src, FALSE, c) >= 0)
+	while (LWZReadByte(src, FALSE, c, state) >= 0)
 	    ;
 	return NULL;
     }
@@ -567,7 +575,7 @@ ReadImage(SDL_RWops * src, int len, int height, int cmapSize,
 	ImageSetCmap(image, i, cmap[CM_RED][i],
 		     cmap[CM_GREEN][i], cmap[CM_BLUE][i]);
 
-    while ((v = LWZReadByte(src, FALSE, c)) >= 0) {
+    while ((v = LWZReadByte(src, FALSE, c, state)) >= 0) {
 #ifdef USED_BY_SDL
 	((Uint8 *)image->pixels)[xpos + ypos * image->pitch] = v;
 #else
