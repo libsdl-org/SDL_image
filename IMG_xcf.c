@@ -413,6 +413,8 @@ static xcf_layer * read_xcf_layer (SDL_RWops * src, const xcf_header * h) {
       l->offset_y = prop.data.offset.y;
     } else if (prop.id == PROP_VISIBLE) {
       l->visible = prop.data.visible ? 1 : 0;
+    } else if (prop.id == PROP_COLORMAP) {
+      free (prop.data.colormap.cmap);
     }
   } while (prop.id != PROP_END);
 
@@ -700,7 +702,7 @@ do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_
       p16 = (Uint16 *) p8;
       p   = (Uint32 *) p8;
       for (y=ty; y < ty+oy; y++) {
-	if ((ty >= surface->h) || ((tx+ox) > surface->w)) {
+	if ((y >= surface->h) || ((tx+ox) > surface->w)) {
 	  break;
 	}
 	row = (Uint32 *)((Uint8 *)surface->pixels + y*surface->pitch + tx*4);
