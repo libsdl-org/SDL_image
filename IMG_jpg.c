@@ -479,7 +479,7 @@ static int IMG_SaveJPG_RW_jpeglib(SDL_Surface *surface, SDL_RWops *dst, int free
     int result = -1;
 
     if (!dst) {
-        SDL_SetError("Passed NULL dst");
+        IMG_SetError("Passed NULL dst");
         goto done;
     }
 

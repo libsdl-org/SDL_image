@@ -543,14 +543,14 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
 
         png_ptr = lib.png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
         if (png_ptr == NULL) {
-            SDL_SetError("Couldn't allocate memory for PNG file or incompatible PNG dll");
+            IMG_SetError("Couldn't allocate memory for PNG file or incompatible PNG dll");
             return -1;
         }
 
         info_ptr = lib.png_create_info_struct(png_ptr);
         if (info_ptr == NULL) {
             lib.png_destroy_write_struct(&png_ptr, NULL);
-            SDL_SetError("Couldn't create image information for PNG file");
+            IMG_SetError("Couldn't create image information for PNG file");
             return -1;
         }
 #ifdef PNG_SETJMP_SUPPORTED
@@ -562,7 +562,7 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
 #endif
         {
             lib.png_destroy_write_struct(&png_ptr, &info_ptr);
-            SDL_SetError("Error writing the PNG file.");
+            IMG_SetError("Error writing the PNG file.");
             return -1;
         }
 
@@ -575,7 +575,7 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
             if (color_ptr == NULL)
             {
                 lib.png_destroy_write_struct(&png_ptr, &info_ptr);
-                SDL_SetError("Couldn't create palette for PNG file");
+                IMG_SetError("Couldn't create palette for PNG file");
                 return -1;
             }
             for (i = 0; i < ncolors; i++) {
@@ -603,7 +603,7 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
             row_pointers = (png_bytep *) SDL_malloc(sizeof(png_bytep) * source->h);
             if (!row_pointers) {
                 lib.png_destroy_write_struct(&png_ptr, &info_ptr);
-                SDL_SetError("Out of memory");
+                IMG_SetError("Out of memory");
                 return -1;
             }
             for (row = 0; row < (int)source->h; row++) {
@@ -626,7 +626,7 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
             SDL_RWclose(dst);
         }
     } else {
-        SDL_SetError("Passed NULL dst");
+        IMG_SetError("Passed NULL dst");
         return -1;
     }
     return 0;
@@ -670,13 +670,13 @@ static int IMG_SavePNG_RW_miniz(SDL_Surface *surface, SDL_RWops *dst, int freeds
             }
             SDL_free(png);
         } else {
-            SDL_SetError("Failed to convert and save image");
+            IMG_SetError("Failed to convert and save image");
         }
         if (freedst) {
             SDL_RWclose(dst);
         }
     } else {
-        SDL_SetError("Passed NULL dst");
+        IMG_SetError("Passed NULL dst");
     }
     return result;
 }
