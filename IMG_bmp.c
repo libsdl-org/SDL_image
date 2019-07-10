@@ -292,6 +292,14 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 			ExpandBMP = biBitCount;
 			biBitCount = 8;
 			break;
+		case 2:
+		case 3:
+		case 5:
+		case 6:
+		case 7:
+			IMG_SetError("%d-bpp BMP images are not supported", biBitCount);
+			was_error = SDL_TRUE;
+			goto done;
 		default:
 			ExpandBMP = 0;
 			break;
@@ -444,7 +452,12 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 						goto done;
 					}
 				}
-				*(bits+i) = (pixel>>shift);
+				bits[i] = (pixel >> shift);
+				if (bits[i] >= biClrUsed) {
+					IMG_SetError("A BMP image contains a pixel with a color out of the palette");
+					was_error = SDL_TRUE;
+					goto done;
+				}
 				pixel <<= ExpandBMP;
 			} }
 			break;
@@ -455,6 +468,15 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 				SDL_Error(SDL_EFREAD);
 				was_error = SDL_TRUE;
 				goto done;
+			}
+			if (biBitCount == 8 && palette && biClrUsed < (1 << biBitCount)) {
+				for (i = 0; i < surface->w; ++i) {
+					if (bits[i] >= biClrUsed) {
+						IMG_SetError("A BMP image contains a pixel with a color out of the palette");
+						was_error = SDL_TRUE;
+						goto done;
+					}
+				}
 			}
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 			/* Byte-swap the pixels if needed. Note that the 24bpp
