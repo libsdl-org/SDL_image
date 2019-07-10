@@ -376,7 +376,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
         case 5:
         case 6:
         case 7:
-            SDL_SetError("%d-bpp BMP images are not supported", biBitCount);
+            IMG_SetError("%d-bpp BMP images are not supported", biBitCount);
             was_error = SDL_TRUE;
             goto done;
         default:
@@ -543,7 +543,7 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
                 if (biBitCount == 8 && palette && biClrUsed < (1 << biBitCount)) {
                     for (i = 0; i < surface->w; ++i) {
                         if (bits[i] >= biClrUsed) {
-                            SDL_SetError("A BMP image contains a pixel with a color out of the palette");
+                            IMG_SetError("A BMP image contains a pixel with a color out of the palette");
                             was_error = SDL_TRUE;
                             goto done;
                         }
