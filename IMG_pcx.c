@@ -100,6 +100,8 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 	Uint8 *row, *buf = NULL;
 	char *error = NULL;
 	int bits, src_bits;
+	int count = 0;
+	Uint8 ch;
 
 	if ( !src ) {
 		/* The error message has been set in SDL_RWFromFile */
@@ -116,6 +118,20 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 	pcxh.Xmax = SDL_SwapLE16(pcxh.Xmax);
 	pcxh.Ymax = SDL_SwapLE16(pcxh.Ymax);
 	pcxh.BytesPerLine = SDL_SwapLE16(pcxh.BytesPerLine);
+
+#if 0
+	printf("Manufacturer = %d\n", pcxh.Manufacturer);
+	printf("Version = %d\n", pcxh.Version);
+	printf("Encoding = %d\n", pcxh.Encoding);
+	printf("BitsPerPixel = %d\n", pcxh.BitsPerPixel);
+	printf("Xmin = %d, Ymin = %d, Xmax = %d, Ymax = %d\n", pcxh.Xmin, pcxh.Ymin, pcxh.Xmax, pcxh.Ymax);
+	printf("HDpi = %d, VDpi = %d\n", pcxh.HDpi, pcxh.VDpi);
+	printf("NPlanes = %d\n", pcxh.NPlanes);
+	printf("BytesPerLine = %d\n", pcxh.BytesPerLine);
+	printf("PaletteInfo = %d\n", pcxh.PaletteInfo);
+	printf("HscreenSize = %d\n", pcxh.HscreenSize);
+	printf("VscreenSize = %d\n", pcxh.VscreenSize);
+#endif
 
 	/* Create the surface of the appropriate type */
 	width = (pcxh.Xmax - pcxh.Xmin) + 1;
@@ -142,22 +158,22 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 	}
 	surface = SDL_AllocSurface(SDL_SWSURFACE, width, height,
 				   bits, Rmask, Gmask, Bmask, Amask);
-	if ( surface == NULL )
+	if ( surface == NULL ) {
 		goto done;
+	}
 
 	bpl = pcxh.NPlanes * pcxh.BytesPerLine;
-	if (bpl > surface->pitch) {
-		error = "bytes per line is too large (corrupt?)";
+	buf = (Uint8 *)calloc(bpl, 1);
+	if (!buf) {
+		error = "Out of memory";
+		goto done;
 	}
-	buf = (Uint8 *)calloc(SDL_max(bpl, surface->pitch), 1);
 	row = (Uint8 *)surface->pixels;
 	for ( y=0; y<surface->h; ++y ) {
 		/* decode a scan line to a temporary buffer first */
-		int i, count = 0;
-		Uint8 ch;
-		Uint8 *dst = (src_bits == 8) ? row : buf;
+		int i;
 		if ( pcxh.Encoding == 0 ) {
-			if(!SDL_RWread(src, dst, bpl, 1)) {
+			if(!SDL_RWread(src, buf, bpl, 1)) {
 				error = "file truncated";
 				goto done;
 			}
@@ -168,16 +184,17 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 						error = "file truncated";
 						goto done;
 					}
-					if( (ch & 0xc0) == 0xc0) {
-						count = ch & 0x3f;
+					if (ch < 0xc0) {
+						count = 1;
+					} else {
+						count = ch - 0xc0;
 						if(!SDL_RWread(src, &ch, 1, 1)) {
 							error = "file truncated";
 							goto done;
 						}
-					} else
-						count = 1;
+					}
 				}
-				dst[i] = ch;
+				buf[i] = ch;
 				count--;
 			}
 		}
@@ -199,14 +216,21 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 					}
 				}
 			}
+		} else if(src_bits == 8) {
+			/* Copy the row directly */
+			memcpy(row, buf, SDL_min(width, bpl));
  		} else if(src_bits == 24) {
 			/* de-interlace planes */
 			Uint8 *innerSrc = buf;
 			int plane;
 			for(plane = 0; plane < pcxh.NPlanes; plane++) {
 				int x;
-				dst = row + plane;
+				Uint8 *dst = row + plane;
 				for(x = 0; x < width; x++) {
+					if (dst >= row+surface->pitch) {
+						error = "decoding out of bounds (corrupt?)";
+						goto done;
+					}
 					*dst = *innerSrc++;
 					dst += pcxh.NPlanes;
 				}
@@ -227,8 +251,9 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 			/* look for a 256-colour palette */
 			do {
 				if ( !SDL_RWread(src, &ch, 1, 1)) {
-					error = "file truncated";
-					goto done;
+					/* Couldn't find the palette, try the end of the file */
+					SDL_RWseek(src, -768, RW_SEEK_END);
+					break;
 				}
 			} while ( ch != 12 );
 
