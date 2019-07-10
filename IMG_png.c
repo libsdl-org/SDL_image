@@ -121,7 +121,7 @@ static struct {
 	void (*png_set_packing) (png_structrp png_ptr);
 	void (*png_set_read_fn) (png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr read_data_fn);
 	void (*png_set_strip_16) (png_structrp png_ptr);
-	int (*png_set_interlace_handling) (png_structp png_ptr);
+	int (*png_set_interlace_handling) (png_structrp png_ptr);
 	int (*png_sig_cmp) (png_const_bytep sig, png_size_t start, png_size_t num_to_check);
 #ifndef LIBPNG_VERSION_12
 	jmp_buf* (*png_set_longjmp_fn) (png_structrp, png_longjmp_ptr, size_t);
@@ -256,7 +256,7 @@ int IMG_InitPNG()
 			return -1;
 		}
 		lib.png_set_interlace_handling =
-			(int (*) (png_structp))
+			(int (*) (png_structrp))
 			SDL_LoadFunction(lib.handle, "png_set_interlace_handling");
 		if ( lib.png_set_interlace_handling == NULL ) {
 			SDL_UnloadObject(lib.handle);
