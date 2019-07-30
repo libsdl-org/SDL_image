@@ -272,6 +272,11 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 		biClrUsed	= SDL_ReadLE32(src);
 		biClrImportant	= SDL_ReadLE32(src);
 	}
+	if (biWidth <= 0 || biHeight == 0) {
+		IMG_SetError("BMP file with bad dimensions (%dx%d)", biWidth, biHeight);
+		was_error = SDL_TRUE;
+		goto done;
+	}
 	if (biHeight < 0) {
 		topDown = SDL_TRUE;
 		biHeight = -biHeight;
