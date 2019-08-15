@@ -8,8 +8,8 @@ if (ANDROID)
     option(SUPPORT_PNG "Support loading PNG images" ON)
     option(SUPPORT_WEBP "Support loading WEBP images" OFF)
 
-    add_library(SDL_image SHARED)
-    target_sources(SDL_image PRIVATE IMG.c IMG_png.c IMG_bmp.c IMG_gif.c
+    add_library(SDL2_image SHARED)
+    target_sources(SDL2_image PRIVATE IMG.c IMG_png.c IMG_bmp.c IMG_gif.c
             IMG_jpg.c IMG_lbm.c IMG_pcx.c IMG_pnm.c IMG_svg.c IMG_tga.c
             IMG_tif.c IMG_webp.c IMG_WIC.c IMG_xcf.c IMG_xpm.c IMG_xv.c IMG_xxx.c)
 
@@ -22,7 +22,7 @@ if (ANDROID)
         # missing CMakeFiles
         add_subdirectory(external/jpeg-9b)
 
-        target_link_libraries(SDL_image PRIVATE jpeg)
+        target_link_libraries(SDL2_image PRIVATE jpeg)
     endif()
 
     if (SUPPORT_PNG)
@@ -32,17 +32,20 @@ if (ANDROID)
 
         add_subdirectory(external/libpng-1.6.37)
         include_directories(external/libpng-1.6.37)
-        target_link_libraries(SDL_image PRIVATE png)
+        target_link_libraries(SDL2_image PRIVATE png)
     endif()
 
     if (SUPPORT_WEBP)
         add_definitions(-DLOAD_WEBP)
         # missing cpufeatures
         add_subdirectory(external/libwebp-1.0.2)
-        target_link_libraries(SDL_image PRIVATE webp)
+        target_link_libraries(SDL2_image PRIVATE webp)
     endif()
 
-    target_link_libraries(SDL_image PRIVATE SDL2)
+    target_include_directories(SDL2_image PUBLIC .)
+    target_link_libraries(SDL2_image PRIVATE SDL2)
+
+
 else()
 
 endif()
