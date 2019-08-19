@@ -954,6 +954,7 @@ enable_xcf
 enable_xpm
 enable_xv
 enable_webp
+enable_webpdec
 enable_webp_shared
 '
       ac_precious_vars='build_alias
@@ -1628,6 +1629,8 @@ Optional Features:
   --enable-xpm            support loading XPM images [default=yes]
   --enable-xv             support loading XV images [default=yes]
   --enable-webp           support loading WEBP images [default=yes]
+  --enable-webpdec        support loading WEBP images via libwebpdecoder
+                          instead of libwebp [default=no]
   --enable-webp-shared    dynamically load WEBP support [default=yes]
 
 Optional Packages:
@@ -3791,13 +3794,13 @@ if test "${lt_cv_nm_interface+set}" = set; then
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:3794: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:3797: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:3797: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:3800: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:3800: output\"" >&5)
+  (eval echo "\"\$as_me:3803: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -5008,7 +5011,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5011 "configure"' > conftest.$ac_ext
+  echo '#line 5014 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7166,11 +7169,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7169: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7172: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7173: \$? = $ac_status" >&5
+   echo "$as_me:7176: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7505,11 +7508,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7508: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7511: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7512: \$? = $ac_status" >&5
+   echo "$as_me:7515: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7610,11 +7613,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7613: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7616: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7617: \$? = $ac_status" >&5
+   echo "$as_me:7620: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -7665,11 +7668,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7668: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7671: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7672: \$? = $ac_status" >&5
+   echo "$as_me:7675: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10467,7 +10470,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10470 "configure"
+#line 10473 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10563,7 +10566,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10566 "configure"
+#line 10569 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13654,6 +13657,13 @@ else
   enable_webp=yes
 fi
 
+# Check whether --enable-webpdec was given.
+if test "${enable_webpdec+set}" = set; then
+  enableval=$enable_webpdec;
+else
+  enable_webpdec=no
+fi
+
 # Check whether --enable-webp-shared was given.
 if test "${enable_webp_shared+set}" = set; then
   enableval=$enable_webp_shared;
@@ -14641,6 +14651,11 @@ $as_echo "$as_me: WARNING: TIF image loading disabled" >&2;}
     fi
 fi
 
+if test x$enable_webpdec = xyes; then
+  webplib=webpdecoder
+else
+  webplib=webp
+fi
 if test x$enable_webp = xyes; then
 
 pkg_failed=no
@@ -14652,12 +14667,12 @@ if test -n "$PKG_CONFIG"; then
         pkg_cv_LIBWEBP_CFLAGS="$LIBWEBP_CFLAGS"
     else
         if test -n "$PKG_CONFIG" && \
-    { ($as_echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"libwebp\"") >&5
-  ($PKG_CONFIG --exists --print-errors "libwebp") 2>&5
+    { ($as_echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"lib\$webplib\"") >&5
+  ($PKG_CONFIG --exists --print-errors "lib$webplib") 2>&5
   ac_status=$?
   $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; then
-  pkg_cv_LIBWEBP_CFLAGS=`$PKG_CONFIG --cflags "libwebp" 2>/dev/null`
+  pkg_cv_LIBWEBP_CFLAGS=`$PKG_CONFIG --cflags "lib$webplib" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -14670,12 +14685,12 @@ if test -n "$PKG_CONFIG"; then
         pkg_cv_LIBWEBP_LIBS="$LIBWEBP_LIBS"
     else
         if test -n "$PKG_CONFIG" && \
-    { ($as_echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"libwebp\"") >&5
-  ($PKG_CONFIG --exists --print-errors "libwebp") 2>&5
+    { ($as_echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"lib\$webplib\"") >&5
+  ($PKG_CONFIG --exists --print-errors "lib$webplib") 2>&5
   ac_status=$?
   $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; then
-  pkg_cv_LIBWEBP_LIBS=`$PKG_CONFIG --libs "libwebp" 2>/dev/null`
+  pkg_cv_LIBWEBP_LIBS=`$PKG_CONFIG --libs "lib$webplib" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -14694,9 +14709,9 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        LIBWEBP_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "libwebp"`
+	        LIBWEBP_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "lib$webplib"`
         else
-	        LIBWEBP_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "libwebp"`
+	        LIBWEBP_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "lib$webplib"`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$LIBWEBP_PKG_ERRORS" >&5
@@ -14838,13 +14853,14 @@ if test "x$ac_cv_header_webp_decode_h" = x""yes; then
 fi
 
 
-        { $as_echo "$as_me:$LINENO: checking for WebPGetDecoderVersion in -lwebp" >&5
-$as_echo_n "checking for WebPGetDecoderVersion in -lwebp... " >&6; }
-if test "${ac_cv_lib_webp_WebPGetDecoderVersion+set}" = set; then
+        as_ac_Lib=`$as_echo "ac_cv_lib_$webplib''_WebPGetDecoderVersion" | $as_tr_sh`
+{ $as_echo "$as_me:$LINENO: checking for WebPGetDecoderVersion in -l$webplib" >&5
+$as_echo_n "checking for WebPGetDecoderVersion in -l$webplib... " >&6; }
+if { as_var=$as_ac_Lib; eval "test \"\${$as_var+set}\" = set"; }; then
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lwebp -lm $LIBS"
+LIBS="-l$webplib -lm $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -14888,12 +14904,12 @@ $as_echo "$ac_try_echo") >&5
 	 test "$cross_compiling" = yes ||
 	 $as_test_x conftest$ac_exeext
        }; then
-  ac_cv_lib_webp_WebPGetDecoderVersion=yes
+  eval "$as_ac_Lib=yes"
 else
   $as_echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-	ac_cv_lib_webp_WebPGetDecoderVersion=no
+	eval "$as_ac_Lib=no"
 fi
 
 rm -rf conftest.dSYM
@@ -14901,12 +14917,16 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_webp_WebPGetDecoderVersion" >&5
-$as_echo "$ac_cv_lib_webp_WebPGetDecoderVersion" >&6; }
-if test "x$ac_cv_lib_webp_WebPGetDecoderVersion" = x""yes; then
+ac_res=`eval 'as_val=${'$as_ac_Lib'}
+		 $as_echo "$as_val"'`
+	       { $as_echo "$as_me:$LINENO: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+as_val=`eval 'as_val=${'$as_ac_Lib'}
+		 $as_echo "$as_val"'`
+   if test "x$as_val" = x""yes; then
 
             have_webp_lib=yes
-            LIBWEBP_LIBS="-lwebp"
+            LIBWEBP_LIBS="-l$webplib"
 
 fi
 
@@ -15047,13 +15067,14 @@ if test "x$ac_cv_header_webp_decode_h" = x""yes; then
 fi
 
 
-        { $as_echo "$as_me:$LINENO: checking for WebPGetDecoderVersion in -lwebp" >&5
-$as_echo_n "checking for WebPGetDecoderVersion in -lwebp... " >&6; }
-if test "${ac_cv_lib_webp_WebPGetDecoderVersion+set}" = set; then
+        as_ac_Lib=`$as_echo "ac_cv_lib_$webplib''_WebPGetDecoderVersion" | $as_tr_sh`
+{ $as_echo "$as_me:$LINENO: checking for WebPGetDecoderVersion in -l$webplib" >&5
+$as_echo_n "checking for WebPGetDecoderVersion in -l$webplib... " >&6; }
+if { as_var=$as_ac_Lib; eval "test \"\${$as_var+set}\" = set"; }; then
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lwebp -lm $LIBS"
+LIBS="-l$webplib -lm $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -15097,12 +15118,12 @@ $as_echo "$ac_try_echo") >&5
 	 test "$cross_compiling" = yes ||
 	 $as_test_x conftest$ac_exeext
        }; then
-  ac_cv_lib_webp_WebPGetDecoderVersion=yes
+  eval "$as_ac_Lib=yes"
 else
   $as_echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-	ac_cv_lib_webp_WebPGetDecoderVersion=no
+	eval "$as_ac_Lib=no"
 fi
 
 rm -rf conftest.dSYM
@@ -15110,12 +15131,16 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
       conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_webp_WebPGetDecoderVersion" >&5
-$as_echo "$ac_cv_lib_webp_WebPGetDecoderVersion" >&6; }
-if test "x$ac_cv_lib_webp_WebPGetDecoderVersion" = x""yes; then
+ac_res=`eval 'as_val=${'$as_ac_Lib'}
+		 $as_echo "$as_val"'`
+	       { $as_echo "$as_me:$LINENO: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+as_val=`eval 'as_val=${'$as_ac_Lib'}
+		 $as_echo "$as_val"'`
+   if test "x$as_val" = x""yes; then
 
             have_webp_lib=yes
-            LIBWEBP_LIBS="-lwebp"
+            LIBWEBP_LIBS="-l$webplib"
 
 fi
 
@@ -15137,15 +15162,15 @@ _ACEOF
 
         case "$host" in
             *-*-darwin*)
-                webp_lib=`find_lib libwebp.dylib`
+                webp_lib=`find_lib lib$webplib.dylib`
                 ;;
             *-*-cygwin* | *-*-mingw32*)
-                webp_lib=`find_lib "libwebp-*.dll"`
+                webp_lib=`find_lib "lib$webplib-*.dll"`
                 ;;
             *)
-                webp_lib=`find_lib "libwebp[0-9]*.so.*"`
+                webp_lib=`find_lib "lib$webplib[0-9]*.so.*"`
                 if test x$webp_lib = x; then
-                    webp_lib=`find_lib "libwebp.so.*"`
+                    webp_lib=`find_lib "lib$webplib.so.*"`
                 fi
                 ;;
         esac
