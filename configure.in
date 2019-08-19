@@ -159,6 +159,8 @@ AC_ARG_ENABLE([xv], [AC_HELP_STRING([--enable-xv], [support loading XV images [d
  [], [enable_xv=yes])
 AC_ARG_ENABLE([webp], [AC_HELP_STRING([--enable-webp], [support loading WEBP images [default=yes]])],
  [], [enable_webp=yes])
+AC_ARG_ENABLE([webpdec], [AC_HELP_STRING([--enable-webpdec], [support loading WEBP images via libwebpdecoder instead of libwebp [default=no]])],
+ [], [enable_webpdec=no])
 AC_ARG_ENABLE([webp-shared], AC_HELP_STRING([--enable-webp-shared], [dynamically load WEBP support [[default=yes]]]),
  [], [enable_webp_shared=yes])
 
@@ -254,8 +256,13 @@ if test x$enable_tif = xyes -a x$enable_imageio != xyes; then
     fi
 fi
 
+if test x$enable_webpdec = xyes; then
+  webplib=webpdecoder
+else
+  webplib=webp
+fi
 if test x$enable_webp = xyes; then
-    PKG_CHECK_MODULES([LIBWEBP], [libwebp], [dnl
+    PKG_CHECK_MODULES([LIBWEBP], [lib$webplib], [dnl
         have_webp_hdr=yes
         have_webp_lib=yes
       ], [dnl
@@ -263,9 +270,9 @@ if test x$enable_webp = xyes; then
             have_webp_hdr=yes
             LIBWEBP_CFLAGS=""
         ])
-        AC_CHECK_LIB([webp], [WebPGetDecoderVersion], [
+        AC_CHECK_LIB([$webplib], [WebPGetDecoderVersion], [
             have_webp_lib=yes
-            LIBWEBP_LIBS="-lwebp"
+            LIBWEBP_LIBS="-l$webplib"
         ], [], [-lm])
       ])
     if test x$have_webp_hdr = xyes -a x$have_webp_lib = xyes; then
@@ -273,15 +280,15 @@ if test x$enable_webp = xyes; then
 
         case "$host" in
             *-*-darwin*)
-                webp_lib=[`find_lib libwebp.dylib`]
+                webp_lib=[`find_lib lib$webplib.dylib`]
                 ;;
             *-*-cygwin* | *-*-mingw32*)
-                webp_lib=[`find_lib "libwebp-*.dll"`]
+                webp_lib=[`find_lib "lib$webplib-*.dll"`]
                 ;;
             *)
-                webp_lib=[`find_lib "libwebp[0-9]*.so.*"`]
+                webp_lib=[`find_lib "lib$webplib[0-9]*.so.*"`]
                 if test x$webp_lib = x; then
-                    webp_lib=[`find_lib "libwebp.so.*"`]
+                    webp_lib=[`find_lib "lib$webplib.so.*"`]
                 fi
                 ;;
         esac
