@@ -41,7 +41,7 @@ endif()
 if (SUPPORT_WEBP)
 	target_compile_definitions(SDL2_image PRIVATE -DLOAD_WEBP)
 	# missing cpufeatures
-	add_subdirectory(external/libwebp-1.0.2)
+	add_subdirectory(external/libwebp-1.0.3)
 	target_link_libraries(SDL2_image PRIVATE webp)
 endif()
 
