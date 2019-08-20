@@ -1,9 +1,9 @@
 
 /* pngconf.h - machine configurable file for libpng
  *
- * libpng version 1.5.7 - December 15, 2011
+ * libpng version 1.5.13 - September 27, 2012
  *
- * Copyright (c) 1998-2011 Glenn Randers-Pehrson
+ * Copyright (c) 1998-2012 Glenn Randers-Pehrson
  * (Version 0.96 Copyright (c) 1996, 1997 Andreas Dilger)
  * (Version 0.88 Copyright (c) 1995, 1996 Guy Eric Schalnat, Group 42, Inc.)
  *
@@ -25,7 +25,7 @@
 #ifndef PNG_BUILDING_SYMBOL_TABLE
 /* PNG_NO_LIMITS_H may be used to turn off the use of the standard C
  * definition file for  machine specific limits, this may impact the
- * correctness of the definitons below (see uses of INT_MAX).
+ * correctness of the definitions below (see uses of INT_MAX).
  */
 #  ifndef PNG_NO_LIMITS_H
 #    include <limits.h>
@@ -51,8 +51,8 @@
 
 /* This controls optimization of the reading of 16 and 32 bit values
  * from PNG files.  It can be set on a per-app-file basis - it
- * just changes whether a macro is used to the function is called.
- * The library builder sets the default, if read functions are not
+ * just changes whether a macro is used when the function is called.
+ * The library builder sets the default; if read functions are not
  * built into the library the macro implementation is forced on.
  */
 #ifndef PNG_READ_INT_FUNCTIONS_SUPPORTED
@@ -344,21 +344,23 @@
 #    ifndef PNG_NORETURN
 #      define PNG_NORETURN   __attribute__((__noreturn__))
 #    endif
-#    ifndef PNG_ALLOCATED
-#      define PNG_ALLOCATED  __attribute__((__malloc__))
-#    endif
-#    ifndef PNG_DEPRECATED
-#      define PNG_DEPRECATED __attribute__((__deprecated__))
-#    endif
-#    ifndef PNG_PRIVATE
-#      if 0 /* Doesn't work so we use deprecated instead*/
-#        define PNG_PRIVATE \
-          __attribute__((warning("This function is not exported by libpng.")))
-#      else
-#        define PNG_PRIVATE \
-          __attribute__((__deprecated__))
+#    if __GNUC__ >= 3
+#      ifndef PNG_ALLOCATED
+#        define PNG_ALLOCATED  __attribute__((__malloc__))
 #      endif
-#    endif
+#      ifndef PNG_DEPRECATED
+#        define PNG_DEPRECATED __attribute__((__deprecated__))
+#      endif
+#      ifndef PNG_PRIVATE
+#        if 0 /* Doesn't work so we use deprecated instead*/
+#          define PNG_PRIVATE \
+            __attribute__((warning("This function is not exported by libpng.")))
+#        else
+#          define PNG_PRIVATE \
+            __attribute__((__deprecated__))
+#        endif
+#      endif
+#    endif /*  __GNUC__ >= 3 */
 #  endif /* __GNUC__ */
 
 #  if defined(_MSC_VER)  && (_MSC_VER >= 1300)
@@ -400,7 +402,7 @@
 #ifndef PNG_FP_EXPORT     /* A floating point API. */
 #  ifdef PNG_FLOATING_POINT_SUPPORTED
 #     define PNG_FP_EXPORT(ordinal, type, name, args)\
-         PNG_EXPORT(ordinal, type, name, args)
+         PNG_EXPORT(ordinal, type, name, args);
 #  else                   /* No floating point APIs */
 #     define PNG_FP_EXPORT(ordinal, type, name, args)
 #  endif
@@ -408,7 +410,7 @@
 #ifndef PNG_FIXED_EXPORT  /* A fixed point API. */
 #  ifdef PNG_FIXED_POINT_SUPPORTED
 #     define PNG_FIXED_EXPORT(ordinal, type, name, args)\
-         PNG_EXPORT(ordinal, type, name, args)
+         PNG_EXPORT(ordinal, type, name, args);
 #  else                   /* No fixed point APIs */
 #     define PNG_FIXED_EXPORT(ordinal, type, name, args)
 #  endif
