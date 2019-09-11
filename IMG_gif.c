@@ -90,6 +90,9 @@ int IMG_isGIF(SDL_RWops *src)
 
 /* Original XPaint sources */
 
+#include <stdio.h>
+#include <string.h>
+
 #include "image.h"
 #include "rwTable.h"
 
@@ -180,24 +183,24 @@ IMG_LoadGIF_RW(SDL_RWops *src)
     state.fresh = FALSE;
     state.last_byte = 0;
 
-    if ( src == NULL ) {
-    return NULL;
+    if (src == NULL) {
+        return NULL;
     }
     start = SDL_RWtell(src);
 
     if (!ReadOK(src, buf, 6)) {
-    RWSetMsg("error reading magic number");
+        RWSetMsg("error reading magic number");
         goto done;
     }
     if (SDL_strncmp((char *) buf, "GIF", 3) != 0) {
-    RWSetMsg("not a GIF file");
+        RWSetMsg("not a GIF file");
         goto done;
     }
     SDL_memcpy(version, (char *) buf + 3, 3);
     version[3] = '\0';
 
     if ((SDL_strcmp(version, "87a") != 0) && (SDL_strcmp(version, "89a") != 0)) {
-    RWSetMsg("bad version number, not '87a' or '89a'");
+        RWSetMsg("bad version number, not '87a' or '89a'");
         goto done;
     }
     state.Gif89.transparent = -1;
@@ -206,7 +209,7 @@ IMG_LoadGIF_RW(SDL_RWops *src)
     state.Gif89.disposal = 0;
 
     if (!ReadOK(src, buf, 7)) {
-    RWSetMsg("failed to read screen descriptor");
+        RWSetMsg("failed to read screen descriptor");
         goto done;
     }
     state.GifScreen.Width = LM_to_uint(buf[0], buf[1]);
@@ -217,72 +220,72 @@ IMG_LoadGIF_RW(SDL_RWops *src)
     state.GifScreen.AspectRatio = buf[6];
 
     if (BitSet(buf[4], LOCALCOLORMAP)) {    /* Global Colormap */
-    if (ReadColorMap(src, state.GifScreen.BitPixel,
-        state.GifScreen.ColorMap, &state.GifScreen.GrayScale)) {
-        RWSetMsg("error reading global colormap");
+        if (ReadColorMap(src, state.GifScreen.BitPixel,
+                         state.GifScreen.ColorMap, &state.GifScreen.GrayScale)) {
+            RWSetMsg("error reading global colormap");
             goto done;
-    }
+        }
     }
     do {
-    if (!ReadOK(src, &c, 1)) {
-        RWSetMsg("EOF / read error on image data");
-            goto done;
-    }
-    if (c == ';') {     /* GIF terminator */
-        if (imageCount < imageNumber) {
-        RWSetMsg("only %d image%s found in file",
-             imageCount, imageCount > 1 ? "s" : "");
-                goto done;
-        }
-    }
-    if (c == '!') {     /* Extension */
         if (!ReadOK(src, &c, 1)) {
-        RWSetMsg("EOF / read error on extention function code");
-                goto done;
-        }
-        DoExtension(src, c, &state);
-        continue;
-    }
-    if (c != ',') {     /* Not a valid start character */
-        continue;
-    }
-    ++imageCount;
-
-    if (!ReadOK(src, buf, 9)) {
-        RWSetMsg("couldn't read left/top/width/height");
+            RWSetMsg("EOF / read error on image data");
             goto done;
-    }
-    useGlobalColormap = !BitSet(buf[8], LOCALCOLORMAP);
-
-    bitPixel = 1 << ((buf[8] & 0x07) + 1);
-
-    if (!useGlobalColormap) {
-        if (ReadColorMap(src, bitPixel, localColorMap, &grayScale)) {
-        RWSetMsg("error reading local colormap");
-                goto done;
         }
-        image = ReadImage(src, LM_to_uint(buf[4], buf[5]),
-                  LM_to_uint(buf[6], buf[7]),
-                  bitPixel, localColorMap, grayScale,
-                  BitSet(buf[8], INTERLACE),
-                  imageCount != imageNumber, &state);
-    } else {
-        image = ReadImage(src, LM_to_uint(buf[4], buf[5]),
-                  LM_to_uint(buf[6], buf[7]),
-                  state.GifScreen.BitPixel, state.GifScreen.ColorMap,
-                  state.GifScreen.GrayScale, BitSet(buf[8], INTERLACE),
-                  imageCount != imageNumber, &state);
-    }
+        if (c == ';') {     /* GIF terminator */
+            if (imageCount < imageNumber) {
+                RWSetMsg("only %d image%s found in file",
+                         imageCount, imageCount > 1 ? "s" : "");
+                goto done;
+            }
+        }
+        if (c == '!') {     /* Extension */
+            if (!ReadOK(src, &c, 1)) {
+                RWSetMsg("EOF / read error on extention function code");
+                goto done;
+            }
+            DoExtension(src, c, &state);
+            continue;
+        }
+        if (c != ',') {     /* Not a valid start character */
+            continue;
+        }
+        ++imageCount;
+
+        if (!ReadOK(src, buf, 9)) {
+            RWSetMsg("couldn't read left/top/width/height");
+            goto done;
+        }
+        useGlobalColormap = !BitSet(buf[8], LOCALCOLORMAP);
+
+        bitPixel = 1 << ((buf[8] & 0x07) + 1);
+
+        if (!useGlobalColormap) {
+            if (ReadColorMap(src, bitPixel, localColorMap, &grayScale)) {
+                RWSetMsg("error reading local colormap");
+                goto done;
+            }
+            image = ReadImage(src, LM_to_uint(buf[4], buf[5]),
+                      LM_to_uint(buf[6], buf[7]),
+                      bitPixel, localColorMap, grayScale,
+                      BitSet(buf[8], INTERLACE),
+                      imageCount != imageNumber, &state);
+        } else {
+            image = ReadImage(src, LM_to_uint(buf[4], buf[5]),
+                      LM_to_uint(buf[6], buf[7]),
+                      state.GifScreen.BitPixel, state.GifScreen.ColorMap,
+                      state.GifScreen.GrayScale, BitSet(buf[8], INTERLACE),
+                      imageCount != imageNumber, &state);
+        }
     } while (image == NULL);
 
 #ifdef USED_BY_SDL
-    if ( state.Gif89.transparent >= 0 ) {
+    if (state.Gif89.transparent >= 0) {
         SDL_SetColorKey(image, SDL_TRUE, state.Gif89.transparent);
     }
 #endif
 
 done:
-    if ( image == NULL ) {
+    if (image == NULL) {
         SDL_RWseek(src, start, RW_SEEK_SET);
     }
     return image;
@@ -299,21 +302,21 @@ ReadColorMap(SDL_RWops *src, int number,
     flag = TRUE;
 
     for (i = 0; i < number; ++i) {
-    if (!ReadOK(src, rgb, sizeof(rgb))) {
-        RWSetMsg("bad colormap");
-        return 1;
-    }
-    buffer[CM_RED][i] = rgb[0];
-    buffer[CM_GREEN][i] = rgb[1];
-    buffer[CM_BLUE][i] = rgb[2];
-    flag &= (rgb[0] == rgb[1] && rgb[1] == rgb[2]);
+        if (!ReadOK(src, rgb, sizeof(rgb))) {
+            RWSetMsg("bad colormap");
+            return 1;
+        }
+        buffer[CM_RED][i] = rgb[0];
+        buffer[CM_GREEN][i] = rgb[1];
+        buffer[CM_BLUE][i] = rgb[2];
+        flag &= (rgb[0] == rgb[1] && rgb[1] == rgb[2]);
     }
 
 #if 0
     if (flag)
-    *gray = (number == 2) ? PBM_TYPE : PGM_TYPE;
+        *gray = (number == 2) ? PBM_TYPE : PGM_TYPE;
     else
-    *gray = PPM_TYPE;
+        *gray = PPM_TYPE;
 #else
     *gray = 0;
 #endif
@@ -329,36 +332,36 @@ DoExtension(SDL_RWops *src, int label, State_t * state)
 
     switch (label) {
     case 0x01:          /* Plain Text Extension */
-    str = "Plain Text Extension";
-    break;
+        str = "Plain Text Extension";
+        break;
     case 0xff:          /* Application Extension */
-    str = "Application Extension";
-    break;
+        str = "Application Extension";
+        break;
     case 0xfe:          /* Comment Extension */
-    str = "Comment Extension";
-    while (GetDataBlock(src, (unsigned char *) buf, state) > 0)
-        ;
-    return FALSE;
+        str = "Comment Extension";
+        while (GetDataBlock(src, (unsigned char *) buf, state) > 0)
+            ;
+        return FALSE;
     case 0xf9:          /* Graphic Control Extension */
-    str = "Graphic Control Extension";
-    (void) GetDataBlock(src, (unsigned char *) buf, state);
-    state->Gif89.disposal = (buf[0] >> 2) & 0x7;
-    state->Gif89.inputFlag = (buf[0] >> 1) & 0x1;
-    state->Gif89.delayTime = LM_to_uint(buf[1], buf[2]);
-    if ((buf[0] & 0x1) != 0)
-        state->Gif89.transparent = buf[3];
+        str = "Graphic Control Extension";
+        (void) GetDataBlock(src, (unsigned char *) buf, state);
+        state->Gif89.disposal = (buf[0] >> 2) & 0x7;
+        state->Gif89.inputFlag = (buf[0] >> 1) & 0x1;
+        state->Gif89.delayTime = LM_to_uint(buf[1], buf[2]);
+        if ((buf[0] & 0x1) != 0)
+            state->Gif89.transparent = buf[3];
 
-    while (GetDataBlock(src, (unsigned char *) buf, state) > 0)
-        ;
-    return FALSE;
+        while (GetDataBlock(src, (unsigned char *) buf, state) > 0)
+            ;
+        return FALSE;
     default:
-    str = (char *)buf;
-    SDL_snprintf(str, 256, "UNKNOWN (0x%02x)", label);
-    break;
+        str = (char *)buf;
+        SDL_snprintf(str, 256, "UNKNOWN (0x%02x)", label);
+        break;
     }
 
     while (GetDataBlock(src, (unsigned char *) buf, state) > 0)
-    ;
+        ;
 
     return FALSE;
 }
@@ -369,14 +372,14 @@ GetDataBlock(SDL_RWops *src, unsigned char *buf, State_t * state)
     unsigned char count;
 
     if (!ReadOK(src, &count, 1)) {
-    /* pm_message("error in getting DataBlock size" ); */
-    return -1;
+        /* pm_message("error in getting DataBlock size" ); */
+        return -1;
     }
     state->ZeroDataBlock = count == 0;
 
     if ((count != 0) && (!ReadOK(src, buf, count))) {
-    /* pm_message("error in reading DataBlock" ); */
-    return -1;
+        /* pm_message("error in reading DataBlock" ); */
+        return -1;
     }
     return count;
 }
@@ -388,30 +391,30 @@ GetCode(SDL_RWops *src, int code_size, int flag, State_t * state)
     unsigned char count;
 
     if (flag) {
-    state->curbit = 0;
-    state->lastbit = 0;
-    state->done = FALSE;
-    return 0;
+        state->curbit = 0;
+        state->lastbit = 0;
+        state->done = FALSE;
+        return 0;
     }
     if ((state->curbit + code_size) >= state->lastbit) {
-    if (state->done) {
-        if (state->curbit >= state->lastbit)
-        RWSetMsg("ran off the end of my bits");
-        return -1;
-    }
-    state->buf[0] = state->buf[state->last_byte - 2];
-    state->buf[1] = state->buf[state->last_byte - 1];
+        if (state->done) {
+            if (state->curbit >= state->lastbit)
+                RWSetMsg("ran off the end of my bits");
+            return -1;
+        }
+        state->buf[0] = state->buf[state->last_byte - 2];
+        state->buf[1] = state->buf[state->last_byte - 1];
 
-    if ((count = GetDataBlock(src, &state->buf[2], state)) <= 0)
-        state->done = TRUE;
+        if ((count = GetDataBlock(src, &state->buf[2], state)) <= 0)
+            state->done = TRUE;
 
-    state->last_byte = 2 + count;
-    state->curbit = (state->curbit - state->lastbit) + 16;
-    state->lastbit = (2 + count) * 8;
+        state->last_byte = 2 + count;
+        state->curbit = (state->curbit - state->lastbit) + 16;
+        state->lastbit = (2 + count) * 8;
     }
     ret = 0;
     for (i = state->curbit, j = 0; j < code_size; ++i, ++j)
-    ret |= ((state->buf[i / 8] & (1 << (i % 8))) != 0) << j;
+        ret |= ((state->buf[i / 8] & (1 << (i % 8))) != 0) << j;
 
     state->curbit += code_size;
 
@@ -429,118 +432,118 @@ LWZReadByte(SDL_RWops *src, int flag, int input_code_size, State_t * state)
         return -1;
 
     if (flag) {
-    state->set_code_size = input_code_size;
-    state->code_size = state->set_code_size + 1;
-    state->clear_code = 1 << state->set_code_size;
-    state->end_code = state->clear_code + 1;
-    state->max_code_size = 2 * state->clear_code;
-    state->max_code = state->clear_code + 2;
-
-    GetCode(src, 0, TRUE, state);
-
-    state->fresh = TRUE;
-
-    for (i = 0; i < state->clear_code; ++i) {
-        state->table[0][i] = 0;
-        state->table[1][i] = i;
-    }
-    state->table[1][0] = 0;
-    for (; i < (1 << MAX_LWZ_BITS); ++i)
-        state->table[0][i] = 0;
-
-    state->sp = state->stack;
-
-    return 0;
-    } else if (state->fresh) {
-    state->fresh = FALSE;
-    do {
-        state->firstcode = state->oldcode = GetCode(src, state->code_size, FALSE, state);
-    } while (state->firstcode == state->clear_code);
-    return state->firstcode;
-    }
-    if (state->sp > state->stack)
-    return *--state->sp;
-
-    while ((code = GetCode(src, state->code_size, FALSE, state)) >= 0) {
-    if (code == state->clear_code) {
-        for (i = 0; i < state->clear_code; ++i) {
-        state->table[0][i] = 0;
-        state->table[1][i] = i;
-        }
-        for (; i < (1 << MAX_LWZ_BITS); ++i)
-        state->table[0][i] = state->table[1][i] = 0;
+        state->set_code_size = input_code_size;
         state->code_size = state->set_code_size + 1;
+        state->clear_code = 1 << state->set_code_size;
+        state->end_code = state->clear_code + 1;
         state->max_code_size = 2 * state->clear_code;
         state->max_code = state->clear_code + 2;
-        state->sp = state->stack;
-        state->firstcode = state->oldcode = GetCode(src, state->code_size, FALSE, state);
-        return state->firstcode;
-    } else if (code == state->end_code) {
-        int count;
-        unsigned char buf[260];
 
-        if (state->ZeroDataBlock)
-        return -2;
+        GetCode(src, 0, TRUE, state);
 
-        while ((count = GetDataBlock(src, buf, state)) > 0)
-        ;
+        state->fresh = TRUE;
 
-        if (count != 0) {
-        /*
-         * pm_message("missing EOD in data stream (common occurence)");
-         */
+        for (i = 0; i < state->clear_code; ++i) {
+            state->table[0][i] = 0;
+            state->table[1][i] = i;
         }
-        return -2;
-    }
-    incode = code;
+        state->table[1][0] = 0;
+        for (; i < (1 << MAX_LWZ_BITS); ++i)
+            state->table[0][i] = 0;
 
-    if (code >= state->max_code) {
-        *state->sp++ = state->firstcode;
-        code = state->oldcode;
+        state->sp = state->stack;
+
+        return 0;
+    } else if (state->fresh) {
+        state->fresh = FALSE;
+        do {
+            state->firstcode = state->oldcode = GetCode(src, state->code_size, FALSE, state);
+        } while (state->firstcode == state->clear_code);
+        return state->firstcode;
     }
-    while (code >= state->clear_code) {
+    if (state->sp > state->stack)
+        return *--state->sp;
+
+    while ((code = GetCode(src, state->code_size, FALSE, state)) >= 0) {
+        if (code == state->clear_code) {
+            for (i = 0; i < state->clear_code; ++i) {
+                state->table[0][i] = 0;
+                state->table[1][i] = i;
+            }
+            for (; i < (1 << MAX_LWZ_BITS); ++i)
+                state->table[0][i] = state->table[1][i] = 0;
+            state->code_size = state->set_code_size + 1;
+            state->max_code_size = 2 * state->clear_code;
+            state->max_code = state->clear_code + 2;
+            state->sp = state->stack;
+            state->firstcode = state->oldcode = GetCode(src, state->code_size, FALSE, state);
+            return state->firstcode;
+        } else if (code == state->end_code) {
+            int count;
+            unsigned char buf[260];
+
+            if (state->ZeroDataBlock)
+                return -2;
+
+            while ((count = GetDataBlock(src, buf, state)) > 0)
+                ;
+
+            if (count != 0) {
+            /*
+             * pm_message("missing EOD in data stream (common occurence)");
+             */
+            }
+            return -2;
+        }
+        incode = code;
+
+        if (code >= state->max_code) {
+            *state->sp++ = state->firstcode;
+            code = state->oldcode;
+        }
+        while (code >= state->clear_code) {
+            /* Guard against buffer overruns */
+            if (code < 0 || code >= (1 << MAX_LWZ_BITS)) {
+                RWSetMsg("invalid LWZ data");
+                return -3;
+            }
+            *state->sp++ = state->table[1][code];
+            if (code == state->table[0][code]) {
+                RWSetMsg("circular table entry BIG ERROR");
+                return -3;
+            }
+            code = state->table[0][code];
+        }
+
         /* Guard against buffer overruns */
         if (code < 0 || code >= (1 << MAX_LWZ_BITS)) {
             RWSetMsg("invalid LWZ data");
-            return -3;
+            return -4;
         }
-        *state->sp++ = state->table[1][code];
-        if (code == state->table[0][code]) {
-            RWSetMsg("circular table entry BIG ERROR");
-            return -3;
+        *state->sp++ = state->firstcode = state->table[1][code];
+
+        if ((code = state->max_code) < (1 << MAX_LWZ_BITS)) {
+            state->table[0][code] = state->oldcode;
+            state->table[1][code] = state->firstcode;
+            ++state->max_code;
+            if ((state->max_code >= state->max_code_size) &&
+                (state->max_code_size < (1 << MAX_LWZ_BITS))) {
+                state->max_code_size *= 2;
+                ++state->code_size;
+            }
         }
-        code = state->table[0][code];
-    }
+        state->oldcode = incode;
 
-    /* Guard against buffer overruns */
-    if (code < 0 || code >= (1 << MAX_LWZ_BITS)) {
-        RWSetMsg("invalid LWZ data");
-        return -4;
-    }
-    *state->sp++ = state->firstcode = state->table[1][code];
-
-    if ((code = state->max_code) < (1 << MAX_LWZ_BITS)) {
-        state->table[0][code] = state->oldcode;
-        state->table[1][code] = state->firstcode;
-        ++state->max_code;
-        if ((state->max_code >= state->max_code_size) &&
-        (state->max_code_size < (1 << MAX_LWZ_BITS))) {
-        state->max_code_size *= 2;
-        ++state->code_size;
-        }
-    }
-    state->oldcode = incode;
-
-    if (state->sp > state->stack)
-        return *--state->sp;
+        if (state->sp > state->stack)
+            return *--state->sp;
     }
     return code;
 }
 
 static Image *
 ReadImage(SDL_RWops * src, int len, int height, int cmapSize,
-      unsigned char cmap[3][MAXCOLORMAPSIZE],
-      int gray, int interlace, int ignore, State_t * state)
+          unsigned char cmap[3][MAXCOLORMAPSIZE],
+          int gray, int interlace, int ignore, State_t * state)
 {
     Image *image;
     unsigned char c;
@@ -551,72 +554,72 @@ ReadImage(SDL_RWops * src, int len, int height, int cmapSize,
     **  Initialize the compression routines
      */
     if (!ReadOK(src, &c, 1)) {
-    RWSetMsg("EOF / read error on image data");
-    return NULL;
+        RWSetMsg("EOF / read error on image data");
+        return NULL;
     }
     if (LWZReadByte(src, TRUE, c, state) < 0) {
-    RWSetMsg("error reading image");
-    return NULL;
+        RWSetMsg("error reading image");
+        return NULL;
     }
     /*
     **  If this is an "uninteresting picture" ignore it.
      */
     if (ignore) {
-    while (LWZReadByte(src, FALSE, c, state) >= 0)
-        ;
-    return NULL;
+        while (LWZReadByte(src, FALSE, c, state) >= 0)
+            ;
+        return NULL;
     }
     image = ImageNewCmap(len, height, cmapSize);
 
     for (i = 0; i < cmapSize; i++)
-    ImageSetCmap(image, i, cmap[CM_RED][i],
-             cmap[CM_GREEN][i], cmap[CM_BLUE][i]);
+        ImageSetCmap(image, i, cmap[CM_RED][i],
+                     cmap[CM_GREEN][i], cmap[CM_BLUE][i]);
 
     while ((v = LWZReadByte(src, FALSE, c, state)) >= 0) {
 #ifdef USED_BY_SDL
-    ((Uint8 *)image->pixels)[xpos + ypos * image->pitch] = v;
+        ((Uint8 *)image->pixels)[xpos + ypos * image->pitch] = v;
 #else
-    image->data[xpos + ypos * len] = v;
+        image->data[xpos + ypos * len] = v;
 #endif
-    ++xpos;
-    if (xpos == len) {
-        xpos = 0;
-        if (interlace) {
-        switch (pass) {
-        case 0:
-        case 1:
-            ypos += 8;
-            break;
-        case 2:
-            ypos += 4;
-            break;
-        case 3:
-            ypos += 2;
-            break;
-        }
+        ++xpos;
+        if (xpos == len) {
+            xpos = 0;
+            if (interlace) {
+                switch (pass) {
+                case 0:
+                case 1:
+                    ypos += 8;
+                    break;
+                case 2:
+                    ypos += 4;
+                    break;
+                case 3:
+                    ypos += 2;
+                    break;
+                }
 
-        if (ypos >= height) {
-            ++pass;
-            switch (pass) {
-            case 1:
-            ypos = 4;
-            break;
-            case 2:
-            ypos = 2;
-            break;
-            case 3:
-            ypos = 1;
-            break;
-            default:
-            goto fini;
+                if (ypos >= height) {
+                    ++pass;
+                    switch (pass) {
+                    case 1:
+                        ypos = 4;
+                        break;
+                    case 2:
+                        ypos = 2;
+                        break;
+                    case 3:
+                        ypos = 1;
+                        break;
+                    default:
+                        goto fini;
+                    }
+                }
+            } else {
+                ++ypos;
             }
         }
-        } else {
-        ++ypos;
-        }
-    }
-    if (ypos >= height)
-        break;
+        if (ypos >= height)
+            break;
     }
 
   fini:
