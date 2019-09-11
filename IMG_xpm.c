@@ -934,7 +934,7 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
         char c;
         int n;
         do {
-            if (SDL_RWread(src, &c, 1, 1) <= 0) {
+            if (!SDL_RWread(src, &c, 1, 1)) {
                 error = "Premature end of data";
                 return NULL;
             }
@@ -951,7 +951,7 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
                 }
                 linebuf = linebufnew;
             }
-            if (SDL_RWread(src, linebuf, len - 1, 1) <= 0) {
+            if (!SDL_RWread(src, linebuf, len - 1, 1)) {
                 error = "Premature end of data";
                 return NULL;
             }
@@ -971,7 +971,7 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
                     }
                     linebuf = linebufnew;
                 }
-                if (SDL_RWread(src, linebuf + n, 1, 1) <= 0) {
+                if (!SDL_RWread(src, linebuf + n, 1, 1)) {
                     error = "Premature end of data";
                     return NULL;
                 }
