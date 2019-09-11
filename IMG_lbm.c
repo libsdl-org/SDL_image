@@ -188,7 +188,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
                 goto done;
             }
 
-            if ( !SDL_RWread( src, &colormap, size, 1 ) )
+            if ( !SDL_RWread( src, colormap, size, 1 ) )
             {
                 error="error reading CMAP chunk";
                 goto done;
