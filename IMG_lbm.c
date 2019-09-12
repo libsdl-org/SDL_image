@@ -454,19 +454,15 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 						{
 							finalcolor = pixelcolor;
 						}
-						if ( SDL_BYTEORDER == SDL_LIL_ENDIAN )
-						{
-							*ptr++ = (Uint8)(finalcolor>>16);
-							*ptr++ = (Uint8)(finalcolor>>8);
-							*ptr++ = (Uint8)(finalcolor);
-						}
-						else
-						{
-							*ptr++ = (Uint8)(finalcolor);
-							*ptr++ = (Uint8)(finalcolor>>8);
-							*ptr++ = (Uint8)(finalcolor>>16);
-						}
-
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+						*ptr++ = (Uint8)(finalcolor>>16);
+						*ptr++ = (Uint8)(finalcolor>>8);
+						*ptr++ = (Uint8)(finalcolor);
+#else
+						*ptr++ = (Uint8)(finalcolor);
+						*ptr++ = (Uint8)(finalcolor>>8);
+						*ptr++ = (Uint8)(finalcolor>>16);
+#endif
 						maskBit = maskBit>>1;
 					}
 				}

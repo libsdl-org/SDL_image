@@ -143,15 +143,15 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 		bits = 8;
 	} else if(pcxh.BitsPerPixel == 8 && pcxh.NPlanes == 3) {
 		bits = 24;
-		if ( SDL_BYTEORDER == SDL_LIL_ENDIAN ) {
-			Rmask = 0x000000FF;
-			Gmask = 0x0000FF00;
-			Bmask = 0x00FF0000;
-		} else {
-			Rmask = 0xFF0000;
-			Gmask = 0x00FF00;
-			Bmask = 0x0000FF;
-		}
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+		Rmask = 0x000000FF;
+		Gmask = 0x0000FF00;
+		Bmask = 0x00FF0000;
+#else
+		Rmask = 0xFF0000;
+		Gmask = 0x00FF00;
+		Bmask = 0x0000FF;
+#endif
 	} else {
 		error = "unsupported PCX format";
 		goto done;
