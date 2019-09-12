@@ -169,18 +169,20 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 	alpha = 1;
 	/* fallthrough */
     case 24:
-	if(SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	    {
 	    int s = alpha ? 0 : 8;
 	    amask = 0x000000ff >> s;
 	    rmask = 0x0000ff00 >> s;
 	    gmask = 0x00ff0000 >> s;
 	    bmask = 0xff000000 >> s;
-	} else {
+	    }
+#else
 	    amask = alpha ? 0xff000000 : 0;
 	    rmask = 0x00ff0000;
 	    gmask = 0x0000ff00;
 	    bmask = 0x000000ff;
-	}
+#endif
 	break;
 
     default:
@@ -300,13 +302,15 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 	} else {
 	    SDL_RWread(src, dst, w * bpp, 1);
 	}
-	if(SDL_BYTEORDER == SDL_BIG_ENDIAN && bpp == 2) {
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	if(bpp == 2) {
 	    /* swap byte order */
 	    int x;
 	    Uint16 *p = (Uint16 *)dst;
 	    for(x = 0; x < w; x++)
 		p[x] = SDL_Swap16(p[x]);
 	}
+#endif
 	dst += lstep;
     }
     return img;
