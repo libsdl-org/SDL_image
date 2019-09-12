@@ -405,8 +405,12 @@ GetCode(SDL_RWops *src, int code_size, int flag, State_t * state)
         state->buf[0] = state->buf[state->last_byte - 2];
         state->buf[1] = state->buf[state->last_byte - 1];
 
-        if ((count = GetDataBlock(src, &state->buf[2], state)) <= 0)
+        if ((ret = GetDataBlock(src, &state->buf[2], state)) > 0)
+            count = (unsigned char) ret;
+        else {
+            count = 0;
             state->done = TRUE;
+        }
 
         state->last_byte = 2 + count;
         state->curbit = (state->curbit - state->lastbit) + 16;
