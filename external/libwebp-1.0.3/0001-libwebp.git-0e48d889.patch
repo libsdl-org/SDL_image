@@ -1,0 +1,68 @@
+From 0e48d889eb90363c6ebf8ea276bae4d892f9d3c0 Mon Sep 17 00:00:00 2001
+From: Skal <skal@google.com>
+Date: Fri, 30 Aug 2019 14:13:28 +0200
+Subject: [PATCH] bugfix: last alpha rows were incorrectly decoded
+
+sometimes, the last rows of the alpha plane contain more than NUM_ARGB_CACHE_ROWS
+rows to process. But ExtractAlphaRows() was repeatedly calling ApplyInverseTransforms()
+without updating the dec->last_row_ field, which is the starting row used as starting
+point.
+
+Fix would consist of either updating correctly dec->last_row_ before calling
+ApplyInverseTransforms(). Or pass the starting row explicitly, which is simpler.
+
+BUG=webp:439
+
+Change-Id: Id99f2c28662d02b2b866cb79e666050be9d59e04
+---
+ src/dec/vp8l_dec.c |   10 +++++-----
+ 1 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/dec/vp8l_dec.c b/src/dec/vp8l_dec.c
+index d3e2711..93615d4 100644
+--- a/src/dec/vp8l_dec.c
++++ b/src/dec/vp8l_dec.c
+@@ -754,11 +754,11 @@ static WEBP_INLINE HTreeGroup* GetHtreeGroupForPos(VP8LMetadata* const hdr,
+ 
+ typedef void (*ProcessRowsFunc)(VP8LDecoder* const dec, int row);
+ 
+-static void ApplyInverseTransforms(VP8LDecoder* const dec, int num_rows,
++static void ApplyInverseTransforms(VP8LDecoder* const dec,
++                                   int start_row, int num_rows,
+                                    const uint32_t* const rows) {
+   int n = dec->next_transform_;
+   const int cache_pixs = dec->width_ * num_rows;
+-  const int start_row = dec->last_row_;
+   const int end_row = start_row + num_rows;
+   const uint32_t* rows_in = rows;
+   uint32_t* const rows_out = dec->argb_cache_;
+@@ -789,8 +789,7 @@ static void ProcessRows(VP8LDecoder* const dec, int row) {
+     VP8Io* const io = dec->io_;
+     uint8_t* rows_data = (uint8_t*)dec->argb_cache_;
+     const int in_stride = io->width * sizeof(uint32_t);  // in unit of RGBA
+-
+-    ApplyInverseTransforms(dec, num_rows, rows);
++    ApplyInverseTransforms(dec, dec->last_row_, num_rows, rows);
+     if (!SetCropWindow(io, dec->last_row_, row, &rows_data, in_stride)) {
+       // Nothing to output (this time).
+     } else {
+@@ -1193,6 +1192,7 @@ static int DecodeImageData(VP8LDecoder* const dec, uint32_t* const data,
+       VP8LFillBitWindow(br);
+       dist_code = GetCopyDistance(dist_symbol, br);
+       dist = PlaneCodeToDistance(width, dist_code);
++
+       if (VP8LIsEndOfStream(br)) break;
+       if (src - data < (ptrdiff_t)dist || src_end - src < (ptrdiff_t)length) {
+         goto Error;
+@@ -1553,7 +1553,7 @@ static void ExtractAlphaRows(VP8LDecoder* const dec, int last_row) {
+     const int cache_pixs = width * num_rows_to_process;
+     uint8_t* const dst = output + width * cur_row;
+     const uint32_t* const src = dec->argb_cache_;
+-    ApplyInverseTransforms(dec, num_rows_to_process, in);
++    ApplyInverseTransforms(dec, cur_row, num_rows_to_process, in);
+     WebPExtractGreen(src, dst, cache_pixs);
+     AlphaApplyFilter(alph_dec,
+                      cur_row, cur_row + num_rows_to_process, dst, width);
+-- 
+1.7.1
+
