@@ -187,6 +187,9 @@ static SDL_bool NormalizeFrames(Frame_t *frames, int count)
 
         SDL_FreeSurface(frames[i].image);
         frames[i].image = SDL_DuplicateSurface(image);
+        if (!frames[i].image) {
+            return SDL_FALSE;
+        }
 
         lastDispose = frames[i].disposal;
     }
