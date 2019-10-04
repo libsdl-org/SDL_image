@@ -95,7 +95,7 @@ build_triplet = @build@
 host_triplet = @host@
 @USE_VERSION_RC_FALSE@libSDL2_image_la_DEPENDENCIES =  \
 @USE_VERSION_RC_FALSE@	$(am__DEPENDENCIES_1)
-noinst_PROGRAMS = showimage$(EXEEXT)
+noinst_PROGRAMS = showimage$(EXEEXT) showanim$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude/libtool.m4 \
@@ -164,6 +164,9 @@ am__v_lt_1 =
 libSDL2_image_la_LINK = $(LIBTOOL) $(AM_V_lt) $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(OBJCLD) $(AM_OBJCFLAGS) \
 	$(OBJCFLAGS) $(libSDL2_image_la_LDFLAGS) $(LDFLAGS) -o $@
+showanim_SOURCES = showanim.c
+showanim_OBJECTS = showanim.$(OBJEXT)
+showanim_DEPENDENCIES = libSDL2_image.la
 showimage_SOURCES = showimage.c
 showimage_OBJECTS = showimage.$(OBJEXT)
 showimage_DEPENDENCIES = libSDL2_image.la
@@ -190,7 +193,8 @@ am__depfiles_remade = ./$(DEPDIR)/IMG.Plo ./$(DEPDIR)/IMG_ImageIO.Plo \
 	./$(DEPDIR)/IMG_svg.Plo ./$(DEPDIR)/IMG_tga.Plo \
 	./$(DEPDIR)/IMG_tif.Plo ./$(DEPDIR)/IMG_webp.Plo \
 	./$(DEPDIR)/IMG_xcf.Plo ./$(DEPDIR)/IMG_xpm.Plo \
-	./$(DEPDIR)/IMG_xv.Plo ./$(DEPDIR)/showimage.Po
+	./$(DEPDIR)/IMG_xv.Plo ./$(DEPDIR)/showanim.Po \
+	./$(DEPDIR)/showimage.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -228,8 +232,9 @@ AM_V_OBJCLD = $(am__v_OBJCLD_@AM_V@)
 am__v_OBJCLD_ = $(am__v_OBJCLD_@AM_DEFAULT_V@)
 am__v_OBJCLD_0 = @echo "  OBJCLD  " $@;
 am__v_OBJCLD_1 = 
-SOURCES = $(libSDL2_image_la_SOURCES) showimage.c
-DIST_SOURCES = $(am__libSDL2_image_la_SOURCES_DIST) showimage.c
+SOURCES = $(libSDL2_image_la_SOURCES) showanim.c showimage.c
+DIST_SOURCES = $(am__libSDL2_image_la_SOURCES_DIST) showanim.c \
+	showimage.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -477,6 +482,7 @@ EXTRA_DIST = \
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = SDL2_image.pc
 showimage_LDADD = libSDL2_image.la
+showanim_LDADD = libSDL2_image.la
 all: all-am
 
 .SUFFIXES:
@@ -566,6 +572,10 @@ clean-libLTLIBRARIES:
 libSDL2_image.la: $(libSDL2_image_la_OBJECTS) $(libSDL2_image_la_DEPENDENCIES) $(EXTRA_libSDL2_image_la_DEPENDENCIES) 
 	$(AM_V_OBJCLD)$(libSDL2_image_la_LINK) -rpath $(libdir) $(libSDL2_image_la_OBJECTS) $(libSDL2_image_la_LIBADD) $(LIBS)
 
+showanim$(EXEEXT): $(showanim_OBJECTS) $(showanim_DEPENDENCIES) $(EXTRA_showanim_DEPENDENCIES) 
+	@rm -f showanim$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(showanim_OBJECTS) $(showanim_LDADD) $(LIBS)
+
 showimage$(EXEEXT): $(showimage_OBJECTS) $(showimage_DEPENDENCIES) $(EXTRA_showimage_DEPENDENCIES) 
 	@rm -f showimage$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(showimage_OBJECTS) $(showimage_LDADD) $(LIBS)
@@ -593,6 +603,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_xcf.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_xpm.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_xv.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/showanim.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/showimage.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -980,6 +991,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/IMG_xcf.Plo
 	-rm -f ./$(DEPDIR)/IMG_xpm.Plo
 	-rm -f ./$(DEPDIR)/IMG_xv.Plo
+	-rm -f ./$(DEPDIR)/showanim.Po
 	-rm -f ./$(DEPDIR)/showimage.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -1046,6 +1058,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/IMG_xcf.Plo
 	-rm -f ./$(DEPDIR)/IMG_xpm.Plo
 	-rm -f ./$(DEPDIR)/IMG_xv.Plo
+	-rm -f ./$(DEPDIR)/showanim.Po
 	-rm -f ./$(DEPDIR)/showimage.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
