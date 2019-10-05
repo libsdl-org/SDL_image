@@ -2788,7 +2788,6 @@ static void nsvg__content(void* ud, const char* s)
 					p->styles = (NSVGstyles*)malloc(sizeof(NSVGstyles));
 					p->styles->next = next;
 					p->styles->name = nsvg__strndup(start, (size_t)(s - start));
-					p->styles->next = NULL;
 					start = s + 1;
 					state = 2;
 				}				
