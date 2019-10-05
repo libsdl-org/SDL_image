@@ -29,6 +29,10 @@
 #ifndef NANOSVG_H
 #define NANOSVG_H
 
+#ifndef NSVG_EXPORT
+#define NSVG_EXPORT
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -161,14 +165,14 @@ typedef struct NSVGimage
 } NSVGimage;
 
 // Parses SVG file from a file, returns SVG image as paths.
-NSVGimage* nsvgParseFromFile(const char* filename, const char* units, float dpi);
+NSVG_EXPORT NSVGimage* nsvgParseFromFile(const char* filename, const char* units, float dpi);
 
 // Parses SVG file from a null terminated string, returns SVG image as paths.
 // Important note: changes the string.
-NSVGimage* nsvgParse(char* input, const char* units, float dpi);
+NSVG_EXPORT NSVGimage* nsvgParse(char* input, const char* units, float dpi);
 
 // Deletes list of paths.
-void nsvgDelete(NSVGimage* image);
+NSVG_EXPORT void nsvgDelete(NSVGimage* image);
 
 #ifdef __cplusplus
 }
@@ -1257,7 +1261,7 @@ typedef struct NSVGNamedColor {
 	unsigned int color;
 } NSVGNamedColor;
 
-NSVGNamedColor nsvg__colors[] = {
+static NSVGNamedColor nsvg__colors[] = {
 
 	{ "red", NSVG_RGB(255, 0, 0) },
 	{ "green", NSVG_RGB( 0, 128, 0) },
@@ -2961,7 +2965,7 @@ static void nsvg__scaleToViewbox(NSVGparser* p, const char* units)
 	}
 }
 
-NSVGimage* nsvgParse(char* input, const char* units, float dpi)
+NSVG_EXPORT NSVGimage* nsvgParse(char* input, const char* units, float dpi)
 {
 	NSVGparser* p;
 	NSVGimage* ret = 0;
@@ -2986,7 +2990,7 @@ NSVGimage* nsvgParse(char* input, const char* units, float dpi)
 }
 
 #ifdef HAVE_STDIO_H
-NSVGimage* nsvgParseFromFile(const char* filename, const char* units, float dpi)
+NSVG_EXPORT NSVGimage* nsvgParseFromFile(const char* filename, const char* units, float dpi)
 {
 	FILE* fp = NULL;
 	size_t size;
@@ -3016,7 +3020,7 @@ error:
 }
 #endif /* HAVE_STDIO_H */
 
-void nsvgDelete(NSVGimage* image)
+NSVG_EXPORT void nsvgDelete(NSVGimage* image)
 {
 	NSVGshape *snext, *shape;
 	if (image == NULL) return;
