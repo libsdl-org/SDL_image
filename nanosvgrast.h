@@ -25,6 +25,10 @@
 #ifndef NANOSVGRAST_H
 #define NANOSVGRAST_H
 
+#ifndef NSVG_EXPORT
+#define NSVG_EXPORT
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -44,7 +48,7 @@ typedef struct NSVGrasterizer NSVGrasterizer;
 */
 
 // Allocated rasterizer context.
-NSVGrasterizer* nsvgCreateRasterizer(void);
+NSVG_EXPORT NSVGrasterizer* nsvgCreateRasterizer(void);
 
 // Rasterizes SVG image, returns RGBA image (non-premultiplied alpha)
 //   r - pointer to rasterizer context
@@ -55,12 +59,12 @@ NSVGrasterizer* nsvgCreateRasterizer(void);
 //   w - width of the image to render
 //   h - height of the image to render
 //   stride - number of bytes per scaleline in the destination buffer
-void nsvgRasterize(NSVGrasterizer* r,
-				   NSVGimage* image, float tx, float ty, float scale,
-				   unsigned char* dst, int w, int h, int stride);
+NSVG_EXPORT void nsvgRasterize(NSVGrasterizer* r,
+				               NSVGimage* image, float tx, float ty, float scale,
+				               unsigned char* dst, int w, int h, int stride);
 
 // Deletes rasterizer context.
-void nsvgDeleteRasterizer(NSVGrasterizer*);
+NSVG_EXPORT void nsvgDeleteRasterizer(NSVGrasterizer*);
 
 
 #ifdef __cplusplus
@@ -70,6 +74,9 @@ void nsvgDeleteRasterizer(NSVGrasterizer*);
 #endif // NANOSVGRAST_H
 
 #ifdef NANOSVGRAST_IMPLEMENTATION
+#ifndef NSVG_EXPORT
+#define NSVG_EXPORT
+#endif
 
 /*
 #include <math.h>
@@ -145,7 +152,7 @@ struct NSVGrasterizer
 	int width, height, stride;
 };
 
-NSVGrasterizer* nsvgCreateRasterizer()
+NSVG_EXPORT NSVGrasterizer* nsvgCreateRasterizer()
 {
 	NSVGrasterizer* r = (NSVGrasterizer*)malloc(sizeof(NSVGrasterizer));
 	if (r == NULL) goto error;
@@ -161,7 +168,7 @@ error:
 	return NULL;
 }
 
-void nsvgDeleteRasterizer(NSVGrasterizer* r)
+NSVG_EXPORT void nsvgDeleteRasterizer(NSVGrasterizer* r)
 {
 	NSVGmemPage* p;
 
@@ -1360,7 +1367,7 @@ static void dumpEdges(NSVGrasterizer* r, const char* name)
 }
 */
 
-void nsvgRasterize(NSVGrasterizer* r,
+NSVG_EXPORT void nsvgRasterize(NSVGrasterizer* r,
 				   NSVGimage* image, float tx, float ty, float scale,
 				   unsigned char* dst, int w, int h, int stride)
 {

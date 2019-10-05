@@ -67,6 +67,7 @@
 #endif
 #undef HAVE_STDIO_H
 
+#define NSVG_EXPORT static
 #define NANOSVG_IMPLEMENTATION
 #include "nanosvg.h"
 #define NANOSVGRAST_IMPLEMENTATION
