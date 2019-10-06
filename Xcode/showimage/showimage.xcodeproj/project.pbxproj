@@ -227,6 +227,8 @@
 				HEADER_SEARCH_PATHS = (
 					"$(HOME)/Library/Frameworks/SDL.framework/Headers",
 					/Library/Frameworks/SDL.framework/Headers,
+					"$(HOME)/Library/Frameworks/SDL_image.framework/Headers",
+					/Library/Frameworks/SDL_image.framework/Headers,
 				);
 				INFOPLIST_FILE = "Info-showimage__Upgraded_.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -253,6 +255,8 @@
 				HEADER_SEARCH_PATHS = (
 					"$(HOME)/Library/Frameworks/SDL.framework/Headers",
 					/Library/Frameworks/SDL.framework/Headers,
+					"$(HOME)/Library/Frameworks/SDL_image.framework/Headers",
+					/Library/Frameworks/SDL_image.framework/Headers,
 				);
 				INFOPLIST_FILE = "Info-showimage__Upgraded_.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -278,6 +282,8 @@
 				HEADER_SEARCH_PATHS = (
 					"$(HOME)/Library/Frameworks/SDL.framework/Headers",
 					/Library/Frameworks/SDL.framework/Headers,
+					"$(HOME)/Library/Frameworks/SDL_image.framework/Headers",
+					/Library/Frameworks/SDL_image.framework/Headers,
 				);
 				INFOPLIST_FILE = "Info-showimage__Upgraded_.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
