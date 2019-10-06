@@ -5,7 +5,7 @@
     Feel free to customize this file to suit your needs
 */
 
-#include <SDL/SDL.h>
+#include "SDL.h"
 #include "SDLMain.h"
 #include <sys/param.h> /* for MAXPATHLEN */
 #include <unistd.h>
@@ -19,22 +19,6 @@
 
 /* Use this flag to determine whether we use SDLMain.nib or not */
 #define		SDL_USE_NIB_FILE	0
-
-/* Use this flag to determine whether we use CPS (docking) or not */
-#define		SDL_USE_CPS		1
-#ifdef SDL_USE_CPS
-/* Portions of CPS.h */
-typedef struct CPSProcessSerNum
-{
-	UInt32		lo;
-	UInt32		hi;
-} CPSProcessSerNum;
-
-extern OSErr	CPSGetCurrentProcess( CPSProcessSerNum *psn);
-extern OSErr 	CPSEnableForegroundOperation( CPSProcessSerNum *psn, UInt32 _arg2, UInt32 _arg3, UInt32 _arg4, UInt32 _arg5);
-extern OSErr	CPSSetFrontProcess( CPSProcessSerNum *psn);
-
-#endif /* SDL_USE_CPS */
 
 static int    gArgc;
 static char  **gArgv;
@@ -64,10 +48,10 @@ static NSString *getApplicationName(void)
 @end
 #endif
 
-@interface SDLApplication : NSApplication
+@interface NSApplication (SDLApplication)
 @end
 
-@implementation SDLApplication
+@implementation NSApplication (SDLApplication)
 /* Invoked from the Quit menu item */
 - (void)terminate:(id)sender
 {
@@ -119,7 +103,6 @@ static NSString *getApplicationName(void)
         if ([menuItem hasSubmenu])
             [self fixMenu:[menuItem submenu] withAppName:appName];
     }
-    [ aMenu sizeToFit ];
 }
 
 #else
@@ -202,18 +185,7 @@ static void CustomApplicationMain (int argc, char **argv)
     SDLMain				*sdlMain;
 
     /* Ensure the application object is initialised */
-    [SDLApplication sharedApplication];
-    
-#ifdef SDL_USE_CPS
-    {
-        CPSProcessSerNum PSN;
-        /* Tell the dock about us */
-        if (!CPSGetCurrentProcess(&PSN))
-            if (!CPSEnableForegroundOperation(&PSN,0x03,0x3C,0x2C,0x1103))
-                if (!CPSSetFrontProcess(&PSN))
-                    [SDLApplication sharedApplication];
-    }
-#endif /* SDL_USE_CPS */
+    [[NSApplication sharedApplication] activateIgnoringOtherApps: YES];
 
     /* Set up the menubar */
     [NSApp setMainMenu:[[NSMenu alloc] init]];
@@ -346,18 +318,38 @@ static void CustomApplicationMain (int argc, char **argv)
 @end
 
 
-
 #ifdef main
 #  undef main
 #endif
 
 
+static int IsRootCwd()
+{
+    char buf[MAXPATHLEN];
+    char *cwd = getcwd(buf, sizeof (buf));
+    return (cwd && (strcmp(cwd, "/") == 0));
+}
+
+static int IsFinderLaunch(const int argc, char **argv)
+{
+    /* -psn_XXX is passed if we are launched from Finder, SOMETIMES */
+    if ( (argc >= 2) && (strncmp(argv[1], "-psn", 4) == 0) ) {
+        return 1;
+    } else if ((argc == 1) && IsRootCwd()) {
+        /* we might still be launched from the Finder; on 10.9+, you might not
+        get the -psn command line anymore. If there's no
+        command line, and if our current working directory is "/", it
+        might as well be a Finder launch. */
+        return 1;
+    }
+    return 0;  /* not a Finder launch. */
+}
+
 /* Main entry point to executable - should *not* be SDL_main! */
 int main (int argc, char **argv)
 {
     /* Copy the arguments into a global variable */
-    /* This is passed if we are launched by double-clicking */
-    if ( argc >= 2 && strncmp (argv[1], "-psn", 4) == 0 ) {
+    if (IsFinderLaunch(argc, argv)) {
         gArgv = (char **) SDL_malloc(sizeof (char *) * 2);
         gArgv[0] = argv[0];
         gArgv[1] = NULL;
@@ -373,7 +365,6 @@ int main (int argc, char **argv)
     }
 
 #if SDL_USE_NIB_FILE
-    [SDLApplication poseAsClass:[NSApplication class]];
     NSApplicationMain (argc, argv);
 #else
     CustomApplicationMain (argc, argv);
