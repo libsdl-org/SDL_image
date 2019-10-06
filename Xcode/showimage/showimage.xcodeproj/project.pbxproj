@@ -7,13 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BE1FA82C07AF9002004B6283 /* SDLMain.h in Headers */ = {isa = PBXBuildFile; fileRef = F5A47A9D01A0482F01D3D55B /* SDLMain.h */; };
 		BE1FA82E07AF9002004B6283 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
-		BE1FA83007AF9002004B6283 /* SDLMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F5A47A9E01A0483001D3D55B /* SDLMain.m */; };
 		BE1FA83107AF9002004B6283 /* showimage.c in Sources */ = {isa = PBXBuildFile; fileRef = F5A068FF01CD8555012F876B /* showimage.c */; };
 		BE1FA83307AF9002004B6283 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		BE1FA83407AF9002004B6283 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE1FA82007AF8F33004B6283 /* SDL.framework */; };
-		BE1FA83507AF9002004B6283 /* SDL_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE1FA82207AF8F44004B6283 /* SDL_image.framework */; };
+		BE1FA83407AF9002004B6283 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE1FA82007AF8F33004B6283 /* SDL2.framework */; };
+		BE1FA83507AF9002004B6283 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE1FA82207AF8F44004B6283 /* SDL2_image.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,13 +19,11 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		BE1FA82007AF8F33004B6283 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL.framework; path = /Library/Frameworks/SDL.framework; sourceTree = "<absolute>"; };
-		BE1FA82207AF8F44004B6283 /* SDL_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL_image.framework; path = /Library/Frameworks/SDL_image.framework; sourceTree = "<absolute>"; };
+		BE1FA82007AF8F33004B6283 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = /Library/Frameworks/SDL2.framework; sourceTree = "<absolute>"; };
+		BE1FA82207AF8F44004B6283 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = /Library/Frameworks/SDL2_image.framework; sourceTree = "<absolute>"; };
 		BE1FA83607AF9002004B6283 /* Info-showimage__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-showimage__Upgraded_.plist"; sourceTree = "<group>"; };
 		BE1FA83707AF9002004B6283 /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5A068FF01CD8555012F876B /* showimage.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = showimage.c; path = ../../showimage.c; sourceTree = SOURCE_ROOT; };
-		F5A47A9D01A0482F01D3D55B /* SDLMain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SDLMain.h; sourceTree = SOURCE_ROOT; };
-		F5A47A9E01A0483001D3D55B /* SDLMain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SDLMain.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,28 +32,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE1FA83307AF9002004B6283 /* Cocoa.framework in Frameworks */,
-				BE1FA83407AF9002004B6283 /* SDL.framework in Frameworks */,
-				BE1FA83507AF9002004B6283 /* SDL_image.framework in Frameworks */,
+				BE1FA83407AF9002004B6283 /* SDL2.framework in Frameworks */,
+				BE1FA83507AF9002004B6283 /* SDL2_image.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		080E96DDFE201D6D7F000001 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				F5A47A9D01A0482F01D3D55B /* SDLMain.h */,
-				F5A47A9E01A0483001D3D55B /* SDLMain.m */,
-			);
-			name = Classes;
-			sourceTree = "<group>";
-		};
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BE1FA82207AF8F44004B6283 /* SDL_image.framework */,
-				BE1FA82007AF8F33004B6283 /* SDL.framework */,
+				BE1FA82207AF8F44004B6283 /* SDL2_image.framework */,
+				BE1FA82007AF8F33004B6283 /* SDL2.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 			);
 			name = "Linked Frameworks";
@@ -83,7 +70,6 @@
 		29B97314FDCFA39411CA2CEA /* SDL App */ = {
 			isa = PBXGroup;
 			children = (
-				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
@@ -120,23 +106,11 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		BE1FA82B07AF9002004B6283 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				BE1FA82C07AF9002004B6283 /* SDLMain.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
 		BE1FA82A07AF9002004B6283 /* showimage */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00B7E55F097EF9A500826121 /* Build configuration list for PBXNativeTarget "showimage" */;
 			buildPhases = (
-				BE1FA82B07AF9002004B6283 /* Headers */,
 				BE1FA82D07AF9002004B6283 /* Resources */,
 				BE1FA82F07AF9002004B6283 /* Sources */,
 				BE1FA83207AF9002004B6283 /* Frameworks */,
@@ -194,7 +168,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE1FA83007AF9002004B6283 /* SDLMain.m in Sources */,
 				BE1FA83107AF9002004B6283 /* showimage.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -225,8 +198,10 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				HEADER_SEARCH_PATHS = (
-					"$(HOME)/Library/Frameworks/SDL.framework/Headers",
-					/Library/Frameworks/SDL.framework/Headers,
+					"$(HOME)/Library/Frameworks/SDL2.framework/Headers",
+					/Library/Frameworks/SDL2.framework/Headers,
+					"$(HOME)/Library/Frameworks/SDL2_image.framework/Headers",
+					/Library/Frameworks/SDL2_image.framework/Headers,
 				);
 				INFOPLIST_FILE = "Info-showimage__Upgraded_.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -251,8 +226,10 @@
 					/Library/Frameworks,
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(HOME)/Library/Frameworks/SDL.framework/Headers",
-					/Library/Frameworks/SDL.framework/Headers,
+					"$(HOME)/Library/Frameworks/SDL2.framework/Headers",
+					/Library/Frameworks/SDL2.framework/Headers,
+					"$(HOME)/Library/Frameworks/SDL2_image.framework/Headers",
+					/Library/Frameworks/SDL2_image.framework/Headers,
 				);
 				INFOPLIST_FILE = "Info-showimage__Upgraded_.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -276,8 +253,10 @@
 					/Library/Frameworks,
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(HOME)/Library/Frameworks/SDL.framework/Headers",
-					/Library/Frameworks/SDL.framework/Headers,
+					"$(HOME)/Library/Frameworks/SDL2.framework/Headers",
+					/Library/Frameworks/SDL2.framework/Headers,
+					"$(HOME)/Library/Frameworks/SDL2_image.framework/Headers",
+					/Library/Frameworks/SDL2_image.framework/Headers,
 				);
 				INFOPLIST_FILE = "Info-showimage__Upgraded_.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
