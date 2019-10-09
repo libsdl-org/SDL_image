@@ -69,6 +69,9 @@ SDL_Surface *IMG_LoadXXX_RW(SDL_RWops *src)
 }
 
 #else
+#if _MSC_VER >= 1300
+#pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
+#endif
 
 /* See if an image is contained in a data source */
 int IMG_isXXX(SDL_RWops *src)
