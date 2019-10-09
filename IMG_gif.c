@@ -615,7 +615,7 @@ LWZReadByte(SDL_RWops *src, int flag, int input_code_size, State_t * state)
 static Image *
 ReadImage(SDL_RWops * src, int len, int height, int cmapSize,
           unsigned char cmap[3][MAXCOLORMAPSIZE],
-          int gray, int interlace, int ignore, State_t * state)
+          int /*gray*/, int interlace, int ignore, State_t * state)
 {
     Image *image;
     unsigned char c;
@@ -648,7 +648,7 @@ ReadImage(SDL_RWops * src, int len, int height, int cmapSize,
                      cmap[CM_GREEN][i], cmap[CM_BLUE][i]);
 
     while ((v = LWZReadByte(src, FALSE, c, state)) >= 0) {
-        ((Uint8 *)image->pixels)[xpos + ypos * image->pitch] = v;
+        ((Uint8 *)image->pixels)[xpos + ypos * image->pitch] = (Uint8)v;
         ++xpos;
         if (xpos == len) {
             xpos = 0;
@@ -781,6 +781,9 @@ SDL_Surface *IMG_LoadGIF_RW(SDL_RWops *src)
 }
 
 #else
+#if _MSC_VER >= 1300
+#pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
+#endif
 
 /* See if an image is contained in a data source */
 int IMG_isGIF(SDL_RWops *src)

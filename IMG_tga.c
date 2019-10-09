@@ -323,6 +323,9 @@ error:
 }
 
 #else
+#if _MSC_VER >= 1300
+#pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
+#endif
 
 /* dummy TGA load routine */
 SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)

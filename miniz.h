@@ -940,6 +940,11 @@ MINIZ_STATIC mz_uint tdefl_create_comp_flags_from_zip_params(int level, int wind
 
 #ifndef MINIZ_HEADER_FILE_ONLY
 
+#ifdef _MSC_VER
+#pragma warning (push)
+#pragma warning (disable:4505) // unreferenced local function has been removed
+#endif
+
 typedef unsigned char mz_validate_uint16[sizeof(mz_uint16)==2 ? 1 : -1];
 typedef unsigned char mz_validate_uint32[sizeof(mz_uint32)==4 ? 1 : -1];
 typedef unsigned char mz_validate_uint64[sizeof(mz_uint64)==8 ? 1 : -1];
@@ -4910,6 +4915,10 @@ void *mz_zip_extract_archive_file_to_heap(const char *pZip_filename, const char 
 
 #ifdef __cplusplus
 }
+#endif
+
+#ifdef _MSC_VER
+#pragma warning (pop)
 #endif
 
 #endif // MINIZ_HEADER_FILE_ONLY
