@@ -211,12 +211,13 @@ IMG_LoadGIF_RW_Internal(SDL_RWops *src, SDL_bool load_anim)
     int bitPixel;
     char version[4];
     Image *image = NULL;
+    Anim_t *anim;
+    Frame_t *frames, *frame;
     State_t state;
+
     state.ZeroDataBlock = FALSE;
     state.fresh = FALSE;
     state.last_byte = 0;
-    Anim_t *anim;
-    Frame_t *frames, *frame;
 
     if (src == NULL) {
         return NULL;
@@ -615,12 +616,14 @@ LWZReadByte(SDL_RWops *src, int flag, int input_code_size, State_t * state)
 static Image *
 ReadImage(SDL_RWops * src, int len, int height, int cmapSize,
           unsigned char cmap[3][MAXCOLORMAPSIZE],
-          int /*gray*/, int interlace, int ignore, State_t * state)
+          int gray, int interlace, int ignore, State_t * state)
 {
     Image *image;
     unsigned char c;
     int i, v;
     int xpos = 0, ypos = 0, pass = 0;
+
+    (void) gray; /* unused */
 
     /*
     **  Initialize the compression routines
