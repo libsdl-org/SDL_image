@@ -332,7 +332,7 @@ IMG_LoadGIF_RW_Internal(SDL_RWops *src, SDL_bool load_anim)
             frame->x = LM_to_uint(buf[0], buf[1]);
             frame->y = LM_to_uint(buf[2], buf[3]);
             frame->disposal = state.Gif89.disposal;
-            frame->delay = state.Gif89.delayTime*10;
+            frame->delay = (state.Gif89.delayTime < 2 ? 10 : state.Gif89.delayTime) * 10;
 
             if (!load_anim) {
                 /* We only need one frame, we're done */
