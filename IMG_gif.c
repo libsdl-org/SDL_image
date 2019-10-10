@@ -202,7 +202,6 @@ static SDL_bool NormalizeFrames(Frame_t *frames, int count)
 Anim_t *
 IMG_LoadGIF_RW_Internal(SDL_RWops *src, SDL_bool load_anim)
 {
-    Sint64 start;
     unsigned char buf[16];
     unsigned char c;
     unsigned char localColorMap[3][MAXCOLORMAPSIZE];
@@ -222,7 +221,6 @@ IMG_LoadGIF_RW_Internal(SDL_RWops *src, SDL_bool load_anim)
     if (src == NULL) {
         return NULL;
     }
-    start = SDL_RWtell(src);
 
     anim = (Anim_t *)SDL_calloc(1, sizeof(*anim));
     if (!anim) {
@@ -332,7 +330,11 @@ IMG_LoadGIF_RW_Internal(SDL_RWops *src, SDL_bool load_anim)
             frame->x = LM_to_uint(buf[0], buf[1]);
             frame->y = LM_to_uint(buf[2], buf[3]);
             frame->disposal = state.Gif89.disposal;
-            frame->delay = (state.Gif89.delayTime < 2 ? 10 : state.Gif89.delayTime) * 10;
+            if (state.Gif89.delayTime < 2) {
+                frame->delay = 100; /* Default animation delay, matching browsers and Qt */
+            } else {
+                frame->delay = state.Gif89.delayTime * 10;
+            }
 
             if (!load_anim) {
                 /* We only need one frame, we're done */
@@ -397,39 +399,32 @@ static int
 DoExtension(SDL_RWops *src, int label, State_t * state)
 {
     unsigned char buf[256];
-    char *str;
 
     switch (label) {
     case 0x01:          /* Plain Text Extension */
-        str = "Plain Text Extension";
         break;
     case 0xff:          /* Application Extension */
-        str = "Application Extension";
         break;
     case 0xfe:          /* Comment Extension */
-        str = "Comment Extension";
-        while (GetDataBlock(src, (unsigned char *) buf, state) > 0)
+        while (GetDataBlock(src, buf, state) > 0)
             ;
         return FALSE;
     case 0xf9:          /* Graphic Control Extension */
-        str = "Graphic Control Extension";
-        (void) GetDataBlock(src, (unsigned char *) buf, state);
+        (void) GetDataBlock(src, buf, state);
         state->Gif89.disposal = (buf[0] >> 2) & 0x7;
         state->Gif89.inputFlag = (buf[0] >> 1) & 0x1;
         state->Gif89.delayTime = LM_to_uint(buf[1], buf[2]);
         if ((buf[0] & 0x1) != 0)
             state->Gif89.transparent = buf[3];
 
-        while (GetDataBlock(src, (unsigned char *) buf, state) > 0)
+        while (GetDataBlock(src, buf, state) > 0)
             ;
         return FALSE;
     default:
-        str = (char *)buf;
-        SDL_snprintf(str, 256, "UNKNOWN (0x%02x)", label);
         break;
     }
 
-    while (GetDataBlock(src, (unsigned char *) buf, state) > 0)
+    while (GetDataBlock(src, buf, state) > 0)
         ;
 
     return FALSE;
