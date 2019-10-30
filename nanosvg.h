@@ -327,7 +327,7 @@ static void nsvg__parseElement(char* s,
 		(*endelCb)(ud, name);
 }
 
-int nsvg__parseXML(char* input,
+static int nsvg__parseXML(char* input,
 				   void (*startelCb)(void* ud, const char* el, const char** attr),
 				   void (*endelCb)(void* ud, const char* el),
 				   void (*contentCb)(void* ud, const char* s),
