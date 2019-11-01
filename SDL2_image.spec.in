@@ -14,7 +14,6 @@ Prefix: %{_prefix}
 Packager: Hakan Tandogan <hakan@iconsult.com>
 #BuildRequires: SDL2-devel
 #BuildRequires: libjpeg-devel
-#BuildRequires: libpng-devel
 #BuildRequires: libtiff-devel
 
 %description

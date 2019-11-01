@@ -44,7 +44,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /I "graphics\include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "LOAD_BMP" /D "LOAD_GIF" /D "LOAD_JPG" /D LOAD_JPG_DYNAMIC=\"jpeg.dll\" /D "LOAD_LBM" /D "LOAD_PCX" /D "LOAD_PNG" /D LOAD_PNG_DYNAMIC=\"libpng12-0.dll\" /D "LOAD_PNM" /D "LOAD_TGA" /D "LOAD_TIF" /D LOAD_TIF_DYNAMIC=\"libtiff-3.dll\" /D "LOAD_XPM" /D "LOAD_XV" /D "PNG_USE_DLL" /D "ZLIB_DLL" /YX /FD /c
+# ADD CPP /nologo /MD /W3 /GX /O2 /I "graphics\include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "LOAD_BMP" /D "LOAD_GIF" /D "LOAD_JPG" /D LOAD_JPG_DYNAMIC=\"jpeg.dll\" /D "LOAD_LBM" /D "LOAD_PCX" /D "LOAD_PNG" /D "LOAD_PNM" /D "LOAD_TGA" /D "LOAD_TIF" /D LOAD_TIF_DYNAMIC=\"libtiff-3.dll\" /D "LOAD_XPM" /D "LOAD_XV" "ZLIB_DLL" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o NUL /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o NUL /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -70,7 +70,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /MD /W3 /Gm /GX /Zi /Od /I "graphics\include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "LOAD_BMP" /D "LOAD_GIF" /D "LOAD_JPG" /D LOAD_JPG_DYNAMIC=\"jpeg.dll\" /D "LOAD_LBM" /D "LOAD_PCX" /D "LOAD_PNG" /D LOAD_PNG_DYNAMIC=\"libpng12-0.dll\" /D "LOAD_PNM" /D "LOAD_TGA" /D "LOAD_TIF" /D LOAD_TIF_DYNAMIC=\"libtiff-3.dll\" /D "LOAD_XPM" /D "LOAD_XV" /D "PNG_USE_DLL" /D "ZLIB_DLL" /YX /FD /c
+# ADD CPP /nologo /MD /W3 /Gm /GX /Zi /Od /I "graphics\include" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "LOAD_BMP" /D "LOAD_GIF" /D "LOAD_JPG" /D LOAD_JPG_DYNAMIC=\"jpeg.dll\" /D "LOAD_LBM" /D "LOAD_PCX" /D "LOAD_PNG" /D "LOAD_PNM" /D "LOAD_TGA" /D "LOAD_TIF" /D LOAD_TIF_DYNAMIC=\"libtiff-3.dll\" /D "LOAD_XPM" /D "LOAD_XV" /D "ZLIB_DLL" /YX /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o NUL /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o NUL /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
