@@ -53,25 +53,91 @@ void IMG_QuitPNG()
 {
 }
 
+static int read_and_test_png_magic(SDL_RWops *src)
+{
+    int retval = 0;
+    Uint8 buf[8];
+    if (SDL_RWread(src, buf, sizeof (buf), 1)) {
+        static const Uint8 magic[] = { 137, 80, 78, 71, 13, 10, 26, 10 };  /* stole this list from lodepng's sources. */
+        SDL_assert(sizeof (buf) == sizeof (magic));
+        if (SDL_memcmp(buf, magic, sizeof (buf)) == 0) {
+            retval = 1;  /* it's a PNG signature. */
+        }
+    }
+    return retval;
+}
+
 int IMG_isPNG(SDL_RWops *src)
 {
     Sint64 start;
-    Uint8 buf[8];
     int retval = 0;
 
     if (src) {
         start = SDL_RWtell(src);
-        if (SDL_RWread(src, buf, sizeof (buf), 1)) {
-            static const Uint8 magic[] = { 137, 80, 78, 71, 13, 10, 26, 10 };  /* stole this list from lodepng's sources. */
-            SDL_assert(sizeof (buf) == sizeof (magic));
-            if (SDL_memcmp(buf, magic, sizeof (buf)) == 0) {
-                retval = 1;  /* it's a PNG signature. */
-            }
-        }
+        retval = read_and_test_png_magic(src);
         SDL_RWseek(src, start, RW_SEEK_SET);
     }
 
     return retval;
+}
+
+static SDL_bool load_png_to_memory(SDL_RWops *src, Sint64 *start, unsigned char **png, size_t *pngsize)
+{
+    /* this is a dirt-simple walk through PNG chunks to find the end, so we
+       can read a PNG from a RWops that has other data included. */
+    Uint8 buf[8];
+    size_t flen = 0;
+
+    *start = SDL_RWtell(src);
+
+    if (!read_and_test_png_magic(src)) {
+        return SDL_FALSE;
+    }
+
+    while (SDL_TRUE) {
+        Uint32 len;
+        Uint32 tag;
+
+        if (SDL_RWread(src, &len, sizeof (len), 1) != 1) {
+            return SDL_FALSE;
+        } else if (SDL_RWread(src, &tag, sizeof (tag), 1) != 1) {
+            return SDL_FALSE;
+        }
+
+        len = SDL_SwapBE32(len);
+        tag = SDL_SwapBE32(tag);
+
+        /* +12 for the len, tag, and crc. */
+        flen += len + 12;
+
+        if (tag == 0x49454E44) {  /* IEND tag */
+            break;
+        }
+
+        /* +4 to skip CRC at the end of the chunk. */
+        if (SDL_RWseek(src, len + 4, RW_SEEK_CUR) == -1) {
+            return SDL_FALSE;
+        }
+    }
+
+    SDL_assert(flen != 0);
+    flen += 8;  /* 8 bytes for initial magic header */
+
+    *pngsize = flen;
+    *png = (unsigned char *) SDL_malloc(*pngsize);
+
+    if (*png == NULL) {
+        SDL_OutOfMemory();
+        return SDL_FALSE;
+    } else if (SDL_RWseek(src, *start, RW_SEEK_SET) == -1) {
+        SDL_free(*png);
+        return SDL_FALSE;
+    } else if (SDL_RWread(src, *png, flen, 1) != 1) {
+        SDL_free(*png);
+        return SDL_FALSE;
+    }
+
+    return SDL_TRUE;
 }
 
 SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
@@ -95,12 +161,8 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
     SDL_zero(state);
     lodepng_state_init(&state);
 
-    start = SDL_RWtell(src);
-    png = SDL_LoadFile_RW(src, &pngsize, 0);
-    SDL_RWseek(src, start, RW_SEEK_SET);
-
-    if (!png) {
-        goto failed;  /* assume SDL set the error string */
+    if (!load_png_to_memory(src, &start, &png, &pngsize)) {
+        goto failed;  /* assume it set the error string */
     }
 
     error = lodepng_inspect(&w, &h, &state, png, pngsize);
@@ -226,6 +288,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 
 failed:
     lodepng_state_cleanup(&state);
+    if (src) SDL_RWseek(src, start, RW_SEEK_SET);
     if (png) SDL_free(png);
     if (pixels) lodepng_free(pixels);
     if (retval) SDL_FreeSurface(retval);
