@@ -9,7 +9,6 @@ JPG_LIBRARY_PATH := external/jpeg-9b
 # Enable this if you want to support loading PNG images
 # The library path should be a relative path to this directory.
 SUPPORT_PNG ?= true
-PNG_LIBRARY_PATH := external/libpng-1.6.37
 
 # Enable this if you want to support loading WebP images
 # The library path should be a relative path to this directory.
@@ -20,11 +19,6 @@ WEBP_LIBRARY_PATH := external/libwebp-1.0.2
 # Build the library
 ifeq ($(SUPPORT_JPG),true)
     include $(SDL_IMAGE_LOCAL_PATH)/$(JPG_LIBRARY_PATH)/Android.mk
-endif
-
-# Build the library
-ifeq ($(SUPPORT_PNG),true)
-    include $(SDL_IMAGE_LOCAL_PATH)/$(PNG_LIBRARY_PATH)/Android.mk
 endif
 
 # Build the library
@@ -72,10 +66,7 @@ ifeq ($(SUPPORT_JPG),true)
 endif
 
 ifeq ($(SUPPORT_PNG),true)
-    LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(PNG_LIBRARY_PATH)
     LOCAL_CFLAGS += -DLOAD_PNG
-    LOCAL_STATIC_LIBRARIES += png
-    LOCAL_LDLIBS += -lz
 endif
 
 ifeq ($(SUPPORT_WEBP),true)
