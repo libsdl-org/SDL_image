@@ -32,6 +32,12 @@
 
 #define LODEPNG_NO_COMPILE_ALLOCATORS 1  /* use SDL_malloc instead. */
 #define LODEPNG_NO_COMPILE_DISK 1  /* we do this from SDL_RWops, never filenames. */
+#ifndef SAVE_PNG
+#  define LODEPNG_NO_COMPILE_ENCODER 1
+#endif
+
+/* #define LODEPNG_NO_COMPILE_ANCILLARY_CHUNKS */
+/* #define LODEPNG_NO_COMPILE_ERROR_TEXT */
 #include "external/lodepng/lodepng.c"
 void* lodepng_malloc(size_t size) { return SDL_malloc(size); }
 void* lodepng_realloc(void* ptr, size_t new_size) { return SDL_realloc(ptr, new_size); }
@@ -99,7 +105,11 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 
     error = lodepng_inspect(&w, &h, &state, png, pngsize);
     if (error) {
+#ifdef LODEPNG_COMPILE_ERROR_TEXT
         IMG_SetError("Failed to parse PNG metadata: %s", lodepng_error_text(error));
+#else
+        IMG_SetError("Failed to parse PNG metadata: %d", error);
+#endif
         goto failed;
     }
 
@@ -138,7 +148,11 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
     }
 
     if (error) {
+#ifdef LODEPNG_COMPILE_ERROR_TEXT
         IMG_SetError("Failed to decode PNG file: %s", lodepng_error_text(error));
+#else
+        IMG_SetError("Failed to decode PNG file: %d", error);
+#endif
         goto failed;
     }
 
@@ -298,7 +312,11 @@ static int IMG_SavePNG_RW_internal(SDL_Surface *surface, SDL_RWops *dst)
         }
         if (error) {
             lodepng_state_cleanup(&state);
+#ifdef LODEPNG_COMPILE_ERROR_TEXT
             return IMG_SetError("Couldn't prepare palette: %s", lodepng_error_text(error));
+#else
+            return IMG_SetError("Couldn't prepare palette: %d", error);
+#endif
         }
     } else if (SDL_ISPIXELFORMAT_ALPHA(pixfmt)) {
         state.info_raw.colortype = LCT_RGBA;
@@ -334,7 +352,11 @@ static int IMG_SavePNG_RW_internal(SDL_Surface *surface, SDL_RWops *dst)
     lodepng_state_cleanup(&state);
 
     if (error) {
+#ifdef LODEPNG_COMPILE_ERROR_TEXT
         return IMG_SetError("Couldn't encode PNG: %s", lodepng_error_text(error));
+#else
+        return IMG_SetError("Couldn't encode PNG: %d", error);
+#endif
     }
 
     /* assume SDL_RWwrite will set the error string if necessary. */
