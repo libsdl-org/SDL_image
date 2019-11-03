@@ -28,6 +28,7 @@ An example program 'showimage' is included, with source in showimage.c
 
 JPEG support requires the JPEG library: http://www.ijg.org/
 TIFF support requires the TIFF library: ftp://ftp.sgi.com/graphics/tiff/
+    and the Zlib library: http://www.gzip.org/zlib/
 
 If you have these libraries installed in non-standard places, you can
 try adding those paths to the configure script, e.g.
