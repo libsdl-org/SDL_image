@@ -32,38 +32,7 @@
 
 #define USE_LIBPNG
 
-/*=============================================================================
-        File: SDL_png.c
-     Purpose: A PNG loader and saver for the SDL library
-    Revision:
-  Created by: Philippe Lavoie          (2 November 1998)
-              lavoie@zeus.genie.uottawa.ca
- Modified by:
-
- Copyright notice:
-          Copyright (C) 1998 Philippe Lavoie
-
-          This library is free software; you can redistribute it and/or
-          modify it under the terms of the GNU Library General Public
-          License as published by the Free Software Foundation; either
-          version 2 of the License, or (at your option) any later version.
-
-          This library is distributed in the hope that it will be useful,
-          but WITHOUT ANY WARRANTY; without even the implied warranty of
-          MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-          Library General Public License for more details.
-
-          You should have received a copy of the GNU Library General Public
-          License along with this library; if not, write to the Free
-          Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-
-    Comments: The load and save routine are basically the ones you can find
-             in the example.c file from the libpng distribution.
-
-  Changes:
-    5/17/99 - Modified to use the new SDL data sources - Sam Lantinga
-
-=============================================================================*/
+/* This code was originally written by Philippe Lavoie (2 November 1998) */
 
 #include "SDL_endian.h"
 
