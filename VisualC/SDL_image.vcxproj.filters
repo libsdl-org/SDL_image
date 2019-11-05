@@ -97,6 +97,9 @@
     <CustomBuild Include="external\lib\x64\libtiff-5.dll">
       <Filter>x64</Filter>
     </CustomBuild>
+    <CustomBuild Include="external\lib\x64\libpng16-16.dll">
+      <Filter>x64</Filter>
+    </CustomBuild>
     <CustomBuild Include="external\lib\x64\zlib1.dll">
       <Filter>x64</Filter>
     </CustomBuild>
@@ -122,6 +125,9 @@
       <Filter>x86</Filter>
     </CustomBuild>
     <CustomBuild Include="external\lib\x86\libtiff-5.dll">
+      <Filter>x86</Filter>
+    </CustomBuild>
+    <CustomBuild Include="external\lib\x86\libpng16-16.dll">
       <Filter>x86</Filter>
     </CustomBuild>
     <CustomBuild Include="external\lib\x86\zlib1.dll">

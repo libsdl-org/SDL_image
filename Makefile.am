@@ -28,6 +28,7 @@ libSDL2_image_la_SOURCES =	\
 	IMG_webp.c		\
 	IMG_WIC.c		\
 	$(IMAGEIO_SOURCE)	\
+	miniz.h			\
 	nanosvg.h		\
 	nanosvgrast.h
 

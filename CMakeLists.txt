@@ -29,7 +29,13 @@ if (SUPPORT_JPG)
 endif()
 
 if (SUPPORT_PNG)
+	# missing libpng.vers
+	set(HAVE_LD_VERSION_SCRIPT OFF CACHE BOOL "" FORCE)
 	target_compile_definitions(SDL2_image PRIVATE -DLOAD_PNG)
+
+	add_subdirectory(external/libpng-1.6.37)
+	include_directories(external/libpng-1.6.37)
+	target_link_libraries(SDL2_image PRIVATE png)
 endif()
 
 if (SUPPORT_WEBP)

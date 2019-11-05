@@ -45,6 +45,7 @@
     <ClCompile Include="..\..\IMG_xxx.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\miniz.h" />
     <ClInclude Include="..\SDL_image.h" />
   </ItemGroup>
   <ItemGroup>
