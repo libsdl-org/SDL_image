@@ -27,6 +27,8 @@ To create a surface from an XPM image included in C source, use:
 An example program 'showimage' is included, with source in showimage.c
 
 JPEG support requires the JPEG library: http://www.ijg.org/
+PNG support requires the PNG library: http://www.libpng.org/pub/png/libpng.html
+    and the Zlib library: http://www.gzip.org/zlib/
 TIFF support requires the TIFF library: ftp://ftp.sgi.com/graphics/tiff/
     and the Zlib library: http://www.gzip.org/zlib/
 

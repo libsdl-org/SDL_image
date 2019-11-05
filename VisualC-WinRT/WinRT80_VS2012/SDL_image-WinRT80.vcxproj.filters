@@ -19,6 +19,7 @@
     <ClCompile Include="..\..\IMG_svg.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\miniz.h" />
     <ClInclude Include="..\SDL_image.h" />
   </ItemGroup>
 </Project>
