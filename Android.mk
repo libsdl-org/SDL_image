@@ -14,7 +14,7 @@ PNG_LIBRARY_PATH := external/libpng-1.6.37
 # Enable this if you want to support loading WebP images
 # The library path should be a relative path to this directory.
 SUPPORT_WEBP ?= true
-WEBP_LIBRARY_PATH := external/libwebp-1.0.2
+WEBP_LIBRARY_PATH := external/libwebp-1.0.3
 
 
 # Build the library
