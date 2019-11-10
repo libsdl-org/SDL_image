@@ -1,0 +1,14 @@
+Extra README for release 8d1 of 24-Dec-2013
+==========================================
+
+This release is identical to release 8d with the exception of a fix for 
+CVE 2013-6629 and 2013-6630 (information disclosure).
+
+This release was prepared by Bill Allombert <ballombe@debian.org> by combining
+release 8d with a fix written by Guido Vollbeding for release 9a.
+
+Files changed:
+  jdmarker.c  
+
+Files added:
+  README.8d1   (this file)
