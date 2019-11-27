@@ -87,3 +87,19 @@ endif
 LOCAL_EXPORT_C_INCLUDES += $(LOCAL_PATH)
 
 include $(BUILD_SHARED_LIBRARY)
+
+###########################
+#
+# SDL2_image static library
+#
+###########################
+
+LOCAL_MODULE := SDL2_image_static
+
+LOCAL_MODULE_FILENAME := libSDL2_image
+
+LOCAL_LDLIBS :=
+LOCAL_EXPORT_LDLIBS :=
+
+include $(BUILD_STATIC_LIBRARY)
+
