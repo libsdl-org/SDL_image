@@ -449,6 +449,53 @@ done:   /* Clean up and return */
     return(surface);
 }
 
+#elif defined(USE_STBIMAGE)
+
+extern SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src);
+
+int IMG_InitPNG()
+{
+    /* Nothing to load */
+    return 0;
+}
+
+void IMG_QuitPNG()
+{
+    /* Nothing to unload */
+}
+
+/* FIXME: This is a copypaste from LIBPNG! Pull that out of the ifdefs */
+/* See if an image is contained in a data source */
+int IMG_isPNG(SDL_RWops *src)
+{
+    Sint64 start;
+    int is_PNG;
+    Uint8 magic[4];
+
+    if ( !src ) {
+        return 0;
+    }
+
+    start = SDL_RWtell(src);
+    is_PNG = 0;
+    if ( SDL_RWread(src, magic, 1, sizeof(magic)) == sizeof(magic) ) {
+        if ( magic[0] == 0x89 &&
+             magic[1] == 'P' &&
+             magic[2] == 'N' &&
+             magic[3] == 'G' ) {
+            is_PNG = 1;
+        }
+    }
+    SDL_RWseek(src, start, RW_SEEK_SET);
+    return(is_PNG);
+}
+
+/* Load a PNG type image from an SDL datasource */
+SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
+{
+    return IMG_LoadSTB_RW(src);
+}
+
 #else
 #if _MSC_VER >= 1300
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */

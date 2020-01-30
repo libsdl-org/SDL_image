@@ -551,6 +551,95 @@ done:
     return result;
 }
 
+#elif defined(USE_STBIMAGE)
+
+extern SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src);
+
+int IMG_InitJPG()
+{
+    /* Nothing to load */
+    return 0;
+}
+
+void IMG_QuitJPG()
+{
+    /* Nothing to unload */
+}
+
+/* FIXME: This is a copypaste from JPEGLIB! Pull that out of the ifdefs */
+/* Define this for quicker (but less perfect) JPEG identification */
+#define FAST_IS_JPEG
+/* See if an image is contained in a data source */
+int IMG_isJPG(SDL_RWops *src)
+{
+    Sint64 start;
+    int is_JPG;
+    int in_scan;
+    Uint8 magic[4];
+
+    /* This detection code is by Steaphan Greene <stea@cs.binghamton.edu> */
+    /* Blame me, not Sam, if this doesn't work right. */
+    /* And don't forget to report the problem to the the sdl list too! */
+
+    if ( !src )
+        return 0;
+    start = SDL_RWtell(src);
+    is_JPG = 0;
+    in_scan = 0;
+    if ( SDL_RWread(src, magic, 2, 1) ) {
+        if ( (magic[0] == 0xFF) && (magic[1] == 0xD8) ) {
+            is_JPG = 1;
+            while (is_JPG == 1) {
+                if(SDL_RWread(src, magic, 1, 2) != 2) {
+                    is_JPG = 0;
+                } else if( (magic[0] != 0xFF) && (in_scan == 0) ) {
+                    is_JPG = 0;
+                } else if( (magic[0] != 0xFF) || (magic[1] == 0xFF) ) {
+                    /* Extra padding in JPEG (legal) */
+                    /* or this is data and we are scanning */
+                    SDL_RWseek(src, -1, RW_SEEK_CUR);
+                } else if(magic[1] == 0xD9) {
+                    /* Got to end of good JPEG */
+                    break;
+                } else if( (in_scan == 1) && (magic[1] == 0x00) ) {
+                    /* This is an encoded 0xFF within the data */
+                } else if( (magic[1] >= 0xD0) && (magic[1] < 0xD9) ) {
+                    /* These have nothing else */
+                } else if(SDL_RWread(src, magic+2, 1, 2) != 2) {
+                    is_JPG = 0;
+                } else {
+                    /* Yes, it's big-endian */
+                    Sint64 innerStart;
+                    Uint32 size;
+                    Sint64 end;
+                    innerStart = SDL_RWtell(src);
+                    size = (magic[2] << 8) + magic[3];
+                    end = SDL_RWseek(src, size-2, RW_SEEK_CUR);
+                    if ( end != innerStart + size - 2 ) is_JPG = 0;
+                    if ( magic[1] == 0xDA ) {
+                        /* Now comes the actual JPEG meat */
+#ifdef  FAST_IS_JPEG
+                        /* Ok, I'm convinced.  It is a JPEG. */
+                        break;
+#else
+                        /* I'm not convinced.  Prove it! */
+                        in_scan = 1;
+#endif
+                    }
+                }
+            }
+        }
+    }
+    SDL_RWseek(src, start, RW_SEEK_SET);
+    return(is_JPG);
+}
+
+/* Load a JPEG type image from an SDL datasource */
+SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
+{
+    return IMG_LoadSTB_RW(src);
+}
+
 #else
 #if _MSC_VER >= 1300
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
@@ -587,6 +676,81 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 
 #ifdef SAVE_JPG
 
+#if !defined(USE_JPEGLIB) && defined(USE_TINYJPEG)
+
+#define assert SDL_assert
+#define ceilf SDL_ceilf
+#define floorf SDL_floorf
+#define memcpy SDL_memcpy
+
+#define tje_log SDL_Log
+#define TJE_IMPLEMENTATION
+#include "tiny_jpeg.h"
+
+static void IMG_SaveJPG_RW_tinyjpeg_callback(void* context, void* data, int size)
+{
+    SDL_RWwrite((SDL_RWops*) context, data, 1, size);
+}
+
+static int IMG_SaveJPG_RW_tinyjpeg(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quality)
+{
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+    static const Uint32 jpg_format = SDL_PIXELFORMAT_RGB24;
+#else
+    static const Uint32 jpg_format = SDL_PIXELFORMAT_BGR24;
+#endif
+    SDL_Surface* jpeg_surface = surface;
+    int result = -1;
+
+    if (!dst) {
+        SDL_SetError("Passed NULL dst");
+        goto done;
+    }
+
+    /* Convert surface to format we can save */
+    if (surface->format->format != jpg_format) {
+        jpeg_surface = SDL_ConvertSurfaceFormat(surface, jpg_format, 0);
+        if (!jpeg_surface) {
+            goto done;
+        }
+    }
+
+    /* Quality for tinyjpeg is from 1-3:
+     * 0  - 33  - Lowest quality
+     * 34 - 66  - Middle quality
+     * 67 - 100 - Highest quality
+     */
+    if      (quality < 34) quality = 1;
+    else if (quality < 67) quality = 2;
+    else                   quality = 3;
+
+    result = tje_encode_with_func(
+        IMG_SaveJPG_RW_tinyjpeg_callback,
+        dst,
+        quality,
+        jpeg_surface->w,
+        jpeg_surface->h,
+        3,
+        jpeg_surface->pixels
+    ) - 1; /* tinyjpeg returns 0 on error, 1 on success */
+
+    if (jpeg_surface != surface) {
+        SDL_FreeSurface(jpeg_surface);
+    }
+
+    if (result < 0) {
+        SDL_SetError("tinyjpeg error");
+    }
+
+done:
+    if (freedst) {
+        SDL_RWclose(dst);
+    }
+    return result;
+}
+
+#endif /* !defined(USE_JPEGLIB) && defined(USE_TINYJPEG) */
+
 int IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality)
 {
     SDL_RWops *dst = SDL_RWFromFile(file, "wb");
@@ -601,8 +765,10 @@ int IMG_SaveJPG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst, int qualit
 {
 #ifdef USE_JPEGLIB
     return IMG_SaveJPG_RW_jpeglib(surface, dst, freedst, quality);
+#elif USE_TINYJPEG
+    return IMG_SaveJPG_RW_tinyjpeg(surface, dst, freedst, quality);
 #else
-    return IMG_SetError("SDL_image not built with jpeglib, saving not supported");
+    return IMG_SetError("SDL_image not built with jpeglib/tinyjpeg, saving not supported");
 #endif
 }
 
