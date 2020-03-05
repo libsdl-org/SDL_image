@@ -269,6 +269,9 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
      */
 
 #ifdef PNG_SETJMP_SUPPORTED
+#ifdef _MSC_VER
+#pragma warning(disable:4611)   /* warning C4611: interaction between '_setjmp' and C++ object destruction is non-portable */
+#endif
 #ifndef LIBPNG_VERSION_12
     if ( setjmp(*lib.png_set_longjmp_fn(png_ptr, longjmp, sizeof (jmp_buf))) )
 #else
@@ -501,6 +504,7 @@ static void png_write_data(png_structp png_ptr, png_bytep src, png_size_t size)
 
 static void png_flush_data(png_structp png_ptr)
 {
+    (void)png_ptr;
 }
 
 static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freedst)
@@ -543,7 +547,7 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
             const int ncolors = palette->ncolors;
             int i;
 
-            color_ptr = SDL_malloc(sizeof(png_colorp) * ncolors);
+            color_ptr = (png_colorp)SDL_malloc(sizeof(png_colorp) * ncolors);
             if (color_ptr == NULL)
             {
                 lib.png_destroy_write_struct(&png_ptr, &info_ptr);
