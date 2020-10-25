@@ -1,6 +1,10 @@
 2.0.6:
 Sam Lantinga - Thu Oct  3 18:09:17 PDT 2019
  * Added support for loading animated GIFs
+Sylvain Becker Sat Aug 31 22:55:31 2019
+ * LoadBMP() now loads files using SDL2.
+Ozkan Sezer - Mon Aug 19 21:35:04 2019
+ * Allow using libwebpdecoder instead libwebp.
 
 2.0.5:
 Sam Lantinga - Wed Jun 19 07:30:51 PDT 2019
