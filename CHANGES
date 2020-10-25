@@ -1,3 +1,62 @@
+1.2.13:
+- bmp: reject files with zero bpp (bug #4536).
+- bmp: validate image size when loading (bug #4538, CVE-2019-13616)
+- bmp: reject 2, 3, 5, 6, 7-bpp images (bug #4498, CVE-2019-7635)
+- bmp: reject images with pixel colors out the palette (bug #4498,
+  CVE-2019-7636, CVE-2019-7638)
+- bmp: don't overflow palette buffer with bogus biClrUsed values.
+- gif: fix detection of truncated files in GetCode (bug #4802)
+- gif: don't get into infinite loops on truncated files.
+- gif: fixed loading gifs on multiple threads returning garbage and
+  crash (bug #4451)
+- gif: report error on bogus LWZ data instead of overflowing buffer.
+- pcx: fixed heap buffer overlow exploit (TALOS-2019-0841)
+- pcx: fixed reading invalid data from the file when bpl is -1
+  (TALOS-2019-0821)
+- pcx: don't overflow buffer if bytes-per-line is less than img width.
+- xcf: prevent infinite loop and/or buffer overflow on bogus data.
+  check for some potential integer overflows.
+- xcf: plug memory leak when parsing colormap of XCF file. (TALOS-
+  2019-0842)
+- xcf: avoid infinite loop in read_xcf_header()
+- xcf: fixed typo in the xcf decoder (bug 1801)
+- xcf: only load 1st level in XCF files (like GIMP)
+- xcf: support XCG files v11+ with 64bits offsets
+- xcf: fixed memory leak issues (bugs #2010, #2318)
+- xcf: fixed a security vulnerability
+- xcf: deal with bogus data in rle tile decoding.
+- xcf: check if there's sufficient data in the stream before allocating
+- xpm: fixed a memory leak issue (bug #1991)
+- xpm: fixed image color code code execution vulnerability (TALOS-
+  2019-0843)
+- xpm: fixed image colorhash parsing code execution vulnerability
+  (TALOS-2019-0844)
+- xpm: fixed memory leak issue (bug #1831)
+- xpm: fixed crash when loading some files (missing NULL checks,
+  bugs #2454, 2965)
+- pnm: don't get into infinite loops on truncated files. improve
+  checks when loading file.
+- png: fixed setting colorkey for indexed images
+- tif: fixed memory leaks in case of errors (bug #3474)
+- tif: removed an unnecessary loop (bug #3475)
+- webp: update to accomodate libwebp abi changes since v0.1.99.
+- webp: allow linking / dynamic loading libwebpdecoder instead of
+  libwebp.
+- webp: fixed a memory leak issue (bug #2295)
+- webp: support for big endian systems
+- ico: reject obviously incorrect image sizes.
+- ImageIO (macOS): fixed image corruption (bug #1413)
+- ImageIO (macOS): fixed failure to reset the file pointer when
+  detecting file types
+- lbm: fixed IMG_Load() refusing to load valid ILBM image files
+  (bug #4461)
+- lbm: use correct variable to check color planes.
+- lbm: fail to load images with unsupported/bogus color depth.
+- lbm: don't overflow static colormap buffer.
+- Fixed crash if some initialization succeeded and some didn't.
+- Build fixes / updates.
+- Updated external libraries with multiple bug/security fixes.
+
 1.2.12:
 Sam Lantinga - Thu Jan 19 23:18:09 EST 2012
  * Fixed regression in 1.2.11 loading 8-bit PNG images with libpng
