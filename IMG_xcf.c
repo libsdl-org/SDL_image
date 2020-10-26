@@ -336,7 +336,10 @@ static xcf_header * read_xcf_header (SDL_RWops * src) {
   h->width       = SDL_ReadBE32 (src);
   h->height      = SDL_ReadBE32 (src);
   h->image_type  = SDL_ReadBE32 (src);
-  h->file_version = (h->sign[10] - '0') * 100 + (h->sign[11] - '0') * 10 + (h->sign[12] - '0');
+  if (h->sign[9] == 'v' && h->sign[10] >= '0' && h->sign[10] <= '9' && h->sign[11] >= '0' && h->sign[11] <= '9' && h->sign[12] >= '0' && h->sign[12] <= '9')
+    h->file_version = (h->sign[10] - '0') * 100 + (h->sign[11] - '0') * 10 + (h->sign[12] - '0');
+  else
+    h->file_version = 0;
 #ifdef DEBUG
   printf ("XCF signature : %.14s (version %u)\n", h->sign, h->file_version);
   printf (" (%u,%u) type=%u\n", h->width, h->height, h->image_type);
