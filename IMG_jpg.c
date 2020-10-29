@@ -21,10 +21,10 @@
 
 /* This is a JPEG image file loading framework */
 
+#include "SDL_image.h"
+
 #include <stdio.h>
 #include <setjmp.h>
-
-#include "SDL_image.h"
 
 #if !(defined(__APPLE__) || defined(SDL_IMAGE_USE_WIC_BACKEND)) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
 
