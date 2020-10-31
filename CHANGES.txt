@@ -1,4 +1,6 @@
 2.0.6:
+Thomas Bernard - Mon Oct 26 23:32:10 2020
+ * Fixer XCF regression introduced in 2.0.5
 Sam Lantinga - Thu Oct  3 18:09:17 PDT 2019
  * Added support for loading animated GIFs
 Sylvain Becker Sat Aug 31 22:55:31 2019
