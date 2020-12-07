@@ -37,6 +37,7 @@ EXTRA_DIST =			\
 	debian			\
 	external		\
 	version.rc		\
+	Makefile.os2		\
 	VisualC			\
 	VisualCE		\
 	VisualC-WinRT	\
