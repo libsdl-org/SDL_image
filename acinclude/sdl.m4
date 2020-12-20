@@ -5,6 +5,8 @@
 # stolen from Manish Singh
 # Shamelessly stolen from Owen Taylor
 
+# serial 2
+
 dnl AM_PATH_SDL([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for SDL, and define SDL_CFLAGS and SDL_LIBS
 dnl
@@ -22,12 +24,9 @@ AC_ARG_ENABLE(sdltest, [  --disable-sdltest       Do not try to compile and run 
   min_sdl_version=ifelse([$1], ,1.2.0,$1)
 
   if test "x$sdl_prefix$sdl_exec_prefix" = x ; then
-    PKG_CHECK_MODULES(SDL, [sdl >= $min_sdl_version],
+    PKG_CHECK_MODULES([SDL], [sdl >= $min_sdl_version],
            [sdl_pc=yes],
-           [dnl
-             AC_MSG_RESULT(no)
-             sdl_pc=no
-           ])
+           [sdl_pc=no])
   else
     sdl_pc=no
     if test x$sdl_exec_prefix != x ; then
