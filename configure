@@ -13220,15 +13220,9 @@ fi
 
 	{ $as_echo "$as_me:$LINENO: result: no" >&5
 $as_echo "no" >&6; }
-                             { $as_echo "$as_me:$LINENO: result: no" >&5
-$as_echo "no" >&6; }
-             sdl_pc=no
-
+                sdl_pc=no
 elif test $pkg_failed = untried; then
-	             { $as_echo "$as_me:$LINENO: result: no" >&5
-$as_echo "no" >&6; }
-             sdl_pc=no
-
+	sdl_pc=no
 else
 	SDL_CFLAGS=$pkg_cv_SDL_CFLAGS
 	SDL_LIBS=$pkg_cv_SDL_LIBS
