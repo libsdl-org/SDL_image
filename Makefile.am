@@ -39,7 +39,6 @@ EXTRA_DIST =			\
 	version.rc		\
 	Makefile.os2		\
 	VisualC			\
-	VisualCE		\
 	VisualC-WinRT	\
 	Xcode			\
 	Xcode-iOS		\
