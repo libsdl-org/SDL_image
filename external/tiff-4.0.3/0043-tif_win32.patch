@@ -1,0 +1,29 @@
+--- tiff-4.0.3/libtiff/tif_win32.c~
++++ tiff-4.0.3/libtiff/tif_win32.c
+@@ -214,7 +214,7 @@ TIFFFdOpen(int ifd, const char* name, co
+ 			break;
+ 		}
+ 	}
+-	tif = TIFFClientOpen(name, mode, (thandle_t)ifd,
++	tif = TIFFClientOpen(name, mode, (thandle_t)(INT_PTR)ifd,
+ 			_tiffReadProc, _tiffWriteProc,
+ 			_tiffSeekProc, _tiffCloseProc, _tiffSizeProc,
+ 			fSuppressMap ? _tiffDummyMapProc : _tiffMapProc,
+@@ -259,7 +259,7 @@ TIFFOpen(const char* name, const char* m
+ 		return ((TIFF *)0);
+ 	}
+ 
+-	tif = TIFFFdOpen((int)fd, name, mode);
++	tif = TIFFFdOpen((int)(INT_PTR)fd, name, mode);
+ 	if(!tif)
+ 		CloseHandle(fd);
+ 	return tif;
+@@ -314,7 +314,7 @@ TIFFOpenW(const wchar_t* name, const cha
+ 				    NULL, NULL);
+ 	}
+ 
+-	tif = TIFFFdOpen((int)fd,
++	tif = TIFFFdOpen((int)(INT_PTR)fd,
+ 			 (mbname != NULL) ? mbname : "<unknown>", mode);
+ 	if(!tif)
+ 		CloseHandle(fd);

@@ -128,9 +128,11 @@ _tiffCloseProc(thandle_t fd)
 static uint64
 _tiffSizeProc(thandle_t fd)
 {
-	ULARGE_INTEGER m;
-	m.LowPart=GetFileSize(fd,&m.HighPart);
-	return(m.QuadPart);
+	LARGE_INTEGER m;
+	if (GetFileSizeEx(fd,&m))
+		return(m.QuadPart);
+	else
+		return(0);
 }
 
 static int
@@ -162,7 +164,7 @@ _tiffMapProc(thandle_t fd, void** pbase, toff_t* psize)
 
 	size = _tiffSizeProc(fd);
 	sizem = (tmsize_t)size;
-	if ((uint64)sizem!=size)
+	if (!size || (uint64)sizem!=size)
 		return (0);
 
 	/* By passing in 0 for the maximum file size, it specifies that we
@@ -214,7 +216,7 @@ TIFFFdOpen(int ifd, const char* name, const char* mode)
 			break;
 		}
 	}
-	tif = TIFFClientOpen(name, mode, (thandle_t)ifd,
+	tif = TIFFClientOpen(name, mode, (thandle_t)(INT_PTR)ifd,
 			_tiffReadProc, _tiffWriteProc,
 			_tiffSeekProc, _tiffCloseProc, _tiffSizeProc,
 			fSuppressMap ? _tiffDummyMapProc : _tiffMapProc,
@@ -259,7 +261,7 @@ TIFFOpen(const char* name, const char* mode)
 		return ((TIFF *)0);
 	}
 
-	tif = TIFFFdOpen((int)fd, name, mode);
+	tif = TIFFFdOpen((int)(INT_PTR)fd, name, mode);
 	if(!tif)
 		CloseHandle(fd);
 	return tif;
@@ -314,7 +316,7 @@ TIFFOpenW(const wchar_t* name, const char* mode)
 				    NULL, NULL);
 	}
 
-	tif = TIFFFdOpen((int)fd,
+	tif = TIFFFdOpen((int)(INT_PTR)fd,
 			 (mbname != NULL) ? mbname : "<unknown>", mode);
 	if(!tif)
 		CloseHandle(fd);
@@ -381,60 +383,21 @@ _TIFFmemcmp(const void* p1, const void* p2, tmsize_t c)
 static void
 Win32WarningHandler(const char* module, const char* fmt, va_list ap)
 {
-#ifndef TIF_PLATFORM_CONSOLE
-	LPTSTR szTitle;
-	LPTSTR szTmp;
-	LPCTSTR szTitleText = "%s Warning";
-	LPCTSTR szDefaultModule = "LIBTIFF";
-	LPCTSTR szTmpModule = (module == NULL) ? szDefaultModule : module;
-        SIZE_T nBufSize = (strlen(szTmpModule) +
-                        strlen(szTitleText) + strlen(fmt) + 256)*sizeof(char);
-
-	if ((szTitle = (LPTSTR)LocalAlloc(LMEM_FIXED, nBufSize)) == NULL)
-		return;
-	sprintf(szTitle, szTitleText, szTmpModule);
-	szTmp = szTitle + (strlen(szTitle)+2)*sizeof(char);
-	vsnprintf(szTmp, nBufSize-(strlen(szTitle)+2)*sizeof(char), fmt, ap);
-	MessageBoxA(GetFocus(), szTmp, szTitle, MB_OK | MB_ICONINFORMATION);
-	LocalFree(szTitle);
-
-	return;
-#else
 	if (module != NULL)
 		fprintf(stderr, "%s: ", module);
 	fprintf(stderr, "Warning, ");
 	vfprintf(stderr, fmt, ap);
 	fprintf(stderr, ".\n");
-#endif        
 }
 TIFFErrorHandler _TIFFwarningHandler = Win32WarningHandler;
 
 static void
 Win32ErrorHandler(const char* module, const char* fmt, va_list ap)
 {
-#ifndef TIF_PLATFORM_CONSOLE
-	LPTSTR szTitle;
-	LPTSTR szTmp;
-	LPCTSTR szTitleText = "%s Error";
-	LPCTSTR szDefaultModule = "LIBTIFF";
-	LPCTSTR szTmpModule = (module == NULL) ? szDefaultModule : module;
-        SIZE_T nBufSize = (strlen(szTmpModule) +
-                        strlen(szTitleText) + strlen(fmt) + 256)*sizeof(char);
-
-	if ((szTitle = (LPTSTR)LocalAlloc(LMEM_FIXED, nBufSize)) == NULL)
-		return;
-	sprintf(szTitle, szTitleText, szTmpModule);
-	szTmp = szTitle + (strlen(szTitle)+2)*sizeof(char);
-	vsnprintf(szTmp, nBufSize-(strlen(szTitle)+2)*sizeof(char), fmt, ap);
-	MessageBoxA(GetFocus(), szTmp, szTitle, MB_OK | MB_ICONEXCLAMATION);
-	LocalFree(szTitle);
-	return;
-#else
 	if (module != NULL)
 		fprintf(stderr, "%s: ", module);
 	vfprintf(stderr, fmt, ap);
 	fprintf(stderr, ".\n");
-#endif        
 }
 TIFFErrorHandler _TIFFerrorHandler = Win32ErrorHandler;
 
