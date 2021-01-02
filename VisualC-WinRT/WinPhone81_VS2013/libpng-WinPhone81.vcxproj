@@ -19,31 +19,31 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\external\libpng-1.6.32\png.h" />
-    <ClInclude Include="..\..\external\libpng-1.6.32\pngconf.h" />
-    <ClInclude Include="..\..\external\libpng-1.6.32\pngdebug.h" />
-    <ClInclude Include="..\..\external\libpng-1.6.32\pnginfo.h" />
-    <ClInclude Include="..\..\external\libpng-1.6.32\pnglibconf.h" />
-    <ClInclude Include="..\..\external\libpng-1.6.32\pngpriv.h" />
-    <ClInclude Include="..\..\external\libpng-1.6.32\pngstruct.h" />
+    <ClInclude Include="..\..\external\libpng-1.6.37\png.h" />
+    <ClInclude Include="..\..\external\libpng-1.6.37\pngconf.h" />
+    <ClInclude Include="..\..\external\libpng-1.6.37\pngdebug.h" />
+    <ClInclude Include="..\..\external\libpng-1.6.37\pnginfo.h" />
+    <ClInclude Include="..\..\external\libpng-1.6.37\pnglibconf.h" />
+    <ClInclude Include="..\..\external\libpng-1.6.37\pngpriv.h" />
+    <ClInclude Include="..\..\external\libpng-1.6.37\pngstruct.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\external\libpng-1.6.32\png.c" />
-    <ClCompile Include="..\..\external\libpng-1.6.32\pngerror.c" />
-    <ClCompile Include="..\..\external\libpng-1.6.32\pngget.c" />
-    <ClCompile Include="..\..\external\libpng-1.6.32\pngmem.c" />
-    <ClCompile Include="..\..\external\libpng-1.6.32\pngpread.c" />
-    <ClCompile Include="..\..\external\libpng-1.6.32\pngread.c" />
-    <ClCompile Include="..\..\external\libpng-1.6.32\pngrio.c" />
-    <ClCompile Include="..\..\external\libpng-1.6.32\pngrtran.c" />
-    <ClCompile Include="..\..\external\libpng-1.6.32\pngrutil.c" />
-    <ClCompile Include="..\..\external\libpng-1.6.32\pngset.c" />
-    <ClCompile Include="..\..\external\libpng-1.6.32\pngtest.c" />
-    <ClCompile Include="..\..\external\libpng-1.6.32\pngtrans.c" />
-    <ClCompile Include="..\..\external\libpng-1.6.32\pngwio.c" />
-    <ClCompile Include="..\..\external\libpng-1.6.32\pngwrite.c" />
-    <ClCompile Include="..\..\external\libpng-1.6.32\pngwtran.c" />
-    <ClCompile Include="..\..\external\libpng-1.6.32\pngwutil.c" />
+    <ClCompile Include="..\..\external\libpng-1.6.37\png.c" />
+    <ClCompile Include="..\..\external\libpng-1.6.37\pngerror.c" />
+    <ClCompile Include="..\..\external\libpng-1.6.37\pngget.c" />
+    <ClCompile Include="..\..\external\libpng-1.6.37\pngmem.c" />
+    <ClCompile Include="..\..\external\libpng-1.6.37\pngpread.c" />
+    <ClCompile Include="..\..\external\libpng-1.6.37\pngread.c" />
+    <ClCompile Include="..\..\external\libpng-1.6.37\pngrio.c" />
+    <ClCompile Include="..\..\external\libpng-1.6.37\pngrtran.c" />
+    <ClCompile Include="..\..\external\libpng-1.6.37\pngrutil.c" />
+    <ClCompile Include="..\..\external\libpng-1.6.37\pngset.c" />
+    <ClCompile Include="..\..\external\libpng-1.6.37\pngtest.c" />
+    <ClCompile Include="..\..\external\libpng-1.6.37\pngtrans.c" />
+    <ClCompile Include="..\..\external\libpng-1.6.37\pngwio.c" />
+    <ClCompile Include="..\..\external\libpng-1.6.37\pngwrite.c" />
+    <ClCompile Include="..\..\external\libpng-1.6.37\pngwtran.c" />
+    <ClCompile Include="..\..\external\libpng-1.6.37\pngwutil.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="zlib-WinPhone81.vcxproj">
