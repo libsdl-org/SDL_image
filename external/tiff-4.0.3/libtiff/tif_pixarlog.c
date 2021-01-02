@@ -637,26 +637,20 @@ PixarLogGuessDataFmt(TIFFDirectory *td)
 static tmsize_t
 multiply_ms(tmsize_t m1, tmsize_t m2)
 {
-	tmsize_t bytes = m1 * m2;
-
-	if (m1 && bytes / m1 != m2)
-		bytes = 0;
-
-	return bytes;
+        return _TIFFMultiplySSize(NULL, m1, m2, NULL);
 }
 
 static tmsize_t
 add_ms(tmsize_t m1, tmsize_t m2)
 {
-	tmsize_t bytes = m1 + m2;
-
+        assert(m1 >= 0 && m2 >= 0);
 	/* if either input is zero, assume overflow already occurred */
 	if (m1 == 0 || m2 == 0)
-		bytes = 0;
-	else if (bytes <= m1 || bytes <= m2)
-		bytes = 0;
+		return 0;
+	else if (m1 > TIFF_TMSIZE_T_MAX - m2)
+		return 0;
 
-	return bytes;
+	return m1 + m2;
 }
 
 static int
