@@ -12173,7 +12173,7 @@ case "$host" in
     *-*-beos*)
         ac_default_prefix=/boot/develop/tools/gnupro
         ;;
-    *-*-cygwin* | *-*-mingw32*)
+    *-*-cygwin* | *-*-mingw*)
         if test "$build" != "$host"; then # cross-compiling
             # Default cross-compile location
             ac_default_prefix=/usr/local/cross-tools/$host
@@ -12436,7 +12436,7 @@ fi
             *-*-darwin*)
                 jpg_lib=`find_lib libjpeg.dylib`
                 ;;
-            *-*-cygwin* | *-*-mingw32*)
+            *-*-cygwin* | *-*-mingw*)
                 jpg_lib=`find_lib "libjpeg*.dll"`
                 ;;
             *)
@@ -12756,7 +12756,7 @@ fi
             *-*-darwin*)
                 png_lib=`find_lib libpng.dylib`
                 ;;
-            *-*-cygwin* | *-*-mingw32*)
+            *-*-cygwin* | *-*-mingw*)
                 png_lib=`find_lib "libpng*.dll"`
                 ;;
             *)
@@ -12829,7 +12829,7 @@ fi
             *-*-darwin*)
                 tif_lib=`find_lib libtiff.dylib`
                 ;;
-            *-*-cygwin* | *-*-mingw32*)
+            *-*-cygwin* | *-*-mingw*)
                 tif_lib=`find_lib "libtiff-*.dll"`
                 ;;
             *)
@@ -13042,7 +13042,7 @@ fi
             *-*-darwin*)
                 webp_lib=`find_lib lib$webplib.dylib`
                 ;;
-            *-*-cygwin* | *-*-mingw32*)
+            *-*-cygwin* | *-*-mingw*)
                 webp_lib=`find_lib "lib$webplib-*.dll"`
                 ;;
             *)

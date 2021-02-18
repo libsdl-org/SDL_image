@@ -62,7 +62,7 @@ case "$host" in
     *-*-beos*)
         ac_default_prefix=/boot/develop/tools/gnupro
         ;;
-    *-*-cygwin* | *-*-mingw32*)
+    *-*-cygwin* | *-*-mingw*)
         if test "$build" != "$host"; then # cross-compiling
             # Default cross-compile location
             ac_default_prefix=/usr/local/cross-tools/$host
@@ -168,7 +168,7 @@ if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_image
             *-*-darwin*)
                 jpg_lib=[`find_lib libjpeg.dylib`]
                 ;;
-            *-*-cygwin* | *-*-mingw32*)
+            *-*-cygwin* | *-*-mingw*)
                 jpg_lib=[`find_lib "libjpeg*.dll"`]
                 ;;
             *)
@@ -205,7 +205,7 @@ if test x$enable_png = xyes -a x$enable_imageio != xyes; then
             *-*-darwin*)
                 png_lib=[`find_lib libpng.dylib`]
                 ;;
-            *-*-cygwin* | *-*-mingw32*)
+            *-*-cygwin* | *-*-mingw*)
                 png_lib=[`find_lib "libpng*.dll"`]
                 ;;
             *)
@@ -231,7 +231,7 @@ if test x$enable_tif = xyes -a x$enable_imageio != xyes; then
             *-*-darwin*)
                 tif_lib=[`find_lib libtiff.dylib`]
                 ;;
-            *-*-cygwin* | *-*-mingw32*)
+            *-*-cygwin* | *-*-mingw*)
                 tif_lib=[`find_lib "libtiff-*.dll"`]
                 ;;
             *)
@@ -273,7 +273,7 @@ if test x$enable_webp = xyes; then
             *-*-darwin*)
                 webp_lib=[`find_lib lib$webplib.dylib`]
                 ;;
-            *-*-cygwin* | *-*-mingw32*)
+            *-*-cygwin* | *-*-mingw*)
                 webp_lib=[`find_lib "lib$webplib-*.dll"`]
                 ;;
             *)
@@ -374,7 +374,7 @@ SDL_VERSION=2.0.8
 AC_SUBST(SDL_VERSION)
 AM_PATH_SDL2($SDL_VERSION,
             :,
-           AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
+            AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
 )
 CFLAGS="$CFLAGS $SDL_CFLAGS"
 LIBS="$LIBS $SDL_LIBS"
