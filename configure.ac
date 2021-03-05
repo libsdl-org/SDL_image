@@ -1,5 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(README.txt)
+AC_INIT
+AC_CONFIG_MACRO_DIR([acinclude])
+AC_CONFIG_SRCDIR([IMG.c])
 
 dnl Set various version strings - taken gratefully from the GTk sources
 
@@ -45,7 +47,6 @@ dnl Setup for automake
 AM_INIT_AUTOMAKE(SDL2_image, $VERSION)
 
 dnl Check for tools
-AC_PROG_LIBTOOL
 AC_PROG_CC
 AC_PROG_OBJC
 AC_C_INLINE
@@ -77,7 +78,7 @@ case "$host" in
         fi
         ;;
     *-*-darwin*)
-        AC_ARG_ENABLE([imageio], [AC_HELP_STRING([--enable-imageio], [use native Mac OS X frameworks for loading images [default=yes]])],
+        AC_ARG_ENABLE([imageio], [AS_HELP_STRING([--enable-imageio], [use native Mac OS X frameworks for loading images [default=yes]])],
                       [], [enable_imageio=yes])
         dnl Show a message when we use ImageIO support so it's not a surprise
         AC_MSG_CHECKING([for ImageIO support])
@@ -116,43 +117,43 @@ find_lib()
 }
 
 dnl Check command-line options
-AC_ARG_ENABLE([bmp], [AC_HELP_STRING([--enable-bmp], [support loading BMP/ICO/CUR images [default=yes]])],
+AC_ARG_ENABLE([bmp], [AS_HELP_STRING([--enable-bmp], [support loading BMP/ICO/CUR images [default=yes]])],
  [], [enable_bmp=yes])
-AC_ARG_ENABLE([gif], [AC_HELP_STRING([--enable-gif], [support loading GIF images [default=yes]])],
+AC_ARG_ENABLE([gif], [AS_HELP_STRING([--enable-gif], [support loading GIF images [default=yes]])],
  [], [enable_gif=yes])
-AC_ARG_ENABLE([jpg], [AC_HELP_STRING([--enable-jpg], [support loading JPG images [default=yes]])],
+AC_ARG_ENABLE([jpg], [AS_HELP_STRING([--enable-jpg], [support loading JPG images [default=yes]])],
  [], [enable_jpg=yes])
-AC_ARG_ENABLE([jpg-shared], AC_HELP_STRING([--enable-jpg-shared], [dynamically load JPG support [[default=yes]]]),
+AC_ARG_ENABLE([jpg-shared], AS_HELP_STRING([--enable-jpg-shared], [dynamically load JPG support [[default=yes]]]),
  [], [enable_jpg_shared=yes])
-AC_ARG_ENABLE([lbm], [AC_HELP_STRING([--enable-lbm], [support loading LBM images [default=yes]])],
+AC_ARG_ENABLE([lbm], [AS_HELP_STRING([--enable-lbm], [support loading LBM images [default=yes]])],
  [], [enable_lbm=yes])
-AC_ARG_ENABLE([pcx], [AC_HELP_STRING([--enable-pcx], [support loading PCX images [default=yes]])],
+AC_ARG_ENABLE([pcx], [AS_HELP_STRING([--enable-pcx], [support loading PCX images [default=yes]])],
  [], [enable_pcx=yes])
-AC_ARG_ENABLE([png], [AC_HELP_STRING([--enable-png], [support loading PNG images [default=yes]])],
+AC_ARG_ENABLE([png], [AS_HELP_STRING([--enable-png], [support loading PNG images [default=yes]])],
  [], [enable_png=yes])
-AC_ARG_ENABLE([png-shared], AC_HELP_STRING([--enable-png-shared], [dynamically load PNG support [[default=yes]]]),
+AC_ARG_ENABLE([png-shared], AS_HELP_STRING([--enable-png-shared], [dynamically load PNG support [[default=yes]]]),
  [], [enable_png_shared=yes])
-AC_ARG_ENABLE([pnm], [AC_HELP_STRING([--enable-pnm], [support loading PNM images [default=yes]])],
+AC_ARG_ENABLE([pnm], [AS_HELP_STRING([--enable-pnm], [support loading PNM images [default=yes]])],
  [], [enable_pnm=yes])
-AC_ARG_ENABLE([svg], [AC_HELP_STRING([--enable-svg], [support loading SVG images [default=yes]])],
+AC_ARG_ENABLE([svg], [AS_HELP_STRING([--enable-svg], [support loading SVG images [default=yes]])],
  [], [enable_svg=yes])
-AC_ARG_ENABLE([tga], [AC_HELP_STRING([--enable-tga], [support loading TGA images [default=yes]])],
+AC_ARG_ENABLE([tga], [AS_HELP_STRING([--enable-tga], [support loading TGA images [default=yes]])],
  [], [enable_tga=yes])
-AC_ARG_ENABLE([tif], [AC_HELP_STRING([--enable-tif], [support loading TIFF images [default=yes]])],
+AC_ARG_ENABLE([tif], [AS_HELP_STRING([--enable-tif], [support loading TIFF images [default=yes]])],
  [], [enable_tif=yes])
-AC_ARG_ENABLE([tif-shared], AC_HELP_STRING([--enable-tif-shared], [dynamically load TIFF support [[default=yes]]]),
+AC_ARG_ENABLE([tif-shared], AS_HELP_STRING([--enable-tif-shared], [dynamically load TIFF support [[default=yes]]]),
  [], [enable_tif_shared=yes])
-AC_ARG_ENABLE([xcf], [AC_HELP_STRING([--enable-xcf], [support loading XCF images [default=yes]])],
+AC_ARG_ENABLE([xcf], [AS_HELP_STRING([--enable-xcf], [support loading XCF images [default=yes]])],
  [], [enable_xcf=yes])
-AC_ARG_ENABLE([xpm], [AC_HELP_STRING([--enable-xpm], [support loading XPM images [default=yes]])],
+AC_ARG_ENABLE([xpm], [AS_HELP_STRING([--enable-xpm], [support loading XPM images [default=yes]])],
  [], [enable_xpm=yes])
-AC_ARG_ENABLE([xv], [AC_HELP_STRING([--enable-xv], [support loading XV images [default=yes]])],
+AC_ARG_ENABLE([xv], [AS_HELP_STRING([--enable-xv], [support loading XV images [default=yes]])],
  [], [enable_xv=yes])
-AC_ARG_ENABLE([webp], [AC_HELP_STRING([--enable-webp], [support loading WEBP images [default=yes]])],
+AC_ARG_ENABLE([webp], [AS_HELP_STRING([--enable-webp], [support loading WEBP images [default=yes]])],
  [], [enable_webp=yes])
-AC_ARG_ENABLE([webpdec], [AC_HELP_STRING([--enable-webpdec], [support loading WEBP images via libwebpdecoder instead of libwebp [default=no]])],
+AC_ARG_ENABLE([webpdec], [AS_HELP_STRING([--enable-webpdec], [support loading WEBP images via libwebpdecoder instead of libwebp [default=no]])],
  [], [enable_webpdec=no])
-AC_ARG_ENABLE([webp-shared], AC_HELP_STRING([--enable-webp-shared], [dynamically load WEBP support [[default=yes]]]),
+AC_ARG_ENABLE([webp-shared], AS_HELP_STRING([--enable-webp-shared], [dynamically load WEBP support [[default=yes]]]),
  [], [enable_webp_shared=yes])
 
 if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_imageio != xyes; then
@@ -385,8 +386,9 @@ AC_SUBST([IMG_LIBS])
 OBJCFLAGS=$CFLAGS
 
 # Finally create all the generated files
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 SDL2_image.spec
 SDL2_image.pc
 ])
+AC_OUTPUT
