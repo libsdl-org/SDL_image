@@ -826,7 +826,7 @@ static float nsvg__convertToPixels(NSVGparser* p, NSVGcoordinate c, float orig, 
 		case NSVG_UNITS_PERCENT:	return orig + c.value / 100.0f * length;
 		default:					return c.value;
 	}
-	return c.value;
+	/*return c.value; UNREACHABLE CODE */
 }
 
 static NSVGgradientData* nsvg__findGradientData(NSVGparser* p, const char* id)
@@ -1120,7 +1120,7 @@ error:
 }
 
 // We roll our own string to float because the std library one uses locale and messes things up.
-static double nsvg__atof(const char* s)
+static float nsvg__atof(const char* s)
 {
 	char* cur = (char*)s;
 	char* end = NULL;
@@ -1163,7 +1163,7 @@ static double nsvg__atof(const char* s)
 
 	// A valid number should have integer or fractional part.
 	if (!hasIntPart && !hasFracPart)
-		return 0.0;
+		return 0.0f;
 
 	// Parse optional exponent
 	if (*cur == 'e' || *cur == 'E') {
@@ -1175,7 +1175,7 @@ static double nsvg__atof(const char* s)
 		}
 	}
 
-	return res * sign;
+	return (float)(res * sign);
 }
 
 
@@ -1515,9 +1515,7 @@ static NSVGcoordinate nsvg__parseCoordinateRaw(const char* str)
 
 static NSVGcoordinate nsvg__coord(float v, int units)
 {
-	NSVGcoordinate coord ;
-	coord.value = v;
-	coord.units = units;
+	NSVGcoordinate coord = {v, units};
 	return coord;
 }
 
@@ -3075,6 +3073,7 @@ error:
 }
 #endif /* HAVE_STDIO_H */
 
+#if 0
 NSVG_EXPORT NSVGpath* nsvgDuplicatePath(NSVGpath* p)
 {
     NSVGpath* res = NULL;
@@ -3104,6 +3103,7 @@ error:
     }
     return NULL;
 }
+#endif // 0
 
 NSVG_EXPORT void nsvgDelete(NSVGimage* image)
 {
