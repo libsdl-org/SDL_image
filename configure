@@ -1603,23 +1603,23 @@ Optional Features:
   --enable-bmp            support loading BMP/ICO/CUR images [default=yes]
   --enable-gif            support loading GIF images [default=yes]
   --enable-jpg            support loading JPG images [default=yes]
-  --enable-jpg-shared     dynamically load JPG support [[default=yes]]
+  --enable-jpg-shared     dynamically load JPG support [default=yes]
   --enable-lbm            support loading LBM images [default=yes]
   --enable-pcx            support loading PCX images [default=yes]
   --enable-png            support loading PNG images [default=yes]
-  --enable-png-shared     dynamically load PNG support [[default=yes]]
+  --enable-png-shared     dynamically load PNG support [default=yes]
   --enable-pnm            support loading PNM images [default=yes]
   --enable-svg            support loading SVG images [default=yes]
   --enable-tga            support loading TGA images [default=yes]
   --enable-tif            support loading TIFF images [default=yes]
-  --enable-tif-shared     dynamically load TIFF support [[default=yes]]
+  --enable-tif-shared     dynamically load TIFF support [default=yes]
   --enable-xcf            support loading XCF images [default=yes]
   --enable-xpm            support loading XPM images [default=yes]
   --enable-xv             support loading XV images [default=yes]
   --enable-webp           support loading WEBP images [default=yes]
   --enable-webpdec        support loading WEBP images via libwebpdecoder
                           instead of libwebp [default=no]
-  --enable-webp-shared    dynamically load WEBP support [[default=yes]]
+  --enable-webp-shared    dynamically load WEBP support [default=yes]
   --disable-sdltest       Do not try to compile and run a test SDL program
 
 Optional Packages:

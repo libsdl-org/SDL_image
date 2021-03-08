@@ -123,7 +123,7 @@ AC_ARG_ENABLE([gif], [AS_HELP_STRING([--enable-gif], [support loading GIF images
  [], [enable_gif=yes])
 AC_ARG_ENABLE([jpg], [AS_HELP_STRING([--enable-jpg], [support loading JPG images [default=yes]])],
  [], [enable_jpg=yes])
-AC_ARG_ENABLE([jpg-shared], AS_HELP_STRING([--enable-jpg-shared], [dynamically load JPG support [[default=yes]]]),
+AC_ARG_ENABLE([jpg-shared], [AS_HELP_STRING([--enable-jpg-shared], [dynamically load JPG support [default=yes]])],
  [], [enable_jpg_shared=yes])
 AC_ARG_ENABLE([lbm], [AS_HELP_STRING([--enable-lbm], [support loading LBM images [default=yes]])],
  [], [enable_lbm=yes])
@@ -131,7 +131,7 @@ AC_ARG_ENABLE([pcx], [AS_HELP_STRING([--enable-pcx], [support loading PCX images
  [], [enable_pcx=yes])
 AC_ARG_ENABLE([png], [AS_HELP_STRING([--enable-png], [support loading PNG images [default=yes]])],
  [], [enable_png=yes])
-AC_ARG_ENABLE([png-shared], AS_HELP_STRING([--enable-png-shared], [dynamically load PNG support [[default=yes]]]),
+AC_ARG_ENABLE([png-shared], [AS_HELP_STRING([--enable-png-shared], [dynamically load PNG support [default=yes]])],
  [], [enable_png_shared=yes])
 AC_ARG_ENABLE([pnm], [AS_HELP_STRING([--enable-pnm], [support loading PNM images [default=yes]])],
  [], [enable_pnm=yes])
@@ -141,7 +141,7 @@ AC_ARG_ENABLE([tga], [AS_HELP_STRING([--enable-tga], [support loading TGA images
  [], [enable_tga=yes])
 AC_ARG_ENABLE([tif], [AS_HELP_STRING([--enable-tif], [support loading TIFF images [default=yes]])],
  [], [enable_tif=yes])
-AC_ARG_ENABLE([tif-shared], AS_HELP_STRING([--enable-tif-shared], [dynamically load TIFF support [[default=yes]]]),
+AC_ARG_ENABLE([tif-shared], [AS_HELP_STRING([--enable-tif-shared], [dynamically load TIFF support [default=yes]])],
  [], [enable_tif_shared=yes])
 AC_ARG_ENABLE([xcf], [AS_HELP_STRING([--enable-xcf], [support loading XCF images [default=yes]])],
  [], [enable_xcf=yes])
@@ -153,7 +153,7 @@ AC_ARG_ENABLE([webp], [AS_HELP_STRING([--enable-webp], [support loading WEBP ima
  [], [enable_webp=yes])
 AC_ARG_ENABLE([webpdec], [AS_HELP_STRING([--enable-webpdec], [support loading WEBP images via libwebpdecoder instead of libwebp [default=no]])],
  [], [enable_webpdec=no])
-AC_ARG_ENABLE([webp-shared], AS_HELP_STRING([--enable-webp-shared], [dynamically load WEBP support [[default=yes]]]),
+AC_ARG_ENABLE([webp-shared], [AS_HELP_STRING([--enable-webp-shared], [dynamically load WEBP support [default=yes]])],
  [], [enable_webp_shared=yes])
 
 if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_imageio != xyes; then
