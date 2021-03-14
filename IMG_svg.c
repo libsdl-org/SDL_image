@@ -28,6 +28,18 @@
 #ifdef LOAD_SVG
 
 /* Replace C runtime functions with SDL C runtime functions for building on Windows */
+#if defined(__WATCOMC__) && defined(HAVE_LIBC)
+#define acosf(x)    (float)acos((double)(x))
+#define atan2f(x,y) (float)atan2((double)(x),(double)(y))
+#define cosf(x)     (float)cos((double)(x))
+#define ceilf(x)    (float)ceil((double)(x))
+#define fabsf(x)    (float)fabs((double)(x))
+#define floorf(x)   (float)floor((double)(x))
+#define fmodf(x,y)  (float)fmod((double)(x),(double)(y))
+#define sinf(x)     (float)sin((double)(x))
+#define sqrtf(x)    (float)sqrt((double)(x))
+#define tanf(x)     (float)tan((double)(x))
+#else
 #define acosf   SDL_acosf
 #define atan2f  SDL_atan2f
 #define cosf    SDL_cosf
@@ -36,18 +48,20 @@
 #define fabsf   SDL_fabsf
 #define floorf  SDL_floorf
 #define fmodf   SDL_fmodf
+#define pow     SDL_pow
+#define sinf    SDL_sinf
+#define sqrt    SDL_sqrt
+#define sqrtf   SDL_sqrtf
+#define tanf    SDL_tanf
+#endif
 #define free    SDL_free
 #define malloc  SDL_malloc
 #undef memcpy
 #define memcpy  SDL_memcpy
 #undef memset
 #define memset  SDL_memset
-#define pow     SDL_pow
 #define qsort   SDL_qsort
 #define realloc SDL_realloc
-#define sinf    SDL_sinf
-#define sqrt    SDL_sqrt
-#define sqrtf   SDL_sqrtf
 #define sscanf  SDL_sscanf
 #undef strchr
 #define strchr  SDL_strchr
@@ -61,7 +75,6 @@
 #define strstr  SDL_strstr
 #define strtol  SDL_strtol
 #define strtoll SDL_strtoll
-#define tanf    SDL_tanf
 #ifndef FLT_MAX
 #define FLT_MAX     3.402823466e+38F
 #endif
