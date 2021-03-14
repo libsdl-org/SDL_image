@@ -29,6 +29,7 @@
 
 /* Replace C runtime functions with SDL C runtime functions for building on Windows */
 #if defined(__WATCOMC__) && defined(HAVE_LIBC)
+  /* With SDL math functions, Watcom builds are very much broken. */
 #define acosf(x)    (float)acos((double)(x))
 #define atan2f(x,y) (float)atan2((double)(x),(double)(y))
 #define cosf(x)     (float)cos((double)(x))
