@@ -177,11 +177,8 @@ IMG_LoadGIF_RW(SDL_RWops *src)
     int imageCount = 0;
     char version[4];
     int imageNumber = 1;
+    State_t *state = NULL;
     Image *image = NULL;
-    State_t state;
-    state.ZeroDataBlock = FALSE;
-    state.fresh = FALSE;
-    state.last_byte = 0;
 
     if ( src == NULL ) {
 	return NULL;
@@ -203,25 +200,30 @@ IMG_LoadGIF_RW(SDL_RWops *src)
 	RWSetMsg("bad version number, not '87a' or '89a'");
         goto done;
     }
-    state.Gif89.transparent = -1;
-    state.Gif89.delayTime = -1;
-    state.Gif89.inputFlag = -1;
-    state.Gif89.disposal = 0;
+    state = (State_t *)calloc(1, sizeof(State_t));
+    if (state == NULL) {
+	RWSetMsg("Out of memory");
+	goto done;
+    }
+    state->Gif89.transparent = -1;
+    state->Gif89.delayTime = -1;
+    state->Gif89.inputFlag = -1;
+    state->Gif89.disposal = 0;
 
     if (!ReadOK(src, buf, 7)) {
 	RWSetMsg("failed to read screen descriptor");
         goto done;
     }
-    state.GifScreen.Width = LM_to_uint(buf[0], buf[1]);
-    state.GifScreen.Height = LM_to_uint(buf[2], buf[3]);
-    state.GifScreen.BitPixel = 2 << (buf[4] & 0x07);
-    state.GifScreen.ColorResolution = (((buf[4] & 0x70) >> 3) + 1);
-    state.GifScreen.Background = buf[5];
-    state.GifScreen.AspectRatio = buf[6];
+    state->GifScreen.Width = LM_to_uint(buf[0], buf[1]);
+    state->GifScreen.Height = LM_to_uint(buf[2], buf[3]);
+    state->GifScreen.BitPixel = 2 << (buf[4] & 0x07);
+    state->GifScreen.ColorResolution = (((buf[4] & 0x70) >> 3) + 1);
+    state->GifScreen.Background = buf[5];
+    state->GifScreen.AspectRatio = buf[6];
 
     if (BitSet(buf[4], LOCALCOLORMAP)) {	/* Global Colormap */
-	if (ReadColorMap(src, state.GifScreen.BitPixel,
-			 state.GifScreen.ColorMap, &state.GifScreen.GrayScale)) {
+	if (ReadColorMap(src, state->GifScreen.BitPixel,
+			 state->GifScreen.ColorMap, &state->GifScreen.GrayScale)) {
 	    RWSetMsg("error reading global colormap");
             goto done;
 	}
@@ -243,7 +245,7 @@ IMG_LoadGIF_RW(SDL_RWops *src)
 		RWSetMsg("EOF / read error on extention function code");
                 goto done;
 	    }
-	    DoExtension(src, c, &state);
+	    DoExtension(src, c, state);
 	    continue;
 	}
 	if (c != ',') {		/* Not a valid start character */
@@ -268,19 +270,19 @@ IMG_LoadGIF_RW(SDL_RWops *src)
 			      LM_to_uint(buf[6], buf[7]),
 			      bitPixel, localColorMap, grayScale,
 			      BitSet(buf[8], INTERLACE),
-			      imageCount != imageNumber, &state);
+			      imageCount != imageNumber, state);
 	} else {
 	    image = ReadImage(src, LM_to_uint(buf[4], buf[5]),
 			      LM_to_uint(buf[6], buf[7]),
-			      state.GifScreen.BitPixel, state.GifScreen.ColorMap,
-			      state.GifScreen.GrayScale, BitSet(buf[8], INTERLACE),
-			      imageCount != imageNumber, &state);
+			      state->GifScreen.BitPixel, state->GifScreen.ColorMap,
+			      state->GifScreen.GrayScale, BitSet(buf[8], INTERLACE),
+			      imageCount != imageNumber, state);
 	}
     } while (image == NULL);
 
 #ifdef USED_BY_SDL
-    if ( state.Gif89.transparent >= 0 ) {
-        SDL_SetColorKey(image, SDL_SRCCOLORKEY, state.Gif89.transparent);
+    if ( state->Gif89.transparent >= 0 ) {
+        SDL_SetColorKey(image, SDL_SRCCOLORKEY, state->Gif89.transparent);
     }
 #endif
 
@@ -288,6 +290,8 @@ done:
     if ( image == NULL ) {
         SDL_RWseek(src, start, RW_SEEK_SET);
     }
+
+    free(state);
     return image;
 }
 
