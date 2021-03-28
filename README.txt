@@ -38,4 +38,4 @@ sh ./configure CPPFLAGS="-I/somewhere/include" LDFLAGS="-L/somewhere/lib"
 If this works, you may need to add /somewhere/lib to your LD_LIBRARY_PATH
 so shared library loading works correctly.
 
-This library is under the zlib License, see the file "COPYING.txt" for details.
+This library is under the zlib License, see the file "LICENSE.txt" for details.
