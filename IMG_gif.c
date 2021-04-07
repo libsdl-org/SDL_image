@@ -495,7 +495,7 @@ static int
 LWZReadByte(SDL_RWops *src, int flag, int input_code_size, State_t * state)
 {
     int code, incode;
-    register int i;
+    int i;
 
     /* Fixed buffer overflow found by Michael Skladnikiewicz */
     if (input_code_size > MAX_LWZ_BITS)
