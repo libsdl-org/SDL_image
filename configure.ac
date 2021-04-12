@@ -1,31 +1,32 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT
+
+dnl Set various version strings - taken gratefully from the GTk sources
+# Making releases:
+#   MICRO_VERSION_MACRO += 1;
+#   INTERFACE_AGE_MACRO += 1;
+#   BINARY_AGE_MACRO += 1;
+# if any functions have been added, set INTERFACE_AGE_MACRO to 0.
+# if backwards compatibility has been broken,
+# set BINARY_AGE_MACRO and INTERFACE_AGE_MACRO to 0.
+m4_define([MAJOR_VERSION_MACRO], [2])
+m4_define([MINOR_VERSION_MACRO], [0])
+m4_define([MICRO_VERSION_MACRO], [6])
+m4_define([INTERFACE_AGE_MACRO], [0])
+m4_define([BINARY_AGE_MACRO], [6])
+
+AC_INIT([SDL2_image],
+        MAJOR_VERSION_MACRO.MINOR_VERSION_MACRO.MICRO_VERSION_MACRO,
+        [https://github.com/libsdl-org/SDL_image/issues],
+        [SDL2_image])
 AC_CONFIG_MACRO_DIR([acinclude])
 AC_CONFIG_SRCDIR([IMG.c])
 
-dnl Set various version strings - taken gratefully from the GTk sources
-
-# Making releases:
-#   MICRO_VERSION += 1;
-#   INTERFACE_AGE += 1;
-#   BINARY_AGE += 1;
-# if any functions have been added, set INTERFACE_AGE to 0.
-# if backwards compatibility has been broken,
-# set BINARY_AGE and INTERFACE_AGE to 0.
-
-MAJOR_VERSION=2
-MINOR_VERSION=0
-MICRO_VERSION=6
-INTERFACE_AGE=0
-BINARY_AGE=6
-VERSION=$MAJOR_VERSION.$MINOR_VERSION.$MICRO_VERSION
-
-AC_SUBST(MAJOR_VERSION)
-AC_SUBST(MINOR_VERSION)
-AC_SUBST(MICRO_VERSION)
-AC_SUBST(INTERFACE_AGE)
-AC_SUBST(BINARY_AGE)
-AC_SUBST(VERSION)
+AC_SUBST([MAJOR_VERSION], MAJOR_VERSION_MACRO)
+AC_SUBST([MINOR_VERSION], MINOR_VERSION_MACRO)
+AC_SUBST([MICRO_VERSION], MICRO_VERSION_MACRO)
+AC_SUBST([INTERFACE_AGE], INTERFACE_AGE_MACRO)
+AC_SUBST([BINARY_AGE], BINARY_AGE_MACRO)
+dnl VERSION is AC_SUBST'd by AC_INIT
 
 # libtool versioning
 LT_INIT([win32-dll])
@@ -44,7 +45,7 @@ dnl Detect the canonical build and host environments
 AC_CANONICAL_HOST
 
 dnl Setup for automake
-AM_INIT_AUTOMAKE(SDL2_image, $VERSION)
+AM_INIT_AUTOMAKE([foreign tar-pax])
 
 dnl Check for tools
 AC_PROG_CC

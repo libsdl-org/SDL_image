@@ -1,6 +1,5 @@
 # Makefile.am for the SDL sample image loading library and viewer
 ACLOCAL_AMFLAGS = -I acinclude
-AUTOMAKE_OPTIONS= foreign
 
 lib_LTLIBRARIES = libSDL2_image.la
 
