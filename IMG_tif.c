@@ -37,7 +37,7 @@ static struct {
 	TIFF* (*TIFFClientOpen)(const char*, const char*, thandle_t, TIFFReadWriteProc, TIFFReadWriteProc, TIFFSeekProc, TIFFCloseProc, TIFFSizeProc, TIFFMapFileProc, TIFFUnmapFileProc);
 	void (*TIFFClose)(TIFF*);
 	int (*TIFFGetField)(TIFF*, ttag_t, ...);
-	int (*TIFFReadRGBAImageOriented)(TIFF*, uint32, uint32, uint32*, int, int);
+	int (*TIFFReadRGBAImageOriented)(TIFF*, Uint32, Uint32, Uint32*, int, int);
 	TIFFErrorHandler (*TIFFSetErrorHandler)(TIFFErrorHandler);
 } lib;
 
@@ -71,7 +71,7 @@ int IMG_InitTIF()
 			return -1;
 		}
 		lib.TIFFReadRGBAImageOriented =
-			(int (*)(TIFF*, uint32, uint32, uint32*, int, int))
+			(int (*)(TIFF*, Uint32, Uint32, Uint32*, int, int))
 			SDL_LoadFunction(lib.handle, "TIFFReadRGBAImageOriented");
 		if ( lib.TIFFReadRGBAImageOriented == NULL ) {
 			SDL_UnloadObject(lib.handle);
@@ -208,8 +208,6 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 	SDL_Surface* surface = NULL;
 	Uint32 img_width, img_height;
 	Uint32 Rmask, Gmask, Bmask, Amask;
-	Uint32 x, y;
-	Uint32 half;
 
 	if ( !src ) {
 		/* The error message has been set in SDL_RWFromFile */
@@ -240,7 +238,7 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
 	if(!surface)
 		goto error;
 	
-	if(!lib.TIFFReadRGBAImageOriented(tiff, img_width, img_height, (uint32 *)surface->pixels, ORIENTATION_TOPLEFT, 0))
+	if(!lib.TIFFReadRGBAImageOriented(tiff, img_width, img_height, (Uint32 *)surface->pixels, ORIENTATION_TOPLEFT, 0))
 		goto error;
 
 	lib.TIFFClose(tiff);
