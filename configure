@@ -12547,7 +12547,6 @@ fi
             $as_echo "#define LOAD_JPG 1" >>confdefs.h
 
         fi
-        LIBS="-ljpeg $LIBS"
 
         case "$host" in
             *-*-darwin*)

@@ -163,7 +163,6 @@ if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_image
         if test x$enable_jpg = xyes; then
             AC_DEFINE([LOAD_JPG])
         fi
-        LIBS="-ljpeg $LIBS"
 
         case "$host" in
             *-*-darwin*)
