@@ -1,29 +1,31 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(README)
 
 dnl Set various version strings - taken gratefully from the GTk sources
-
 # Making releases:
-#   MICRO_VERSION += 1;
-#   INTERFACE_AGE += 1;
-#   BINARY_AGE += 1;
-# if any functions have been added, set INTERFACE_AGE to 0.
+#   MICRO_VERSION_MACRO += 1;
+#   INTERFACE_AGE_MACRO += 1;
+#   BINARY_AGE_MACRO += 1;
+# if any functions have been added, set INTERFACE_AGE_MACRO to 0.
 # if backwards compatibility has been broken,
-# set BINARY_AGE and INTERFACE_AGE to 0.
+# set BINARY_AGE_MACRO and INTERFACE_AGE_MACRO to 0.
+m4_define([MAJOR_VERSION_MACRO], [1])
+m4_define([MINOR_VERSION_MACRO], [2])
+m4_define([MICRO_VERSION_MACRO], [13])
+m4_define([INTERFACE_AGE_MACRO], [5])
+m4_define([BINARY_AGE_MACRO], [13])
 
-MAJOR_VERSION=1
-MINOR_VERSION=2
-MICRO_VERSION=13
-INTERFACE_AGE=5
-BINARY_AGE=13
-VERSION=$MAJOR_VERSION.$MINOR_VERSION.$MICRO_VERSION
+AC_INIT([SDL_image],
+        MAJOR_VERSION_MACRO.MINOR_VERSION_MACRO.MICRO_VERSION_MACRO,
+        [https://github.com/libsdl-org/SDL_image/issues],
+        [SDL_image])
+AC_CONFIG_MACRO_DIR([acinclude])
+AC_CONFIG_SRCDIR([IMG.c])
 
-AC_SUBST(MAJOR_VERSION)
-AC_SUBST(MINOR_VERSION)
-AC_SUBST(MICRO_VERSION)
-AC_SUBST(INTERFACE_AGE)
-AC_SUBST(BINARY_AGE)
-AC_SUBST(VERSION)
+AC_SUBST([MAJOR_VERSION], MAJOR_VERSION_MACRO)
+AC_SUBST([MINOR_VERSION], MINOR_VERSION_MACRO)
+AC_SUBST([MICRO_VERSION], MICRO_VERSION_MACRO)
+AC_SUBST([INTERFACE_AGE], INTERFACE_AGE_MACRO)
+AC_SUBST([BINARY_AGE], BINARY_AGE_MACRO)
 
 # libtool versioning
 LT_INIT([win32-dll])
@@ -42,10 +44,9 @@ dnl Detect the canonical build and host environments
 AC_CANONICAL_HOST
 
 dnl Setup for automake
-AM_INIT_AUTOMAKE(SDL_image, $VERSION)
+AM_INIT_AUTOMAKE([foreign tar-ustar])
 
 dnl Check for tools
-AC_PROG_LIBTOOL
 AC_PROG_CC
 AC_PROG_OBJC
 AC_C_INLINE
@@ -77,7 +78,7 @@ case "$host" in
         fi
         ;;
     *-*-darwin*)
-        AC_ARG_ENABLE([imageio], [AC_HELP_STRING([--enable-imageio], [use native Mac OS X frameworks for loading images [default=yes]])],
+        AC_ARG_ENABLE([imageio], [AS_HELP_STRING([--enable-imageio], [use native Mac OS X frameworks for loading images [default=yes]])],
                       [], [enable_imageio=yes])
         dnl Show a message when we use ImageIO support so it's not a surprise
         AC_MSG_CHECKING([for ImageIO support])
@@ -115,53 +116,42 @@ find_lib()
     done
 }
 
-dnl Check for SDL
-SDL_VERSION=1.2.10
-AC_SUBST(SDL_VERSION)
-AM_PATH_SDL($SDL_VERSION,
-            :,
-           AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
-)
-CFLAGS="$CFLAGS $SDL_CFLAGS"
-LIBS="$LIBS $SDL_LIBS"
-saved_LIBS="$LIBS"
-
 dnl Check command-line options
-AC_ARG_ENABLE([bmp], [AC_HELP_STRING([--enable-bmp], [support loading BMP/ICO/CUR images [default=yes]])],
+AC_ARG_ENABLE([bmp], [AS_HELP_STRING([--enable-bmp], [support loading BMP/ICO/CUR images [default=yes]])],
  [], [enable_bmp=yes])
-AC_ARG_ENABLE([gif], [AC_HELP_STRING([--enable-gif], [support loading GIF images [default=yes]])],
+AC_ARG_ENABLE([gif], [AS_HELP_STRING([--enable-gif], [support loading GIF images [default=yes]])],
  [], [enable_gif=yes])
-AC_ARG_ENABLE([jpg], [AC_HELP_STRING([--enable-jpg], [support loading JPG images [default=yes]])],
+AC_ARG_ENABLE([jpg], [AS_HELP_STRING([--enable-jpg], [support loading JPG images [default=yes]])],
  [], [enable_jpg=yes])
-AC_ARG_ENABLE([jpg-shared], AC_HELP_STRING([--enable-jpg-shared], [dynamically load JPG support [[default=yes]]]),
+AC_ARG_ENABLE([jpg-shared], [AS_HELP_STRING([--enable-jpg-shared], [dynamically load JPG support [default=yes]])],
  [], [enable_jpg_shared=yes])
-AC_ARG_ENABLE([lbm], [AC_HELP_STRING([--enable-lbm], [support loading LBM images [default=yes]])],
+AC_ARG_ENABLE([lbm], [AS_HELP_STRING([--enable-lbm], [support loading LBM images [default=yes]])],
  [], [enable_lbm=yes])
-AC_ARG_ENABLE([pcx], [AC_HELP_STRING([--enable-pcx], [support loading PCX images [default=yes]])],
+AC_ARG_ENABLE([pcx], [AS_HELP_STRING([--enable-pcx], [support loading PCX images [default=yes]])],
  [], [enable_pcx=yes])
-AC_ARG_ENABLE([png], [AC_HELP_STRING([--enable-png], [support loading PNG images [default=yes]])],
+AC_ARG_ENABLE([png], [AS_HELP_STRING([--enable-png], [support loading PNG images [default=yes]])],
  [], [enable_png=yes])
-AC_ARG_ENABLE([png-shared], [AC_HELP_STRING([--enable-png-shared], [dynamically load PNG support [default=yes]])],
+AC_ARG_ENABLE([png-shared], [AS_HELP_STRING([--enable-png-shared], [dynamically load PNG support [default=yes]])],
  [], [enable_png_shared=yes])
-AC_ARG_ENABLE([pnm], [AC_HELP_STRING([--enable-pnm], [support loading PNM images [default=yes]])],
+AC_ARG_ENABLE([pnm], [AS_HELP_STRING([--enable-pnm], [support loading PNM images [default=yes]])],
  [], [enable_pnm=yes])
-AC_ARG_ENABLE([tga], [AC_HELP_STRING([--enable-tga], [support loading TGA images [default=yes]])],
+AC_ARG_ENABLE([tga], [AS_HELP_STRING([--enable-tga], [support loading TGA images [default=yes]])],
  [], [enable_tga=yes])
-AC_ARG_ENABLE([tif], [AC_HELP_STRING([--enable-tif], [support loading TIFF images [default=yes]])],
+AC_ARG_ENABLE([tif], [AS_HELP_STRING([--enable-tif], [support loading TIFF images [default=yes]])],
  [], [enable_tif=yes])
-AC_ARG_ENABLE([tif-shared], [AC_HELP_STRING([--enable-tif-shared], [dynamically load TIFF support [default=yes]])],
+AC_ARG_ENABLE([tif-shared], [AS_HELP_STRING([--enable-tif-shared], [dynamically load TIFF support [default=yes]])],
  [], [enable_tif_shared=yes])
-AC_ARG_ENABLE([xcf], [AC_HELP_STRING([--enable-xcf], [support loading XCF images [default=yes]])],
+AC_ARG_ENABLE([xcf], [AS_HELP_STRING([--enable-xcf], [support loading XCF images [default=yes]])],
  [], [enable_xcf=yes])
-AC_ARG_ENABLE([xpm], [AC_HELP_STRING([--enable-xpm], [support loading XPM images [default=yes]])],
+AC_ARG_ENABLE([xpm], [AS_HELP_STRING([--enable-xpm], [support loading XPM images [default=yes]])],
  [], [enable_xpm=yes])
-AC_ARG_ENABLE([xv], [AC_HELP_STRING([--enable-xv], [support loading XV images [default=yes]])],
+AC_ARG_ENABLE([xv], [AS_HELP_STRING([--enable-xv], [support loading XV images [default=yes]])],
  [], [enable_xv=yes])
-AC_ARG_ENABLE([webp], [AC_HELP_STRING([--enable-webp], [support loading WEBP images [default=yes]])],
+AC_ARG_ENABLE([webp], [AS_HELP_STRING([--enable-webp], [support loading WEBP images [default=yes]])],
  [], [enable_webp=yes])
-AC_ARG_ENABLE([webpdec], [AC_HELP_STRING([--enable-webpdec], [support loading WEBP images via libwebpdecoder instead of libwebp [default=no]])],
+AC_ARG_ENABLE([webpdec], [AS_HELP_STRING([--enable-webpdec], [support loading WEBP images via libwebpdecoder instead of libwebp [default=no]])],
  [], [enable_webpdec=no])
-AC_ARG_ENABLE([webp-shared], [AC_HELP_STRING([--enable-webp-shared], [dynamically load WEBP support [default=yes]])],
+AC_ARG_ENABLE([webp-shared], [AS_HELP_STRING([--enable-webp-shared], [dynamically load WEBP support [default=yes]])],
  [], [enable_webp_shared=yes])
 
 if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_imageio != xyes; then
@@ -171,7 +161,6 @@ if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_image
         if test x$enable_jpg = xyes; then
             AC_DEFINE([LOAD_JPG])
         fi
-        LIBS="-ljpeg $LIBS"
 
         case "$host" in
             *-*-darwin*)
@@ -374,7 +363,15 @@ if test x$enable_png = xyes -a x$have_png_hdr = xyes -a x$have_png_lib = xyes; t
     fi
 fi
 
-LIBS="$saved_LIBS"
+dnl Check for SDL
+SDL_VERSION=1.2.10
+AC_SUBST(SDL_VERSION)
+AM_PATH_SDL($SDL_VERSION,
+            :,
+           AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
+)
+CFLAGS="$CFLAGS $SDL_CFLAGS"
+LIBS="$LIBS $SDL_LIBS"
 
 AC_SUBST([WINDRES])
 AC_SUBST([IMG_LIBS])
@@ -382,8 +379,9 @@ AC_SUBST([IMG_LIBS])
 OBJCFLAGS=$CFLAGS
 
 # Finally create all the generated files
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 SDL_image.spec
 SDL_image.pc
 ])
+AC_OUTPUT

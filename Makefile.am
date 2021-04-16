@@ -1,4 +1,5 @@
 # Makefile.am for the SDL sample image loading library and viewer
+ACLOCAL_AMFLAGS = -I acinclude
 
 lib_LTLIBRARIES = libSDL_image.la
 
@@ -29,6 +30,7 @@ libSDL_image_la_SOURCES =	\
 
 EXTRA_DIST =			\
 	Android.mk		\
+	external		\
 	CHANGES			\
 	version.rc		\
 	VisualC			\
