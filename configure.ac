@@ -26,7 +26,6 @@ AC_SUBST([MINOR_VERSION], MINOR_VERSION_MACRO)
 AC_SUBST([MICRO_VERSION], MICRO_VERSION_MACRO)
 AC_SUBST([INTERFACE_AGE], INTERFACE_AGE_MACRO)
 AC_SUBST([BINARY_AGE], BINARY_AGE_MACRO)
-dnl VERSION is AC_SUBST'd by AC_INIT
 
 # libtool versioning
 LT_INIT([win32-dll])
@@ -45,7 +44,7 @@ dnl Detect the canonical build and host environments
 AC_CANONICAL_HOST
 
 dnl Setup for automake
-AM_INIT_AUTOMAKE([foreign tar-pax])
+AM_INIT_AUTOMAKE([foreign tar-ustar])
 
 dnl Check for tools
 AC_PROG_CC
