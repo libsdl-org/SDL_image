@@ -10,15 +10,31 @@ option(SUPPORT_PNG "Support loading PNG images" ON)
 option(SUPPORT_WEBP "Support loading WEBP images" OFF)
 option(BUILD_SHOWIMAGE "Build the showimage sample program" OFF)
 option(BUILD_SHARED_LIBS "Build the library as a shared library" ON)
+if (APPLE)
+	option(ENABLE_APPLE_IMAGEIO "Use native Mac OS X frameworks for loading images" ON)
+endif()
+
 
 if (NOT BUILD_SHARED_LIBS)
 	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
 add_library(SDL2_image)
+
+set(IMAGEIO_SOURCES)
+if (APPLE)
+	if (ENABLE_APPLE_IMAGEIO)
+		target_link_options(SDL2_image PRIVATE -Wl,-framework,ApplicationServices)
+		target_link_libraries(SDL2_image PRIVATE objc)
+		set(IMAGEIO_SOURCES "IMG_ImageIO.m")
+	else()
+		target_compile_definitions(SDL2_image PRIVATE SDL_IMAGE_USE_COMMON_BACKEND)
+	endif()
+endif()
+
 target_sources(SDL2_image PRIVATE IMG.c IMG_png.c IMG_bmp.c IMG_gif.c
 		IMG_jpg.c IMG_lbm.c IMG_pcx.c IMG_pnm.c IMG_svg.c IMG_tga.c
-		IMG_tif.c IMG_webp.c IMG_WIC.c IMG_xcf.c IMG_xpm.c IMG_xv.c IMG_xxx.c)
+		IMG_tif.c IMG_webp.c IMG_WIC.c IMG_xcf.c IMG_xpm.c IMG_xv.c IMG_xxx.c ${IMAGEIO_SOURCES})
 
 target_compile_definitions(SDL2_image PRIVATE
 		-DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM
