@@ -311,15 +311,16 @@ int IMG_isPNG(SDL_RWops *src)
 	int is_PNG;
 	Uint8 magic[4];
 
-	if ( !src )
+	if ( !src ) {
 		return 0;
+	}
 	start = SDL_RWtell(src);
 	is_PNG = 0;
 	if ( SDL_RWread(src, magic, 1, sizeof(magic)) == sizeof(magic) ) {
-                if ( magic[0] == 0x89 &&
-                     magic[1] == 'P' &&
-                     magic[2] == 'N' &&
-                     magic[3] == 'G' ) {
+		if ( magic[0] == 0x89 &&
+		     magic[1] == 'P' &&
+		     magic[2] == 'N' &&
+		     magic[3] == 'G' ) {
 			is_PNG = 1;
 		}
 	}
@@ -485,13 +486,13 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	}
 
 	if(ckey != -1) {
-	        if(color_type != PNG_COLOR_TYPE_PALETTE)
+		if(color_type != PNG_COLOR_TYPE_PALETTE)
 			/* FIXME: Should these be truncated or shifted down? */
-		        ckey = SDL_MapRGB(surface->format,
-			                 (Uint8)transv->red,
-			                 (Uint8)transv->green,
-			                 (Uint8)transv->blue);
-	        SDL_SetColorKey(surface, SDL_SRCCOLORKEY, ckey);
+			ckey = SDL_MapRGB(surface->format,
+					  (Uint8)transv->red,
+					  (Uint8)transv->green,
+					  (Uint8)transv->blue);
+		SDL_SetColorKey(surface, SDL_SRCCOLORKEY, ckey);
 	}
 
 	/* Create the array of pointers to image data */
@@ -542,8 +543,8 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 done:	/* Clean up and return */
 	if ( png_ptr ) {
 		lib.png_destroy_read_struct(&png_ptr,
-		                        info_ptr ? &info_ptr : (png_infopp)0,
-								(png_infopp)0);
+					info_ptr ? &info_ptr : (png_infopp)0,
+					(png_infopp)0);
 	}
 	if ( row_pointers ) {
 		free(row_pointers);
@@ -556,7 +557,7 @@ done:	/* Clean up and return */
 		}
 		IMG_SetError(error);
 	}
-	return(surface); 
+	return(surface);
 }
 
 #else
