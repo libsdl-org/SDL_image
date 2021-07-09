@@ -51,20 +51,23 @@ if (SUPPORT_PNG)
 	set(HAVE_LD_VERSION_SCRIPT OFF CACHE BOOL "" FORCE)
 	target_compile_definitions(SDL2_image PRIVATE -DLOAD_PNG)
 
-  if (NOT TARGET zlib)
-	add_subdirectory(external/zlib-1.2.11 "${CMAKE_CURRENT_BINARY_DIR}/external/zlib-1.2.11")
-	set(ZLIB_INCLUDE_DIR "external/zlib-1.2.11")
-	set(SKIP_INSTALL_ALL ON) # SDL_image doesn't support installing currently
-	if (BUILD_SHARED_LIBS)
-		set(ZLIB_LIBRARY zlib)
-	else()
-		set(ZLIB_LIBRARY zlibstatic)
+	if (NOT TARGET zlib)
+		# if zlib not included from another source, add_subdirectory
+		add_subdirectory(external/zlib-1.2.11)
+
+		# libpng find_package(zlib) requires ZLIB_INCLUDE_DIR set
+		get_target_property(ZLIB_INCLUDE_DIR zlib INCLUDE_DIRECTORIES)
+
+		# libpng find_package(zlib) requires ZLIB_LIBRARY
+		if (BUILD_SHARED_LIBS)
+			set(ZLIB_LIBRARY zlib)
+		else()
+			set(ZLIB_LIBRARY zlibstatic)
+		endif()
+
+		# SDL_image doesn't support installing currently
+		set(SKIP_INSTALL_ALL ON)
 	endif()
-	target_include_directories(${ZLIB_LIBRARY} PUBLIC
-		"${ZLIB_INCLUDE_DIR}"
-		"${CMAKE_CURRENT_BINARY_DIR}/external/zlib-1.2.11" # zconf.h is generated there
-	)
-  endif()
 
 	add_subdirectory(external/libpng-1.6.37)
 	include_directories(external/libpng-1.6.37)
