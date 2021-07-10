@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.3.2)
+cmake_minimum_required(VERSION 3.1)
 project(jpeg C)
 
-add_library(jpeg)
+add_library(jpeg STATIC)
 target_sources(jpeg PRIVATE
 		jaricom.c jcapimin.c jcapistd.c jcarith.c jccoefct.c jccolor.c
 		jcdctmgr.c jchuff.c jcinit.c jcmainct.c jcmarker.c jcmaster.c
