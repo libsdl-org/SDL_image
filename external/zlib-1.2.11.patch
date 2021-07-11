@@ -1,3 +1,15 @@
+diff -ruN zlib-1.2.11.orig/CMakeLists.txt zlib-1.2.11/CMakeLists.txt
+--- zlib-1.2.11.orig/CMakeLists.txt
++++ zlib-1.2.11/CMakeLists.txt
+@@ -83,7 +83,7 @@ configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/zlib.pc.cmakein
+ 		${ZLIB_PC} @ONLY)
+ configure_file(	${CMAKE_CURRENT_SOURCE_DIR}/zconf.h.cmakein
+ 		${CMAKE_CURRENT_BINARY_DIR}/zconf.h @ONLY)
+-include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR})
++include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+ 
+ 
+ #============================================================================
 diff -ruN zlib-1.2.11.orig/make-cross-x64.sh zlib-1.2.11/make-cross-x64.sh
 --- zlib-1.2.11.orig/make-cross-x64.sh	1969-12-31 16:00:00.000000000 -0800
 +++ zlib-1.2.11/make-cross-x64.sh	2017-10-21 21:09:10.000000000 -0700
@@ -34,3 +46,4 @@ diff -ruN zlib-1.2.11.orig/make-cross-x86.sh zlib-1.2.11/make-cross-x86.sh
 +    BINARY_PATH=$INSTALL_PATH/bin \
 +    INCLUDE_PATH=$INSTALL_PATH/include \
 +    LIBRARY_PATH=$INSTALL_PATH/lib $*
+
