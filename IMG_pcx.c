@@ -220,12 +220,14 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
         } else if ( src_bits == 24 ) {
             /* de-interlace planes */
             Uint8 *innerSrc = buf;
+            Uint8 *end1 = buf+bpl;
             int plane;
             for ( plane = 0; plane < pcxh.NPlanes; plane++ ) {
                 int x;
                 Uint8 *dst = row + plane;
+                Uint8 *end2= row + surface->pitch;
                 for ( x = 0; x < width; x++ ) {
-                    if ( dst >= row+surface->pitch ) {
+                    if ( innerSrc >= end1 || dst >= end2 ) {
                         error = "decoding out of bounds (corrupt?)";
                         goto done;
                     }
