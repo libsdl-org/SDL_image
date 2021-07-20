@@ -642,6 +642,9 @@ ReadImage(SDL_RWops * src, int len, int height, int cmapSize,
         return NULL;
     }
     image = ImageNewCmap(len, height, cmapSize);
+    if (!image) {
+        return NULL;
+    }
 
     for (i = 0; i < cmapSize; i++)
         ImageSetCmap(image, i, cmap[CM_RED][i],
