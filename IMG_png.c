@@ -620,7 +620,11 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
 #undef memset
 #define memset  SDL_memset
 #define strlen  SDL_strlen
-
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+#define MINIZ_LITTLE_ENDIAN 1
+#else
+#define MINIZ_LITTLE_ENDIAN 0
+#endif
 #include "miniz.h"
 
 static int IMG_SavePNG_RW_miniz(SDL_Surface *surface, SDL_RWops *dst, int freedst)
