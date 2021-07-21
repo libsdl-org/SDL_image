@@ -581,6 +581,12 @@ ReadImage(SDL_RWops * src, int len, int height, int cmapSize,
     if (!image) {
 	return NULL;
     }
+#ifdef USED_BY_SDL
+    if (!image->pixels) {
+	SDL_FreeSurface(image);
+	return NULL;
+    }
+#endif
 
     for (i = 0; i < cmapSize; i++)
 	ImageSetCmap(image, i, cmap[CM_RED][i],
