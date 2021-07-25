@@ -248,6 +248,9 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
         case 8:
             ExpandBMP = 8;
             break;
+        case 24:
+            ExpandBMP = 24;
+            break;
         case 32:
             Rmask = 0x00FF0000;
             Gmask = 0x0000FF00;
@@ -316,6 +319,10 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
         bmpPitch = biWidth;
         pad = (((bmpPitch) % 4) ? (4 - ((bmpPitch) % 4)) : 0);
         break;
+    case 24:
+        bmpPitch = biWidth * 3;
+        pad = (((bmpPitch) % 4) ? (4 - ((bmpPitch) % 4)) : 0);
+        break;
     default:
         bmpPitch = biWidth * 4;
         pad = 0;
@@ -340,6 +347,26 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
                     }
                     *((Uint32 *) bits + i) = (palette[pixel >> shift]);
                     pixel <<= ExpandBMP;
+                }
+            }
+            break;
+        case 24:
+            {
+                Uint32 pixel;
+                Uint8 channel;
+                for (i = 0; i < surface->w; ++i) {
+                    pixel = 0;
+                    for (int j = 0; j < 3; ++j) {
+                        //Load each color channel into pixel
+                        if (!SDL_RWread(src, &channel, 1, 1)) {
+                            IMG_SetError("Error reading from ICO");
+                            was_error = SDL_TRUE;
+                            goto done;
+                        }
+                        pixel |= (channel << (j * 8));
+    
+                    }
+                    *((Uint32 *) bits + i) = pixel;
                 }
             }
             break;
