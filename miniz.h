@@ -983,6 +983,8 @@ typedef unsigned char mz_validate_uint64[sizeof(mz_uint64)==8 ? 1 : -1];
 #define MZ_MAX(a,b) (((a)>(b))?(a):(b))
 #define MZ_MIN(a,b) (((a)<(b))?(a):(b))
 #define MZ_CLEAR_OBJ(obj) memset(&(obj), 0, sizeof(obj))
+#define MZ_CLEAR_ARR(obj) memset((obj), 0, sizeof(obj))
+#define MZ_CLEAR_PTR(obj) memset((obj), 0, sizeof(*obj))
 
 #if MINIZ_USE_UNALIGNED_LOADS_AND_STORES && MINIZ_LITTLE_ENDIAN
   #define MZ_READ_LE16(p) *((const mz_uint16 *)(p))
@@ -1534,13 +1536,13 @@ tinfl_status tinfl_decompress(tinfl_decompressor *r, const mz_uint8 *pIn_buf_nex
       else
       {
         for (counter = 0; counter < 3; counter++) { TINFL_GET_BITS(11, r->m_table_sizes[counter], "\05\05\04"[counter]); r->m_table_sizes[counter] += s_min_table_sizes[counter]; }
-        MZ_CLEAR_OBJ(r->m_tables[2].m_code_size); for (counter = 0; counter < r->m_table_sizes[2]; counter++) { mz_uint s; TINFL_GET_BITS(14, s, 3); r->m_tables[2].m_code_size[s_length_dezigzag[counter]] = (mz_uint8)s; }
+        MZ_CLEAR_ARR(r->m_tables[2].m_code_size); for (counter = 0; counter < r->m_table_sizes[2]; counter++) { mz_uint s; TINFL_GET_BITS(14, s, 3); r->m_tables[2].m_code_size[s_length_dezigzag[counter]] = (mz_uint8)s; }
         r->m_table_sizes[2] = 19;
       }
       for ( ; (int)r->m_type >= 0; r->m_type--)
       {
         int tree_next, tree_cur; tinfl_huff_table *pTable;
-        mz_uint i, j, used_syms, total, sym_index, next_code[17], total_syms[16]; pTable = &r->m_tables[r->m_type]; MZ_CLEAR_OBJ(total_syms); MZ_CLEAR_OBJ(pTable->m_look_up); MZ_CLEAR_OBJ(pTable->m_tree);
+        mz_uint i, j, used_syms, total, sym_index, next_code[17], total_syms[16]; pTable = &r->m_tables[r->m_type]; MZ_CLEAR_ARR(total_syms); MZ_CLEAR_ARR(pTable->m_look_up); MZ_CLEAR_ARR(pTable->m_tree);
         for (i = 0; i < r->m_table_sizes[r->m_type]; ++i) total_syms[pTable->m_code_size[i]]++;
         used_syms = 0, total = 0; next_code[0] = next_code[1] = 0;
         for (i = 1; i <= 15; ++i) { used_syms += total_syms[i]; next_code[i + 1] = (total = ((total + total_syms[i]) << 1)); }
@@ -1772,6 +1774,7 @@ int tinfl_decompress_mem_to_callback(const void *pIn_buf, size_t *pIn_buf_size, 
   mz_uint8 *pDict = (mz_uint8*)MZ_MALLOC(TINFL_LZ_DICT_SIZE); size_t in_buf_ofs = 0, dict_ofs = 0;
   if (!pDict)
     return TINFL_STATUS_FAILED;
+  memset(pDict,0,TINFL_LZ_DICT_SIZE);
   tinfl_init(&decomp);
   for ( ; ; )
   {
@@ -1850,7 +1853,7 @@ static const mz_uint8 s_tdefl_large_dist_extra[128] = {
 typedef struct { mz_uint16 m_key, m_sym_index; } tdefl_sym_freq;
 static tdefl_sym_freq* tdefl_radix_sort_syms(mz_uint num_syms, tdefl_sym_freq* pSyms0, tdefl_sym_freq* pSyms1)
 {
-  mz_uint32 total_passes = 2, pass_shift, pass, i, hist[256 * 2]; tdefl_sym_freq* pCur_syms = pSyms0, *pNew_syms = pSyms1; MZ_CLEAR_OBJ(hist);
+  mz_uint32 total_passes = 2, pass_shift, pass, i, hist[256 * 2]; tdefl_sym_freq* pCur_syms = pSyms0, *pNew_syms = pSyms1; MZ_CLEAR_ARR(hist);
   for (i = 0; i < num_syms; i++) { mz_uint freq = pSyms0[i].m_key; hist[freq & 0xFF]++; hist[256 + ((freq >> 8) & 0xFF)]++; }
   while ((total_passes > 1) && (num_syms == hist[(total_passes - 1) * 256])) total_passes--;
   for (pass_shift = 0, pass = 0; pass < total_passes; pass++, pass_shift += 8)
@@ -1902,7 +1905,7 @@ static void tdefl_huffman_enforce_max_code_size(int *pNum_codes, int code_list_l
 
 static void tdefl_optimize_huffman_table(tdefl_compressor *d, int table_num, int table_len, int code_size_limit, int static_table)
 {
-  int i, j, l, num_codes[1 + TDEFL_MAX_SUPPORTED_HUFF_CODESIZE]; mz_uint next_code[TDEFL_MAX_SUPPORTED_HUFF_CODESIZE + 1]; MZ_CLEAR_OBJ(num_codes);
+  int i, j, l, num_codes[1 + TDEFL_MAX_SUPPORTED_HUFF_CODESIZE]; mz_uint next_code[TDEFL_MAX_SUPPORTED_HUFF_CODESIZE + 1]; MZ_CLEAR_ARR(num_codes);
   if (static_table)
   {
     for (i = 0; i < table_len; i++) num_codes[d->m_huff_code_sizes[table_num][i]]++;
@@ -1920,7 +1923,7 @@ static void tdefl_optimize_huffman_table(tdefl_compressor *d, int table_num, int
 
     tdefl_huffman_enforce_max_code_size(num_codes, num_used_syms, code_size_limit);
 
-    MZ_CLEAR_OBJ(d->m_huff_code_sizes[table_num]); MZ_CLEAR_OBJ(d->m_huff_codes[table_num]);
+    MZ_CLEAR_ARR(d->m_huff_code_sizes[table_num]); MZ_CLEAR_ARR(d->m_huff_codes[table_num]);
     for (i = 1, j = num_used_syms; i <= code_size_limit; i++)
       for (l = num_codes[i]; l > 0; l--) d->m_huff_code_sizes[table_num][pSyms[--j].m_sym_index] = (mz_uint8)(i);
   }
@@ -2715,7 +2718,7 @@ tdefl_status tdefl_compress(tdefl_compressor *d, const void *pIn_buf, size_t *pI
     if (tdefl_flush_block(d, flush) < 0)
       return d->m_prev_return_status;
     d->m_finished = (flush == TDEFL_FINISH);
-    if (flush == TDEFL_FULL_FLUSH) { MZ_CLEAR_OBJ(d->m_hash); MZ_CLEAR_OBJ(d->m_next); d->m_dict_size = 0; }
+    if (flush == TDEFL_FULL_FLUSH) { MZ_CLEAR_ARR(d->m_hash); MZ_CLEAR_ARR(d->m_next); d->m_dict_size = 0; }
   }
 
   return (d->m_prev_return_status = tdefl_flush_output_buffer(d));
@@ -2731,7 +2734,7 @@ tdefl_status tdefl_init(tdefl_compressor *d, tdefl_put_buf_func_ptr pPut_buf_fun
   d->m_pPut_buf_func = pPut_buf_func; d->m_pPut_buf_user = pPut_buf_user;
   d->m_flags = (mz_uint)(flags); d->m_max_probes[0] = 1 + ((flags & 0xFFF) + 2) / 3; d->m_greedy_parsing = (flags & TDEFL_GREEDY_PARSING_FLAG) != 0;
   d->m_max_probes[1] = 1 + (((flags & 0xFFF) >> 2) + 2) / 3;
-  if (!(flags & TDEFL_NONDETERMINISTIC_PARSING_FLAG)) MZ_CLEAR_OBJ(d->m_hash);
+  if (!(flags & TDEFL_NONDETERMINISTIC_PARSING_FLAG)) MZ_CLEAR_ARR(d->m_hash);
   d->m_lookahead_pos = d->m_lookahead_size = d->m_dict_size = d->m_total_lz_bytes = d->m_lz_code_buf_dict_pos = d->m_bits_in = 0;
   d->m_output_flush_ofs = d->m_output_flush_remaining = d->m_finished = d->m_block_index = d->m_bit_buffer = d->m_wants_to_finish = 0;
   d->m_pLZ_code_buf = d->m_lz_code_buf + 1; d->m_pLZ_flags = d->m_lz_code_buf; d->m_num_flags_left = 8;
@@ -2848,26 +2851,38 @@ MINIZ_STATIC void *tdefl_write_image_to_png_file_in_memory_ex(const void *pImage
   *pLen_out = out_buf.m_size-41;
   {
     static const mz_uint8 chans[] = {0x00, 0x00, 0x04, 0x02, 0x06};
-    mz_uint8 pnghdr[41]={0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a,0x00,0x00,0x00,0x0d,0x49,0x48,0x44,0x52,
-      0, 0, 0/*[18]*/, 0/*[19]*/, 0, 0, 0/*[22]*/, 0/*[23]*/, 8, 0/*[25]*/, 0,0,0,0,0,0,0,
-      0/*[33]*/, 0/*[34]*/, 0/*[35]*/, 0/*[36]*/, 0x49, 0x44, 0x41, 0x54};
+
+    mz_uint8 pnghdr[41]={ 0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a,
+                          0x00,0x00,0x00,0x0d,0x49,0x48,0x44,0x52,
+                          0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+                          0x08,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+                          0x00,0x00,0x00,0x00,0x49,0x44,0x41,0x54};
+
     pnghdr[18] = (mz_uint8)(w>>8);
-    pnghdr[19] = (mz_uint8)w;
+    pnghdr[19] = (mz_uint8)(w>>0);
+
     pnghdr[22] = (mz_uint8)(h>>8);
-    pnghdr[23] = (mz_uint8)h;
-    pnghdr[25] = chans[num_chans];
+    pnghdr[23] = (mz_uint8)(h>>0);
+
+    pnghdr[25] = (chans[num_chans]);
+
     pnghdr[33] = (mz_uint8)(*pLen_out>>24);
     pnghdr[34] = (mz_uint8)(*pLen_out>>16);
-    pnghdr[35] = (mz_uint8)(*pLen_out>>8);
-    pnghdr[36] = (mz_uint8)*pLen_out;
-    c=(mz_uint32)mz_crc32(MZ_CRC32_INIT,pnghdr+12,17); for (i=0; i<4; ++i, c<<=8) ((mz_uint8*)(pnghdr+29))[i]=(mz_uint8)(c>>24);
+    pnghdr[35] = (mz_uint8)(*pLen_out>> 8);
+    pnghdr[36] = (mz_uint8)(*pLen_out>> 0);
+
+    c = (mz_uint32)mz_crc32(MZ_CRC32_INIT,pnghdr+12,17);
+    for (i=0; i<4; ++i, c<<=8) ((mz_uint8*)(pnghdr+29))[i] = (mz_uint8)(c>>24);
     memcpy(out_buf.m_pBuf, pnghdr, 41);
   }
   // write footer (IDAT CRC-32, followed by IEND chunk)
   if (!tdefl_output_buffer_putter("\0\0\0\0\0\0\0\0\x49\x45\x4e\x44\xae\x42\x60\x82", 16, &out_buf)) { *pLen_out = 0; MZ_FREE(pComp); MZ_FREE(out_buf.m_pBuf); return NULL; }
-  c = (mz_uint32)mz_crc32(MZ_CRC32_INIT,out_buf.m_pBuf+41-4, *pLen_out+4); for (i=0; i<4; ++i, c<<=8) (out_buf.m_pBuf+out_buf.m_size-16)[i] = (mz_uint8)(c >> 24);
+  c = (mz_uint32)mz_crc32(MZ_CRC32_INIT,out_buf.m_pBuf+41-4, *pLen_out+4);
+  for (i=0; i<4; ++i, c<<=8) (out_buf.m_pBuf+out_buf.m_size-16)[i] = (mz_uint8)(c >> 24);
   // compute final size of file, grab compressed data buffer and return
-  *pLen_out += 57; MZ_FREE(pComp); return out_buf.m_pBuf;
+  *pLen_out += 57;
+  MZ_FREE(pComp);
+  return out_buf.m_pBuf;
 }
 MINIZ_STATIC void *tdefl_write_image_to_png_file_in_memory(const void *pImage, int w, int h, int num_chans, int bpl, size_t *pLen_out)
 {
@@ -4107,7 +4122,7 @@ mz_bool mz_zip_writer_init_file(mz_zip_archive *pZip, const char *pFilename, mz_
   pZip->m_pState->m_pFile = pFile;
   if (size_to_reserve_at_beginning)
   {
-    mz_uint64 cur_ofs = 0; char buf[4096]; MZ_CLEAR_OBJ(buf);
+    mz_uint64 cur_ofs = 0; char buf[4096]; MZ_CLEAR_ARR(buf);
     do
     {
       size_t n = (size_t)MZ_MIN(sizeof(buf), size_to_reserve_at_beginning);
@@ -4373,7 +4388,7 @@ mz_bool mz_zip_writer_add_mem_ex(mz_zip_archive *pZip, const char *pArchive_name
   if (pZip->m_file_offset_alignment) { MZ_ASSERT((local_dir_header_ofs & (pZip->m_file_offset_alignment - 1)) == 0); }
   cur_archive_file_ofs += num_alignment_padding_bytes + sizeof(local_dir_header);
 
-  MZ_CLEAR_OBJ(local_dir_header);
+  MZ_CLEAR_ARR(local_dir_header);
   if (pZip->m_pWrite(pZip->m_pIO_opaque, cur_archive_file_ofs, pArchive_name, archive_name_size) != archive_name_size)
   {
     pZip->m_pFree(pZip->m_pAlloc_opaque, pComp);
@@ -4508,7 +4523,7 @@ mz_bool mz_zip_writer_add_file(mz_zip_archive *pZip, const char *pArchive_name, 
   if (pZip->m_file_offset_alignment) { MZ_ASSERT((local_dir_header_ofs & (pZip->m_file_offset_alignment - 1)) == 0); }
   cur_archive_file_ofs += num_alignment_padding_bytes + sizeof(local_dir_header);
 
-  MZ_CLEAR_OBJ(local_dir_header);
+  MZ_CLEAR_ARR(local_dir_header);
   if (pZip->m_pWrite(pZip->m_pIO_opaque, cur_archive_file_ofs, pArchive_name, archive_name_size) != archive_name_size)
   {
     MZ_FCLOSE(pSrc_file);
@@ -4780,7 +4795,7 @@ mz_bool mz_zip_writer_finalize_archive(mz_zip_archive *pZip)
   }
 
   // Write end of central directory record
-  MZ_CLEAR_OBJ(hdr);
+  MZ_CLEAR_ARR(hdr);
   MZ_WRITE_LE32(hdr + MZ_ZIP_ECDH_SIG_OFS, MZ_ZIP_END_OF_CENTRAL_DIR_HEADER_SIG);
   MZ_WRITE_LE16(hdr + MZ_ZIP_ECDH_CDIR_NUM_ENTRIES_ON_DISK_OFS, pZip->m_total_files);
   MZ_WRITE_LE16(hdr + MZ_ZIP_ECDH_CDIR_TOTAL_ENTRIES_OFS, pZip->m_total_files);
