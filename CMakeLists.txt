@@ -19,6 +19,10 @@ if (NOT BUILD_SHARED_LIBS)
 	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
+if (NOT WINDOWS)
+	add_compile_options(-fPIC)
+endif()
+
 add_library(SDL2_image)
 
 set(IMAGEIO_SOURCES)
