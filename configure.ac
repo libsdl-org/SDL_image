@@ -73,6 +73,8 @@ case "$host" in
             # Look for the location of the tools and install there
             if test "$BUILD_PREFIX" != ""; then
                 ac_default_prefix=$BUILD_PREFIX
+            elif test "$MINGW_PREFIX" != ""; then
+                ac_default_prefix=$MINGW_PREFIX
             fi
         fi
         if test x$WINDRES != x; then
@@ -104,6 +106,7 @@ AM_CONDITIONAL(USE_IMAGEIO, test x$enable_imageio = xyes)
 AM_CONDITIONAL(USE_VERSION_RC, test x$use_version_rc = xtrue)
 
 dnl set this to use on systems that use lib64 instead of lib
+base_bindir=`echo \${bindir} | sed 's/.*\/\(.*\)/\1/; q'`
 base_libdir=`echo \${libdir} | sed 's/.*\/\(.*\)/\1/; q'`
 
 dnl Function to find a library in the compiler search path
@@ -115,7 +118,7 @@ find_lib()
     if test "$cross_compiling" = yes; then
         host_lib_path=""
     else
-        host_lib_path="/usr/$base_libdir /usr/local/$base_libdir"
+        host_lib_path="$ac_default_prefix/$base_libdir $ac_default_prefix/$base_bindir /usr/$base_libdir /usr/local/$base_libdir"
     fi
     for path in $env_lib_path $gcc_bin_path $gcc_lib_path $host_lib_path; do
         lib=[`ls -- $path/$1 2>/dev/null | sed -e '/\.so\..*\./d' -e 's,.*/,,' | sort | tail -1`]
