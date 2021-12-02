@@ -166,6 +166,16 @@ AC_ARG_ENABLE([webpdec], [AS_HELP_STRING([--enable-webpdec], [support loading WE
 AC_ARG_ENABLE([webp-shared], [AS_HELP_STRING([--enable-webp-shared], [dynamically load WEBP support [default=yes]])],
  [], [enable_webp_shared=yes])
 
+dnl Check for SDL
+SDL_VERSION=2.0.8
+AC_SUBST(SDL_VERSION)
+AM_PATH_SDL2($SDL_VERSION,
+            :,
+            AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
+)
+CFLAGS="$CFLAGS $SDL_CFLAGS"
+LIBS="$LIBS $SDL_LIBS"
+
 if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_imageio != xyes; then
     AC_CHECK_HEADER([jpeglib.h], [have_jpg_hdr=yes])
     AC_CHECK_LIB([jpeg], [jpeg_CreateDecompress], [have_jpg_lib=yes])
@@ -378,16 +388,6 @@ if test x$enable_png = xyes -a x$have_png_hdr = xyes -a x$have_png_lib = xyes; t
         IMG_LIBS="$LIBPNG_LIBS $IMG_LIBS"
     fi
 fi
-
-dnl Check for SDL
-SDL_VERSION=2.0.8
-AC_SUBST(SDL_VERSION)
-AM_PATH_SDL2($SDL_VERSION,
-            :,
-            AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
-)
-CFLAGS="$CFLAGS $SDL_CFLAGS"
-LIBS="$LIBS $SDL_LIBS"
 
 AC_SUBST([WINDRES])
 AC_SUBST([IMG_LIBS])
