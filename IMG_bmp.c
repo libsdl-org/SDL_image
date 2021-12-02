@@ -120,7 +120,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
     SDL_bool was_error;
     Sint64 fp_offset = 0;
     int bmpPitch;
-    int i, pad;
+    int i,j, pad;
     SDL_Surface *surface;
     Uint32 Rmask;
     Uint32 Gmask;
@@ -356,7 +356,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
                 Uint8 channel;
                 for (i = 0; i < surface->w; ++i) {
                     pixel = 0;
-                    for (int j = 0; j < 3; ++j) {
+                    for (j = 0; j < 3; ++j) {
                         //Load each color channel into pixel
                         if (!SDL_RWread(src, &channel, 1, 1)) {
                             IMG_SetError("Error reading from ICO");
@@ -364,7 +364,6 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
                             goto done;
                         }
                         pixel |= (channel << (j * 8));
-    
                     }
                     *((Uint32 *) bits + i) = pixel;
                 }
