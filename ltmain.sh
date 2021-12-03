@@ -805,7 +805,7 @@ func_enable_tag ()
 
 
   case $host in
-    *cygwin* | *mingw* | *pw32* | *cegcc*)
+    *cygwin* | *mingw* | *pw32* | *cegcc* | *os2*)
       # don't eliminate duplications in $postdeps and $predeps
       opt_duplicate_compiler_generated_deps=:
       ;;
@@ -1573,6 +1573,7 @@ The following components of LINK-COMMAND are treated specially:
   -no-undefined     declare that a library does not refer to external symbols
   -o OUTPUT-FILE    create OUTPUT-FILE from the specified objects
   -objectlist FILE  Use a list of object files found in FILE to specify objects
+  -os2dllname NAME  specify short DLL name on OS/2 (no effect on other OSes)
   -precious-files-regex REGEX
                     don't remove output files matching REGEX
   -release RELEASE  specify package release information
@@ -2051,6 +2052,13 @@ func_mode_install ()
 	    case $realname in
 	    *.dll.a)
 	      tstripme=""
+	      ;;
+	    esac
+	    ;;
+	  os2*)
+	    case $realname in
+	    *_dll.a)
+	      tstripme=
 	      ;;
 	    esac
 	    ;;
@@ -4085,6 +4093,7 @@ func_mode_link ()
     module=no
     no_install=no
     objs=
+    os2dllname=
     non_pic_objects=
     precious_files_regex=
     prefer_static_libs=no
@@ -4328,6 +4337,11 @@ func_mode_link ()
 	    func_fatal_error "link input file \`$arg' does not exist"
 	  fi
 	  arg=$save_arg
+	  prev=
+	  continue
+	  ;;
+	os2dllname)
+	  os2dllname="$arg"
 	  prev=
 	  continue
 	  ;;
@@ -4622,6 +4636,11 @@ func_mode_link ()
 	continue
 	;;
 
+      -os2dllname)
+	prev=os2dllname
+	continue
+	;;
+
       -o) prev=output ;;
 
       -precious-files-regex)
@@ -4774,6 +4793,17 @@ func_mode_link ()
         compiler_flags="$compiler_flags $arg"
         continue
         ;;
+
+      # OS/2 uses -Zxxx to specify OS/2-specific options
+      -Z*)
+	compiler_flags="$compiler_flags $arg"
+	func_append compile_command " $arg"
+	func_append finalize_command " $arg"
+	case $arg in
+	-Zlinker | -Zstack) prev=xcompiler;;
+	esac
+	continue
+	;;
 
       # Some other compiler flag.
       -* | +*)
@@ -5557,7 +5587,7 @@ func_mode_link ()
 	if test -n "$library_names" &&
 	   { test "$use_static_libs" = no || test -z "$old_library"; }; then
 	  case $host in
-	  *cygwin* | *mingw* | *cegcc*)
+	  *cygwin* | *mingw* | *cegcc* | *os2*)
 	      # No point in relinking DLLs because paths are not encoded
 	      notinst_deplibs="$notinst_deplibs $lib"
 	      need_relink=no
@@ -5627,7 +5657,7 @@ func_mode_link ()
 	    elif test -n "$soname_spec"; then
 	      # bleh windows
 	      case $host in
-	      *cygwin* | mingw* | *cegcc*)
+	      *cygwin* | mingw* | *cegcc*)  # | *os2* # SDL customization: removed OS/2 versioning support.
 	        func_arith $current - $age
 		major=$func_arith_result
 		versuffix="-$major"
