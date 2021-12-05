@@ -954,6 +954,7 @@ enable_xv
 enable_webp
 enable_webpdec
 enable_webp_shared
+enable_qoi
 with_sdl_prefix
 with_sdl_exec_prefix
 enable_sdltest
@@ -1629,6 +1630,7 @@ Optional Features:
   --enable-webpdec        support loading WEBP images via libwebpdecoder
                           instead of libwebp [default=no]
   --enable-webp-shared    dynamically load WEBP support [default=yes]
+  --enable-qoi            support loading QOI images [default=yes]
   --disable-sdltest       Do not try to compile and run a test SDL program
 
 Optional Packages:
@@ -12601,6 +12603,13 @@ else
   enable_webp_shared=yes
 fi
 
+# Check whether --enable-qoi was given.
+if test "${enable_qoi+set}" = set; then :
+  enableval=$enable_qoi;
+else
+  enable_qoi=yes
+fi
+
 
 SDL_VERSION=2.0.8
 
@@ -13658,6 +13667,11 @@ fi
 
 if test x$enable_xv = xyes; then
     $as_echo "#define LOAD_XV 1" >>confdefs.h
+
+fi
+
+if test x$enable_qoi = xyes; then
+    $as_echo "#define LOAD_QOI 1" >>confdefs.h
 
 fi
 
