@@ -7855,7 +7855,7 @@ _LT_EOF
 	cat $export_symbols | $prefix_cmds >> $output_objdir/$libname.def~
 	$CC -Zdll -Zcrtdll -o $output_objdir/$soname $libobjs $deplibs $compiler_flags $output_objdir/$libname.def~
 	emximp -o $lib $output_objdir/$libname.def'
-      old_archive_From_new_cmds='emximp -o $output_objdir/${libname}_dll.a $output_objdir/$libname.def'
+      old_archive_from_new_cmds='emximp -o $output_objdir/${libname}_dll.a $output_objdir/$libname.def'
       enable_shared_with_static_runtimes=yes
       ;;
 
@@ -8519,7 +8519,7 @@ rm -f core conftest.err conftest.$ac_objext \
 	cat $export_symbols | $prefix_cmds >> $output_objdir/$libname.def~
 	$CC -Zdll -Zcrtdll -o $output_objdir/$soname $libobjs $deplibs $compiler_flags $output_objdir/$libname.def~
 	emximp -o $lib $output_objdir/$libname.def'
-      old_archive_From_new_cmds='emximp -o $output_objdir/${libname}_dll.a $output_objdir/$libname.def'
+      old_archive_from_new_cmds='emximp -o $output_objdir/${libname}_dll.a $output_objdir/$libname.def'
       enable_shared_with_static_runtimes=yes
       ;;
 
