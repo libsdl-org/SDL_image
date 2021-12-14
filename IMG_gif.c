@@ -199,7 +199,7 @@ static SDL_bool NormalizeFrames(Frame_t *frames, int count)
     return SDL_TRUE;
 }
 
-Anim_t *
+static Anim_t *
 IMG_LoadGIF_RW_Internal(SDL_RWops *src, SDL_bool load_anim)
 {
     unsigned char buf[16];
