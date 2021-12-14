@@ -12468,6 +12468,50 @@ find_lib()
     done
 }
 
+CheckVisibilityHidden()
+{
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for GCC -fvisibility=hidden option" >&5
+$as_echo_n "checking for GCC -fvisibility=hidden option... " >&6; }
+    have_gcc_fvisibility=no
+    case "$host" in
+    *-*-cygwin* | *-*-mingw* | *-*-os2*)
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: ignored for $host_os" >&5
+$as_echo "ignored for $host_os" >&6; }
+        return
+        ;;
+    esac
+
+    visibility_CFLAGS="-fvisibility=hidden"
+    save_CFLAGS="$CFLAGS"
+    CFLAGS="$save_CFLAGS $visibility_CFLAGS -Werror"
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+    #if !defined(__GNUC__) || __GNUC__ < 4
+    #error SDL only uses visibility attributes in GCC 4 or newer
+    #endif
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  have_gcc_fvisibility=yes
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $have_gcc_fvisibility" >&5
+$as_echo "$have_gcc_fvisibility" >&6; }
+    CFLAGS="$save_CFLAGS"
+
+    if test x$have_gcc_fvisibility = xyes; then
+        CFLAGS="$CFLAGS $visibility_CFLAGS"
+    fi
+}
+
 # Check whether --enable-bmp was given.
 if test "${enable_bmp+set}" = set; then :
   enableval=$enable_bmp;
@@ -13715,6 +13759,8 @@ fi
 
 
 
+
+CheckVisibilityHidden
 
 OBJCFLAGS=$CFLAGS
 
