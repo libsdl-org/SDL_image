@@ -8,7 +8,7 @@ diff -u /dev/null tiff-4.1.0/libtiff/mingw/Makefile
 +DLLNAME = libtiff-5.dll
 +LIBNAME = libtiff.dll.a
 +INCLUDES= -I. -Iexternal/include
-+CPPFLAGS= -DDLL_EXPORT
++CPPFLAGS= -DDLL_EXPORT -DNDEBUG
 +CFLAGS	= -O2 -Wall
 +LDFLAGS = -Wl,--enable-auto-image-base -Wl,--no-undefined
 +LDLIBS	= -Lexternal/lib -ljpeg -lz
