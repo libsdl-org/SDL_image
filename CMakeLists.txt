@@ -9,11 +9,20 @@ option(SDL_IMAGE_SUPPORT_JPG "Support loading JPEG images" ON)
 option(SDL_IMAGE_SUPPORT_PNG "Support loading PNG images" ON)
 option(SDL_IMAGE_SUPPORT_WEBP "Support loading WEBP images" OFF)
 option(SDL_IMAGE_BUILD_SHOWIMAGE "Build the showimage sample program" OFF)
+option(SDL_IMAGE_USE_WIC "Use WIC Backend on Windows" OFF)
 option(BUILD_SHARED_LIBS "Build the library as a shared library" ON)
 if (APPLE)
 	option(ENABLE_APPLE_IMAGEIO "Use native Mac OS X frameworks for loading images" ON)
 endif()
 
+if (NOT WIN32 AND SDL_IMAGE_USE_WIC)
+	message(FATAL_ERROR "WIC is only supported on Windows")
+endif()
+if (NOT SDL_IMAGE_SUPPORT_PNG OR NOT SDL_IMAGE_SUPPORT_JPG)
+	if (SDL_IMAGE_USE_WIC)
+		message(FATAL_ERROR "WIC requires PNG and JPG support.")
+	endif()
+endif()
 
 if (NOT BUILD_SHARED_LIBS)
 	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -40,43 +49,53 @@ target_compile_definitions(SDL2_image PRIVATE
 		-DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM
 		-DLOAD_TGA -DLOAD_XCF -DLOAD_XPM -DLOAD_XV -DLOAD_XPM)
 
-if (SDL_IMAGE_SUPPORT_JPG)
-	target_compile_definitions(SDL2_image PRIVATE -DLOAD_JPG)
-	add_subdirectory(external/jpeg-9d)
-	target_link_libraries(SDL2_image PRIVATE jpeg)
-endif()
+if (NOT SDL_IMAGE_USE_WIC)
+	if (SDL_IMAGE_SUPPORT_JPG)
+		target_compile_definitions(SDL2_image PRIVATE -DLOAD_JPG)
+		add_subdirectory(external/jpeg-9d)
+		target_link_libraries(SDL2_image PRIVATE jpeg)
+	endif()
 
-if (SDL_IMAGE_SUPPORT_PNG)
-	# missing libpng.vers
-	set(HAVE_LD_VERSION_SCRIPT OFF CACHE BOOL "" FORCE)
-	target_compile_definitions(SDL2_image PRIVATE -DLOAD_PNG)
+	if (SDL_IMAGE_SUPPORT_PNG)
+		# missing libpng.vers
+		set(HAVE_LD_VERSION_SCRIPT OFF CACHE BOOL "" FORCE)
+		target_compile_definitions(SDL2_image PRIVATE -DLOAD_PNG)
 
-	if (NOT TARGET zlib)
-		# if zlib not included from another source, add_subdirectory
-		add_subdirectory(external/zlib-1.2.11)
+		if (NOT TARGET zlib)
+			# if zlib not included from another source, add_subdirectory
+			add_subdirectory(external/zlib-1.2.11)
 
-		# libpng find_package(zlib) requires ZLIB_INCLUDE_DIR set
-		get_target_property(ZLIB_INCLUDE_DIR zlib INCLUDE_DIRECTORIES)
+			# libpng find_package(zlib) requires ZLIB_INCLUDE_DIR set
+			get_target_property(ZLIB_INCLUDE_DIR zlib INCLUDE_DIRECTORIES)
 
-		# libpng find_package(zlib) requires ZLIB_LIBRARY
-		if (BUILD_SHARED_LIBS)
-			set(ZLIB_LIBRARY zlib)
-		else()
-			set(ZLIB_LIBRARY zlibstatic)
+			# libpng find_package(zlib) requires ZLIB_LIBRARY
+			if (BUILD_SHARED_LIBS)
+				set(ZLIB_LIBRARY zlib)
+			else()
+				set(ZLIB_LIBRARY zlibstatic)
+			endif()
+
+			# SDL_image doesn't support installing currently
+			set(SKIP_INSTALL_ALL ON)
 		endif()
 
-		# SDL_image doesn't support installing currently
-		set(SKIP_INSTALL_ALL ON)
+		add_subdirectory(external/libpng-1.6.37)
+		include_directories(external/libpng-1.6.37)
+		if(BUILD_SHARED_LIBS)
+			target_link_libraries(SDL2_image PRIVATE png)
+		else()
+			target_link_libraries(SDL2_image PRIVATE png_static)
+		endif()
 	endif()
-
-	add_subdirectory(external/libpng-1.6.37)
-	include_directories(external/libpng-1.6.37)
-	if(BUILD_SHARED_LIBS)
-		target_link_libraries(SDL2_image PRIVATE png)
-	else()
-		target_link_libraries(SDL2_image PRIVATE png_static)
-	endif()
+else()
+	# WIC
+	target_compile_definitions(SDL2_image PRIVATE -DLOAD_JPG)
+	target_compile_definitions(SDL2_image PRIVATE -DLOAD_PNG)
+	target_compile_definitions(SDL2_image PRIVATE -DSDL_IMAGE_USE_WIC_BACKEND)
+	# link "windowscodecs.lib"
+	target_link_libraries(SDL2_image PRIVATE windowscodecs)
 endif()
+
 
 if (SDL_IMAGE_SUPPORT_WEBP)
 	target_compile_definitions(SDL2_image PRIVATE -DLOAD_WEBP)
