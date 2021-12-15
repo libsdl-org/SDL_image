@@ -5,10 +5,10 @@ if (NOT ANDROID AND NOT (TARGET SDL2 OR TARGET SDL2-static))
 	find_package(SDL2 REQUIRED)
 endif()
 
-option(SUPPORT_JPG "Support loading JPEG images" ON)
-option(SUPPORT_PNG "Support loading PNG images" ON)
-option(SUPPORT_WEBP "Support loading WEBP images" OFF)
-option(BUILD_SHOWIMAGE "Build the showimage sample program" OFF)
+option(SDL_IMAGE_SUPPORT_JPG "Support loading JPEG images" ON)
+option(SDL_IMAGE_SUPPORT_PNG "Support loading PNG images" ON)
+option(SDL_IMAGE_SUPPORT_WEBP "Support loading WEBP images" OFF)
+option(SDL_IMAGE_BUILD_SHOWIMAGE "Build the showimage sample program" OFF)
 option(BUILD_SHARED_LIBS "Build the library as a shared library" ON)
 if (APPLE)
 	option(ENABLE_APPLE_IMAGEIO "Use native Mac OS X frameworks for loading images" ON)
@@ -40,13 +40,13 @@ target_compile_definitions(SDL2_image PRIVATE
 		-DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM
 		-DLOAD_TGA -DLOAD_XCF -DLOAD_XPM -DLOAD_XV -DLOAD_XPM)
 
-if (SUPPORT_JPG)
+if (SDL_IMAGE_SUPPORT_JPG)
 	target_compile_definitions(SDL2_image PRIVATE -DLOAD_JPG)
 	add_subdirectory(external/jpeg-9d)
 	target_link_libraries(SDL2_image PRIVATE jpeg)
 endif()
 
-if (SUPPORT_PNG)
+if (SDL_IMAGE_SUPPORT_PNG)
 	# missing libpng.vers
 	set(HAVE_LD_VERSION_SCRIPT OFF CACHE BOOL "" FORCE)
 	target_compile_definitions(SDL2_image PRIVATE -DLOAD_PNG)
@@ -78,7 +78,7 @@ if (SUPPORT_PNG)
 	endif()
 endif()
 
-if (SUPPORT_WEBP)
+if (SDL_IMAGE_SUPPORT_WEBP)
 	target_compile_definitions(SDL2_image PRIVATE -DLOAD_WEBP)
 	# missing cpufeatures
 	add_subdirectory(external/libwebp-1.0.3)
@@ -99,7 +99,7 @@ else()
 	target_link_libraries(SDL2_image PUBLIC SDL2::SDL2-static)
 endif()
 
-if(BUILD_SHOWIMAGE)
+if(SDL_IMAGE_BUILD_SHOWIMAGE)
 	add_executable(showimage showimage.c)
 	target_link_libraries(showimage PRIVATE SDL2::image)
 	if (WIN32)
