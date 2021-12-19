@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.3.2)
 project(SDL_image C)
 
+# FIXME: CMAKE SUPPORT IN SDL2_image IS VERY INCOMPLETE YET !!!
+#
+# FIXME: make it able build against system codec libraries, too.
+# FIXME: handle library versioning.
+# FIXME: test accross different target platforms.
+
 if (NOT ANDROID AND NOT (TARGET SDL2 OR TARGET SDL2-static))
 	find_package(SDL2 REQUIRED)
 endif()
@@ -14,7 +20,7 @@ if (APPLE)
 	option(ENABLE_APPLE_IMAGEIO "Use native Mac OS X frameworks for loading images" ON)
 endif()
 
-
+# FIXME: ????
 if (NOT BUILD_SHARED_LIBS)
 	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
