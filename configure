@@ -954,6 +954,7 @@ enable_xv
 enable_webp
 enable_webpdec
 enable_webp_shared
+enable_qoi
 with_sdl_prefix
 with_sdl_exec_prefix
 enable_sdltest
@@ -1629,6 +1630,7 @@ Optional Features:
   --enable-webpdec        support loading WEBP images via libwebpdecoder
                           instead of libwebp [default=no]
   --enable-webp-shared    dynamically load WEBP support [default=yes]
+  --enable-qoi            support loading QOI images [default=yes]
   --disable-sdltest       Do not try to compile and run a test SDL program
 
 Optional Packages:
@@ -4061,13 +4063,13 @@ if ${lt_cv_nm_interface+:} false; then :
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:4064: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:4066: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4067: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:4069: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4070: output\"" >&5)
+  (eval echo "\"\$as_me:4072: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -5281,7 +5283,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5284 "configure"' > conftest.$ac_ext
+  echo '#line 5286 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7106,11 +7108,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7109: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7111: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7113: \$? = $ac_status" >&5
+   echo "$as_me:7115: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7455,11 +7457,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7458: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7460: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7462: \$? = $ac_status" >&5
+   echo "$as_me:7464: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7560,11 +7562,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7563: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7565: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7567: \$? = $ac_status" >&5
+   echo "$as_me:7569: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -7615,11 +7617,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7618: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7620: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7622: \$? = $ac_status" >&5
+   echo "$as_me:7624: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10058,7 +10060,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10061 "configure"
+#line 10063 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10154,7 +10156,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10157 "configure"
+#line 10159 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12645,6 +12647,13 @@ else
   enable_webp_shared=yes
 fi
 
+# Check whether --enable-qoi was given.
+if test "${enable_qoi+set}" = set; then :
+  enableval=$enable_qoi;
+else
+  enable_qoi=yes
+fi
+
 
 SDL_VERSION=2.0.8
 
@@ -13702,6 +13711,11 @@ fi
 
 if test x$enable_xv = xyes; then
     $as_echo "#define LOAD_XV 1" >>confdefs.h
+
+fi
+
+if test x$enable_qoi = xyes; then
+    $as_echo "#define LOAD_QOI 1" >>confdefs.h
 
 fi
 

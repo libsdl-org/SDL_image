@@ -51,6 +51,7 @@ static struct {
     { "XPM", IMG_isXPM, IMG_LoadXPM_RW },
     { "XV",  IMG_isXV,  IMG_LoadXV_RW  },
     { "WEBP", IMG_isWEBP, IMG_LoadWEBP_RW },
+    { "QOI", IMG_isQOI, IMG_LoadQOI_RW },
 };
 
 /* Table of animation detection and loading functions */

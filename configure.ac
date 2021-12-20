@@ -193,6 +193,8 @@ AC_ARG_ENABLE([webpdec], [AS_HELP_STRING([--enable-webpdec], [support loading WE
  [], [enable_webpdec=no])
 AC_ARG_ENABLE([webp-shared], [AS_HELP_STRING([--enable-webp-shared], [dynamically load WEBP support [default=yes]])],
  [], [enable_webp_shared=yes])
+AC_ARG_ENABLE([qoi], [AS_HELP_STRING([--enable-qoi], [support loading QOI images [default=yes]])],
+ [], [enable_qoi=yes])
 
 dnl Check for SDL
 SDL_VERSION=2.0.8
@@ -375,6 +377,10 @@ fi
 
 if test x$enable_xv = xyes; then
     AC_DEFINE([LOAD_XV])
+fi
+
+if test x$enable_qoi = xyes; then
+    AC_DEFINE([LOAD_QOI])
 fi
 
 if test x$enable_webp = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib = xyes; then

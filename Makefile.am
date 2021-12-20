@@ -20,6 +20,7 @@ libSDL2_image_la_SOURCES =	\
 	IMG_pcx.c		\
 	IMG_png.c		\
 	IMG_pnm.c		\
+	IMG_qoi.c		\
 	IMG_svg.c		\
 	IMG_tga.c		\
 	IMG_tif.c		\
@@ -31,7 +32,8 @@ libSDL2_image_la_SOURCES =	\
 	$(IMAGEIO_SOURCE)	\
 	miniz.h			\
 	nanosvg.h		\
-	nanosvgrast.h
+	nanosvgrast.h		\
+	qoi.h
 
 EXTRA_DIST =			\
 	Android.mk		\

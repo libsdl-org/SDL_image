@@ -146,14 +146,15 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(pkgconfigdir)" \
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 am__libSDL2_image_la_SOURCES_DIST = IMG.c IMG_bmp.c IMG_gif.c \
-	IMG_jpg.c IMG_lbm.c IMG_pcx.c IMG_png.c IMG_pnm.c IMG_svg.c \
-	IMG_tga.c IMG_tif.c IMG_xcf.c IMG_xpm.c IMG_xv.c IMG_webp.c \
-	IMG_WIC.c IMG_ImageIO.m miniz.h nanosvg.h nanosvgrast.h
+	IMG_jpg.c IMG_lbm.c IMG_pcx.c IMG_png.c IMG_pnm.c IMG_qoi.c \
+	IMG_svg.c IMG_tga.c IMG_tif.c IMG_xcf.c IMG_xpm.c IMG_xv.c \
+	IMG_webp.c IMG_WIC.c IMG_ImageIO.m miniz.h nanosvg.h \
+	nanosvgrast.h qoi.h
 @USE_IMAGEIO_TRUE@am__objects_1 = IMG_ImageIO.lo
 am_libSDL2_image_la_OBJECTS = IMG.lo IMG_bmp.lo IMG_gif.lo IMG_jpg.lo \
-	IMG_lbm.lo IMG_pcx.lo IMG_png.lo IMG_pnm.lo IMG_svg.lo \
-	IMG_tga.lo IMG_tif.lo IMG_xcf.lo IMG_xpm.lo IMG_xv.lo \
-	IMG_webp.lo IMG_WIC.lo $(am__objects_1)
+	IMG_lbm.lo IMG_pcx.lo IMG_png.lo IMG_pnm.lo IMG_qoi.lo \
+	IMG_svg.lo IMG_tga.lo IMG_tif.lo IMG_xcf.lo IMG_xpm.lo \
+	IMG_xv.lo IMG_webp.lo IMG_WIC.lo $(am__objects_1)
 libSDL2_image_la_OBJECTS = $(am_libSDL2_image_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -188,11 +189,11 @@ am__depfiles_remade = ./$(DEPDIR)/IMG.Plo ./$(DEPDIR)/IMG_ImageIO.Plo \
 	./$(DEPDIR)/IMG_gif.Plo ./$(DEPDIR)/IMG_jpg.Plo \
 	./$(DEPDIR)/IMG_lbm.Plo ./$(DEPDIR)/IMG_pcx.Plo \
 	./$(DEPDIR)/IMG_png.Plo ./$(DEPDIR)/IMG_pnm.Plo \
-	./$(DEPDIR)/IMG_svg.Plo ./$(DEPDIR)/IMG_tga.Plo \
-	./$(DEPDIR)/IMG_tif.Plo ./$(DEPDIR)/IMG_webp.Plo \
-	./$(DEPDIR)/IMG_xcf.Plo ./$(DEPDIR)/IMG_xpm.Plo \
-	./$(DEPDIR)/IMG_xv.Plo ./$(DEPDIR)/showanim.Po \
-	./$(DEPDIR)/showimage.Po
+	./$(DEPDIR)/IMG_qoi.Plo ./$(DEPDIR)/IMG_svg.Plo \
+	./$(DEPDIR)/IMG_tga.Plo ./$(DEPDIR)/IMG_tif.Plo \
+	./$(DEPDIR)/IMG_webp.Plo ./$(DEPDIR)/IMG_xcf.Plo \
+	./$(DEPDIR)/IMG_xpm.Plo ./$(DEPDIR)/IMG_xv.Plo \
+	./$(DEPDIR)/showanim.Po ./$(DEPDIR)/showimage.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -443,6 +444,7 @@ libSDL2_image_la_SOURCES = \
 	IMG_pcx.c		\
 	IMG_png.c		\
 	IMG_pnm.c		\
+	IMG_qoi.c		\
 	IMG_svg.c		\
 	IMG_tga.c		\
 	IMG_tif.c		\
@@ -454,7 +456,8 @@ libSDL2_image_la_SOURCES = \
 	$(IMAGEIO_SOURCE)	\
 	miniz.h			\
 	nanosvg.h		\
-	nanosvgrast.h
+	nanosvgrast.h		\
+	qoi.h
 
 EXTRA_DIST = \
 	Android.mk		\
@@ -603,6 +606,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_pcx.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_png.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_pnm.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_qoi.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_svg.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_tga.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_tif.Plo@am__quote@ # am--include-marker
@@ -996,6 +1000,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/IMG_pcx.Plo
 	-rm -f ./$(DEPDIR)/IMG_png.Plo
 	-rm -f ./$(DEPDIR)/IMG_pnm.Plo
+	-rm -f ./$(DEPDIR)/IMG_qoi.Plo
 	-rm -f ./$(DEPDIR)/IMG_svg.Plo
 	-rm -f ./$(DEPDIR)/IMG_tga.Plo
 	-rm -f ./$(DEPDIR)/IMG_tif.Plo
@@ -1063,6 +1068,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/IMG_pcx.Plo
 	-rm -f ./$(DEPDIR)/IMG_png.Plo
 	-rm -f ./$(DEPDIR)/IMG_pnm.Plo
+	-rm -f ./$(DEPDIR)/IMG_qoi.Plo
 	-rm -f ./$(DEPDIR)/IMG_svg.Plo
 	-rm -f ./$(DEPDIR)/IMG_tga.Plo
 	-rm -f ./$(DEPDIR)/IMG_tif.Plo
