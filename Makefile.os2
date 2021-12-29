@@ -26,6 +26,8 @@ LIBS = libpng.lib libtiff.lib zlib.lib jpeg.lib webpdec.lib SDL2.lib
 CFLAGS_BASE = -bt=os2 -ei -d0 -q -5s -fp5 -fpi87 -sg -s -oilrtfm
 # warnings:
 CFLAGS_BASE+= -wx -wcd=202
+# newer OpenWatcom versions enable W303 by default
+CFLAGS_BASE+= -wcd=303
 # include paths:
 CFLAGS_BASE+= -I"$(%WATCOM)/h/os2" -I"$(%WATCOM)/h"
 CFLAGS_BASE+= -I. $(DEPS_INC)
