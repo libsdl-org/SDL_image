@@ -49,6 +49,7 @@ LOCAL_SRC_FILES :=  \
     IMG_pcx.c       \
     IMG_png.c       \
     IMG_pnm.c       \
+    IMG_qoi.c       \
     IMG_svg.c       \
     IMG_tga.c       \
     IMG_tif.c       \
