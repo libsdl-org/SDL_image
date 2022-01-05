@@ -50,6 +50,9 @@
     <ClCompile Include="..\IMG_svg.c">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\IMG_qoi.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Sources">

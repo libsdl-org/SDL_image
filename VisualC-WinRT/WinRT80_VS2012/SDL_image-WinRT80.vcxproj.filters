@@ -17,6 +17,7 @@
     <ClCompile Include="..\..\IMG_xv.c" />
     <ClCompile Include="..\..\IMG_xxx.c" />
     <ClCompile Include="..\..\IMG_svg.c" />
+    <ClCompile Include="..\..\IMG_qoi.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\miniz.h" />
