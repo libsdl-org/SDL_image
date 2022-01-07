@@ -135,8 +135,8 @@ The possible chunks are:
 2-bit tag b00
 6-bit index into the color index array: 0..63
 
-A valid encoder must not issue 7 or more consecutive QOI_OP_INDEX chunks to the
-index 0, to avoid confusion with the 8 byte end marker.
+A valid encoder must not issue 2 or more consecutive QOI_OP_INDEX chunks to the
+same index. QOI_OP_RUN should be used instead.
 
 
 .- QOI_OP_DIFF -----------.
@@ -173,8 +173,8 @@ The alpha value remains unchanged from the previous pixel.
 The green channel is used to indicate the general direction of change and is
 encoded in 6 bits. The red and blue channels (dr and db) base their diffs off
 of the green channel difference and are encoded in 4 bits. I.e.:
-	dr_dg = (last_px.r - cur_px.r) - (last_px.g - cur_px.g)
-	db_dg = (last_px.b - cur_px.b) - (last_px.g - cur_px.g)
+	dr_dg = (cur_px.r - prev_px.r) - (cur_px.g - prev_px.g)
+	db_dg = (cur_px.b - prev_px.b) - (cur_px.g - prev_px.g)
 
 The difference to the current channel values are using a wraparound operation,
 so "10 - 13" will result in 253, while "250 + 7" will result in 1.
@@ -248,7 +248,7 @@ The colorspace in this qoi_desc is an enum where
 	1 = all channels are linear
 You may use the constants QOI_SRGB or QOI_LINEAR. The colorspace is purely
 informative. It will be saved to the file header, but does not affect
-en-/decoding in any way. */
+how chunks are en-/decoded. */
 
 #define QOI_SRGB   0
 #define QOI_LINEAR 1
