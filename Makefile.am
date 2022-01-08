@@ -35,22 +35,22 @@ libSDL2_image_la_SOURCES =	\
 	nanosvgrast.h		\
 	qoi.h
 
-EXTRA_DIST =			\
+EXTRA_DIST = CHANGES.txt LICENSE.txt README.txt README-emscripten.txt \
+	IMG_xxx.c		\
+	IMG_ImageIO.m		\
+	IMG_UIImage.m		\
 	Android.mk		\
-	debian			\
-	external		\
-	version.rc		\
 	Makefile.os2		\
 	VisualC			\
-	VisualC-WinRT	\
+	VisualC-WinRT		\
+	version.rc		\
 	Xcode			\
 	Xcode-iOS		\
-	IMG_xxx.c		\
-	$(srcdir)/*.m		\
+	debian			\
+	external		\
 	SDL2_image.spec		\
-	gcc-fat.sh		\
-	autogen.sh		\
-	$(srcdir)/*.txt
+	autogen.sh gcc-fat.sh
+
 
 if USE_VERSION_RC
 libSDL2_image_la_LDFLAGS = 	\
