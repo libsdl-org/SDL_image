@@ -513,6 +513,7 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
         png_structp png_ptr;
         png_infop info_ptr;
         png_colorp color_ptr = NULL;
+        uint8_t transparent_table[256];
         SDL_Surface *source = surface;
         SDL_Palette *palette;
         int png_color_type = PNG_COLOR_TYPE_RGB_ALPHA;
@@ -546,6 +547,7 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
         if (palette) {
             const int ncolors = palette->ncolors;
             int i;
+            int last_transparent = -1;
 
             color_ptr = (png_colorp)SDL_malloc(sizeof(png_colorp) * ncolors);
             if (color_ptr == NULL)
@@ -558,9 +560,22 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
                 color_ptr[i].red = palette->colors[i].r;
                 color_ptr[i].green = palette->colors[i].g;
                 color_ptr[i].blue = palette->colors[i].b;
+                if (palette->colors[i].a != 255) {
+                    last_transparent = i;
+                }
             }
             lib.png_set_PLTE(png_ptr, info_ptr, color_ptr, ncolors);
             png_color_type = PNG_COLOR_TYPE_PALETTE;
+
+            if (last_transparent >= 0) {
+                for (i = 0; i <= last_transparent; ++i) {
+                    transparent_table[i] = palette->colors[i].a;
+                }
+                png_set_tRNS(png_ptr, info_ptr, transparent_table, last_transparent + 1, NULL);
+            }
+        }
+        else if (surface->format->format == SDL_PIXELFORMAT_RGB24) {
+            png_color_type = PNG_COLOR_TYPE_RGB;
         }
         else if (surface->format->format != png_format) {
             source = SDL_ConvertSurfaceFormat(surface, png_format, 0);
