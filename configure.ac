@@ -210,6 +210,7 @@ if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_image
     PKG_CHECK_MODULES([LIBJPEG], [libjpeg], [dnl
         have_jpg_hdr=yes
         have_jpg_lib=yes
+        have_jpg_pc=yes
       ], [dnl
         AC_CHECK_HEADER([jpeglib.h], [
             have_jpg_hdr=yes
@@ -249,6 +250,7 @@ if test x$enable_png = xyes -a x$enable_imageio != xyes; then
     PKG_CHECK_MODULES([LIBPNG], [libpng], [dnl
         have_png_hdr=yes
         have_png_lib=yes
+        have_png_pc=yes
       ], [dnl
         AC_CHECK_HEADER([png.h], [
             have_png_hdr=yes
@@ -286,6 +288,7 @@ if test x$enable_tif = xyes -a x$enable_imageio != xyes; then
     PKG_CHECK_MODULES([LIBTIFF], [libtiff-4], [dnl
         have_tif_hdr=yes
         have_tif_lib=yes
+        have_tif_pc=yes
       ], [dnl
         AC_CHECK_HEADER([tiffio.h], [
             have_tif_hdr=yes
@@ -328,6 +331,7 @@ if test x$enable_webp = xyes; then
     PKG_CHECK_MODULES([LIBWEBP], [lib$webplib], [dnl
         have_webp_hdr=yes
         have_webp_lib=yes
+        have_webp_pc=yes
       ], [dnl
         AC_CHECK_HEADER([webp/decode.h], [
             have_webp_hdr=yes
@@ -412,6 +416,11 @@ if test x$enable_webp = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib = xyes
         AC_DEFINE_UNQUOTED(LOAD_WEBP_DYNAMIC, "$webp_lib")
     else
         IMG_LIBS="$LIBWEBP_LIBS $IMG_LIBS"
+        if test x$have_webp_pc = xyes; then
+            PC_REQUIRES="lib$webplib $PC_REQUIRES"
+        else
+            PC_LIBS="$LIBWEBP_LIBS $PC_LIBS"
+        fi
     fi
 fi
 
@@ -426,6 +435,11 @@ if test x$enable_tif = xyes -a x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; t
             jpg_lib=''
         fi
         IMG_LIBS="$LIBTIFF_LIBS $IMG_LIBS"
+        if test x$have_tif_pc = xyes; then
+            PC_REQUIRES="libtiff-4 $PC_REQUIRES"
+        else
+            PC_LIBS="$LIBTIFF_LIBS $PC_LIBS"
+        fi
     fi
 fi
 if test x$enable_jpg = xyes -a x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; then
@@ -435,6 +449,11 @@ if test x$enable_jpg = xyes -a x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; t
         AC_DEFINE_UNQUOTED(LOAD_JPG_DYNAMIC, "$jpg_lib")
     else
         IMG_LIBS="$LIBJPEG_LIBS $IMG_LIBS"
+        if test x$have_jpg_pc = xyes; then
+            PC_REQUIRES="libjpeg $PC_REQUIRES"
+        else
+            PC_LIBS="$LIBJPEG_LIBS $PC_LIBS"
+        fi
     fi
 fi
 if test x$enable_png = xyes -a x$have_png_hdr = xyes -a x$have_png_lib = xyes; then
@@ -444,11 +463,18 @@ if test x$enable_png = xyes -a x$have_png_hdr = xyes -a x$have_png_lib = xyes; t
         AC_DEFINE_UNQUOTED(LOAD_PNG_DYNAMIC, "$png_lib")
     else
         IMG_LIBS="$LIBPNG_LIBS $IMG_LIBS"
+        if test x$have_png_pc = xyes; then
+            PC_REQUIRES="libpng $PC_REQUIRES"
+        else
+            PC_LIBS="$LIBPNG_LIBS $PC_LIBS"
+        fi
     fi
 fi
 
 AC_SUBST([WINDRES])
 AC_SUBST([IMG_LIBS])
+AC_SUBST([PC_LIBS])
+AC_SUBST([PC_REQUIRES])
 
 dnl check for GCC visibility attributes
 CheckVisibilityHidden
