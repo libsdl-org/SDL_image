@@ -207,8 +207,19 @@ CFLAGS="$CFLAGS $SDL_CFLAGS"
 LIBS="$LIBS $SDL_LIBS"
 
 if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_imageio != xyes; then
-    AC_CHECK_HEADER([jpeglib.h], [have_jpg_hdr=yes])
-    AC_CHECK_LIB([jpeg], [jpeg_CreateDecompress], [have_jpg_lib=yes])
+    PKG_CHECK_MODULES([LIBJPEG], [libjpeg], [dnl
+        have_jpg_hdr=yes
+        have_jpg_lib=yes
+      ], [dnl
+        AC_CHECK_HEADER([jpeglib.h], [
+            have_jpg_hdr=yes
+            LIBJPEG_CFLAGS=""
+        ])
+        AC_CHECK_LIB([jpeg], [jpeg_CreateDecompress], [
+            have_jpg_lib=yes
+            LIBJPEG_LIBS="-ljpeg"
+        ])
+      ])
     if test x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; then
         if test x$enable_jpg = xyes; then
             AC_DEFINE([LOAD_JPG])
@@ -272,8 +283,19 @@ if test x$enable_png = xyes -a x$enable_imageio != xyes; then
 fi
 
 if test x$enable_tif = xyes -a x$enable_imageio != xyes; then
-    AC_CHECK_HEADER([tiffio.h], [have_tif_hdr=yes])
-    AC_CHECK_LIB([tiff], [TIFFClientOpen], [have_tif_lib=yes], [], [-lz])
+    PKG_CHECK_MODULES([LIBTIFF], [libtiff-4], [dnl
+        have_tif_hdr=yes
+        have_tif_lib=yes
+      ], [dnl
+        AC_CHECK_HEADER([tiffio.h], [
+            have_tif_hdr=yes
+            LIBTIFF_CFLAGS=""
+        ])
+        AC_CHECK_LIB([tiff], [TIFFClientOpen], [
+            have_tif_lib=yes
+            LIBTIFF_LIBS="-ltiff -lz"
+        ], [], [-lz])
+      ])
     if test x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; then
         AC_DEFINE([LOAD_TIF])
 
@@ -394,6 +416,7 @@ if test x$enable_webp = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib = xyes
 fi
 
 if test x$enable_tif = xyes -a x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; then
+    CFLAGS="$LIBTIFF_CFLAGS $CFLAGS"
     if test x$enable_tif_shared = xyes && test x$tif_lib != x; then
         echo "-- dynamic libtiff -> $tif_lib"
         AC_DEFINE_UNQUOTED(LOAD_TIF_DYNAMIC, "$tif_lib")
@@ -402,15 +425,16 @@ if test x$enable_tif = xyes -a x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; t
             # Disable dynamic jpeg since we're linking it explicitly
             jpg_lib=''
         fi
-        IMG_LIBS="-ltiff -lz $IMG_LIBS"
+        IMG_LIBS="$LIBTIFF_LIBS $IMG_LIBS"
     fi
 fi
 if test x$enable_jpg = xyes -a x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; then
+    CFLAGS="$LIBJPEG_CFLAGS $CFLAGS"
     if test x$enable_jpg_shared = xyes && test x$jpg_lib != x; then
         echo "-- dynamic libjpeg -> $jpg_lib"
         AC_DEFINE_UNQUOTED(LOAD_JPG_DYNAMIC, "$jpg_lib")
     else
-        IMG_LIBS="-ljpeg $IMG_LIBS"
+        IMG_LIBS="$LIBJPEG_LIBS $IMG_LIBS"
     fi
 fi
 if test x$enable_png = xyes -a x$have_png_hdr = xyes -a x$have_png_lib = xyes; then
