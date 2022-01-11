@@ -8,5 +8,7 @@ Description: image loading library for Simple DirectMedia Layer
 Version: @VERSION@
 Requires: sdl2 >= @SDL_VERSION@
 Libs: -L${libdir} -lSDL2_image
+Requires.private: @PC_REQUIRES@
+Libs.private: @PC_LIBS@
 Cflags: -I${includedir}/SDL2
 
