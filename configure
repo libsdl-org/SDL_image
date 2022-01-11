@@ -775,11 +775,17 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+PC_REQUIRES
+PC_LIBS
 IMG_LIBS
 LIBWEBP_LIBS
 LIBWEBP_CFLAGS
+LIBTIFF_LIBS
+LIBTIFF_CFLAGS
 LIBPNG_LIBS
 LIBPNG_CFLAGS
+LIBJPEG_LIBS
+LIBJPEG_CFLAGS
 SDL2_CONFIG
 SDL_LIBS
 SDL_CFLAGS
@@ -975,8 +981,12 @@ PKG_CONFIG_PATH
 PKG_CONFIG_LIBDIR
 SDL_CFLAGS
 SDL_LIBS
+LIBJPEG_CFLAGS
+LIBJPEG_LIBS
 LIBPNG_CFLAGS
 LIBPNG_LIBS
+LIBTIFF_CFLAGS
+LIBTIFF_LIBS
 LIBWEBP_CFLAGS
 LIBWEBP_LIBS'
 
@@ -1660,9 +1670,17 @@ Some influential environment variables:
               path overriding pkg-config's built-in search path
   SDL_CFLAGS  C compiler flags for SDL, overriding pkg-config
   SDL_LIBS    linker flags for SDL, overriding pkg-config
+  LIBJPEG_CFLAGS
+              C compiler flags for LIBJPEG, overriding pkg-config
+  LIBJPEG_LIBS
+              linker flags for LIBJPEG, overriding pkg-config
   LIBPNG_CFLAGS
               C compiler flags for LIBPNG, overriding pkg-config
   LIBPNG_LIBS linker flags for LIBPNG, overriding pkg-config
+  LIBTIFF_CFLAGS
+              C compiler flags for LIBTIFF, overriding pkg-config
+  LIBTIFF_LIBS
+              linker flags for LIBTIFF, overriding pkg-config
   LIBWEBP_CFLAGS
               C compiler flags for LIBWEBP, overriding pkg-config
   LIBWEBP_LIBS
@@ -4063,13 +4081,13 @@ if ${lt_cv_nm_interface+:} false; then :
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:4066: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:4084: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4069: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:4087: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4072: output\"" >&5)
+  (eval echo "\"\$as_me:4090: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -5283,7 +5301,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5286 "configure"' > conftest.$ac_ext
+  echo '#line 5304 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7108,11 +7126,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7111: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7129: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7115: \$? = $ac_status" >&5
+   echo "$as_me:7133: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7457,11 +7475,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7460: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7478: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7464: \$? = $ac_status" >&5
+   echo "$as_me:7482: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7562,11 +7580,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7565: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7583: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7569: \$? = $ac_status" >&5
+   echo "$as_me:7587: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -7617,11 +7635,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7620: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7638: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7624: \$? = $ac_status" >&5
+   echo "$as_me:7642: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10060,7 +10078,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10063 "configure"
+#line 10081 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10156,7 +10174,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10159 "configure"
+#line 10177 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13103,13 +13121,75 @@ CFLAGS="$CFLAGS $SDL_CFLAGS"
 LIBS="$LIBS $SDL_LIBS"
 
 if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_imageio != xyes; then
-    ac_fn_c_check_header_mongrel "$LINENO" "jpeglib.h" "ac_cv_header_jpeglib_h" "$ac_includes_default"
-if test "x$ac_cv_header_jpeglib_h" = xyes; then :
-  have_jpg_hdr=yes
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libjpeg" >&5
+$as_echo_n "checking for libjpeg... " >&6; }
+
+if test -n "$LIBJPEG_CFLAGS"; then
+    pkg_cv_LIBJPEG_CFLAGS="$LIBJPEG_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libjpeg\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libjpeg") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBJPEG_CFLAGS=`$PKG_CONFIG --cflags "libjpeg" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$LIBJPEG_LIBS"; then
+    pkg_cv_LIBJPEG_LIBS="$LIBJPEG_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libjpeg\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libjpeg") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBJPEG_LIBS=`$PKG_CONFIG --libs "libjpeg" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
 fi
 
 
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for jpeg_CreateDecompress in -ljpeg" >&5
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        LIBJPEG_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libjpeg" 2>&1`
+        else
+	        LIBJPEG_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libjpeg" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$LIBJPEG_PKG_ERRORS" >&5
+
+	        ac_fn_c_check_header_mongrel "$LINENO" "jpeglib.h" "ac_cv_header_jpeglib_h" "$ac_includes_default"
+if test "x$ac_cv_header_jpeglib_h" = xyes; then :
+
+            have_jpg_hdr=yes
+            LIBJPEG_CFLAGS=""
+
+fi
+
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for jpeg_CreateDecompress in -ljpeg" >&5
 $as_echo_n "checking for jpeg_CreateDecompress in -ljpeg... " >&6; }
 if ${ac_cv_lib_jpeg_jpeg_CreateDecompress+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -13146,9 +13226,79 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_jpeg_jpeg_CreateDecompress" >&5
 $as_echo "$ac_cv_lib_jpeg_jpeg_CreateDecompress" >&6; }
 if test "x$ac_cv_lib_jpeg_jpeg_CreateDecompress" = xyes; then :
-  have_jpg_lib=yes
+
+            have_jpg_lib=yes
+            LIBJPEG_LIBS="-ljpeg"
+
 fi
 
+
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	        ac_fn_c_check_header_mongrel "$LINENO" "jpeglib.h" "ac_cv_header_jpeglib_h" "$ac_includes_default"
+if test "x$ac_cv_header_jpeglib_h" = xyes; then :
+
+            have_jpg_hdr=yes
+            LIBJPEG_CFLAGS=""
+
+fi
+
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for jpeg_CreateDecompress in -ljpeg" >&5
+$as_echo_n "checking for jpeg_CreateDecompress in -ljpeg... " >&6; }
+if ${ac_cv_lib_jpeg_jpeg_CreateDecompress+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ljpeg  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char jpeg_CreateDecompress ();
+int
+main ()
+{
+return jpeg_CreateDecompress ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_jpeg_jpeg_CreateDecompress=yes
+else
+  ac_cv_lib_jpeg_jpeg_CreateDecompress=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_jpeg_jpeg_CreateDecompress" >&5
+$as_echo "$ac_cv_lib_jpeg_jpeg_CreateDecompress" >&6; }
+if test "x$ac_cv_lib_jpeg_jpeg_CreateDecompress" = xyes; then :
+
+            have_jpg_lib=yes
+            LIBJPEG_LIBS="-ljpeg"
+
+fi
+
+
+else
+	LIBJPEG_CFLAGS=$pkg_cv_LIBJPEG_CFLAGS
+	LIBJPEG_LIBS=$pkg_cv_LIBJPEG_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	        have_jpg_hdr=yes
+        have_jpg_lib=yes
+        have_jpg_pc=yes
+
+fi
     if test x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; then
         if test x$enable_jpg = xyes; then
             $as_echo "#define LOAD_JPG 1" >>confdefs.h
@@ -13353,6 +13503,7 @@ else
 $as_echo "yes" >&6; }
 	        have_png_hdr=yes
         have_png_lib=yes
+        have_png_pc=yes
 
 fi
     if test x$have_png_hdr = xyes -a x$have_png_lib = xyes; then
@@ -13382,13 +13533,75 @@ $as_echo "$as_me: WARNING: PNG image loading disabled" >&2;}
 fi
 
 if test x$enable_tif = xyes -a x$enable_imageio != xyes; then
-    ac_fn_c_check_header_mongrel "$LINENO" "tiffio.h" "ac_cv_header_tiffio_h" "$ac_includes_default"
-if test "x$ac_cv_header_tiffio_h" = xyes; then :
-  have_tif_hdr=yes
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libtiff-4" >&5
+$as_echo_n "checking for libtiff-4... " >&6; }
+
+if test -n "$LIBTIFF_CFLAGS"; then
+    pkg_cv_LIBTIFF_CFLAGS="$LIBTIFF_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libtiff-4\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libtiff-4") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBTIFF_CFLAGS=`$PKG_CONFIG --cflags "libtiff-4" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$LIBTIFF_LIBS"; then
+    pkg_cv_LIBTIFF_LIBS="$LIBTIFF_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libtiff-4\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libtiff-4") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBTIFF_LIBS=`$PKG_CONFIG --libs "libtiff-4" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
 fi
 
 
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for TIFFClientOpen in -ltiff" >&5
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        LIBTIFF_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libtiff-4" 2>&1`
+        else
+	        LIBTIFF_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libtiff-4" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$LIBTIFF_PKG_ERRORS" >&5
+
+	        ac_fn_c_check_header_mongrel "$LINENO" "tiffio.h" "ac_cv_header_tiffio_h" "$ac_includes_default"
+if test "x$ac_cv_header_tiffio_h" = xyes; then :
+
+            have_tif_hdr=yes
+            LIBTIFF_CFLAGS=""
+
+fi
+
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for TIFFClientOpen in -ltiff" >&5
 $as_echo_n "checking for TIFFClientOpen in -ltiff... " >&6; }
 if ${ac_cv_lib_tiff_TIFFClientOpen+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -13425,9 +13638,79 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_tiff_TIFFClientOpen" >&5
 $as_echo "$ac_cv_lib_tiff_TIFFClientOpen" >&6; }
 if test "x$ac_cv_lib_tiff_TIFFClientOpen" = xyes; then :
-  have_tif_lib=yes
+
+            have_tif_lib=yes
+            LIBTIFF_LIBS="-ltiff -lz"
+
 fi
 
+
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	        ac_fn_c_check_header_mongrel "$LINENO" "tiffio.h" "ac_cv_header_tiffio_h" "$ac_includes_default"
+if test "x$ac_cv_header_tiffio_h" = xyes; then :
+
+            have_tif_hdr=yes
+            LIBTIFF_CFLAGS=""
+
+fi
+
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for TIFFClientOpen in -ltiff" >&5
+$as_echo_n "checking for TIFFClientOpen in -ltiff... " >&6; }
+if ${ac_cv_lib_tiff_TIFFClientOpen+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ltiff -lz $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char TIFFClientOpen ();
+int
+main ()
+{
+return TIFFClientOpen ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_tiff_TIFFClientOpen=yes
+else
+  ac_cv_lib_tiff_TIFFClientOpen=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_tiff_TIFFClientOpen" >&5
+$as_echo "$ac_cv_lib_tiff_TIFFClientOpen" >&6; }
+if test "x$ac_cv_lib_tiff_TIFFClientOpen" = xyes; then :
+
+            have_tif_lib=yes
+            LIBTIFF_LIBS="-ltiff -lz"
+
+fi
+
+
+else
+	LIBTIFF_CFLAGS=$pkg_cv_LIBTIFF_CFLAGS
+	LIBTIFF_LIBS=$pkg_cv_LIBTIFF_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	        have_tif_hdr=yes
+        have_tif_lib=yes
+        have_tif_pc=yes
+
+fi
     if test x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; then
         $as_echo "#define LOAD_TIF 1" >>confdefs.h
 
@@ -13639,6 +13922,7 @@ else
 $as_echo "yes" >&6; }
 	        have_webp_hdr=yes
         have_webp_lib=yes
+        have_webp_pc=yes
 
 fi
     if test x$have_webp_hdr = xyes -a x$have_webp_lib = xyes; then
@@ -13732,10 +14016,16 @@ _ACEOF
 
     else
         IMG_LIBS="$LIBWEBP_LIBS $IMG_LIBS"
+        if test x$have_webp_pc = xyes; then
+            PC_REQUIRES="lib$webplib $PC_REQUIRES"
+        else
+            PC_LIBS="$LIBWEBP_LIBS $PC_LIBS"
+        fi
     fi
 fi
 
 if test x$enable_tif = xyes -a x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; then
+    CFLAGS="$LIBTIFF_CFLAGS $CFLAGS"
     if test x$enable_tif_shared = xyes && test x$tif_lib != x; then
         echo "-- dynamic libtiff -> $tif_lib"
         cat >>confdefs.h <<_ACEOF
@@ -13747,10 +14037,16 @@ _ACEOF
             # Disable dynamic jpeg since we're linking it explicitly
             jpg_lib=''
         fi
-        IMG_LIBS="-ltiff -lz $IMG_LIBS"
+        IMG_LIBS="$LIBTIFF_LIBS $IMG_LIBS"
+        if test x$have_tif_pc = xyes; then
+            PC_REQUIRES="libtiff-4 $PC_REQUIRES"
+        else
+            PC_LIBS="$LIBTIFF_LIBS $PC_LIBS"
+        fi
     fi
 fi
 if test x$enable_jpg = xyes -a x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; then
+    CFLAGS="$LIBJPEG_CFLAGS $CFLAGS"
     if test x$enable_jpg_shared = xyes && test x$jpg_lib != x; then
         echo "-- dynamic libjpeg -> $jpg_lib"
         cat >>confdefs.h <<_ACEOF
@@ -13758,7 +14054,12 @@ if test x$enable_jpg = xyes -a x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; t
 _ACEOF
 
     else
-        IMG_LIBS="-ljpeg $IMG_LIBS"
+        IMG_LIBS="$LIBJPEG_LIBS $IMG_LIBS"
+        if test x$have_jpg_pc = xyes; then
+            PC_REQUIRES="libjpeg $PC_REQUIRES"
+        else
+            PC_LIBS="$LIBJPEG_LIBS $PC_LIBS"
+        fi
     fi
 fi
 if test x$enable_png = xyes -a x$have_png_hdr = xyes -a x$have_png_lib = xyes; then
@@ -13771,8 +14072,15 @@ _ACEOF
 
     else
         IMG_LIBS="$LIBPNG_LIBS $IMG_LIBS"
+        if test x$have_png_pc = xyes; then
+            PC_REQUIRES="libpng $PC_REQUIRES"
+        else
+            PC_LIBS="$LIBPNG_LIBS $PC_LIBS"
+        fi
     fi
 fi
+
+
 
 
 
