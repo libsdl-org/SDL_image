@@ -46,7 +46,6 @@ EXTRA_DIST = CHANGES.txt LICENSE.txt README.txt README-emscripten.txt \
 	version.rc		\
 	Xcode			\
 	Xcode-iOS		\
-	debian			\
 	external		\
 	SDL2_image.spec		\
 	autogen.sh gcc-fat.sh
