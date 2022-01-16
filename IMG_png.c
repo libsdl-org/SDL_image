@@ -513,7 +513,7 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
         png_structp png_ptr;
         png_infop info_ptr;
         png_colorp color_ptr = NULL;
-        uint8_t transparent_table[256];
+        Uint8 transparent_table[256];
         SDL_Surface *source = surface;
         SDL_Palette *palette;
         int png_color_type = PNG_COLOR_TYPE_RGB_ALPHA;
