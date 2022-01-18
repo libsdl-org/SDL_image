@@ -23,7 +23,7 @@ SRCS = IMG.c IMG_bmp.c IMG_gif.c IMG_jpg.c IMG_lbm.c IMG_pcx.c IMG_png.c &
 
 LIBS = libpng.lib libtiff.lib zlib.lib jpeg.lib webpdec.lib SDL2.lib
 
-CFLAGS_BASE = -bt=os2 -ei -d0 -q -5s -fp5 -fpi87 -sg -s -oilrtfm
+CFLAGS_BASE = -bt=os2 -ei -d0 -q -5s -fp5 -fpi87 -sg -oeatxh
 # warnings:
 CFLAGS_BASE+= -wx -wcd=202
 # newer OpenWatcom versions enable W303 by default
