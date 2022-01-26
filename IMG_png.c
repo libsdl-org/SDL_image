@@ -47,6 +47,7 @@
 #define LIBPNG_VERSION_12
 typedef png_bytep png_const_bytep;
 typedef png_color *png_const_colorp;
+typedef png_color_16 *png_const_color_16p;
 #endif
 #if (PNG_LIBPNG_VER_MINOR < 4)
 typedef png_structp png_const_structp;
@@ -109,6 +110,7 @@ static struct {
     void (*png_set_rows) (png_noconst15_structrp png_ptr, png_inforp info_ptr, png_bytepp row_pointers);
     void (*png_write_png) (png_structrp png_ptr, png_inforp info_ptr, int transforms, png_voidp params);
     void (*png_set_PLTE) (png_structrp png_ptr, png_inforp info_ptr, png_const_colorp palette, int num_palette);
+    void (*png_set_tRNS) (png_structrp png_ptr, png_inforp info_ptr, png_const_bytep trans_alpha, int num_trans, png_const_color_16p trans_color);
 #endif
 } lib;
 
@@ -163,6 +165,7 @@ int IMG_InitPNG()
         FUNCTION_LOADER(png_set_rows, void (*) (png_noconst15_structrp png_ptr, png_inforp info_ptr, png_bytepp row_pointers))
         FUNCTION_LOADER(png_write_png, void (*) (png_structrp png_ptr, png_inforp info_ptr, int transforms, png_voidp params))
         FUNCTION_LOADER(png_set_PLTE, void (*) (png_structrp png_ptr, png_inforp info_ptr, png_const_colorp palette, int num_palette))
+        FUNCTION_LOADER(png_set_tRNS, void (*) (png_structrp png_ptr, png_inforp info_ptr, png_const_bytep trans_alpha, int num_trans, png_const_color_16p trans_color))
 #endif
     }
     ++lib.loaded;
@@ -571,7 +574,7 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
                 for (i = 0; i <= last_transparent; ++i) {
                     transparent_table[i] = palette->colors[i].a;
                 }
-                png_set_tRNS(png_ptr, info_ptr, transparent_table, last_transparent + 1, NULL);
+                lib.png_set_tRNS(png_ptr, info_ptr, transparent_table, last_transparent + 1, NULL);
             }
         }
         else if (surface->format->format == SDL_PIXELFORMAT_RGB24) {
