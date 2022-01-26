@@ -9,6 +9,7 @@ JPG_LIBRARY_PATH := external/jpeg-9d
 # Enable this if you want to support loading PNG images
 # The library path should be a relative path to this directory.
 SUPPORT_PNG ?= true
+SUPPORT_SAVE_PNG ?= true
 PNG_LIBRARY_PATH := external/libpng-1.6.37
 
 # Enable this if you want to support loading WebP images
@@ -78,6 +79,11 @@ ifeq ($(SUPPORT_PNG),true)
     LOCAL_CFLAGS += -DLOAD_PNG
     LOCAL_STATIC_LIBRARIES += png
     LOCAL_LDLIBS += -lz
+ifeq ($(SUPPORT_SAVE_PNG),true)
+    LOCAL_CFLAGS += -DSDL_IMAGE_SAVE_PNG=1
+else
+    LOCAL_CFLAGS += -DSDL_IMAGE_SAVE_PNG=0
+endif
 endif
 
 ifeq ($(SUPPORT_WEBP),true)

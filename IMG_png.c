@@ -23,8 +23,9 @@
 
 #include "SDL_image.h"
 
-/* We'll always have PNG save support */
-#define SAVE_PNG
+#if !defined(SDL_IMAGE_SAVE_PNG)
+#  define SDL_IMAGE_SAVE_PNG 1
+#endif
 
 #if !(defined(__APPLE__) || defined(SDL_IMAGE_USE_WIC_BACKEND)) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
 
@@ -101,7 +102,7 @@ static struct {
     jmp_buf* (*png_set_longjmp_fn) (png_structrp, png_longjmp_ptr, size_t);
 #endif
 #endif
-#ifdef SAVE_PNG
+#if SDL_IMAGE_SAVE_PNG
     png_structp (*png_create_write_struct) (png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
     void (*png_destroy_write_struct) (png_structpp png_ptr_ptr, png_infopp info_ptr_ptr);
     void (*png_set_write_fn) (png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr write_data_fn, png_flush_ptr output_flush_fn);
@@ -156,7 +157,7 @@ int IMG_InitPNG()
         FUNCTION_LOADER(png_set_longjmp_fn, jmp_buf* (*) (png_structrp, png_longjmp_ptr, size_t))
 #endif
 #endif
-#ifdef SAVE_PNG
+#if SDL_IMAGE_SAVE_PNG
         FUNCTION_LOADER(png_create_write_struct, png_structp (*) (png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn))
         FUNCTION_LOADER(png_destroy_write_struct, void (*) (png_structpp png_ptr_ptr, png_infopp info_ptr_ptr))
         FUNCTION_LOADER(png_set_write_fn, void (*) (png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr write_data_fn, png_flush_ptr output_flush_fn))
@@ -479,7 +480,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 
 #endif /* !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND) */
 
-#ifdef SAVE_PNG
+#if SDL_IMAGE_SAVE_PNG
 
 int IMG_SavePNG(SDL_Surface *surface, const char *file)
 {
@@ -695,5 +696,14 @@ int IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
 
     return rw_func(surface, dst, freedst);
 }
+#else
+int IMG_SavePNG(SDL_Surface *surface, const char *file)
+{
+    return SDL_Unsupported();
+}
 
-#endif /* SAVE_PNG */
+int IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
+{
+    return SDL_Unsupported();
+}
+#endif /* SDL_IMAGE_SAVE_PNG */
