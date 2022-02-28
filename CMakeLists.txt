@@ -20,7 +20,9 @@ if (APPLE)
 	option(ENABLE_APPLE_IMAGEIO "Use native Mac OS X frameworks for loading images" ON)
 endif()
 
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+if (NOT BUILD_SHARED_LIBS)
+	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
 
 add_library(SDL2_image)
 
