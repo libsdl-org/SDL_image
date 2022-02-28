@@ -11,6 +11,7 @@ target_sources(jpeg PRIVATE
 		jdmerge.c jdpostct.c jdsample.c jdtrans.c jerror.c jfdctflt.c
 		jfdctfst.c jfdctint.c jidctflt.c jquant1.c
 		jquant2.c jutils.c jmemmgr.c)
+set_property(TARGET jpeg PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 if (ANDROID)
 	target_sources(jpeg PRIVATE jmem-android.c)
