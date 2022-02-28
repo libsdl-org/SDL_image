@@ -20,10 +20,7 @@ if (APPLE)
 	option(ENABLE_APPLE_IMAGEIO "Use native Mac OS X frameworks for loading images" ON)
 endif()
 
-# FIXME: ????
-if (NOT BUILD_SHARED_LIBS)
-	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-endif()
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_library(SDL2_image)
 
@@ -98,14 +95,19 @@ add_library(SDL2::image ALIAS SDL2_image)
 
 target_include_directories(SDL2_image PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-if (BUILD_SHARED_LIBS)
-	if(WIN32)
-	  target_compile_definitions(SDL2_image PRIVATE -DDLL_EXPORT)
+if(SDL2_FOUND)
+	target_link_libraries(SDL2_image PUBLIC ${SDL2_LIBRARIES})
+	target_include_directories(SDL2_image PUBLIC ${SDL2_INCLUDE_DIRS})
+else(SDL2_FOUND)
+	if (BUILD_SHARED_LIBS)
+		if(WIN32)
+		  target_compile_definitions(SDL2_image PRIVATE -DDLL_EXPORT)
+		endif()
+		target_link_libraries(SDL2_image PUBLIC SDL2::SDL2)
+	else()
+		target_link_libraries(SDL2_image PUBLIC SDL2::SDL2-static)
 	endif()
-	target_link_libraries(SDL2_image PUBLIC SDL2::SDL2)
-else()
-	target_link_libraries(SDL2_image PUBLIC SDL2::SDL2-static)
-endif()
+endif(SDL2_FOUND)
 
 if(BUILD_SHOWIMAGE)
 	add_executable(showimage showimage.c)
