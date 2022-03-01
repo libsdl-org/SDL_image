@@ -50,7 +50,7 @@ target_compile_definitions(SDL2_image PRIVATE
 
 if (SUPPORT_JPG)
 	target_compile_definitions(SDL2_image PRIVATE -DLOAD_JPG)
-	add_subdirectory(external/jpeg-9d)
+	add_subdirectory(external/jpeg-9e)
 	target_link_libraries(SDL2_image PRIVATE jpeg)
 endif()
 

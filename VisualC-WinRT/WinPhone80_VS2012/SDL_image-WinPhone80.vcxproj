@@ -83,7 +83,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.37;..\..\external\jpeg-9d;..\..\external\libwebp-1.0.3\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.37;..\..\external\jpeg-9e;..\..\external\libwebp-1.0.3\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -99,7 +99,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.37;..\..\external\jpeg-9d;..\..\external\libwebp-1.0.3\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.37;..\..\external\jpeg-9e;..\..\external\libwebp-1.0.3\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -115,7 +115,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.37;..\..\external\jpeg-9d;..\..\external\libwebp-1.0.3\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.37;..\..\external\jpeg-9e;..\..\external\libwebp-1.0.3\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,7 +131,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAsWinRT>false</CompileAsWinRT>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.37;..\..\external\jpeg-9d;..\..\external\libwebp-1.0.3\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\SDL\include;..\..\external\libpng-1.6.37;..\..\external\jpeg-9e;..\..\external\libwebp-1.0.3\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
