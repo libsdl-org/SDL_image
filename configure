@@ -11014,18 +11014,24 @@ _am_tools='gnutar plaintar pax cpio none'
       am_gid=`id -g || echo unknown`
       { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether UID '$am_uid' is supported by ustar format" >&5
 $as_echo_n "checking whether UID '$am_uid' is supported by ustar format... " >&6; }
-      if test $am_uid -le $am_max_uid; then
-         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+      if test x$am_uid = xunknown; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: ancient id detected; assuming current UID is ok, but dist-ustar might not work" >&5
+$as_echo "$as_me: WARNING: ancient id detected; assuming current UID is ok, but dist-ustar might not work" >&2;}
+      elif test $am_uid -le $am_max_uid; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
       else
-         { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-         _am_tools=none
+        _am_tools=none
       fi
       { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether GID '$am_gid' is supported by ustar format" >&5
 $as_echo_n "checking whether GID '$am_gid' is supported by ustar format... " >&6; }
-      if test $am_gid -le $am_max_gid; then
-         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+      if test x$gm_gid = xunknown; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: ancient id detected; assuming current GID is ok, but dist-ustar might not work" >&5
+$as_echo "$as_me: WARNING: ancient id detected; assuming current GID is ok, but dist-ustar might not work" >&2;}
+      elif test $am_gid -le $am_max_gid; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
       else
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
