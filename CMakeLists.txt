@@ -61,7 +61,7 @@ if (SUPPORT_PNG)
 
 	if (NOT TARGET zlib)
 		# if zlib not included from another source, add_subdirectory
-		add_subdirectory(external/zlib-1.2.11)
+		add_subdirectory(external/zlib-1.2.12)
 
 		# libpng find_package(zlib) requires ZLIB_INCLUDE_DIR set
 		get_target_property(ZLIB_INCLUDE_DIR zlib INCLUDE_DIRECTORIES)
