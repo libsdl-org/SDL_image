@@ -1,0 +1,49 @@
+diff -ruN zlib-1.2.12/CMakeLists.txt.orig zlib-1.2.12/CMakeLists.txt
+--- zlib-1.2.12/CMakeLists.txt.orig
++++ zlib-1.2.12/CMakeLists.txt
+@@ -83,7 +83,7 @@ configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/zlib.pc.cmakein
+ 		${ZLIB_PC} @ONLY)
+ configure_file(	${CMAKE_CURRENT_SOURCE_DIR}/zconf.h.cmakein
+ 		${CMAKE_CURRENT_BINARY_DIR}/zconf.h @ONLY)
+-include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_SOURCE_DIR})
++include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+ 
+ 
+ #============================================================================
+diff -u /dev/null zlib-1.2.12/make-cross-x64.sh
+--- /dev/null
++++ zlib-1.2.12/make-cross-x64.sh
+@@ -0,0 +1,14 @@
++#!/bin/sh
++
++TARGET=x86_64-w64-mingw32
++INSTALL_PATH=/usr/local/$TARGET
++export PATH=$PATH:/usr/local/bin
++
++make -f win32/Makefile.gcc \
++    SHARED_MODE=1 \
++    LDFLAGS=-static-libgcc \
++    PREFIX=$TARGET- \
++    prefix=$INSTALL_PATH \
++    BINARY_PATH=$INSTALL_PATH/bin \
++    INCLUDE_PATH=$INSTALL_PATH/include \
++    LIBRARY_PATH=$INSTALL_PATH/lib $*
+diff -u /dev/null zlib-1.2.12/make-cross-x86.sh
+--- /dev/null
++++ zlib-1.2.12/make-cross-x86.sh
+@@ -0,0 +1,14 @@
++#!/bin/sh
++
++TARGET=i686-w64-mingw32
++INSTALL_PATH=/usr/local/$TARGET
++export PATH=$PATH:/usr/local/bin
++
++make -f win32/Makefile.gcc \
++    SHARED_MODE=1 \
++    LDFLAGS=-static-libgcc \
++    PREFIX=$TARGET- \
++    prefix=$INSTALL_PATH \
++    BINARY_PATH=$INSTALL_PATH/bin \
++    INCLUDE_PATH=$INSTALL_PATH/include \
++    LIBRARY_PATH=$INSTALL_PATH/lib $*
+

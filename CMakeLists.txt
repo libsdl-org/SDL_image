@@ -61,7 +61,7 @@ if (SUPPORT_PNG)
 
 	if (NOT TARGET zlib)
 		# if zlib not included from another source, add_subdirectory
-		add_subdirectory(external/zlib-1.2.11)
+		add_subdirectory(external/zlib-1.2.12)
 
 		# libpng find_package(zlib) requires ZLIB_INCLUDE_DIR set
 		get_target_property(ZLIB_INCLUDE_DIR zlib INCLUDE_DIRECTORIES)
@@ -105,6 +105,7 @@ else(SDL2_FOUND)
 	if (BUILD_SHARED_LIBS)
 		if(WIN32)
 		  target_compile_definitions(SDL2_image PRIVATE -DDLL_EXPORT)
+      target_sources(SDL2_image PRIVATE version.rc)
 		endif()
 		target_link_libraries(SDL2_image PUBLIC SDL2::SDL2)
 	else()
