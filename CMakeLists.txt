@@ -60,6 +60,9 @@ if (SUPPORT_PNG)
 	target_compile_definitions(SDL2_image PRIVATE -DLOAD_PNG)
 
 	if (NOT TARGET zlib)
+		# SDL_image doesn't support installing currently
+		set(SKIP_INSTALL_ALL ON CACHE BOOL "" FORCE)
+
 		# if zlib not included from another source, add_subdirectory
 		add_subdirectory(external/zlib-1.2.12)
 
@@ -72,9 +75,6 @@ if (SUPPORT_PNG)
 		else()
 			set(ZLIB_LIBRARY zlibstatic)
 		endif()
-
-		# SDL_image doesn't support installing currently
-		set(SKIP_INSTALL_ALL ON)
 	endif()
 
 	add_subdirectory(external/libpng-1.6.37)
