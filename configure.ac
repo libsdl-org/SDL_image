@@ -54,12 +54,7 @@ AC_PROG_OBJC
 AC_C_INLINE
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-if test -z "$host_alias"; then
-    hostaliaswindres=
-else
-    hostaliaswindres="$host_alias-windres"
-fi
-AC_CHECK_PROGS(WINDRES, [windres $hostaliaswindres $host_os-windres])
+AC_CHECK_TOOL(WINDRES, [windres], [:])
 
 case "$host" in
     *-*-beos*)
