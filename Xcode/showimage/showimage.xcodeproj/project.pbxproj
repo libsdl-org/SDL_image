@@ -3,317 +3,625 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BE1FA82E07AF9002004B6283 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
-		BE1FA83107AF9002004B6283 /* showimage.c in Sources */ = {isa = PBXBuildFile; fileRef = F5A068FF01CD8555012F876B /* showimage.c */; };
-		BE1FA83307AF9002004B6283 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		BE1FA83407AF9002004B6283 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE1FA82007AF8F33004B6283 /* SDL2.framework */; };
-		BE1FA83507AF9002004B6283 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE1FA82207AF8F44004B6283 /* SDL2_image.framework */; };
+		F39CD44A281DC6A4006CF638 /* SDL2.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED810E281DC09600C33C5B /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F39CD44B281DC6C8006CF638 /* SDL2_image.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL2_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F39CD44E281DC7AF006CF638 /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F39CD44C281DC7A4006CF638 /* webp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F39CD451281DC955006CF638 /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F39CD44F281DC949006CF638 /* webp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F39CD452281DC9CE006CF638 /* SDL2_image.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL2_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F3ED80CB281D9ECB00C33C5B /* showimage.c in Sources */ = {isa = PBXBuildFile; fileRef = F3ED80CA281D9ECB00C33C5B /* showimage.c */; };
+		F3ED80CC281D9ECB00C33C5B /* showimage.c in Sources */ = {isa = PBXBuildFile; fileRef = F3ED80CA281D9ECB00C33C5B /* showimage.c */; };
+		F3ED80DB281D9F2100C33C5B /* showimage.c in Sources */ = {isa = PBXBuildFile; fileRef = F3ED80CA281D9ECB00C33C5B /* showimage.c */; };
+		F3ED80E3281DA16500C33C5B /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL2_image.framework */; };
+		F3ED80E5281DA17800C33C5B /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80E4281DA17800C33C5B /* SDL2.framework */; };
+		F3ED80F3281DA3BD00C33C5B /* SDL_uikit_main.c in Sources */ = {isa = PBXBuildFile; fileRef = F3ED80EF281DA3BD00C33C5B /* SDL_uikit_main.c */; };
+		F3ED80F4281DA3BD00C33C5B /* SDL_uikit_main.c in Sources */ = {isa = PBXBuildFile; fileRef = F3ED80EF281DA3BD00C33C5B /* SDL_uikit_main.c */; };
+		F3ED80F5281DA3F600C33C5B /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL2_image.framework */; };
+		F3ED80F7281DA40300C33C5B /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80F6281DA40300C33C5B /* SDL2.framework */; };
+		F3ED80FF281DA63000C33C5B /* SDL2_image.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL2_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F3ED810C281DBEF000C33C5B /* SDL2.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80F6281DA40300C33C5B /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F3ED8110281DC09600C33C5B /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED810E281DC09600C33C5B /* SDL2.framework */; };
+		F3ED8111281DC0F500C33C5B /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80EA281DA1E000C33C5B /* webp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F3ED8112281DC11700C33C5B /* SDL2.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80E4281DA17800C33C5B /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F3ED8113281DC13D00C33C5B /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL2_image.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		F3ED80D3281D9ED600C33C5B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BE1FA72E07AF4C45004B6283;
+			remoteInfo = Framework;
+		};
+		F3ED80D5281D9ED600C33C5B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BE1FA74107AF4C45004B6283;
+			remoteInfo = "Static Library";
+		};
+		F3ED80D7281D9ED600C33C5B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BE1FA74507AF4C45004B6283;
+			remoteInfo = "Create DMG";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		F39CD449281DC695006CF638 /* Copy Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F39CD44B281DC6C8006CF638 /* SDL2_image.framework in Copy Frameworks */,
+				F39CD44A281DC6A4006CF638 /* SDL2.framework in Copy Frameworks */,
+				F39CD44E281DC7AF006CF638 /* webp.framework in Copy Frameworks */,
+			);
+			name = "Copy Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3ED80EC281DA29B00C33C5B /* Copy Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F39CD452281DC9CE006CF638 /* SDL2_image.framework in Copy Frameworks */,
+				F3ED8112281DC11700C33C5B /* SDL2.framework in Copy Frameworks */,
+				F3ED8111281DC0F500C33C5B /* webp.framework in Copy Frameworks */,
+			);
+			name = "Copy Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3ED80FA281DA44400C33C5B /* Copy Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F3ED80FF281DA63000C33C5B /* SDL2_image.framework in Copy Frameworks */,
+				F3ED810C281DBEF000C33C5B /* SDL2.framework in Copy Frameworks */,
+				F39CD451281DC955006CF638 /* webp.framework in Copy Frameworks */,
+			);
+			name = "Copy Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
-		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		BE1FA82007AF8F33004B6283 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = /Library/Frameworks/SDL2.framework; sourceTree = "<absolute>"; };
-		BE1FA82207AF8F44004B6283 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = /Library/Frameworks/SDL2_image.framework; sourceTree = "<absolute>"; };
-		BE1FA83607AF9002004B6283 /* Info-showimage__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-showimage__Upgraded_.plist"; sourceTree = "<group>"; };
-		BE1FA83707AF9002004B6283 /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F5A068FF01CD8555012F876B /* showimage.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = showimage.c; path = ../../showimage.c; sourceTree = SOURCE_ROOT; };
+		F39CD44C281DC7A4006CF638 /* webp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = webp.framework; path = ../tvOS/webp.framework; sourceTree = "<group>"; };
+		F39CD44F281DC949006CF638 /* webp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = webp.framework; path = ../iOS/webp.framework; sourceTree = "<group>"; };
+		F3ED80B3281D9E8900C33C5B /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3ED80B9281D9E8900C33C5B /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3ED80BB281D9E8900C33C5B /* macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOS.entitlements; sourceTree = "<group>"; };
+		F3ED80CA281D9ECB00C33C5B /* showimage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = showimage.c; path = ../../../showimage.c; sourceTree = "<group>"; };
+		F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL_image.xcodeproj; path = ../SDL_image.xcodeproj; sourceTree = "<group>"; };
+		F3ED80E1281D9F2100C33C5B /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3ED80E4281DA17800C33C5B /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../macOS/SDL2.framework; sourceTree = "<group>"; };
+		F3ED80EA281DA1E000C33C5B /* webp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = webp.framework; path = ../macOS/webp.framework; sourceTree = "<group>"; };
+		F3ED80EF281DA3BD00C33C5B /* SDL_uikit_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SDL_uikit_main.c; sourceTree = SOURCE_ROOT; };
+		F3ED80F6281DA40300C33C5B /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../iOS/SDL2.framework; sourceTree = "<group>"; };
+		F3ED810E281DC09600C33C5B /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../tvOS/SDL2.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		BE1FA83207AF9002004B6283 /* Frameworks */ = {
+		F3ED80B0281D9E8900C33C5B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE1FA83307AF9002004B6283 /* Cocoa.framework in Frameworks */,
-				BE1FA83407AF9002004B6283 /* SDL2.framework in Frameworks */,
-				BE1FA83507AF9002004B6283 /* SDL2_image.framework in Frameworks */,
+				F3ED80F7281DA40300C33C5B /* SDL2.framework in Frameworks */,
+				F3ED80F5281DA3F600C33C5B /* SDL2_image.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3ED80B6281D9E8900C33C5B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F3ED80E5281DA17800C33C5B /* SDL2.framework in Frameworks */,
+				F3ED80E3281DA16500C33C5B /* SDL2_image.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3ED80DC281D9F2100C33C5B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F3ED8110281DC09600C33C5B /* SDL2.framework in Frameworks */,
+				F3ED8113281DC13D00C33C5B /* SDL2_image.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
+		F3ED80A6281D9E8800C33C5B = {
 			isa = PBXGroup;
 			children = (
-				BE1FA82207AF8F44004B6283 /* SDL2_image.framework */,
-				BE1FA82007AF8F33004B6283 /* SDL2.framework */,
-				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+				F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */,
+				F3ED80AB281D9E8800C33C5B /* Shared */,
+				F3ED80BA281D9E8900C33C5B /* macOS */,
+				F3ED80B4281D9E8900C33C5B /* Products */,
+				F3ED80E2281DA16500C33C5B /* Frameworks */,
 			);
-			name = "Linked Frameworks";
 			sourceTree = "<group>";
 		};
-		1058C7A2FEA54F0111CA2CBB /* Other Frameworks */ = {
+		F3ED80AB281D9E8800C33C5B /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
-				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
+				F3ED80EF281DA3BD00C33C5B /* SDL_uikit_main.c */,
+				F3ED80CA281D9ECB00C33C5B /* showimage.c */,
 			);
-			name = "Other Frameworks";
+			path = Shared;
 			sourceTree = "<group>";
 		};
-		19C28FACFE9D520D11CA2CBB /* Products */ = {
+		F3ED80B4281D9E8900C33C5B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BE1FA83707AF9002004B6283 /* showimage.app */,
+				F3ED80B3281D9E8900C33C5B /* showimage.app */,
+				F3ED80B9281D9E8900C33C5B /* showimage.app */,
+				F3ED80E1281D9F2100C33C5B /* showimage.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		29B97314FDCFA39411CA2CEA /* SDL App */ = {
+		F3ED80BA281D9E8900C33C5B /* macOS */ = {
 			isa = PBXGroup;
 			children = (
-				29B97315FDCFA39411CA2CEA /* Other Sources */,
-				29B97317FDCFA39411CA2CEA /* Resources */,
-				29B97323FDCFA39411CA2CEA /* Frameworks */,
-				19C28FACFE9D520D11CA2CBB /* Products */,
-				BE1FA83607AF9002004B6283 /* Info-showimage__Upgraded_.plist */,
+				F3ED80BB281D9E8900C33C5B /* macOS.entitlements */,
 			);
-			name = "SDL App";
+			path = macOS;
 			sourceTree = "<group>";
 		};
-		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+		F3ED80CE281D9ED600C33C5B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F5A068FF01CD8555012F876B /* showimage.c */,
+				F3ED80D4281D9ED600C33C5B /* SDL2_image.framework */,
+				F3ED80D6281D9ED600C33C5B /* libSDL2_image.a */,
+				F3ED80D8281D9ED600C33C5B /* Create DMG */,
 			);
-			name = "Other Sources";
+			name = Products;
 			sourceTree = "<group>";
 		};
-		29B97317FDCFA39411CA2CEA /* Resources */ = {
+		F3ED80E2281DA16500C33C5B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-		};
-		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
-				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+				F3ED8104281DADB900C33C5B /* macOS */,
+				F3ED8105281DADC900C33C5B /* iOS */,
+				F3ED810D281DC07200C33C5B /* tvOS */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F3ED8104281DADB900C33C5B /* macOS */ = {
+			isa = PBXGroup;
+			children = (
+				F3ED80E4281DA17800C33C5B /* SDL2.framework */,
+				F3ED80EA281DA1E000C33C5B /* webp.framework */,
+			);
+			name = macOS;
+			sourceTree = "<group>";
+		};
+		F3ED8105281DADC900C33C5B /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				F3ED80F6281DA40300C33C5B /* SDL2.framework */,
+				F39CD44F281DC949006CF638 /* webp.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		F3ED810D281DC07200C33C5B /* tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				F3ED810E281DC09600C33C5B /* SDL2.framework */,
+				F39CD44C281DC7A4006CF638 /* webp.framework */,
+			);
+			name = tvOS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		BE1FA82A07AF9002004B6283 /* showimage */ = {
+		F3ED80B2281D9E8900C33C5B /* showimage (iOS) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 00B7E55F097EF9A500826121 /* Build configuration list for PBXNativeTarget "showimage" */;
+			buildConfigurationList = F3ED80C4281D9E8900C33C5B /* Build configuration list for PBXNativeTarget "showimage (iOS)" */;
 			buildPhases = (
-				BE1FA82D07AF9002004B6283 /* Resources */,
-				BE1FA82F07AF9002004B6283 /* Sources */,
-				BE1FA83207AF9002004B6283 /* Frameworks */,
+				F3ED80AF281D9E8900C33C5B /* Sources */,
+				F3ED80B0281D9E8900C33C5B /* Frameworks */,
+				F3ED80B1281D9E8900C33C5B /* Resources */,
+				F3ED80FA281DA44400C33C5B /* Copy Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = showimage;
-			productInstallPath = "$(HOME)/Applications";
-			productName = "SDL App";
-			productReference = BE1FA83707AF9002004B6283 /* showimage.app */;
+			name = "showimage (iOS)";
+			productName = "showimage (iOS)";
+			productReference = F3ED80B3281D9E8900C33C5B /* showimage.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F3ED80B8281D9E8900C33C5B /* showimage (macOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F3ED80C7281D9E8900C33C5B /* Build configuration list for PBXNativeTarget "showimage (macOS)" */;
+			buildPhases = (
+				F3ED80B5281D9E8900C33C5B /* Sources */,
+				F3ED80B6281D9E8900C33C5B /* Frameworks */,
+				F3ED80B7281D9E8900C33C5B /* Resources */,
+				F3ED80EC281DA29B00C33C5B /* Copy Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "showimage (macOS)";
+			productName = "showimage (macOS)";
+			productReference = F3ED80B9281D9E8900C33C5B /* showimage.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F3ED80D9281D9F2100C33C5B /* showimage (tvOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F3ED80DE281D9F2100C33C5B /* Build configuration list for PBXNativeTarget "showimage (tvOS)" */;
+			buildPhases = (
+				F3ED80DA281D9F2100C33C5B /* Sources */,
+				F3ED80DC281D9F2100C33C5B /* Frameworks */,
+				F3ED80DD281D9F2100C33C5B /* Resources */,
+				F39CD449281DC695006CF638 /* Copy Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "showimage (tvOS)";
+			productName = "showimage (iOS)";
+			productReference = F3ED80E1281D9F2100C33C5B /* showimage.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		29B97313FDCFA39411CA2CEA /* Project object */ = {
+		F3ED80A7281D9E8800C33C5B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1330;
+				LastUpgradeCheck = 1330;
+				TargetAttributes = {
+					F3ED80B2281D9E8900C33C5B = {
+						CreatedOnToolsVersion = 13.3.1;
+					};
+					F3ED80B8281D9E8900C33C5B = {
+						CreatedOnToolsVersion = 13.3.1;
+					};
+				};
 			};
-			buildConfigurationList = 00B7E563097EF9A500826121 /* Build configuration list for PBXProject "showimage" */;
-			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			buildConfigurationList = F3ED80AA281D9E8800C33C5B /* Build configuration list for PBXProject "showimage" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
-				Japanese,
-				French,
-				German,
+				en,
+				Base,
 			);
-			mainGroup = 29B97314FDCFA39411CA2CEA /* SDL App */;
+			mainGroup = F3ED80A6281D9E8800C33C5B;
+			productRefGroup = F3ED80B4281D9E8900C33C5B /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F3ED80CE281D9ED600C33C5B /* Products */;
+					ProjectRef = F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
-				BE1FA82A07AF9002004B6283 /* showimage */,
+				F3ED80B2281D9E8900C33C5B /* showimage (iOS) */,
+				F3ED80B8281D9E8900C33C5B /* showimage (macOS) */,
+				F3ED80D9281D9F2100C33C5B /* showimage (tvOS) */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		F3ED80D4281D9ED600C33C5B /* SDL2_image.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SDL2_image.framework;
+			remoteRef = F3ED80D3281D9ED600C33C5B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F3ED80D6281D9ED600C33C5B /* libSDL2_image.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSDL2_image.a;
+			remoteRef = F3ED80D5281D9ED600C33C5B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F3ED80D8281D9ED600C33C5B /* Create DMG */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = "Create DMG";
+			remoteRef = F3ED80D7281D9ED600C33C5B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXResourcesBuildPhase section */
-		BE1FA82D07AF9002004B6283 /* Resources */ = {
+		F3ED80B1281D9E8900C33C5B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE1FA82E07AF9002004B6283 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3ED80B7281D9E8900C33C5B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3ED80DD281D9F2100C33C5B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		BE1FA82F07AF9002004B6283 /* Sources */ = {
+		F3ED80AF281D9E8900C33C5B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BE1FA83107AF9002004B6283 /* showimage.c in Sources */,
+				F3ED80CB281D9ECB00C33C5B /* showimage.c in Sources */,
+				F3ED80F3281DA3BD00C33C5B /* SDL_uikit_main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3ED80B5281D9E8900C33C5B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F3ED80CC281D9ECB00C33C5B /* showimage.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3ED80DA281D9F2100C33C5B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F3ED80DB281D9F2100C33C5B /* showimage.c in Sources */,
+				F3ED80F4281DA3BD00C33C5B /* SDL_uikit_main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXVariantGroup section */
-		089C165CFE840E0CC02AAC07 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				089C165DFE840E0CC02AAC07 /* English */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
-		00B7E560097EF9A500826121 /* Development */ = {
+		F3ED80C2281D9E8900C33C5B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(HOME)/Library/Frameworks",
-					/Library/Frameworks,
-				);
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/../$(PLATFORM)\"";
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				HEADER_SEARCH_PATHS = (
-					"$(HOME)/Library/Frameworks/SDL2.framework/Headers",
-					/Library/Frameworks/SDL2.framework/Headers,
-					"$(HOME)/Library/Frameworks/SDL2_image.framework/Headers",
-					/Library/Frameworks/SDL2_image.framework/Headers,
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
 				);
-				INFOPLIST_FILE = "Info-showimage__Upgraded_.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../$(PLATFORM)/SDL2.framework/Headers\"";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				PLATFORM = "";
+				"PLATFORM[sdk=appletvos*]" = tvOS;
+				"PLATFORM[sdk=iphoneos*]" = iOS;
+				"PLATFORM[sdk=macosx*]" = macOS;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Debug;
+		};
+		F3ED80C3281D9E8900C33C5B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/../$(PLATFORM)\"";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../$(PLATFORM)/SDL2.framework/Headers\"";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				PLATFORM = "";
+				"PLATFORM[sdk=appletvos*]" = tvOS;
+				"PLATFORM[sdk=iphoneos*]" = iOS;
+				"PLATFORM[sdk=macosx*]" = macOS;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Release;
+		};
+		F3ED80C5281D9E8900C33C5B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = EH385AYQ6F;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.libsdl.showimage;
 				PRODUCT_NAME = showimage;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				WRAPPER_EXTENSION = app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = Development;
+			name = Debug;
 		};
-		00B7E561097EF9A500826121 /* Deployment */ = {
+		F3ED80C6281D9E8900C33C5B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(HOME)/Library/Frameworks",
-					/Library/Frameworks,
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = EH385AYQ6F;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
 				);
-				HEADER_SEARCH_PATHS = (
-					"$(HOME)/Library/Frameworks/SDL2.framework/Headers",
-					/Library/Frameworks/SDL2.framework/Headers,
-					"$(HOME)/Library/Frameworks/SDL2_image.framework/Headers",
-					/Library/Frameworks/SDL2_image.framework/Headers,
-				);
-				INFOPLIST_FILE = "Info-showimage__Upgraded_.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = "";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.libsdl.showimage;
 				PRODUCT_NAME = showimage;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				WRAPPER_EXTENSION = app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Deployment;
+			name = Release;
 		};
-		00B7E562097EF9A500826121 /* Default */ = {
+		F3ED80C8281D9E8900C33C5B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(HOME)/Library/Frameworks",
-					/Library/Frameworks,
+				CODE_SIGN_ENTITLEMENTS = macOS/macOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
 				);
-				HEADER_SEARCH_PATHS = (
-					"$(HOME)/Library/Frameworks/SDL2.framework/Headers",
-					/Library/Frameworks/SDL2.framework/Headers,
-					"$(HOME)/Library/Frameworks/SDL2_image.framework/Headers",
-					/Library/Frameworks/SDL2_image.framework/Headers,
-				);
-				INFOPLIST_FILE = "Info-showimage__Upgraded_.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = "";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.libsdl.showimage;
 				PRODUCT_NAME = showimage;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		F3ED80C9281D9E8900C33C5B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = macOS/macOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
 				);
-				WRAPPER_EXTENSION = app;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.libsdl.showimage;
+				PRODUCT_NAME = showimage;
+				SDKROOT = macosx;
 			};
-			name = Default;
+			name = Release;
 		};
-		00B7E564097EF9A500826121 /* Development */ = {
+		F3ED80DF281D9F2100C33C5B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = EH385AYQ6F;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.libsdl.showimage;
+				PRODUCT_NAME = showimage;
+				SDKROOT = appletvos;
 			};
-			name = Development;
+			name = Debug;
 		};
-		00B7E565097EF9A500826121 /* Deployment */ = {
+		F3ED80E0281D9F2100C33C5B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = EH385AYQ6F;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.libsdl.showimage;
+				PRODUCT_NAME = showimage;
+				SDKROOT = appletvos;
+				VALIDATE_PRODUCT = YES;
 			};
-			name = Deployment;
-		};
-		00B7E566097EF9A500826121 /* Default */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-			};
-			name = Default;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		00B7E55F097EF9A500826121 /* Build configuration list for PBXNativeTarget "showimage" */ = {
+		F3ED80AA281D9E8800C33C5B /* Build configuration list for PBXProject "showimage" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				00B7E560097EF9A500826121 /* Development */,
-				00B7E561097EF9A500826121 /* Deployment */,
-				00B7E562097EF9A500826121 /* Default */,
+				F3ED80C2281D9E8900C33C5B /* Debug */,
+				F3ED80C3281D9E8900C33C5B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Default;
+			defaultConfigurationName = Release;
 		};
-		00B7E563097EF9A500826121 /* Build configuration list for PBXProject "showimage" */ = {
+		F3ED80C4281D9E8900C33C5B /* Build configuration list for PBXNativeTarget "showimage (iOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				00B7E564097EF9A500826121 /* Development */,
-				00B7E565097EF9A500826121 /* Deployment */,
-				00B7E566097EF9A500826121 /* Default */,
+				F3ED80C5281D9E8900C33C5B /* Debug */,
+				F3ED80C6281D9E8900C33C5B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Default;
+			defaultConfigurationName = Release;
+		};
+		F3ED80C7281D9E8900C33C5B /* Build configuration list for PBXNativeTarget "showimage (macOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F3ED80C8281D9E8900C33C5B /* Debug */,
+				F3ED80C9281D9E8900C33C5B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F3ED80DE281D9F2100C33C5B /* Build configuration list for PBXNativeTarget "showimage (tvOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F3ED80DF281D9F2100C33C5B /* Debug */,
+				F3ED80E0281D9F2100C33C5B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+	rootObject = F3ED80A7281D9E8800C33C5B /* Project object */;
 }
