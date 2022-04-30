@@ -24,6 +24,7 @@
  */
 
 #include "SDL_image.h"
+#include <limits.h> /* for INT_MAX */
 
 #ifdef LOAD_QOI
 
@@ -66,6 +67,11 @@ SDL_Surface *IMG_LoadQOI_RW(SDL_RWops *src)
 
     data = (void *)SDL_LoadFile_RW(src, &size, SDL_FALSE);
     if ( !data ) {
+        return NULL;
+    }
+    if ( size > INT_MAX ) {
+        SDL_free(data);
+        IMG_SetError("QOI image is too big.");
         return NULL;
     }
 
