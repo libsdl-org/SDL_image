@@ -69,7 +69,7 @@ SDL_Surface *IMG_LoadQOI_RW(SDL_RWops *src)
         return NULL;
     }
 
-    pixel_data = qoi_decode(data, size, &image_info, 4);
+    pixel_data = qoi_decode(data, (int)size, &image_info, 4);
     SDL_free(data);
     if ( !pixel_data ) {
         IMG_SetError("Couldn't parse QOI image");

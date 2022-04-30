@@ -306,7 +306,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_Index(CGImageRef image_ref)
     }
 
     CGColorSpaceGetColorTable(color_space, entries);
-    surface = SDL_CreateRGBSurface(SDL_SWSURFACE, (int)w, (int)h, bits_per_pixel, 0, 0, 0, 0);
+    surface = SDL_CreateRGBSurface(SDL_SWSURFACE, (int)w, (int)h, (int)bits_per_pixel, 0, 0, 0, 0);
     if (surface) {
         uint8_t* pixels = (uint8_t*)surface->pixels;
         CGDataProviderRef provider = CGImageGetDataProvider(image_ref);
