@@ -28,13 +28,13 @@
 #ifndef SDL_surface_h_
 #define SDL_surface_h_
 
-#include "SDL_stdinc.h"
-#include "SDL_pixels.h"
-#include "SDL_rect.h"
-#include "SDL_blendmode.h"
-#include "SDL_rwops.h"
+#include <SDL2/SDL_stdinc.h>
+#include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_rect.h>
+#include <SDL2/SDL_blendmode.h>
+#include <SDL2/SDL_rwops.h>
 
-#include "begin_code.h"
+#include <SDL2/begin_code.h>
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
 extern "C" {
@@ -878,7 +878,7 @@ extern DECLSPEC SDL_YUV_CONVERSION_MODE SDLCALL SDL_GetYUVConversionModeForResol
 #ifdef __cplusplus
 }
 #endif
-#include "close_code.h"
+#include <SDL2/close_code.h>
 
 #endif /* SDL_surface_h_ */
 

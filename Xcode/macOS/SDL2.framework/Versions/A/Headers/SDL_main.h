@@ -22,7 +22,7 @@
 #ifndef SDL_main_h_
 #define SDL_main_h_
 
-#include "SDL_stdinc.h"
+#include <SDL2/SDL_stdinc.h>
 
 /**
  *  \file SDL_main.h
@@ -109,7 +109,7 @@
 #define main    SDL_main
 #endif
 
-#include "begin_code.h"
+#include <SDL2/begin_code.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -178,7 +178,7 @@ extern DECLSPEC int SDLCALL SDL_UIKitRunApp(int argc, char *argv[], SDL_main_fun
 #ifdef __cplusplus
 }
 #endif
-#include "close_code.h"
+#include <SDL2/close_code.h>
 
 #endif /* SDL_main_h_ */
 

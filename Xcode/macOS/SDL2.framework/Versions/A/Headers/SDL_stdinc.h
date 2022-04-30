@@ -28,7 +28,7 @@
 #ifndef SDL_stdinc_h_
 #define SDL_stdinc_h_
 
-#include "SDL_config.h"
+#include <SDL2/SDL_config.h>
 
 #ifdef __APPLE__
 #ifndef _DARWIN_C_SOURCE
@@ -378,7 +378,7 @@ SDL_COMPILE_TIME_ASSERT(enum, sizeof(SDL_DUMMY_ENUM) == sizeof(int));
 #endif /* DOXYGEN_SHOULD_IGNORE_THIS */
 /** \endcond */
 
-#include "begin_code.h"
+#include <SDL2/begin_code.h>
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
 extern "C" {
@@ -680,7 +680,7 @@ SDL_FORCE_INLINE void *SDL_memcpy4(SDL_OUT_BYTECAP(dwords*4) void *dst, SDL_IN_B
 #ifdef __cplusplus
 }
 #endif
-#include "close_code.h"
+#include <SDL2/close_code.h>
 
 #endif /* SDL_stdinc_h_ */
 

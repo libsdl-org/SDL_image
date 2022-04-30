@@ -28,13 +28,13 @@
 #ifndef SDL_gamecontroller_h_
 #define SDL_gamecontroller_h_
 
-#include "SDL_stdinc.h"
-#include "SDL_error.h"
-#include "SDL_rwops.h"
-#include "SDL_sensor.h"
-#include "SDL_joystick.h"
+#include <SDL2/SDL_stdinc.h>
+#include <SDL2/SDL_error.h>
+#include <SDL2/SDL_rwops.h>
+#include <SDL2/SDL_sensor.h>
+#include <SDL2/SDL_joystick.h>
 
-#include "begin_code.h"
+#include <SDL2/begin_code.h>
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
 extern "C" {
@@ -834,7 +834,7 @@ extern DECLSPEC void SDLCALL SDL_GameControllerClose(SDL_GameController *gamecon
 #ifdef __cplusplus
 }
 #endif
-#include "close_code.h"
+#include <SDL2/close_code.h>
 
 #endif /* SDL_gamecontroller_h_ */
 

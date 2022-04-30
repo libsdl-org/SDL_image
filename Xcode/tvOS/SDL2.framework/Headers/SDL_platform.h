@@ -68,8 +68,8 @@
 
 #if defined(__APPLE__)
 /* lets us know what version of Mac OS X we're compiling on */
-#include "AvailabilityMacros.h"
-#include "TargetConditionals.h"
+#include <AvailabilityMacros.h>
+#include <TargetConditionals.h>
 #if TARGET_OS_TV
 #undef __TVOS__
 #define __TVOS__ 1
@@ -176,7 +176,7 @@
 #endif
 
 
-#include "begin_code.h"
+#include <SDL2/begin_code.h>
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
 extern "C" {
@@ -191,7 +191,7 @@ extern DECLSPEC const char * SDLCALL SDL_GetPlatform (void);
 #ifdef __cplusplus
 }
 #endif
-#include "close_code.h"
+#include <SDL2/close_code.h>
 
 #endif /* SDL_platform_h_ */
 

@@ -23,7 +23,7 @@
 #define SDL_config_iphoneos_h_
 #define SDL_config_h_
 
-#include "SDL_platform.h"
+#include <SDL2/SDL_platform.h>
 
 #ifdef __LP64__
 #define SIZEOF_VOIDP 8

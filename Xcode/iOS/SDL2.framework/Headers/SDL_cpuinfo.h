@@ -28,7 +28,7 @@
 #ifndef SDL_cpuinfo_h_
 #define SDL_cpuinfo_h_
 
-#include "SDL_stdinc.h"
+#include <SDL2/SDL_stdinc.h>
 
 /* Need to do this here because intrin.h has C++ code in it */
 /* Visual Studio 2005 has a bug where intrin.h conflicts with winnt.h */
@@ -100,7 +100,7 @@
 #endif /* HAVE_IMMINTRIN_H */
 #endif /* compiler version */
 
-#include "begin_code.h"
+#include <SDL2/begin_code.h>
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
 extern "C" {
@@ -268,7 +268,7 @@ extern DECLSPEC void SDLCALL SDL_SIMDFree(void *ptr);
 #ifdef __cplusplus
 }
 #endif
-#include "close_code.h"
+#include <SDL2/close_code.h>
 
 #endif /* SDL_cpuinfo_h_ */
 

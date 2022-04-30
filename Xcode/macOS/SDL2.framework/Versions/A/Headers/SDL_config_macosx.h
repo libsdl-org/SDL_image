@@ -23,7 +23,7 @@
 #define SDL_config_macosx_h_
 #define SDL_config_h_
 
-#include "SDL_platform.h"
+#include <SDL2/SDL_platform.h>
 
 /* This gets us MAC_OS_X_VERSION_MIN_REQUIRED... */
 #include <AvailabilityMacros.h>

@@ -28,9 +28,9 @@
 #ifndef SDL_metal_h_
 #define SDL_metal_h_
 
-#include "SDL_video.h"
+#include <SDL2/SDL_video.h>
 
-#include "begin_code.h"
+#include <SDL2/begin_code.h>
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
 extern "C" {
@@ -86,6 +86,6 @@ extern DECLSPEC void SDLCALL SDL_Metal_DestroyView(SDL_MetalView view);
 #ifdef __cplusplus
 }
 #endif
-#include "close_code.h"
+#include <SDL2/close_code.h>
 
 #endif /* SDL_metal_h_ */

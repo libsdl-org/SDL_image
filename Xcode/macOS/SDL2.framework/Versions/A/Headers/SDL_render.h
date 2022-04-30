@@ -48,11 +48,11 @@
 #ifndef SDL_render_h_
 #define SDL_render_h_
 
-#include "SDL_stdinc.h"
-#include "SDL_rect.h"
-#include "SDL_video.h"
+#include <SDL2/SDL_stdinc.h>
+#include <SDL2/SDL_rect.h>
+#include <SDL2/SDL_video.h>
 
-#include "begin_code.h"
+#include <SDL2/begin_code.h>
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
 extern "C" {
@@ -1614,7 +1614,7 @@ extern DECLSPEC void *SDLCALL SDL_RenderGetMetalCommandEncoder(SDL_Renderer * re
 #ifdef __cplusplus
 }
 #endif
-#include "close_code.h"
+#include <SDL2/close_code.h>
 
 #endif /* SDL_render_h_ */
 
