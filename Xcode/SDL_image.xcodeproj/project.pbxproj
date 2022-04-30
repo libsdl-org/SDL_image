@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -44,11 +44,15 @@
 		AA579E0F161C07E7005F809B /* IMG_xxx.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DF0161C07E6005F809B /* IMG_xxx.c */; };
 		AA579E10161C07E7005F809B /* IMG.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DF1161C07E6005F809B /* IMG.c */; };
 		AA579E11161C07E7005F809B /* IMG.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DF1161C07E6005F809B /* IMG.c */; };
-		AADBAC88175C6AAB004F8ED2 /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = AA9EE77514B27A62008773C0 /* webp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		AADBAC89175C6B4C004F8ED2 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007288A60F0DA79800C302A9 /* ApplicationServices.framework */; };
+		AADBAC89175C6B4C004F8ED2 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007288A60F0DA79800C302A9 /* ApplicationServices.framework */; platformFilters = (macos, ); };
 		AADBAC8A175C6B4F004F8ED2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F85449145A19BC002CA294 /* Foundation.framework */; };
 		BE1FA71A07AF4C44004B6283 /* SDL_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 1014BAEA010A4B677F000001 /* SDL_image.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BE1FA76307AF7335004B6283 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE1FA76207AF7335004B6283 /* SDL2.framework */; };
+		F3A7E021281C9B740003E124 /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3A7E020281C9B740003E124 /* webp.framework */; platformFilters = (macos, ); settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F3E1AAEB281CBABD00740E39 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAEA281CBABD00740E39 /* CoreGraphics.framework */; platformFilters = (ios, tvos, ); };
+		F3E1AAEC281CBB1F00740E39 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */; platformFilters = (ios, tvos, ); };
+		F3E1AAEE281CBD9F00740E39 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAED281CBD9F00740E39 /* UIKit.framework */; platformFilters = (ios, tvos, ); };
+		F3E1AAF0281CBDD100740E39 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAEF281CBDD100740E39 /* MobileCoreServices.framework */; platformFilters = (ios, tvos, ); };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,7 +72,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				AADBAC88175C6AAB004F8ED2 /* webp.framework in Copy Frameworks */,
+				F3A7E021281C9B740003E124 /* webp.framework in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -97,12 +101,16 @@
 		AA579DEF161C07E6005F809B /* IMG_xv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_xv.c; path = ../IMG_xv.c; sourceTree = "<group>"; };
 		AA579DF0161C07E6005F809B /* IMG_xxx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_xxx.c; path = ../IMG_xxx.c; sourceTree = "<group>"; };
 		AA579DF1161C07E6005F809B /* IMG.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG.c; path = ../IMG.c; sourceTree = "<group>"; };
-		AA9EE77514B27A62008773C0 /* webp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = webp.framework; path = Frameworks/webp.framework; sourceTree = "<group>"; };
 		BE1FA72D07AF4C44004B6283 /* Info-Framework.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Framework.plist"; sourceTree = "<group>"; };
 		BE1FA72E07AF4C45004B6283 /* SDL2_image.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDL2_image.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1FA74107AF4C45004B6283 /* libSDL2_image.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSDL2_image.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1FA74507AF4C45004B6283 /* Create DMG */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Create DMG"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1FA76207AF7335004B6283 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = /Library/Frameworks/SDL2.framework; sourceTree = "<absolute>"; };
+		F3A7E020281C9B740003E124 /* webp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = webp.framework; path = macOS/webp.framework; sourceTree = "<group>"; };
+		F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		F3E1AAEA281CBABD00740E39 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		F3E1AAED281CBD9F00740E39 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/System/iOSSupport/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		F3E1AAEF281CBDD100740E39 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/iOSSupport/System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		F59C710300D5CB5801000001 /* ReadMe.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
 		F59C710400D5CB5801000001 /* Welcome.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Welcome.txt; sourceTree = "<group>"; };
 		F59C710600D5CB5801000001 /* SDL_image.info */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SDL_image.info; sourceTree = "<group>"; };
@@ -114,7 +122,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				AADBAC89175C6B4C004F8ED2 /* ApplicationServices.framework in Frameworks */,
+				F3E1AAEB281CBABD00740E39 /* CoreGraphics.framework in Frameworks */,
 				AADBAC8A175C6B4F004F8ED2 /* Foundation.framework in Frameworks */,
+				F3E1AAEC281CBB1F00740E39 /* ImageIO.framework in Frameworks */,
+				F3E1AAF0281CBDD100740E39 /* MobileCoreServices.framework in Frameworks */,
+				F3E1AAEE281CBD9F00740E39 /* UIKit.framework in Frameworks */,
 				BE1FA76307AF7335004B6283 /* SDL2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -200,7 +212,7 @@
 				007288A60F0DA79800C302A9 /* ApplicationServices.framework */,
 				61F85449145A19BC002CA294 /* Foundation.framework */,
 				BE1FA76207AF7335004B6283 /* SDL2.framework */,
-				AA9EE77514B27A62008773C0 /* webp.framework */,
+				F3A7E020281C9B740003E124 /* webp.framework */,
 			);
 			name = "Linked Frameworks";
 			sourceTree = "<group>";
@@ -208,6 +220,10 @@
 		BE1FA76107AF72F5004B6283 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F3E1AAEF281CBDD100740E39 /* MobileCoreServices.framework */,
+				F3E1AAED281CBD9F00740E39 /* UIKit.framework */,
+				F3E1AAEA281CBABD00740E39 /* CoreGraphics.framework */,
+				F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */,
 				BE1FA76007AF72B1004B6283 /* Linked Frameworks */,
 			);
 			name = Frameworks;
@@ -382,7 +398,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd $SYMROOT/$CONFIGURATION/$FULL_PRODUCT_NAME\nif ! [ -L Frameworks ]; then\n    rm -f Frameworks\n    ln -s Versions/Current/Frameworks Frameworks\nfi";
+			shellScript = "cd $SYMROOT/$CONFIGURATION/$FULL_PRODUCT_NAME\nif ! [ -L Frameworks ]; then\n    rm -f Frameworks\n    ln -s Versions/Current/Frameworks Frameworks\nfi\n";
 		};
 		AA9EE77414B27854008773C0 /* Convert SDL includes to SDL Framework includes */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -396,7 +412,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd $SYMROOT/$CONFIGURATION/$PUBLIC_HEADERS_FOLDER_PATH\nHEADER=SDL_image.h\nsed 's,#include \"\\(.*\\)\",#include <SDL2/\\1>,' <$HEADER >$HEADER.new\nmv $HEADER.new $HEADER";
+			shellScript = "cd \"$BUILT_PRODUCTS_DIR/$PUBLIC_HEADERS_FOLDER_PATH\"\nHEADER=SDL_image.h\nsed 's,#include \"\\(.*\\)\",#include <SDL2/\\1>,' <$HEADER >$HEADER.new\nmv $HEADER.new $HEADER\n";
 		};
 		BE1FA74407AF4C45004B6283 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -474,12 +490,13 @@
 		007288110F0DA5BA00C302A9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED)",
-					"$(HOME)/Library/Frameworks",
-					/Library/Frameworks,
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED = "\"$(SRCROOT)/Frameworks\"";
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
+				COPY_PHASE_STRIP = NO;
+				DYLIB_COMPATIBILITY_VERSION = 3.0.0;
+				DYLIB_CURRENT_VERSION = 7.0.0;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/$(PLATFORM)\"";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					LOAD_BMP,
@@ -499,79 +516,47 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(HEADER_SEARCH_PATHS_QUOTED)",
-					"$(HOME)/Library/Frameworks/SDL.framework/Headers",
-					/Library/Frameworks/SDL.framework/Headers,
+					"\"$(SRCROOT)/$(PLATFORM)/SDL2.framework/Headers\"",
+					"\"$(SRCROOT)/$(PLATFORM)/webp.framework/Headers\"",
 				);
-				HEADER_SEARCH_PATHS_QUOTED = "\"$(SRCROOT)/Frameworks/webp.framework/Headers\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				INFOPLIST_FILE = "Info-Framework.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = YES;
+				PLATFORM = "";
+				"PLATFORM[sdk=appletvos*]" = tvOS;
+				"PLATFORM[sdk=iphoneos*]" = iOS;
+				"PLATFORM[sdk=macosx*]" = macOS;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.libsdl.SDL2-image";
 				PRODUCT_NAME = SDL2_image;
-				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS_QUOTED) $(HOME)/Library/Frameworks/SDL2.framework/Headers /Library/Frameworks/SDL2.framework/Headers";
+				SUPPORTED_PLATFORMS = "watchsimulator watchos macosx iphonesimulator iphoneos driverkit appletvsimulator appletvos";
+				SUPPORTS_MACCATALYST = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Debug;
 		};
 		007288120F0DA5BA00C302A9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				DYLIB_COMPATIBILITY_VERSION = 3.0.0;
-				DYLIB_CURRENT_VERSION = 7.0.0;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/Frameworks\"",
+					"$(SDKROOT)/System/iOSSupport/System/Library/Frameworks",
 				);
-				FRAMEWORK_VERSION = A;
-				INFOPLIST_FILE = "Info-Framework.plist";
-				INSTALL_PATH = "@rpath";
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_LDFLAGS = (
 					"-weak_framework",
 					webp,
 				);
-				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
 		};
 		007288130F0DA5BA00C302A9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = "";
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					LOAD_BMP,
-					LOAD_GIF,
-					LOAD_JPG,
-					LOAD_LBM,
-					LOAD_PCX,
-					LOAD_PNG,
-					LOAD_PNM,
-					LOAD_QOI,
-					LOAD_SVG,
-					LOAD_TGA,
-					LOAD_TIF,
-					LOAD_WEBP,
-					LOAD_XPM,
-					LOAD_XV,
-				);
-				HEADER_SEARCH_PATHS = (
-					/Library/Frameworks/SDL.framework/Headers,
-					"~/Library/Frameworks/SDL.framework/Headers",
-				);
-				LIBRARY_STYLE = STATIC;
-				OTHER_CFLAGS = "";
-				OTHER_LIBTOOL_FLAGS = "";
-				OTHER_REZFLAGS = "";
-				REZ_EXECUTABLE = YES;
-				SECTORDER_FLAGS = "";
-				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
@@ -599,13 +584,12 @@
 		007288150F0DA5C400C302A9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED)",
-					"$(HOME)/Library/Frameworks",
-					/Library/Frameworks,
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED = "\"$(SRCROOT)/Frameworks\"";
+				DYLIB_COMPATIBILITY_VERSION = 3.0.0;
+				DYLIB_CURRENT_VERSION = 7.0.0;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/$(PLATFORM)\"";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					LOAD_BMP,
@@ -625,78 +609,46 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(HEADER_SEARCH_PATHS_QUOTED)",
-					"$(HOME)/Library/Frameworks/SDL.framework/Headers",
-					/Library/Frameworks/SDL.framework/Headers,
+					"\"$(SRCROOT)/$(PLATFORM)/SDL2.framework/Headers\"",
+					"\"$(SRCROOT)/$(PLATFORM)/webp.framework/Headers\"",
 				);
-				HEADER_SEARCH_PATHS_QUOTED = "\"$(SRCROOT)/Frameworks/webp.framework/Headers\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				INFOPLIST_FILE = "Info-Framework.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				PLATFORM = "";
+				"PLATFORM[sdk=appletvos*]" = tvOS;
+				"PLATFORM[sdk=iphoneos*]" = iOS;
+				"PLATFORM[sdk=macosx*]" = macOS;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.libsdl.SDL2-image";
 				PRODUCT_NAME = SDL2_image;
-				SDKROOT = macosx;
-				SEPARATE_STRIP = YES;
-				STRIP_STYLE = "non-global";
-				USER_HEADER_SEARCH_PATHS = "$(HEADER_SEARCH_PATHS_QUOTED) $(HOME)/Library/Frameworks/SDL2.framework/Headers /Library/Frameworks/SDL2.framework/Headers";
+				SUPPORTED_PLATFORMS = "watchsimulator watchos macosx iphonesimulator iphoneos driverkit appletvsimulator appletvos";
+				SUPPORTS_MACCATALYST = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Release;
 		};
 		007288160F0DA5C400C302A9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				DYLIB_COMPATIBILITY_VERSION = 3.0.0;
-				DYLIB_CURRENT_VERSION = 7.0.0;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/Frameworks\"",
+					"$(SDKROOT)/System/iOSSupport/System/Library/Frameworks",
 				);
-				FRAMEWORK_VERSION = A;
-				INFOPLIST_FILE = "Info-Framework.plist";
-				INSTALL_PATH = "@rpath";
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_LDFLAGS = (
 					"-weak_framework",
 					webp,
 				);
-				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
 		};
 		007288170F0DA5C400C302A9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = "";
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					LOAD_BMP,
-					LOAD_GIF,
-					LOAD_JPG,
-					LOAD_LBM,
-					LOAD_PCX,
-					LOAD_PNG,
-					LOAD_PNM,
-					LOAD_QOI,
-					LOAD_SVG,
-					LOAD_TGA,
-					LOAD_TIF,
-					LOAD_WEBP,
-					LOAD_XPM,
-					LOAD_XV,
-				);
-				HEADER_SEARCH_PATHS = (
-					/Library/Frameworks/SDL.framework/Headers,
-					"~/Library/Frameworks/SDL.framework/Headers",
-				);
-				LIBRARY_STYLE = STATIC;
-				OTHER_CFLAGS = "";
-				OTHER_LIBTOOL_FLAGS = "";
-				OTHER_REZFLAGS = "";
-				REZ_EXECUTABLE = YES;
-				SECTORDER_FLAGS = "";
-				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
