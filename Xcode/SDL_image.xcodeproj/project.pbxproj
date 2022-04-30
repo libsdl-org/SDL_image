@@ -47,8 +47,8 @@
 		AADBAC89175C6B4C004F8ED2 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007288A60F0DA79800C302A9 /* ApplicationServices.framework */; platformFilters = (macos, ); };
 		AADBAC8A175C6B4F004F8ED2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F85449145A19BC002CA294 /* Foundation.framework */; };
 		BE1FA71A07AF4C44004B6283 /* SDL_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 1014BAEA010A4B677F000001 /* SDL_image.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		BE1FA76307AF7335004B6283 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE1FA76207AF7335004B6283 /* SDL2.framework */; };
 		F3A7E021281C9B740003E124 /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3A7E020281C9B740003E124 /* webp.framework */; platformFilters = (macos, ); settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F3D87C04281DF8FC005DA540 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3D87C03281DF8FC005DA540 /* SDL2.framework */; };
 		F3E1AAEB281CBABD00740E39 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAEA281CBABD00740E39 /* CoreGraphics.framework */; platformFilters = (ios, tvos, ); };
 		F3E1AAEC281CBB1F00740E39 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */; platformFilters = (ios, tvos, ); };
 		F3E1AAEE281CBD9F00740E39 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAED281CBD9F00740E39 /* UIKit.framework */; platformFilters = (ios, tvos, ); };
@@ -105,8 +105,8 @@
 		BE1FA72E07AF4C45004B6283 /* SDL2_image.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDL2_image.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1FA74107AF4C45004B6283 /* libSDL2_image.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSDL2_image.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1FA74507AF4C45004B6283 /* Create DMG */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Create DMG"; sourceTree = BUILT_PRODUCTS_DIR; };
-		BE1FA76207AF7335004B6283 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = /Library/Frameworks/SDL2.framework; sourceTree = "<absolute>"; };
 		F3A7E020281C9B740003E124 /* webp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = webp.framework; path = macOS/webp.framework; sourceTree = "<group>"; };
+		F3D87C03281DF8FC005DA540 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = macOS/SDL2.framework; sourceTree = "<group>"; };
 		F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		F3E1AAEA281CBABD00740E39 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		F3E1AAED281CBD9F00740E39 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/System/iOSSupport/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -127,7 +127,7 @@
 				F3E1AAEC281CBB1F00740E39 /* ImageIO.framework in Frameworks */,
 				F3E1AAF0281CBDD100740E39 /* MobileCoreServices.framework in Frameworks */,
 				F3E1AAEE281CBD9F00740E39 /* UIKit.framework in Frameworks */,
-				BE1FA76307AF7335004B6283 /* SDL2.framework in Frameworks */,
+				F3D87C04281DF8FC005DA540 /* SDL2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -211,7 +211,7 @@
 			children = (
 				007288A60F0DA79800C302A9 /* ApplicationServices.framework */,
 				61F85449145A19BC002CA294 /* Foundation.framework */,
-				BE1FA76207AF7335004B6283 /* SDL2.framework */,
+				F3D87C03281DF8FC005DA540 /* SDL2.framework */,
 				F3A7E020281C9B740003E124 /* webp.framework */,
 			);
 			name = "Linked Frameworks";
