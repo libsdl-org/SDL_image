@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2021 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -98,6 +98,8 @@ typedef int SDL_SpinLock;
  * \returns SDL_TRUE if the lock succeeded, SDL_FALSE if the lock is already
  *          held.
  *
+ * \since This function is available since SDL 2.0.0.
+ *
  * \sa SDL_AtomicLock
  * \sa SDL_AtomicUnlock
  */
@@ -110,6 +112,8 @@ extern DECLSPEC SDL_bool SDLCALL SDL_AtomicTryLock(SDL_SpinLock *lock);
  * doing. Please be careful using any sort of spinlock!***
  *
  * \param lock a pointer to a lock variable
+ *
+ * \since This function is available since SDL 2.0.0.
  *
  * \sa SDL_AtomicTryLock
  * \sa SDL_AtomicUnlock
@@ -148,7 +152,7 @@ void _ReadWriteBarrier(void);
 /* This is correct for all CPUs when using GCC or Solaris Studio 12.1+. */
 #define SDL_CompilerBarrier()   __asm__ __volatile__ ("" : : : "memory")
 #elif defined(__WATCOMC__)
-extern _inline void SDL_CompilerBarrier (void);
+extern __inline void SDL_CompilerBarrier(void);
 #pragma aux SDL_CompilerBarrier = "" parm [] modify exact [];
 #else
 #define SDL_CompilerBarrier()   \
@@ -159,20 +163,22 @@ extern _inline void SDL_CompilerBarrier (void);
  * Memory barriers are designed to prevent reads and writes from being
  * reordered by the compiler and being seen out of order on multi-core CPUs.
  *
- * A typical pattern would be for thread A to write some data and a flag,
- * and for thread B to read the flag and get the data. In this case you
- * would insert a release barrier between writing the data and the flag,
+ * A typical pattern would be for thread A to write some data and a flag, and
+ * for thread B to read the flag and get the data. In this case you would
+ * insert a release barrier between writing the data and the flag,
  * guaranteeing that the data write completes no later than the flag is
- * written, and you would insert an acquire barrier between reading the
- * flag and reading the data, to ensure that all the reads associated
- * with the flag have completed.
+ * written, and you would insert an acquire barrier between reading the flag
+ * and reading the data, to ensure that all the reads associated with the flag
+ * have completed.
  *
- * In this pattern you should always see a release barrier paired with
- * an acquire barrier and you should gate the data reads/writes with a
- * single flag variable.
+ * In this pattern you should always see a release barrier paired with an
+ * acquire barrier and you should gate the data reads/writes with a single
+ * flag variable.
  *
  * For more information on these semantics, take a look at the blog post:
  * http://preshing.com/20120913/acquire-and-release-semantics
+ *
+ * \since This function is available since SDL 2.0.6.
  */
 extern DECLSPEC void SDLCALL SDL_MemoryBarrierReleaseFunction(void);
 extern DECLSPEC void SDLCALL SDL_MemoryBarrierAcquireFunction(void);
@@ -238,8 +244,7 @@ typedef void (*SDL_KernelMemoryBarrierFunc)();
 typedef struct { int value; } SDL_atomic_t;
 
 /**
- * Set an atomic variable to a new value if it is
- * currently an old value.
+ * Set an atomic variable to a new value if it is currently an old value.
  *
  * ***Note: If you don't know what this function is for, you shouldn't use
  * it!***
@@ -269,6 +274,8 @@ extern DECLSPEC SDL_bool SDLCALL SDL_AtomicCAS(SDL_atomic_t *a, int oldval, int 
  * \param v the desired value
  * \returns the previous value of the atomic variable.
  *
+ * \since This function is available since SDL 2.0.2.
+ *
  * \sa SDL_AtomicGet
  */
 extern DECLSPEC int SDLCALL SDL_AtomicSet(SDL_atomic_t *a, int v);
@@ -281,6 +288,8 @@ extern DECLSPEC int SDLCALL SDL_AtomicSet(SDL_atomic_t *a, int v);
  *
  * \param a a pointer to an SDL_atomic_t variable
  * \returns the current value of an atomic variable.
+ *
+ * \since This function is available since SDL 2.0.2.
  *
  * \sa SDL_AtomicSet
  */
@@ -297,6 +306,8 @@ extern DECLSPEC int SDLCALL SDL_AtomicGet(SDL_atomic_t *a);
  * \param a a pointer to an SDL_atomic_t variable to be modified
  * \param v the desired value to add
  * \returns the previous value of the atomic variable.
+ *
+ * \since This function is available since SDL 2.0.2.
  *
  * \sa SDL_AtomicDecRef
  * \sa SDL_AtomicIncRef
@@ -321,8 +332,7 @@ extern DECLSPEC int SDLCALL SDL_AtomicAdd(SDL_atomic_t *a, int v);
 #endif
 
 /**
- * Set a pointer to a new value if it is currently an old
- * value.
+ * Set a pointer to a new value if it is currently an old value.
  *
  * ***Note: If you don't know what this function is for, you shouldn't use
  * it!***
@@ -350,6 +360,8 @@ extern DECLSPEC SDL_bool SDLCALL SDL_AtomicCASPtr(void **a, void *oldval, void *
  * \param v the desired pointer value
  * \returns the previous value of the pointer.
  *
+ * \since This function is available since SDL 2.0.2.
+ *
  * \sa SDL_AtomicCASPtr
  * \sa SDL_AtomicGetPtr
  */
@@ -363,6 +375,8 @@ extern DECLSPEC void* SDLCALL SDL_AtomicSetPtr(void **a, void* v);
  *
  * \param a a pointer to a pointer
  * \returns the current value of a pointer.
+ *
+ * \since This function is available since SDL 2.0.2.
  *
  * \sa SDL_AtomicCASPtr
  * \sa SDL_AtomicSetPtr

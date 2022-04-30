@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2021 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -76,7 +76,7 @@
  *    }
  *
  *    // Create the effect
- *    memset( &effect, 0, sizeof(SDL_HapticEffect) ); // 0 is safe default
+ *    SDL_memset( &effect, 0, sizeof(SDL_HapticEffect) ); // 0 is safe default
  *    effect.type = SDL_HAPTIC_SINE;
  *    effect.periodic.direction.type = SDL_HAPTIC_POLAR; // Polar coordinates
  *    effect.periodic.direction.dir[0] = 18000; // Force comes from south
@@ -820,6 +820,7 @@ typedef union SDL_HapticEffect
 
 
 /* Function prototypes */
+
 /**
  * Count the number of haptic devices attached to the system.
  *
@@ -970,6 +971,8 @@ extern DECLSPEC SDL_Haptic *SDLCALL SDL_HapticOpenFromJoystick(SDL_Joystick *
  *
  * \param haptic the SDL_Haptic device to close
  *
+ * \since This function is available since SDL 2.0.0.
+ *
  * \sa SDL_HapticOpen
  */
 extern DECLSPEC void SDLCALL SDL_HapticClose(SDL_Haptic * haptic);
@@ -993,8 +996,7 @@ extern DECLSPEC void SDLCALL SDL_HapticClose(SDL_Haptic * haptic);
 extern DECLSPEC int SDLCALL SDL_HapticNumEffects(SDL_Haptic * haptic);
 
 /**
- * Get the number of effects a haptic device can play at
- * the same time.
+ * Get the number of effects a haptic device can play at the same time.
  *
  * This is not supported on all platforms, but will always return a value.
  *
@@ -1034,12 +1036,13 @@ extern DECLSPEC unsigned int SDLCALL SDL_HapticQuery(SDL_Haptic * haptic);
  * \param haptic the SDL_Haptic device to query
  * \returns the number of axes on success or a negative error code on failure;
  *          call SDL_GetError() for more information.
+ *
+ * \since This function is available since SDL 2.0.0.
  */
 extern DECLSPEC int SDLCALL SDL_HapticNumAxes(SDL_Haptic * haptic);
 
 /**
- * Check to see if an effect is supported by a haptic
- * device.
+ * Check to see if an effect is supported by a haptic device.
  *
  * \param haptic the SDL_Haptic device to query
  * \param effect the desired effect to query
@@ -1064,6 +1067,8 @@ extern DECLSPEC int SDLCALL SDL_HapticEffectSupported(SDL_Haptic * haptic,
  *               the effect to create
  * \returns the ID of the effect on success or a negative error code on
  *          failure; call SDL_GetError() for more information.
+ *
+ * \since This function is available since SDL 2.0.0.
  *
  * \sa SDL_HapticDestroyEffect
  * \sa SDL_HapticRunEffect
@@ -1125,7 +1130,9 @@ extern DECLSPEC int SDLCALL SDL_HapticRunEffect(SDL_Haptic * haptic,
 
 /**
  * Stop the haptic effect on its associated haptic device.
+ *
  * *
+ *
  * \param haptic the SDL_Haptic device to stop the effect on
  * \param effect the ID of the haptic effect to stop
  * \returns 0 on success or a negative error code on failure; call
@@ -1156,8 +1163,7 @@ extern DECLSPEC void SDLCALL SDL_HapticDestroyEffect(SDL_Haptic * haptic,
                                                      int effect);
 
 /**
- * Get the status of the current effect on the specified
- * haptic device.
+ * Get the status of the current effect on the specified haptic device.
  *
  * Device must support the SDL_HAPTIC_STATUS feature.
  *
@@ -1208,6 +1214,8 @@ extern DECLSPEC int SDLCALL SDL_HapticSetGain(SDL_Haptic * haptic, int gain);
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
  *
+ * \since This function is available since SDL 2.0.0.
+ *
  * \sa SDL_HapticQuery
  */
 extern DECLSPEC int SDLCALL SDL_HapticSetAutocenter(SDL_Haptic * haptic,
@@ -1226,6 +1234,8 @@ extern DECLSPEC int SDLCALL SDL_HapticSetAutocenter(SDL_Haptic * haptic,
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
  *
+ * \since This function is available since SDL 2.0.0.
+ *
  * \sa SDL_HapticUnpause
  */
 extern DECLSPEC int SDLCALL SDL_HapticPause(SDL_Haptic * haptic);
@@ -1239,6 +1249,8 @@ extern DECLSPEC int SDLCALL SDL_HapticPause(SDL_Haptic * haptic);
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
  *
+ * \since This function is available since SDL 2.0.0.
+ *
  * \sa SDL_HapticPause
  */
 extern DECLSPEC int SDLCALL SDL_HapticUnpause(SDL_Haptic * haptic);
@@ -1249,6 +1261,8 @@ extern DECLSPEC int SDLCALL SDL_HapticUnpause(SDL_Haptic * haptic);
  * \param haptic the SDL_Haptic device to stop
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
+ *
+ * \since This function is available since SDL 2.0.0.
  */
 extern DECLSPEC int SDLCALL SDL_HapticStopAll(SDL_Haptic * haptic);
 
@@ -1259,6 +1273,8 @@ extern DECLSPEC int SDLCALL SDL_HapticStopAll(SDL_Haptic * haptic);
  * \returns SDL_TRUE if effect is supported, SDL_FALSE if it isn't, or a
  *          negative error code on failure; call SDL_GetError() for more
  *          information.
+ *
+ * \since This function is available since SDL 2.0.0.
  *
  * \sa SDL_HapticRumbleInit
  * \sa SDL_HapticRumblePlay
@@ -1291,6 +1307,8 @@ extern DECLSPEC int SDLCALL SDL_HapticRumbleInit(SDL_Haptic * haptic);
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
  *
+ * \since This function is available since SDL 2.0.0.
+ *
  * \sa SDL_HapticRumbleInit
  * \sa SDL_HapticRumbleStop
  * \sa SDL_HapticRumbleSupported
@@ -1303,6 +1321,8 @@ extern DECLSPEC int SDLCALL SDL_HapticRumblePlay(SDL_Haptic * haptic, float stre
  * \param haptic the haptic device to stop the rumble effect on
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
+ *
+ * \since This function is available since SDL 2.0.0.
  *
  * \sa SDL_HapticRumbleInit
  * \sa SDL_HapticRumblePlay

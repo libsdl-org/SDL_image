@@ -73,8 +73,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F39CD452281DC9CE006CF638 /* SDL2_image.framework in Copy Frameworks */,
 				F3ED8112281DC11700C33C5B /* SDL2.framework in Copy Frameworks */,
+				F39CD452281DC9CE006CF638 /* SDL2_image.framework in Copy Frameworks */,
 				F3ED8111281DC0F500C33C5B /* webp.framework in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
@@ -156,8 +156,8 @@
 		F3ED80AB281D9E8800C33C5B /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				F3ED80EF281DA3BD00C33C5B /* SDL_uikit_main.c */,
 				F3ED80CA281D9ECB00C33C5B /* showimage.c */,
+				F3ED80EF281DA3BD00C33C5B /* SDL_uikit_main.c */,
 			);
 			path = Shared;
 			sourceTree = "<group>";

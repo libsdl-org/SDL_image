@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2021 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -71,6 +71,8 @@ typedef struct SDL_mutex SDL_mutex;
  * \returns the initialized and unlocked mutex or NULL on failure; call
  *          SDL_GetError() for more information.
  *
+ * \since This function is available since SDL 2.0.0.
+ *
  * \sa SDL_DestroyMutex
  * \sa SDL_LockMutex
  * \sa SDL_TryLockMutex
@@ -86,11 +88,13 @@ extern DECLSPEC SDL_mutex *SDLCALL SDL_CreateMutex(void);
  * it. Of all threads waiting to lock the mutex, only one may do so at a time.
  *
  * It is legal for the owning thread to lock an already-locked mutex. It must
- * unlock it the same number of times before it is actually made available
- * for other threads in the system (this is known as a "recursive mutex").
+ * unlock it the same number of times before it is actually made available for
+ * other threads in the system (this is known as a "recursive mutex").
  *
  * \param mutex the mutex to lock
  * \return 0, or -1 on error.
+ *
+ * \since This function is available since SDL 2.0.0.
  */
 extern DECLSPEC int SDLCALL SDL_LockMutex(SDL_mutex * mutex);
 #define SDL_mutexP(m)   SDL_LockMutex(m)
@@ -105,8 +109,10 @@ extern DECLSPEC int SDLCALL SDL_LockMutex(SDL_mutex * mutex);
  * don't want to wait for it, and will return to it to try again later.
  *
  * \param mutex the mutex to try to lock
- * \returns return 0, `SDL_MUTEX_TIMEDOUT`, or -1 on error; call
- *          SDL_GetError() for more information.
+ * \returns 0, `SDL_MUTEX_TIMEDOUT`, or -1 on error; call SDL_GetError() for
+ *          more information.
+ *
+ * \since This function is available since SDL 2.0.0.
  *
  * \sa SDL_CreateMutex
  * \sa SDL_DestroyMutex
@@ -119,8 +125,8 @@ extern DECLSPEC int SDLCALL SDL_TryLockMutex(SDL_mutex * mutex);
  * Unlock the mutex.
  *
  * It is legal for the owning thread to lock an already-locked mutex. It must
- * unlock it the same number of times before it is actually made available
- * for other threads in the system (this is known as a "recursive mutex").
+ * unlock it the same number of times before it is actually made available for
+ * other threads in the system (this is known as a "recursive mutex").
  *
  * It is an error to unlock a mutex that has not been locked by the current
  * thread, and doing so results in undefined behavior.
@@ -129,6 +135,8 @@ extern DECLSPEC int SDLCALL SDL_TryLockMutex(SDL_mutex * mutex);
  *
  * \param mutex the mutex to unlock.
  * \returns 0, or -1 on error.
+ *
+ * \since This function is available since SDL 2.0.0.
  */
 extern DECLSPEC int SDLCALL SDL_UnlockMutex(SDL_mutex * mutex);
 #define SDL_mutexV(m)   SDL_UnlockMutex(m)
@@ -143,6 +151,8 @@ extern DECLSPEC int SDLCALL SDL_UnlockMutex(SDL_mutex * mutex);
  * on the platform.
  *
  * \param mutex the mutex to destroy
+ *
+ * \since This function is available since SDL 2.0.0.
  *
  * \sa SDL_CreateMutex
  * \sa SDL_LockMutex
@@ -176,6 +186,8 @@ typedef struct SDL_semaphore SDL_sem;
  * \returns a new semaphore or NULL on failure; call SDL_GetError() for more
  *          information.
  *
+ * \since This function is available since SDL 2.0.0.
+ *
  * \sa SDL_DestroySemaphore
  * \sa SDL_SemPost
  * \sa SDL_SemTryWait
@@ -192,6 +204,8 @@ extern DECLSPEC SDL_sem *SDLCALL SDL_CreateSemaphore(Uint32 initial_value);
  * waiting on it.
  *
  * \param sem the semaphore to destroy
+ *
+ * \since This function is available since SDL 2.0.0.
  *
  * \sa SDL_CreateSemaphore
  * \sa SDL_SemPost
@@ -217,6 +231,8 @@ extern DECLSPEC void SDLCALL SDL_DestroySemaphore(SDL_sem * sem);
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
  *
+ * \since This function is available since SDL 2.0.0.
+ *
  * \sa SDL_CreateSemaphore
  * \sa SDL_DestroySemaphore
  * \sa SDL_SemPost
@@ -240,6 +256,8 @@ extern DECLSPEC int SDLCALL SDL_SemWait(SDL_sem * sem);
  *          block, or a negative error code on failure; call SDL_GetError()
  *          for more information.
  *
+ * \since This function is available since SDL 2.0.0.
+ *
  * \sa SDL_CreateSemaphore
  * \sa SDL_DestroySemaphore
  * \sa SDL_SemPost
@@ -250,8 +268,7 @@ extern DECLSPEC int SDLCALL SDL_SemWait(SDL_sem * sem);
 extern DECLSPEC int SDLCALL SDL_SemTryWait(SDL_sem * sem);
 
 /**
- * Wait until a semaphore has a positive value and then
- * decrements it.
+ * Wait until a semaphore has a positive value and then decrements it.
  *
  * This function suspends the calling thread until either the semaphore
  * pointed to by `sem` has a positive value, the call is interrupted by a
@@ -263,6 +280,8 @@ extern DECLSPEC int SDLCALL SDL_SemTryWait(SDL_sem * sem);
  * \returns 0 if the wait succeeds, `SDL_MUTEX_TIMEDOUT` if the wait does not
  *          succeed in the allotted time, or a negative error code on failure;
  *          call SDL_GetError() for more information.
+ *
+ * \since This function is available since SDL 2.0.0.
  *
  * \sa SDL_CreateSemaphore
  * \sa SDL_DestroySemaphore
@@ -280,6 +299,8 @@ extern DECLSPEC int SDLCALL SDL_SemWaitTimeout(SDL_sem * sem, Uint32 ms);
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
  *
+ * \since This function is available since SDL 2.0.0.
+ *
  * \sa SDL_CreateSemaphore
  * \sa SDL_DestroySemaphore
  * \sa SDL_SemTryWait
@@ -294,6 +315,8 @@ extern DECLSPEC int SDLCALL SDL_SemPost(SDL_sem * sem);
  *
  * \param sem the semaphore to query
  * \returns the current value of the semaphore.
+ *
+ * \since This function is available since SDL 2.0.0.
  *
  * \sa SDL_CreateSemaphore
  */
@@ -317,6 +340,8 @@ typedef struct SDL_cond SDL_cond;
  * \returns a new condition variable or NULL on failure; call SDL_GetError()
  *          for more information.
  *
+ * \since This function is available since SDL 2.0.0.
+ *
  * \sa SDL_CondBroadcast
  * \sa SDL_CondSignal
  * \sa SDL_CondWait
@@ -329,6 +354,8 @@ extern DECLSPEC SDL_cond *SDLCALL SDL_CreateCond(void);
  * Destroy a condition variable.
  *
  * \param cond the condition variable to destroy
+ *
+ * \since This function is available since SDL 2.0.0.
  *
  * \sa SDL_CondBroadcast
  * \sa SDL_CondSignal
@@ -345,6 +372,8 @@ extern DECLSPEC void SDLCALL SDL_DestroyCond(SDL_cond * cond);
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
  *
+ * \since This function is available since SDL 2.0.0.
+ *
  * \sa SDL_CondBroadcast
  * \sa SDL_CondWait
  * \sa SDL_CondWaitTimeout
@@ -360,6 +389,8 @@ extern DECLSPEC int SDLCALL SDL_CondSignal(SDL_cond * cond);
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
  *
+ * \since This function is available since SDL 2.0.0.
+ *
  * \sa SDL_CondSignal
  * \sa SDL_CondWait
  * \sa SDL_CondWaitTimeout
@@ -371,10 +402,10 @@ extern DECLSPEC int SDLCALL SDL_CondBroadcast(SDL_cond * cond);
 /**
  * Wait until a condition variable is signaled.
  *
- * This function unlocks the specified `mutex` and waits for another thread
- * to call SDL_CondSignal() or SDL_CondBroadcast() on the condition variable
- * `cond`. Once the condition variable is signaled, the mutex is re-locked
- * and the function returns.
+ * This function unlocks the specified `mutex` and waits for another thread to
+ * call SDL_CondSignal() or SDL_CondBroadcast() on the condition variable
+ * `cond`. Once the condition variable is signaled, the mutex is re-locked and
+ * the function returns.
  *
  * The mutex must be locked before calling this function.
  *
@@ -385,6 +416,8 @@ extern DECLSPEC int SDLCALL SDL_CondBroadcast(SDL_cond * cond);
  * \param mutex the mutex used to coordinate thread access
  * \returns 0 when it is signaled or a negative error code on failure; call
  *          SDL_GetError() for more information.
+ *
+ * \since This function is available since SDL 2.0.0.
  *
  * \sa SDL_CondBroadcast
  * \sa SDL_CondSignal
@@ -397,10 +430,10 @@ extern DECLSPEC int SDLCALL SDL_CondWait(SDL_cond * cond, SDL_mutex * mutex);
 /**
  * Wait until a condition variable is signaled or a certain time has passed.
  *
- * This function unlocks the specified `mutex` and waits for another thread
- * to call SDL_CondSignal() or SDL_CondBroadcast() on the condition variable
- * `cond`, or for the specified time to elapse. Once the condition variable
- * is signaled or the time elapsed, the mutex is re-locked and the function
+ * This function unlocks the specified `mutex` and waits for another thread to
+ * call SDL_CondSignal() or SDL_CondBroadcast() on the condition variable
+ * `cond`, or for the specified time to elapse. Once the condition variable is
+ * signaled or the time elapsed, the mutex is re-locked and the function
  * returns.
  *
  * The mutex must be locked before calling this function.
@@ -412,6 +445,8 @@ extern DECLSPEC int SDLCALL SDL_CondWait(SDL_cond * cond, SDL_mutex * mutex);
  * \returns 0 if the condition variable is signaled, `SDL_MUTEX_TIMEDOUT` if
  *          the condition is not signaled in the allotted time, or a negative
  *          error code on failure; call SDL_GetError() for more information.
+ *
+ * \since This function is available since SDL 2.0.0.
  *
  * \sa SDL_CondBroadcast
  * \sa SDL_CondSignal
