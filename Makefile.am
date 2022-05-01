@@ -51,26 +51,20 @@ EXTRA_DIST = CHANGES.txt LICENSE.txt README.txt README-emscripten.txt \
 	autogen.sh gcc-fat.sh
 
 
-if USE_VERSION_RC
-libSDL2_image_la_LDFLAGS = 	\
-	-no-undefined		\
-	-release $(LT_RELEASE)	\
-	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) -Wl,version.o
-libSDL2_image_la_LIBADD = $(IMG_LIBS)
-libSDL2_image_la_DEPENDENCIES = version.o
-else
 libSDL2_image_la_LDFLAGS = 	\
 	-no-undefined		\
 	-release $(LT_RELEASE)	\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) $(LT_EXTRA)
 libSDL2_image_la_LIBADD = $(IMG_LIBS)
+if USE_VERSION_RC
+libSDL2_image_la_DEPENDENCIES = version.o
 endif
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = SDL2_image.pc
 
-%.o : %.rc
-	$(WINDRES) $< $@
+.rc.o:
+	$(RC) $< $@
 
 noinst_PROGRAMS = showimage showanim
 
