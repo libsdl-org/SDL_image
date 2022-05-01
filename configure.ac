@@ -55,6 +55,7 @@ AC_C_INLINE
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 LT_PROG_RC
+PKG_PROG_PKG_CONFIG
 
 case "$host" in
     *-*-beos*)
