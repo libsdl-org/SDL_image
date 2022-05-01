@@ -61,7 +61,8 @@ static struct {
     if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle); return -1; }
 #else
 #define FUNCTION_LOADER(FUNC, SIG) \
-    lib.FUNC = FUNC;
+    lib.FUNC = FUNC; \
+    if (lib.FUNC == NULL) { IMG_SetError("Missing webp.framework"); return -1; }
 #endif
 
 int IMG_InitWEBP()
