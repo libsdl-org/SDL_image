@@ -47,7 +47,6 @@
 		AADBAC89175C6B4C004F8ED2 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007288A60F0DA79800C302A9 /* ApplicationServices.framework */; platformFilters = (macos, ); };
 		AADBAC8A175C6B4F004F8ED2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F85449145A19BC002CA294 /* Foundation.framework */; };
 		BE1FA71A07AF4C44004B6283 /* SDL_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 1014BAEA010A4B677F000001 /* SDL_image.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F3A7E021281C9B740003E124 /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3A7E020281C9B740003E124 /* webp.framework */; platformFilters = (macos, ); settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F3D87C04281DF8FC005DA540 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3D87C03281DF8FC005DA540 /* SDL2.framework */; };
 		F3E1AAEB281CBABD00740E39 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAEA281CBABD00740E39 /* CoreGraphics.framework */; platformFilters = (ios, tvos, ); };
 		F3E1AAEC281CBB1F00740E39 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */; platformFilters = (ios, tvos, ); };
@@ -63,6 +62,13 @@
 			remoteGlobalIDString = BE1FA71807AF4C44004B6283;
 			remoteInfo = Framework;
 		};
+		F3D87D23281EA9D8005DA540 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F3D87D15281EA88F005DA540 /* webp.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F3D87D21281EA9C3005DA540;
+			remoteInfo = webp;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -72,7 +78,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F3A7E021281C9B740003E124 /* webp.framework in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -105,8 +110,8 @@
 		BE1FA72E07AF4C45004B6283 /* SDL2_image.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDL2_image.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1FA74107AF4C45004B6283 /* libSDL2_image.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSDL2_image.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1FA74507AF4C45004B6283 /* Create DMG */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Create DMG"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F3A7E020281C9B740003E124 /* webp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = webp.framework; path = macOS/webp.framework; sourceTree = "<group>"; };
 		F3D87C03281DF8FC005DA540 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = macOS/SDL2.framework; sourceTree = "<group>"; };
+		F3D87D15281EA88F005DA540 /* webp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = webp.xcodeproj; path = webp/webp.xcodeproj; sourceTree = "<group>"; };
 		F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		F3E1AAEA281CBABD00740E39 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		F3E1AAED281CBD9F00740E39 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/System/iOSSupport/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -164,6 +169,7 @@
 		0867D691FE84028FC02AAC07 /* SDL_imageFramework */ = {
 			isa = PBXGroup;
 			children = (
+				F3D87D15281EA88F005DA540 /* webp.xcodeproj */,
 				F59C70FC00D5CB5801000001 /* pkg-support */,
 				0153844A006D81B07F000001 /* Public Headers */,
 				08FB77ACFE841707C02AAC07 /* Library Source */,
@@ -212,7 +218,6 @@
 				007288A60F0DA79800C302A9 /* ApplicationServices.framework */,
 				61F85449145A19BC002CA294 /* Foundation.framework */,
 				F3D87C03281DF8FC005DA540 /* SDL2.framework */,
-				F3A7E020281C9B740003E124 /* webp.framework */,
 			);
 			name = "Linked Frameworks";
 			sourceTree = "<group>";
@@ -227,6 +232,14 @@
 				BE1FA76007AF72B1004B6283 /* Linked Frameworks */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F3D87D16281EA88F005DA540 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F3D87D24281EA9D8005DA540 /* webp.framework */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		F59C70FC00D5CB5801000001 /* pkg-support */ = {
@@ -349,6 +362,12 @@
 			mainGroup = 0867D691FE84028FC02AAC07 /* SDL_imageFramework */;
 			productRefGroup = 034768DDFF38A45A11DB9C8B /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F3D87D16281EA88F005DA540 /* Products */;
+					ProjectRef = F3D87D15281EA88F005DA540 /* webp.xcodeproj */;
+				},
+			);
 			projectRoot = ..;
 			targets = (
 				BE1FA71807AF4C44004B6283 /* Framework */,
@@ -357,6 +376,16 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		F3D87D24281EA9D8005DA540 /* webp.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = webp.framework;
+			remoteRef = F3D87D23281EA9D8005DA540 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		BE1FA71B07AF4C44004B6283 /* Resources */ = {
@@ -517,7 +546,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)/$(PLATFORM)/SDL2.framework/Headers\"",
-					"\"$(SRCROOT)/$(PLATFORM)/webp.framework/Headers\"",
+					"\"$(SRCROOT)/../external/libwebp-1.0.3/src\"",
 				);
 				INFOPLIST_FILE = "Info-Framework.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -606,7 +635,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)/$(PLATFORM)/SDL2.framework/Headers\"",
-					"\"$(SRCROOT)/$(PLATFORM)/webp.framework/Headers\"",
+					"\"$(SRCROOT)/../external/libwebp-1.0.3/src\"",
 				);
 				INFOPLIST_FILE = "Info-Framework.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;

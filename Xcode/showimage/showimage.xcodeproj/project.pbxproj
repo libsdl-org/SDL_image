@@ -9,9 +9,10 @@
 /* Begin PBXBuildFile section */
 		F39CD44A281DC6A4006CF638 /* SDL2.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED810E281DC09600C33C5B /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F39CD44B281DC6C8006CF638 /* SDL2_image.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL2_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F39CD44E281DC7AF006CF638 /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F39CD44C281DC7A4006CF638 /* webp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		F39CD451281DC955006CF638 /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F39CD44F281DC949006CF638 /* webp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F39CD452281DC9CE006CF638 /* SDL2_image.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL2_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F3E949DB281EAC3500B8F4EA /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3E949DA281EAC1B00B8F4EA /* webp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F3E949DC281EAC9600B8F4EA /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3E949DA281EAC1B00B8F4EA /* webp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F3E949DD281EAC9C00B8F4EA /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3E949DA281EAC1B00B8F4EA /* webp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F3ED80CB281D9ECB00C33C5B /* showimage.c in Sources */ = {isa = PBXBuildFile; fileRef = F3ED80CA281D9ECB00C33C5B /* showimage.c */; };
 		F3ED80CC281D9ECB00C33C5B /* showimage.c in Sources */ = {isa = PBXBuildFile; fileRef = F3ED80CA281D9ECB00C33C5B /* showimage.c */; };
 		F3ED80DB281D9F2100C33C5B /* showimage.c in Sources */ = {isa = PBXBuildFile; fileRef = F3ED80CA281D9ECB00C33C5B /* showimage.c */; };
@@ -24,12 +25,18 @@
 		F3ED80FF281DA63000C33C5B /* SDL2_image.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL2_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F3ED810C281DBEF000C33C5B /* SDL2.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80F6281DA40300C33C5B /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F3ED8110281DC09600C33C5B /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED810E281DC09600C33C5B /* SDL2.framework */; };
-		F3ED8111281DC0F500C33C5B /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80EA281DA1E000C33C5B /* webp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F3ED8112281DC11700C33C5B /* SDL2.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80E4281DA17800C33C5B /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F3ED8113281DC13D00C33C5B /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL2_image.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		F3E949D9281EAC1B00B8F4EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F3E949D5281EAC1B00B8F4EA /* webp.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F3D87D21281EA9C3005DA540;
+			remoteInfo = webp;
+		};
 		F3ED80D3281D9ED600C33C5B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */;
@@ -60,9 +67,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F39CD44B281DC6C8006CF638 /* SDL2_image.framework in Copy Frameworks */,
 				F39CD44A281DC6A4006CF638 /* SDL2.framework in Copy Frameworks */,
-				F39CD44E281DC7AF006CF638 /* webp.framework in Copy Frameworks */,
+				F39CD44B281DC6C8006CF638 /* SDL2_image.framework in Copy Frameworks */,
+				F3E949DB281EAC3500B8F4EA /* webp.framework in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -75,7 +82,7 @@
 			files = (
 				F3ED8112281DC11700C33C5B /* SDL2.framework in Copy Frameworks */,
 				F39CD452281DC9CE006CF638 /* SDL2_image.framework in Copy Frameworks */,
-				F3ED8111281DC0F500C33C5B /* webp.framework in Copy Frameworks */,
+				F3E949DC281EAC9600B8F4EA /* webp.framework in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -86,9 +93,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				F3ED80FF281DA63000C33C5B /* SDL2_image.framework in Copy Frameworks */,
 				F3ED810C281DBEF000C33C5B /* SDL2.framework in Copy Frameworks */,
-				F39CD451281DC955006CF638 /* webp.framework in Copy Frameworks */,
+				F3ED80FF281DA63000C33C5B /* SDL2_image.framework in Copy Frameworks */,
+				F3E949DD281EAC9C00B8F4EA /* webp.framework in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -98,6 +105,7 @@
 /* Begin PBXFileReference section */
 		F39CD44C281DC7A4006CF638 /* webp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = webp.framework; path = ../tvOS/webp.framework; sourceTree = "<group>"; };
 		F39CD44F281DC949006CF638 /* webp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = webp.framework; path = ../iOS/webp.framework; sourceTree = "<group>"; };
+		F3E949D5281EAC1B00B8F4EA /* webp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = webp.xcodeproj; path = ../webp/webp.xcodeproj; sourceTree = "<group>"; };
 		F3ED80B3281D9E8900C33C5B /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3ED80B9281D9E8900C33C5B /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3ED80BB281D9E8900C33C5B /* macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOS.entitlements; sourceTree = "<group>"; };
@@ -142,10 +150,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F3E949D6281EAC1B00B8F4EA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F3E949DA281EAC1B00B8F4EA /* webp.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		F3ED80A6281D9E8800C33C5B = {
 			isa = PBXGroup;
 			children = (
 				F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */,
+				F3E949D5281EAC1B00B8F4EA /* webp.xcodeproj */,
 				F3ED80AB281D9E8800C33C5B /* Shared */,
 				F3ED80BA281D9E8900C33C5B /* macOS */,
 				F3ED80B4281D9E8900C33C5B /* Products */,
@@ -318,6 +335,10 @@
 					ProductGroup = F3ED80CE281D9ED600C33C5B /* Products */;
 					ProjectRef = F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */;
 				},
+				{
+					ProductGroup = F3E949D6281EAC1B00B8F4EA /* Products */;
+					ProjectRef = F3E949D5281EAC1B00B8F4EA /* webp.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -329,6 +350,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		F3E949DA281EAC1B00B8F4EA /* webp.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = webp.framework;
+			remoteRef = F3E949D9281EAC1B00B8F4EA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		F3ED80D4281D9ED600C33C5B /* SDL2_image.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
