@@ -115,6 +115,13 @@
 		F3D87D12281EA550005DA540 /* backward_references_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = F3D87CFB281EA550005DA540 /* backward_references_enc.c */; };
 		F3D87D13281EA550005DA540 /* vp8l_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = F3D87CFC281EA550005DA540 /* vp8l_enc.c */; };
 		F3D87D14281EA550005DA540 /* analysis_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = F3D87CFD281EA550005DA540 /* analysis_enc.c */; };
+		F3E949F7281F144C00B8F4EA /* demux.h in Headers */ = {isa = PBXBuildFile; fileRef = F3E949F2281F144C00B8F4EA /* demux.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F3E949F8281F144C00B8F4EA /* mux_types.h in Headers */ = {isa = PBXBuildFile; fileRef = F3E949F3281F144C00B8F4EA /* mux_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F3E949F9281F144C00B8F4EA /* types.h in Headers */ = {isa = PBXBuildFile; fileRef = F3E949F4281F144C00B8F4EA /* types.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F3E949FA281F144C00B8F4EA /* encode.h in Headers */ = {isa = PBXBuildFile; fileRef = F3E949F5281F144C00B8F4EA /* encode.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F3E949FB281F144C00B8F4EA /* decode.h in Headers */ = {isa = PBXBuildFile; fileRef = F3E949F6281F144C00B8F4EA /* decode.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F3E94A00281F14F700B8F4EA /* README in Resources */ = {isa = PBXBuildFile; fileRef = F3E949FE281F14F700B8F4EA /* README */; };
+		F3E94A01281F14F700B8F4EA /* COPYING in Resources */ = {isa = PBXBuildFile; fileRef = F3E949FF281F14F700B8F4EA /* COPYING */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -227,6 +234,13 @@
 		F3D87CFC281EA550005DA540 /* vp8l_enc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vp8l_enc.c; path = "../../external/libwebp-1.0.3/src/enc/vp8l_enc.c"; sourceTree = "<group>"; };
 		F3D87CFD281EA550005DA540 /* analysis_enc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = analysis_enc.c; path = "../../external/libwebp-1.0.3/src/enc/analysis_enc.c"; sourceTree = "<group>"; };
 		F3D87D21281EA9C3005DA540 /* webp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = webp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3E949F2281F144C00B8F4EA /* demux.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = demux.h; path = "../../external/libwebp-1.0.3/src/webp/demux.h"; sourceTree = "<group>"; };
+		F3E949F3281F144C00B8F4EA /* mux_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mux_types.h; path = "../../external/libwebp-1.0.3/src/webp/mux_types.h"; sourceTree = "<group>"; };
+		F3E949F4281F144C00B8F4EA /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = types.h; path = "../../external/libwebp-1.0.3/src/webp/types.h"; sourceTree = "<group>"; };
+		F3E949F5281F144C00B8F4EA /* encode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = encode.h; path = "../../external/libwebp-1.0.3/src/webp/encode.h"; sourceTree = "<group>"; };
+		F3E949F6281F144C00B8F4EA /* decode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = decode.h; path = "../../external/libwebp-1.0.3/src/webp/decode.h"; sourceTree = "<group>"; };
+		F3E949FE281F14F700B8F4EA /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README; path = "../../external/libwebp-1.0.3/README"; sourceTree = "<group>"; };
+		F3E949FF281F14F700B8F4EA /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = COPYING; path = "../../external/libwebp-1.0.3/COPYING"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -244,6 +258,8 @@
 			isa = PBXGroup;
 			children = (
 				F3D87D1B281EA8A8005DA540 /* Products */,
+				F3E949FD281F14D000B8F4EA /* Resources */,
+				F3E949F1281F134A00B8F4EA /* Headers */,
 				F3D87CBC281EA3FF005DA540 /* Source */,
 			);
 			sourceTree = "<group>";
@@ -371,6 +387,27 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		F3E949F1281F134A00B8F4EA /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				F3E949F6281F144C00B8F4EA /* decode.h */,
+				F3E949F2281F144C00B8F4EA /* demux.h */,
+				F3E949F5281F144C00B8F4EA /* encode.h */,
+				F3E949F3281F144C00B8F4EA /* mux_types.h */,
+				F3E949F4281F144C00B8F4EA /* types.h */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		F3E949FD281F14D000B8F4EA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F3E949FF281F14F700B8F4EA /* COPYING */,
+				F3E949FE281F14F700B8F4EA /* README */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -378,6 +415,11 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F3E949FA281F144C00B8F4EA /* encode.h in Headers */,
+				F3E949F9281F144C00B8F4EA /* types.h in Headers */,
+				F3E949F7281F144C00B8F4EA /* demux.h in Headers */,
+				F3E949FB281F144C00B8F4EA /* decode.h in Headers */,
+				F3E949F8281F144C00B8F4EA /* mux_types.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -439,6 +481,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F3E94A01281F14F700B8F4EA /* COPYING in Resources */,
+				F3E94A00281F14F700B8F4EA /* README in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
