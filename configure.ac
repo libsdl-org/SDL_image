@@ -39,6 +39,7 @@ AC_SUBST(LT_RELEASE)
 AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
+AC_SUBST(LT_EXTRA)
 
 dnl Detect the canonical build and host environments
 AC_CANONICAL_HOST
@@ -52,12 +53,7 @@ AC_PROG_OBJC
 AC_C_INLINE
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-if test -z "$host_alias"; then
-    hostaliaswindres=
-else
-    hostaliaswindres="$host_alias-windres"
-fi
-AC_CHECK_PROGS(WINDRES, [windres $hostaliaswindres $host_os-windres])
+LT_PROG_RC
 
 case "$host" in
     *-*-beos*)
@@ -75,9 +71,8 @@ case "$host" in
                 ac_default_prefix=$MINGW_PREFIX
             fi
         fi
-        if test x$WINDRES != x; then
-            use_version_rc=true
-        fi
+        use_version_rc=true
+        LT_EXTRA="-Wl,version.o"
         ;;
     *-*-darwin*)
         AC_ARG_ENABLE([imageio], [AS_HELP_STRING([--enable-imageio], [use native Mac OS X frameworks for loading images [default=yes]])],
@@ -482,7 +477,6 @@ AM_PATH_SDL($SDL_VERSION,
 CFLAGS="$CFLAGS $SDL_CFLAGS"
 LIBS="$LIBS $SDL_LIBS"
 
-AC_SUBST([WINDRES])
 AC_SUBST([IMG_LIBS])
 AC_SUBST([PC_LIBS])
 AC_SUBST([PC_REQUIRES])
