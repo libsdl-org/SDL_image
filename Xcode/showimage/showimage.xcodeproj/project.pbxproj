@@ -103,8 +103,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		F39CD44C281DC7A4006CF638 /* webp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = webp.framework; path = ../tvOS/webp.framework; sourceTree = "<group>"; };
-		F39CD44F281DC949006CF638 /* webp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = webp.framework; path = ../iOS/webp.framework; sourceTree = "<group>"; };
 		F3E949D5281EAC1B00B8F4EA /* webp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = webp.xcodeproj; path = ../webp/webp.xcodeproj; sourceTree = "<group>"; };
 		F3ED80B3281D9E8900C33C5B /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3ED80B9281D9E8900C33C5B /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -113,7 +111,6 @@
 		F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL_image.xcodeproj; path = ../SDL_image.xcodeproj; sourceTree = "<group>"; };
 		F3ED80E1281D9F2100C33C5B /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3ED80E4281DA17800C33C5B /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../macOS/SDL2.framework; sourceTree = "<group>"; };
-		F3ED80EA281DA1E000C33C5B /* webp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = webp.framework; path = ../macOS/webp.framework; sourceTree = "<group>"; };
 		F3ED80EF281DA3BD00C33C5B /* SDL_uikit_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SDL_uikit_main.c; sourceTree = SOURCE_ROOT; };
 		F3ED80F6281DA40300C33C5B /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../iOS/SDL2.framework; sourceTree = "<group>"; };
 		F3ED810E281DC09600C33C5B /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../tvOS/SDL2.framework; sourceTree = "<group>"; };
@@ -221,7 +218,6 @@
 			isa = PBXGroup;
 			children = (
 				F3ED80E4281DA17800C33C5B /* SDL2.framework */,
-				F3ED80EA281DA1E000C33C5B /* webp.framework */,
 			);
 			name = macOS;
 			sourceTree = "<group>";
@@ -230,7 +226,6 @@
 			isa = PBXGroup;
 			children = (
 				F3ED80F6281DA40300C33C5B /* SDL2.framework */,
-				F39CD44F281DC949006CF638 /* webp.framework */,
 			);
 			name = iOS;
 			sourceTree = "<group>";
@@ -239,7 +234,6 @@
 			isa = PBXGroup;
 			children = (
 				F3ED810E281DC09600C33C5B /* SDL2.framework */,
-				F39CD44C281DC7A4006CF638 /* webp.framework */,
 			);
 			name = tvOS;
 			sourceTree = "<group>";
