@@ -45,7 +45,6 @@ EXTRA_DIST = CHANGES.txt LICENSE.txt README.txt README-emscripten.txt \
 	VisualC-WinRT		\
 	version.rc		\
 	Xcode			\
-	Xcode-iOS		\
 	external		\
 	SDL2_image.spec		\
 	autogen.sh gcc-fat.sh
