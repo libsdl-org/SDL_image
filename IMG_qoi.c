@@ -28,6 +28,11 @@
 
 #ifdef LOAD_QOI
 
+/* SDL < 2.0.12 compatibility */
+#ifndef SDL_zeroa
+#define SDL_zeroa(x) SDL_memset((x), 0, sizeof((x)))
+#endif
+
 #define QOI_MALLOC(sz) SDL_malloc(sz)
 #define QOI_FREE(p)    SDL_free(p)
 #define QOI_ZEROARR(a) SDL_zeroa(a)
