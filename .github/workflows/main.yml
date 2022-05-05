@@ -1,0 +1,111 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  Build:
+    name: ${{ matrix.platform.name }}
+    runs-on: ${{ matrix.platform.os }}
+
+    defaults:
+      run:
+        shell: ${{ matrix.platform.shell }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+        - { name: Windows (mingw32),      os: windows-latest, shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686 }
+        - { name: Windows (mingw64),      os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64 }
+        - { name: Linux (CMake),          os: ubuntu-20.04,   shell: sh,   cmake: '-GNinja' }
+        - { name: Linux (autotools),      os: ubuntu-20.04,   shell: sh }
+
+    steps:
+    - name: Set up MSYS2
+      if: matrix.platform.shell == 'msys2 {0}'
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{ matrix.platform.msystem }}
+        install: >-
+          ${{ matrix.platform.msys-env }}-SDL2
+          ${{ matrix.platform.msys-env }}-autotools
+          ${{ matrix.platform.msys-env }}-cmake
+          ${{ matrix.platform.msys-env }}-gcc
+          ${{ matrix.platform.msys-env }}-libjpeg-turbo
+          ${{ matrix.platform.msys-env }}-libpng
+          ${{ matrix.platform.msys-env }}-libtiff
+          ${{ matrix.platform.msys-env }}-libwebp
+          ${{ matrix.platform.msys-env }}-ninja
+          ${{ matrix.platform.msys-env }}-pkg-config
+          ${{ matrix.platform.msys-env }}-zlib
+
+    - name: Setup Linux dependencies
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install \
+          autoconf \
+          automake \
+          cmake \
+          gnome-desktop-testing \
+          libjpeg-dev \
+          libpng-dev \
+          libsdl2-dev \
+          libtiff-dev \
+          libtool \
+          libwebp-dev \
+          ninja-build \
+          pkg-config \
+          zlib1g-dev \
+          ${NULL+}
+    - uses: actions/checkout@v2
+
+    - name: Configure CMake
+      if: "matrix.platform.cmake"
+      run: |
+        cmake -B build \
+          -DBUILD_SHOWIMAGE=ON \
+          -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+          -DCMAKE_VERBOSE_MAKEFILE=ON \
+          ${{ matrix.platform.cmake }}
+    - name: Build
+      if: "matrix.platform.cmake"
+      run: cmake --build build/ --config Release
+    - name: Install
+      if: "matrix.platform.shell == 'sh' && matrix.platform.cmake"
+      run: |
+        set -eu
+        rm -fr DESTDIR-cmake
+        DESTDIR=$(pwd)/DESTDIR-cmake cmake --install build/ --config Release
+        ( cd DESTDIR-cmake; find ) | LC_ALL=C sort -u
+
+    - name: Configure Autotools
+      if: "! matrix.platform.cmake"
+      run: |
+        set -eu
+        rm -fr build-autotools
+        mkdir build-autotools
+        ./autogen.sh
+        ( cd build-autotools && ../configure )
+    - name: Build with Autotools
+      if: "! matrix.platform.cmake"
+      run: |
+        set -eu
+        parallel="$(getconf _NPROCESSORS_ONLN)"
+        make -j"${parallel}" -C build-autotools V=1
+    - name: Install with Autotools
+      if: "! matrix.platform.cmake"
+      run: |
+        set -eu
+        curdir="$(pwd)"
+        parallel="$(getconf _NPROCESSORS_ONLN)"
+        rm -fr DESTDIR-autotools
+        mkdir DESTDIR-autotools
+        make -j"${parallel}" -C build-autotools install DESTDIR="${curdir}/DESTDIR-autotools" V=1
+        ( cd DESTDIR-autotools; find ) | LC_ALL=C sort -u
+    - name: Distcheck with Autotools
+      if: "runner.os == 'Linux' && ! matrix.platform.cmake"
+      run: |
+        set -eu
+        parallel="$(getconf _NPROCESSORS_ONLN)"
+        make -j"${parallel}" -C build-autotools distcheck V=1
