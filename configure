@@ -2517,7 +2517,7 @@ MICRO_VERSION=0
 
 BINARY_AGE=`expr $MINOR_VERSION \* 100 + $MICRO_VERSION`
 case "$MINOR_VERSION" in #(
-  *02468) :
+  *[02468]) :
         INTERFACE_AGE="$MICRO_VERSION" ;; #(
   *) :
         INTERFACE_AGE=0 ;; #(
