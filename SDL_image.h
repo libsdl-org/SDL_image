@@ -36,8 +36,8 @@ extern "C" {
 /* Printable format: "%d.%d.%d", MAJOR, MINOR, PATCHLEVEL
 */
 #define SDL_IMAGE_MAJOR_VERSION 2
-#define SDL_IMAGE_MINOR_VERSION 0
-#define SDL_IMAGE_PATCHLEVEL    6
+#define SDL_IMAGE_MINOR_VERSION 5
+#define SDL_IMAGE_PATCHLEVEL    0
 
 /* This macro can be used to fill a version structure with the compile-time
  * version of the SDL_image library.
@@ -49,17 +49,27 @@ extern "C" {
     (X)->patch = SDL_IMAGE_PATCHLEVEL;              \
 }
 
+#if SDL_IMAGE_MAJOR_VERSION < 3 && SDL_MAJOR_VERSION < 3
 /**
  *  This is the version number macro for the current SDL_image version.
+ *
+ *  In versions higher than 2.9.0, the minor version overflows into
+ *  the thousands digit: for example, 2.23.0 is encoded as 4300.
+ *  This macro will not be available in SDL 3.x or SDL_image 3.x.
+ *
+ *  Deprecated, use SDL_IMAGE_VERSION_ATLEAST or SDL_IMAGE_VERSION instead.
  */
 #define SDL_IMAGE_COMPILEDVERSION \
     SDL_VERSIONNUM(SDL_IMAGE_MAJOR_VERSION, SDL_IMAGE_MINOR_VERSION, SDL_IMAGE_PATCHLEVEL)
+#endif /* SDL_IMAGE_MAJOR_VERSION < 3 && SDL_MAJOR_VERSION < 3 */
 
 /**
  *  This macro will evaluate to true if compiled with SDL_image at least X.Y.Z.
  */
 #define SDL_IMAGE_VERSION_ATLEAST(X, Y, Z) \
-    (SDL_IMAGE_COMPILEDVERSION >= SDL_VERSIONNUM(X, Y, Z))
+    ((SDL_IMAGE_MAJOR_VERSION >= X) && \
+     (SDL_IMAGE_MAJOR_VERSION > X || SDL_IMAGE_MINOR_VERSION >= Y) && \
+     (SDL_IMAGE_MAJOR_VERSION > X || SDL_IMAGE_MINOR_VERSION > Y || SDL_IMAGE_PATCHLEVEL >= Z))
 
 /* This function gets the version of the dynamically linked SDL_image library.
    it should NOT be used to fill a version structure, instead you should
