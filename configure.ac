@@ -19,7 +19,7 @@ AC_SUBST([MICRO_VERSION], MICRO_VERSION_MACRO)
 
 BINARY_AGE=`expr $MINOR_VERSION \* 100 + $MICRO_VERSION`
 AS_CASE(["$MINOR_VERSION"],
-  [*[02468]],
+  [*@<:@02468@:>@],
     dnl Stable branch, 2.6.1 -> libSDL2-2.0.so.0.600.1
     [INTERFACE_AGE="$MICRO_VERSION"],
   [*],
