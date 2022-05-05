@@ -83,8 +83,18 @@ endif()
 
 add_library(SDL2_image)
 
+if (UNIX AND NOT APPLE AND NOT ANDROID)
+	# This is compatible with the libtool build
+	set_target_properties(SDL2_image PROPERTIES
+		VERSION ${LT_VERSION}
+		SOVERSION ${LT_MAJOR}
+		OUTPUT_NAME "SDL2_image-${LT_RELEASE}"
+	)
+endif()
+
 set(IMAGEIO_SOURCES)
 if (APPLE)
+	# TODO: Use DYLIB_COMPATIBILITY_VERSION, DYLIB_CURRENT_VERSION here
 	if (ENABLE_APPLE_IMAGEIO)
 		target_link_options(SDL2_image PRIVATE -Wl,-framework,ApplicationServices)
 		target_link_libraries(SDL2_image PRIVATE objc)
