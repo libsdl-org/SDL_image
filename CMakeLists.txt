@@ -11,6 +11,20 @@ if (NOT ANDROID AND NOT (TARGET SDL2 OR TARGET SDL2-static))
 	find_package(SDL2 REQUIRED)
 endif()
 
+# Workaround for Ubuntu 20.04's SDL being older than
+# https://github.com/libsdl-org/SDL/issues/3531
+if (NOT TARGET SDL2::SDL2)
+	add_library(SDL2::SDL2 SHARED IMPORTED)
+	find_library(SDL2_LIBRARY
+		NAMES SDL2
+		HINTS "${SDL2_EXEC_PREFIX}"
+		REQUIRED)
+	set_target_properties(SDL2::SDL2 PROPERTIES
+		INTERFACE_INCLUDE_DIRECTORIES "${SDL2_INCLUDE_DIRS}"
+		IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+		IMPORTED_LOCATION "${SDL2_LIBRARY}")
+endif()
+
 option(SUPPORT_JPG "Support loading JPEG images" ON)
 option(SUPPORT_PNG "Support loading PNG images" ON)
 option(SUPPORT_WEBP "Support loading WEBP images" OFF)
