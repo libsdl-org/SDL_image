@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.3.2)
 project(SDL_image C)
 
+# See docs/release_checklist.md
+set(MAJOR_VERSION 2)
+set(MINOR_VERSION 5)
+set(MICRO_VERSION 0)
+set(FULL_VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}")
+
 # FIXME: CMAKE SUPPORT IN SDL2_image IS VERY INCOMPLETE YET !!!
 #
 # FIXME: make it able build against system codec libraries, too.
@@ -24,6 +30,42 @@ if (NOT TARGET SDL2::SDL2)
 		IMPORTED_LINK_INTERFACE_LANGUAGES "C"
 		IMPORTED_LOCATION "${SDL2_LIBRARY}")
 endif()
+
+# Calculate a libtool-like version number
+math(EXPR BINARY_AGE "${MINOR_VERSION} * 100 + ${MICRO_VERSION}")
+if(MINOR_VERSION MATCHES "[02468]$")
+    # Stable branch, 2.6.1 -> libSDL2_image-2.0.so.0.600.1
+    set(INTERFACE_AGE ${MICRO_VERSION})
+else()
+    # Development branch, 2.5.1 -> libSDL2_image-2.0.so.0.501.0
+    set(INTERFACE_AGE 0)
+endif()
+
+# Increment this if there is an incompatible change - but if that happens,
+# we should rename the library from SDL2 to SDL3, at which point this would
+# reset to 0 anyway.
+set(LT_MAJOR "0")
+
+math(EXPR LT_AGE "${BINARY_AGE} - ${INTERFACE_AGE}")
+math(EXPR LT_CURRENT "${LT_MAJOR} + ${LT_AGE}")
+set(LT_REVISION "${INTERFACE_AGE}")
+# For historical reasons, the library name redundantly includes the major
+# version twice: libSDL2_image-2.0.so.0.
+# TODO: in SDL 3, set the OUTPUT_NAME to plain SDL3_image, which will simplify
+# it to libSDL3_image.so.0
+set(LT_RELEASE "2.0")
+set(LT_VERSION "${LT_MAJOR}.${LT_AGE}.${LT_REVISION}")
+
+# The following should match the versions in the Xcode project file.
+# Each version is 1 higher than you might expect, for compatibility
+# with libtool: macOS ABI versioning is 1-based, unlike other platforms
+# which are normally 0-based.
+math(EXPR DYLIB_CURRENT_VERSION_MAJOR "${LT_MAJOR} + ${LT_AGE} + 1")
+math(EXPR DYLIB_CURRENT_VERSION_MINOR "${LT_REVISION}")
+math(EXPR DYLIB_COMPAT_VERSION_MAJOR "${LT_MAJOR} + 1")
+set(DYLIB_CURRENT_VERSION "${DYLIB_CURRENT_VERSION_MAJOR}.${DYLIB_CURRENT_VERSION_MINOR}.0")
+# For historical reasons this is 3.0.0 rather than the expected 1.0.0
+set(DYLIB_COMPATIBILITY_VERSION "3.0.0")
 
 option(SUPPORT_JPG "Support loading JPEG images" ON)
 option(SUPPORT_PNG "Support loading PNG images" ON)
