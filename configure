@@ -10419,6 +10419,22 @@ LT_EXTRA=""
 
 
 
+cat >>confdefs.h <<_ACEOF
+#define SDL_BUILD_MAJOR_VERSION $MAJOR_VERSION
+_ACEOF
+
+
+cat >>confdefs.h <<_ACEOF
+#define SDL_BUILD_MINOR_VERSION $MINOR_VERSION
+_ACEOF
+
+
+cat >>confdefs.h <<_ACEOF
+#define SDL_BUILD_MICRO_VERSION $MICRO_VERSION
+_ACEOF
+
+
+
 
 am__api_version='1.16'
 
