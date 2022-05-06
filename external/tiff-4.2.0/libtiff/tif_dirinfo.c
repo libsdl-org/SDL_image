@@ -419,11 +419,16 @@ _TIFFSetupFields(TIFF* tif, const TIFFFieldArray* fieldarray)
 
 		for (i = 0; i < tif->tif_nfields; i++) {
 			TIFFField *fld = tif->tif_fields[i];
-			if (fld->field_bit == FIELD_CUSTOM &&
-				strncmp("Tag ", fld->field_name, 4) == 0) {
+			if (fld->field_name != NULL) {
+				if (fld->field_bit == FIELD_CUSTOM &&
+					TIFFFieldIsAnonymous(fld)) {
 					_TIFFfree(fld->field_name);
+					/* catuion: tif_fields[i] must not be the beginning of a fields-array. 
+					 *          Otherwise the following tags are also freed with the first free().
+					 */
 					_TIFFfree(fld);
 				}
+			}
 		}
 
 		_TIFFfree(tif->tif_fields);
@@ -530,7 +535,7 @@ _TIFFPrintFieldInfo(TIFF* tif, FILE* fd)
 }
 
 /*
- * Return size of TIFFDataType in bytes
+ * Return size of TIFFDataType within TIFF-file in bytes
  */
 int
 TIFFDataWidth(TIFFDataType type)
@@ -602,7 +607,7 @@ _TIFFDataSize(TIFFDataType type)
 
 /*
  * Rational2Double: 
- * Return size of TIFFSetGetFieldType in bytes.
+ * Return size of TIFFSetGetFieldType for internal storage in bytes.
  *
  * XXX: TIFF_RATIONAL values for FIELD_CUSTOM are stored internally as 4-byte float.
  * However, some of them should be stored internally as 8-byte double. 
@@ -619,7 +624,7 @@ _TIFFSetGetFieldSize(TIFFSetGetFieldType setgettype)
 		case TIFF_SETGET_C16_ASCII:
 		case TIFF_SETGET_C32_ASCII:
 		case TIFF_SETGET_OTHER:
-		    return 0;
+		    return 1;
 		case TIFF_SETGET_UINT8:
 		case TIFF_SETGET_SINT8:
 		case TIFF_SETGET_C0_UINT8:
@@ -788,6 +793,12 @@ TIFFFieldWriteCount(const TIFFField* fip)
 	return fip->field_writecount;
 }
 
+int
+TIFFFieldIsAnonymous(const TIFFField *fip)
+{
+	return fip->field_anonymous;
+}
+
 const TIFFField*
 _TIFFFindOrRegisterField(TIFF *tif, uint32 tag, TIFFDataType dt)
 
@@ -819,7 +830,7 @@ _TIFFCreateAnonField(TIFF *tif, uint32 tag, TIFFDataType field_type)
 	fld->field_readcount = TIFF_VARIABLE2;
 	fld->field_writecount = TIFF_VARIABLE2;
 	fld->field_type = field_type;
-	fld->reserved = 0;
+	fld->field_anonymous = 1;    /* indicate that this is an anonymous / unknown tag */
 	switch (field_type)
 	{
 		case TIFF_BYTE:
@@ -892,6 +903,8 @@ _TIFFCreateAnonField(TIFF *tif, uint32 tag, TIFFDataType field_type)
 	/* 
 	 * note that this name is a special sign to TIFFClose() and
 	 * _TIFFSetupFields() to free the field
+	 * Update:
+	 *   This special sign is replaced by fld->field_anonymous  flag.
 	 */
 	(void) snprintf(fld->field_name, 32, "Tag %d", (int) tag);
 
@@ -1102,7 +1115,7 @@ TIFFMergeFieldInfo(TIFF* tif, const TIFFFieldInfo info[], uint32 n)
 		tp->field_readcount = info[i].field_readcount;
 		tp->field_writecount = info[i].field_writecount;
 		tp->field_type = info[i].field_type;
-		tp->reserved = 0;
+		tp->field_anonymous = 0;
 		tp->set_field_type =
 		     _TIFFSetGetType(info[i].field_type,
 				info[i].field_readcount,
@@ -1114,6 +1127,11 @@ TIFFMergeFieldInfo(TIFF* tif, const TIFFFieldInfo info[], uint32 n)
 		tp->field_bit = info[i].field_bit;
 		tp->field_oktochange = info[i].field_oktochange;
 		tp->field_passcount = info[i].field_passcount;
+		if (info[i].field_name == NULL) {
+			TIFFErrorExt(tif->tif_clientdata, module,
+				"Field_name of %d.th allocation tag %d is NULL", i, info[i].field_tag);
+			return -1;
+		}
 		tp->field_name = info[i].field_name;
 		tp->field_subfields = NULL;
 		tp++;

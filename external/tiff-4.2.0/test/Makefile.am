@@ -184,7 +184,8 @@ TIFFIMAGES = \
 	images/ojpeg_chewey_subsamp21_multi_strip.tiff \
 	images/ojpeg_single_strip_no_rowsperstrip.tiff \
 	images/testfax4.tiff \
-	images/deflate-last-strip-extra-data.tiff
+	images/deflate-last-strip-extra-data.tiff \
+	images/custom_dir_EXIF_GPS.tiff
 
 PNMIMAGES = \
 	images/minisblack-1c-8b.pgm \

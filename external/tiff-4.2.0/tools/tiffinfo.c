@@ -156,12 +156,22 @@ main(int argc, char* argv[])
 			} else {
 				do {
 					toff_t offset=0;
-
+					uint16 curdir =  TIFFCurrentDirectory(tif);
+					printf("=== TIFF directory %d ===\n", curdir);
 					tiffinfo(tif, order, flags, 1);
 					if (TIFFGetField(tif, TIFFTAG_EXIFIFD,
 							 &offset)) {
 						if (TIFFReadEXIFDirectory(tif, offset)) {
 							tiffinfo(tif, order, flags, 0);
+							/*-- Go back to previous directory, (directory is reloaded from file!) */
+							TIFFSetDirectory(tif, curdir);
+						}
+					}
+					if (TIFFGetField(tif, TIFFTAG_GPSIFD,
+							 &offset)) {
+						if (TIFFReadGPSDirectory(tif, offset)) {
+							tiffinfo(tif, order, flags, 0);
+							TIFFSetDirectory(tif, curdir);
 						}
 					}
 				} while (TIFFReadDirectory(tif));

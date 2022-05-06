@@ -92,9 +92,15 @@ _TIFFPrintField(FILE* fd, const TIFFField *fip,
 			fprintf(fd, "0x%lx",
 				(unsigned long)((uint32 *) raw_data)[j]);
 		else if(fip->field_type == TIFF_RATIONAL
-			|| fip->field_type == TIFF_SRATIONAL
-			|| fip->field_type == TIFF_FLOAT)
-			fprintf(fd, "%f", ((float *) raw_data)[j]);
+			|| fip->field_type == TIFF_SRATIONAL) {
+			int tv_size = _TIFFSetGetFieldSize(fip->set_field_type);
+			if(tv_size==8)
+				fprintf(fd, "%lf", ((double*)raw_data)[j]);
+			else
+				fprintf(fd, "%f", ((float *) raw_data)[j]);
+		}
+		else if(fip->field_type == TIFF_FLOAT)
+			fprintf(fd, "%f", ((float*)raw_data)[j]);
 		else if(fip->field_type == TIFF_LONG8)
 #if defined(__WIN32__) && (defined(_MSC_VER) || defined(__MINGW32__))
 			fprintf(fd, "%I64u",
@@ -144,7 +150,7 @@ _TIFFPrettyPrintField(TIFF* tif, const TIFFField *fip, FILE* fd, uint32 tag,
         (void) tif;
 
 	/* do not try to pretty print auto-defined fields */
-	if (strncmp(fip->field_name,"Tag ", 4) == 0) {
+	if ( TIFFFieldIsAnonymous(fip) ) {
 		return 0;
 	}
         
@@ -624,8 +630,10 @@ TIFFPrintDirectory(TIFF* tif, FILE* fd, long flags)
 					if(TIFFGetField(tif, tag, &raw_data) != 1)
 						continue;
 				} else {
+					/*--: Rational2Double: For Rationals evaluate "set_field_type" to determine internal storage size. */
+					int tv_size = _TIFFSetGetFieldSize(fip->set_field_type);
 					raw_data = _TIFFmalloc(
-					    _TIFFDataSize(fip->field_type)
+					    tv_size
 					    * value_count);
 					mem_alloc = 1;
 					if(TIFFGetField(tif, tag, raw_data) != 1) {

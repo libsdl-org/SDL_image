@@ -116,6 +116,7 @@ set(TESTSCRIPTS
 # subdirectory which are intended to be used as input images for
 # tests.  All of these files should use the extension ".tiff".
 set(TIFFIMAGES
+    images/custom_dir_EXIF_GPS.tiff
     images/logluv-3c-16b.tiff
     images/minisblack-1c-16b.tiff
     images/minisblack-1c-8b.tiff
@@ -401,6 +402,7 @@ add_convert_test_multi(tiffcp thumbnail "" thumbnail "g3:1d" "" ""
 add_reader_test(tiffdump "" "images/miniswhite-1c-1b.tiff")
 
 # tiffinfo
+add_reader_test(tiffinfo "-c -D -d -j -s" "images/custom_dir_EXIF_GPS.tiff")
 add_reader_test(tiffinfo "-c -D -d -j -s" "images/minisblack-1c-16b.tiff")
 
 # tiffcp split/join
