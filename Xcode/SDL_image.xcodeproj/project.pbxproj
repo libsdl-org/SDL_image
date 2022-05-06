@@ -291,7 +291,6 @@
 				BE1FA72A07AF4C44004B6283 /* Frameworks */,
 				BE1FA72B07AF4C44004B6283 /* Rez */,
 				AA9EE77214B27810008773C0 /* Copy Frameworks */,
-				AA9EE77314B2782A008773C0 /* Create Frameworks symlink */,
 				AA9EE77414B27854008773C0 /* Convert SDL includes to SDL Framework includes */,
 			);
 			buildRules = (
@@ -415,20 +414,6 @@
 /* End PBXRezBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		AA9EE77314B2782A008773C0 /* Create Frameworks symlink */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Create Frameworks symlink";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "cd $SYMROOT/$CONFIGURATION/$FULL_PRODUCT_NAME || exit 0\nif ! [ -L Frameworks ]; then\n    rm -f Frameworks\n    ln -s Versions/Current/Frameworks Frameworks\nfi\n";
-		};
 		AA9EE77414B27854008773C0 /* Convert SDL includes to SDL Framework includes */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
