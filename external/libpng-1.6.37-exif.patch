@@ -1,0 +1,63 @@
+From eb6767273a4eb5d6f4ad528370d7262cf7aa220c Mon Sep 17 00:00:00 2001
+From: skal <pascal.massimino@gmail.com>
+Date: Mon, 29 Jul 2019 15:22:06 +0200
+Subject: [PATCH] Fix memory leak if eXIf has incorrect crc
+
+Problem description:
+Imagine a bitstream with an eXIf data segment that has invalid CRC.
+If png_crc_finish() fails at line 2090, info_ptr->eXIf_buf is not freed
+(despite the free_me setting at line 2062) because png_free_data() is
+not called. png_read_info() is actually looping several time over the
+png_eXIf chunk, calling png_handle_eXIf() several time in a row without
+freeing the buffer.
+
+This patch fixes the problem by leaving info_ptr's content in a clean
+state in case of failure, as it is done at line 2084.
+---
+ pngrutil.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/pngrutil.c b/pngrutil.c
+index d5fa08c397..4db3de990b 100644
+--- a/pngrutil.c
++++ b/pngrutil.c
+@@ -2087,10 +2087,8 @@ png_handle_eXIf(png_structrp png_ptr, png_inforp info_ptr, png_uint_32 length)
+       }
+    }
+ 
+-   if (png_crc_finish(png_ptr, 0) != 0)
+-      return;
+-
+-   png_set_eXIf_1(png_ptr, info_ptr, length, info_ptr->eXIf_buf);
++   if (png_crc_finish(png_ptr, 0) == 0)
++      png_set_eXIf_1(png_ptr, info_ptr, length, info_ptr->eXIf_buf);
+ 
+    png_free(png_ptr, info_ptr->eXIf_buf);
+    info_ptr->eXIf_buf = NULL;
+
+
+Origin: https://github.com/glennrp/libpng/pull/326
+From f8c13f61fb4a302a046c2dff46bccd64838a53b3 Mon Sep 17 00:00:00 2001
+From: Qiang Zhou <nju04zq@gmail.com>
+Date: Thu, 19 Dec 2019 18:33:21 +0800
+Subject: [PATCH] FIX: decode fail on image with invalid eXIf chunk
+
+Change-Id: Ibe5cbff3411126696279ca1d81627d4f9325cfed
+---
+ pngrutil.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/pngrutil.c b/pngrutil.c
+index d5fa08c397..ddfe77eaca 100644
+--- a/pngrutil.c
++++ b/pngrutil.c
+@@ -2079,7 +2079,7 @@ png_handle_eXIf(png_structrp png_ptr, png_inforp info_ptr, png_uint_32 length)
+       if (i == 1 && buf[0] != 'M' && buf[0] != 'I'
+                  && info_ptr->eXIf_buf[0] != buf[0])
+       {
+-         png_crc_finish(png_ptr, length);
++         png_crc_finish(png_ptr, length-i-1);
+          png_chunk_benign_error(png_ptr, "incorrect byte-order specifier");
+          png_free(png_ptr, info_ptr->eXIf_buf);
+          info_ptr->eXIf_buf = NULL;
+
