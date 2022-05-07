@@ -13,7 +13,7 @@
 [submodule "external/libtiff"]
 	path = external/libtiff
 	url = https://github.com/libsdl-org/libtiff.git
-	branch = v4.3.0-SDL
+	branch = v4.2.0-SDL
 [submodule "external/zlib"]
 	path = external/zlib
 	url = https://github.com/libsdl-org/zlib.git
