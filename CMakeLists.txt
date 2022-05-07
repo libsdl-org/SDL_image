@@ -120,7 +120,7 @@ target_compile_definitions(SDL2_image PRIVATE
 
 if (SUPPORT_JPG)
 	target_compile_definitions(SDL2_image PRIVATE -DLOAD_JPG)
-	add_subdirectory(external/jpeg-9e)
+	add_subdirectory(external/jpeg)
 	target_link_libraries(SDL2_image PRIVATE jpeg)
 endif()
 
@@ -147,8 +147,8 @@ if (SUPPORT_PNG)
 		endif()
 	endif()
 
-	add_subdirectory(external/libpng-1.6.37)
-	include_directories(external/libpng-1.6.37)
+	add_subdirectory(external/libpng)
+	include_directories(external/libpng)
 	if(BUILD_SHARED_LIBS)
 		target_link_libraries(SDL2_image PRIVATE png)
 	else()

@@ -9,75 +9,75 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\external\libpng-1.6.37\png.c">
+    <ClCompile Include="..\..\external\libpng\png.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\external\libpng-1.6.37\pngerror.c">
+    <ClCompile Include="..\..\external\libpng\pngerror.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\external\libpng-1.6.37\pngget.c">
+    <ClCompile Include="..\..\external\libpng\pngget.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\external\libpng-1.6.37\pngmem.c">
+    <ClCompile Include="..\..\external\libpng\pngmem.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\external\libpng-1.6.37\pngpread.c">
+    <ClCompile Include="..\..\external\libpng\pngpread.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\external\libpng-1.6.37\pngread.c">
+    <ClCompile Include="..\..\external\libpng\pngread.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\external\libpng-1.6.37\pngrio.c">
+    <ClCompile Include="..\..\external\libpng\pngrio.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\external\libpng-1.6.37\pngrtran.c">
+    <ClCompile Include="..\..\external\libpng\pngrtran.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\external\libpng-1.6.37\pngrutil.c">
+    <ClCompile Include="..\..\external\libpng\pngrutil.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\external\libpng-1.6.37\pngset.c">
+    <ClCompile Include="..\..\external\libpng\pngset.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\external\libpng-1.6.37\pngtest.c">
+    <ClCompile Include="..\..\external\libpng\pngtest.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\external\libpng-1.6.37\pngtrans.c">
+    <ClCompile Include="..\..\external\libpng\pngtrans.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\external\libpng-1.6.37\pngwio.c">
+    <ClCompile Include="..\..\external\libpng\pngwio.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\external\libpng-1.6.37\pngwrite.c">
+    <ClCompile Include="..\..\external\libpng\pngwrite.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\external\libpng-1.6.37\pngwtran.c">
+    <ClCompile Include="..\..\external\libpng\pngwtran.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\external\libpng-1.6.37\pngwutil.c">
+    <ClCompile Include="..\..\external\libpng\pngwutil.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\external\libpng-1.6.37\png.h">
+    <ClInclude Include="..\..\external\libpng\png.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\external\libpng-1.6.37\pngconf.h">
+    <ClInclude Include="..\..\external\libpng\pngconf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\external\libpng-1.6.37\pngdebug.h">
+    <ClInclude Include="..\..\external\libpng\pngdebug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\external\libpng-1.6.37\pnginfo.h">
+    <ClInclude Include="..\..\external\libpng\pnginfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\external\libpng-1.6.37\pnglibconf.h">
+    <ClInclude Include="..\..\external\libpng\pnglibconf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\external\libpng-1.6.37\pngpriv.h">
+    <ClInclude Include="..\..\external\libpng\pngpriv.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\external\libpng-1.6.37\pngstruct.h">
+    <ClInclude Include="..\..\external\libpng\pngstruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

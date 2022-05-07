@@ -1,0 +1,8 @@
+[submodule "external/jpeg"]
+	path = external/jpeg
+	url = https://github.com/libsdl-org/jpeg.git
+	branch = v9e-SDL
+[submodule "external/libpng"]
+	path = external/libpng
+	url = https://github.com/libsdl-org/libpng.git
+	branch = v1.6.37-SDL
