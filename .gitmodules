@@ -6,3 +6,15 @@
 	path = external/libpng
 	url = https://github.com/libsdl-org/libpng.git
 	branch = v1.6.37-SDL
+[submodule "external/libwebp"]
+	path = external/libwebp
+	url = https://github.com/libsdl-org/libwebp.git
+	branch = 1.0.3-SDL
+[submodule "external/libtiff"]
+	path = external/libtiff
+	url = https://github.com/libsdl-org/libtiff.git
+	branch = v4.3.0-SDL
+[submodule "external/zlib"]
+	path = external/zlib
+	url = https://github.com/libsdl-org/zlib.git
+	branch = v1.2.12-SDL

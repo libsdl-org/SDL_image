@@ -134,7 +134,7 @@ if (SUPPORT_PNG)
 		set(SKIP_INSTALL_ALL ON CACHE BOOL "" FORCE)
 
 		# if zlib not included from another source, add_subdirectory
-		add_subdirectory(external/zlib-1.2.12)
+		add_subdirectory(external/zlib)
 
 		# libpng find_package(zlib) requires ZLIB_INCLUDE_DIR set
 		get_target_property(ZLIB_INCLUDE_DIR zlib INCLUDE_DIRECTORIES)
@@ -159,8 +159,8 @@ endif()
 if (SUPPORT_WEBP)
 	target_compile_definitions(SDL2_image PRIVATE -DLOAD_WEBP)
 	# missing cpufeatures
-	add_subdirectory(external/libwebp-1.0.3)
-	include_directories(external/libwebp-1.0.3/src)
+	add_subdirectory(external/libwebp)
+	include_directories(external/libwebp/src)
 	target_link_libraries(SDL2_image PRIVATE webp)
 endif()
 
