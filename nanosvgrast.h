@@ -1416,7 +1416,7 @@ NSVG_EXPORT void nsvgRasterize(NSVGrasterizer* r,
 			}
 
 			// Rasterize edges
-			if (r->edges != NULL)
+			if (r->nedges != 0)
 				qsort(r->edges, r->nedges, sizeof(NSVGedge), nsvg__cmpEdge);
 
 			// now, traverse the scanlines and find the intersections on each scanline, use non-zero rule
@@ -1443,7 +1443,7 @@ NSVG_EXPORT void nsvgRasterize(NSVGrasterizer* r,
 			}
 
 			// Rasterize edges
-			if (r->edges != NULL)
+			if (r->nedges != 0)
 				qsort(r->edges, r->nedges, sizeof(NSVGedge), nsvg__cmpEdge);
 
 			// now, traverse the scanlines and find the intersections on each scanline, use non-zero rule
