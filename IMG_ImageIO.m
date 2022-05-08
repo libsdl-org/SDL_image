@@ -355,6 +355,8 @@ static int Internal_checkImageIOisAvailable() {
 }
 #endif
 
+#ifdef JPG_USES_IMAGEIO
+
 int IMG_InitJPG()
 {
     return 0;
@@ -363,6 +365,8 @@ int IMG_InitJPG()
 void IMG_QuitJPG()
 {
 }
+
+#endif /* JPG_USES_IMAGEIO */
 
 int IMG_InitPNG()
 {
@@ -585,11 +589,15 @@ int IMG_isGIF(SDL_RWops *src)
     return Internal_isType(src, kUTTypeGIF);
 }
 
+#ifdef JPG_USES_IMAGEIO
+
 // Note: JPEG 2000 is kUTTypeJPEG2000
 int IMG_isJPG(SDL_RWops *src)
 {
     return Internal_isType(src, kUTTypeJPEG);
 }
+
+#endif /* JPG_USES_IMAGEIO */
 
 int IMG_isPNG(SDL_RWops *src)
 {
@@ -743,10 +751,14 @@ SDL_Surface* IMG_LoadGIF_RW (SDL_RWops *src)
     return LoadImageFromRWops (src, kUTTypeGIF);
 }
 
+#ifdef JPG_USES_IMAGEIO
+
 SDL_Surface* IMG_LoadJPG_RW (SDL_RWops *src)
 {
     return LoadImageFromRWops (src, kUTTypeJPEG);
 }
+
+#endif /* JPG_USES_IMAGEIO */
 
 SDL_Surface* IMG_LoadPNG_RW (SDL_RWops *src)
 {

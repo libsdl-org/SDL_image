@@ -26,7 +26,17 @@
 #include <stdio.h>
 #include <setjmp.h>
 
-#if !(defined(__APPLE__) || defined(SDL_IMAGE_USE_WIC_BACKEND)) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
+#if defined(SDL_IMAGE_USE_COMMON_BACKEND)
+#define WANT_JPEGLIB
+#elif defined(SDL_IMAGE_USE_WIC_BACKEND)
+#undef WANT_JPEGLIB
+#elif defined(__APPLE__) && defined(JPG_USES_IMAGEIO)
+#undef WANT_JPEGLIB
+#else
+#define WANT_JPEGLIB
+#endif
+
+#ifdef WANT_JPEGLIB
 
 #ifdef LOAD_JPG
 
@@ -570,7 +580,7 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 
 #endif /* LOAD_JPG */
 
-#endif /* !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND) */
+#endif /* WANT_JPEGLIB */
 
 /* We'll always have JPG save support */
 #define SAVE_JPG
