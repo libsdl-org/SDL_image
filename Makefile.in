@@ -804,6 +804,9 @@ distdir-am: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) \
+	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
+	  dist-hook
 	-test -n "$(am__skip_mode_fix)" \
 	|| find "$(distdir)" -type d ! -perm -755 \
 		-exec chmod u+rwx,go+rx {} \; -o \
@@ -1097,9 +1100,9 @@ uninstall-am: uninstall-libLTLIBRARIES \
 .PHONY: CTAGS GTAGS TAGS all all-am am--depfiles am--refresh check \
 	check-am clean clean-cscope clean-generic clean-libLTLIBRARIES \
 	clean-libtool clean-noinstPROGRAMS cscope cscopelist-am ctags \
-	ctags-am dist dist-all dist-bzip2 dist-gzip dist-lzip \
-	dist-shar dist-tarZ dist-xz dist-zip dist-zstd distcheck \
-	distclean distclean-compile distclean-generic \
+	ctags-am dist dist-all dist-bzip2 dist-gzip dist-hook \
+	dist-lzip dist-shar dist-tarZ dist-xz dist-zip dist-zstd \
+	distcheck distclean distclean-compile distclean-generic \
 	distclean-libtool distclean-tags distcleancheck distdir \
 	distuninstallcheck dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-dvi \
@@ -1126,6 +1129,10 @@ $(PACKAGE)-$(VERSION).tar.gz: distcheck
 # Rule to build RPM distribution package
 rpm: $(PACKAGE)-$(VERSION).tar.gz
 	rpmbuild -ta $(PACKAGE)-$(VERSION).tar.gz
+
+dist-hook:
+	-rm -rf `find $(distdir)/external -name .git*`
+	-rm -rf `find $(distdir)/external -name *.yml`
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
