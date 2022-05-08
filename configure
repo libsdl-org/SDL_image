@@ -784,6 +784,8 @@ LIBTIFF_LIBS
 LIBTIFF_CFLAGS
 LIBPNG_LIBS
 LIBPNG_CFLAGS
+LIBJXL_LIBS
+LIBJXL_CFLAGS
 LIBJPEG_LIBS
 LIBJPEG_CFLAGS
 SDL2_CONFIG
@@ -943,6 +945,8 @@ enable_bmp
 enable_gif
 enable_jpg
 enable_jpg_shared
+enable_jxl
+enable_jxl_shared
 enable_lbm
 enable_pcx
 enable_png
@@ -981,6 +985,8 @@ SDL_CFLAGS
 SDL_LIBS
 LIBJPEG_CFLAGS
 LIBJPEG_LIBS
+LIBJXL_CFLAGS
+LIBJXL_LIBS
 LIBPNG_CFLAGS
 LIBPNG_LIBS
 LIBTIFF_CFLAGS
@@ -1622,6 +1628,8 @@ Optional Features:
   --enable-gif            support loading GIF images [default=yes]
   --enable-jpg            support loading JPG images [default=yes]
   --enable-jpg-shared     dynamically load JPG support [default=yes]
+  --enable-jxl            support loading JXL images [default=yes]
+  --enable-jxl-shared     dynamically load JXL support [default=yes]
   --enable-lbm            support loading LBM images [default=yes]
   --enable-pcx            support loading PCX images [default=yes]
   --enable-png            support loading PNG images [default=yes]
@@ -1672,6 +1680,9 @@ Some influential environment variables:
               C compiler flags for LIBJPEG, overriding pkg-config
   LIBJPEG_LIBS
               linker flags for LIBJPEG, overriding pkg-config
+  LIBJXL_CFLAGS
+              C compiler flags for LIBJXL, overriding pkg-config
+  LIBJXL_LIBS linker flags for LIBJXL, overriding pkg-config
   LIBPNG_CFLAGS
               C compiler flags for LIBPNG, overriding pkg-config
   LIBPNG_LIBS linker flags for LIBPNG, overriding pkg-config
@@ -4085,13 +4096,13 @@ if ${lt_cv_nm_interface+:} false; then :
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:4088: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:4099: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4091: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:4102: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4094: output\"" >&5)
+  (eval echo "\"\$as_me:4105: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -5305,7 +5316,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5308 "configure"' > conftest.$ac_ext
+  echo '#line 5319 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7130,11 +7141,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7133: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7144: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7137: \$? = $ac_status" >&5
+   echo "$as_me:7148: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7479,11 +7490,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7482: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7493: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7486: \$? = $ac_status" >&5
+   echo "$as_me:7497: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7584,11 +7595,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7587: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7598: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7591: \$? = $ac_status" >&5
+   echo "$as_me:7602: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -7639,11 +7650,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7642: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7653: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7646: \$? = $ac_status" >&5
+   echo "$as_me:7657: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10074,7 +10085,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10077 "configure"
+#line 10088 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10170,7 +10181,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10173 "configure"
+#line 10184 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12800,6 +12811,20 @@ else
   enable_jpg_shared=yes
 fi
 
+# Check whether --enable-jxl was given.
+if test "${enable_jxl+set}" = set; then :
+  enableval=$enable_jxl;
+else
+  enable_jxl=yes
+fi
+
+# Check whether --enable-jxl-shared was given.
+if test "${enable_jxl_shared+set}" = set; then :
+  enableval=$enable_jxl_shared;
+else
+  enable_jxl_shared=yes
+fi
+
 # Check whether --enable-lbm was given.
 if test "${enable_lbm+set}" = set; then :
   enableval=$enable_lbm;
@@ -13441,6 +13466,213 @@ fi
 $as_echo "$as_me: WARNING: *** Unable to find JPEG library (http://www.ijg.org/)" >&2;}
         { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: JPG image loading disabled" >&5
 $as_echo "$as_me: WARNING: JPG image loading disabled" >&2;}
+    fi
+fi
+
+if test x$enable_jxl = xyes; then
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libjxl" >&5
+$as_echo_n "checking for libjxl... " >&6; }
+
+if test -n "$LIBJXL_CFLAGS"; then
+    pkg_cv_LIBJXL_CFLAGS="$LIBJXL_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libjxl\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libjxl") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBJXL_CFLAGS=`$PKG_CONFIG --cflags "libjxl" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$LIBJXL_LIBS"; then
+    pkg_cv_LIBJXL_LIBS="$LIBJXL_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libjxl\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libjxl") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBJXL_LIBS=`$PKG_CONFIG --libs "libjxl" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        LIBJXL_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libjxl" 2>&1`
+        else
+	        LIBJXL_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libjxl" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$LIBJXL_PKG_ERRORS" >&5
+
+	        ac_fn_c_check_header_mongrel "$LINENO" "jxl/decode.h" "ac_cv_header_jxl_decode_h" "$ac_includes_default"
+if test "x$ac_cv_header_jxl_decode_h" = xyes; then :
+
+            have_jxl_hdr=yes
+            LIBJXL_CFLAGS=""
+
+fi
+
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for JxlSignatureCheck in -ljxl" >&5
+$as_echo_n "checking for JxlSignatureCheck in -ljxl... " >&6; }
+if ${ac_cv_lib_jxl_JxlSignatureCheck+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ljxl  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char JxlSignatureCheck ();
+int
+main ()
+{
+return JxlSignatureCheck ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_jxl_JxlSignatureCheck=yes
+else
+  ac_cv_lib_jxl_JxlSignatureCheck=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_jxl_JxlSignatureCheck" >&5
+$as_echo "$ac_cv_lib_jxl_JxlSignatureCheck" >&6; }
+if test "x$ac_cv_lib_jxl_JxlSignatureCheck" = xyes; then :
+
+            have_jxl_lib=yes
+            LIBJXL_LIBS="-ljxl"
+
+fi
+
+
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	        ac_fn_c_check_header_mongrel "$LINENO" "jxl/decode.h" "ac_cv_header_jxl_decode_h" "$ac_includes_default"
+if test "x$ac_cv_header_jxl_decode_h" = xyes; then :
+
+            have_jxl_hdr=yes
+            LIBJXL_CFLAGS=""
+
+fi
+
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for JxlSignatureCheck in -ljxl" >&5
+$as_echo_n "checking for JxlSignatureCheck in -ljxl... " >&6; }
+if ${ac_cv_lib_jxl_JxlSignatureCheck+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ljxl  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char JxlSignatureCheck ();
+int
+main ()
+{
+return JxlSignatureCheck ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_jxl_JxlSignatureCheck=yes
+else
+  ac_cv_lib_jxl_JxlSignatureCheck=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_jxl_JxlSignatureCheck" >&5
+$as_echo "$ac_cv_lib_jxl_JxlSignatureCheck" >&6; }
+if test "x$ac_cv_lib_jxl_JxlSignatureCheck" = xyes; then :
+
+            have_jxl_lib=yes
+            LIBJXL_LIBS="-ljxl"
+
+fi
+
+
+else
+	LIBJXL_CFLAGS=$pkg_cv_LIBJXL_CFLAGS
+	LIBJXL_LIBS=$pkg_cv_LIBJXL_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	        have_jxl_hdr=yes
+        have_jxl_lib=yes
+        have_jxl_pc=yes
+
+fi
+    if test x$have_jxl_hdr = xyes -a x$have_jxl_lib = xyes; then
+        if test x$enable_jxl = xyes; then
+            $as_echo "#define LOAD_JXL 1" >>confdefs.h
+
+        fi
+
+        case "$host" in
+            *-*-darwin*)
+                jxl_lib=`find_lib libjxl.dylib`
+                ;;
+            *-*-cygwin* | *-*-mingw*)
+                jxl_lib=`find_lib "libjxl*.dll"`
+                ;;
+            *)
+                jxl_lib=`find_lib "libjxl[0-9]*.so.*"`
+                if test x$jxl_lib = x; then
+                    jxl_lib=`find_lib "libjxl.so.*"`
+                fi
+                ;;
+        esac
+    elif test x$enable_jxl = xyes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find JXL library (https://jpegxl.info/)" >&5
+$as_echo "$as_me: WARNING: *** Unable to find JXL library (https://jpegxl.info/)" >&2;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: JXL image loading disabled" >&5
+$as_echo "$as_me: WARNING: JXL image loading disabled" >&2;}
     fi
 fi
 
@@ -14176,6 +14408,23 @@ _ACEOF
             PC_REQUIRES="libjpeg $PC_REQUIRES"
         else
             PC_LIBS="$LIBJPEG_LIBS $PC_LIBS"
+        fi
+    fi
+fi
+if test x$enable_jxl = xyes -a x$have_jxl_hdr = xyes -a x$have_jxl_lib = xyes; then
+    CFLAGS="$LIBJXL_CFLAGS $CFLAGS"
+    if test x$enable_jxl_shared = xyes && test x$jxl_lib != x; then
+        echo "-- dynamic libjxl -> $jxl_lib"
+        cat >>confdefs.h <<_ACEOF
+#define LOAD_JXL_DYNAMIC "$jxl_lib"
+_ACEOF
+
+    else
+        IMG_LIBS="$LIBJXL_LIBS $IMG_LIBS"
+        if test x$have_jxl_pc = xyes; then
+            PC_REQUIRES="libjxl $PC_REQUIRES"
+        else
+            PC_LIBS="$LIBJXL_LIBS $PC_LIBS"
         fi
     fi
 fi

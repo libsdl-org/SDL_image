@@ -18,3 +18,7 @@
 	path = external/zlib
 	url = https://github.com/libsdl-org/zlib.git
 	branch = v1.2.12-SDL
+[submodule "external/libjxl"]
+	path = external/libjxl
+	url = https://github.com/libsdl-org/libjxl.git
+	branch = v0.6.1-SDL

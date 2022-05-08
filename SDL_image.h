@@ -82,7 +82,8 @@ typedef enum
     IMG_INIT_JPG = 0x00000001,
     IMG_INIT_PNG = 0x00000002,
     IMG_INIT_TIF = 0x00000004,
-    IMG_INIT_WEBP = 0x00000008
+    IMG_INIT_WEBP = 0x00000008,
+    IMG_INIT_JXL = 0x00000010
 } IMG_InitFlags;
 
 /* Loads dynamic libraries and prepares them for use.  Flags should be
@@ -121,6 +122,7 @@ extern DECLSPEC int SDLCALL IMG_isCUR(SDL_RWops *src);
 extern DECLSPEC int SDLCALL IMG_isBMP(SDL_RWops *src);
 extern DECLSPEC int SDLCALL IMG_isGIF(SDL_RWops *src);
 extern DECLSPEC int SDLCALL IMG_isJPG(SDL_RWops *src);
+extern DECLSPEC int SDLCALL IMG_isJXL(SDL_RWops *src);
 extern DECLSPEC int SDLCALL IMG_isLBM(SDL_RWops *src);
 extern DECLSPEC int SDLCALL IMG_isPCX(SDL_RWops *src);
 extern DECLSPEC int SDLCALL IMG_isPNG(SDL_RWops *src);
@@ -139,6 +141,7 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadCUR_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadBMP_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadGIF_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadJPG_RW(SDL_RWops *src);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadJXL_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadLBM_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadPCX_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadPNG_RW(SDL_RWops *src);

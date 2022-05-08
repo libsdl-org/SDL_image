@@ -204,6 +204,10 @@ AC_ARG_ENABLE([jpg], [AS_HELP_STRING([--enable-jpg], [support loading JPG images
  [], [enable_jpg=yes])
 AC_ARG_ENABLE([jpg-shared], [AS_HELP_STRING([--enable-jpg-shared], [dynamically load JPG support [default=yes]])],
  [], [enable_jpg_shared=yes])
+AC_ARG_ENABLE([jxl], [AS_HELP_STRING([--enable-jxl], [support loading JXL images [default=yes]])],
+ [], [enable_jxl=yes])
+AC_ARG_ENABLE([jxl-shared], [AS_HELP_STRING([--enable-jxl-shared], [dynamically load JXL support [default=yes]])],
+ [], [enable_jxl_shared=yes])
 AC_ARG_ENABLE([lbm], [AS_HELP_STRING([--enable-lbm], [support loading LBM images [default=yes]])],
  [], [enable_lbm=yes])
 AC_ARG_ENABLE([pcx], [AS_HELP_STRING([--enable-pcx], [support loading PCX images [default=yes]])],
@@ -284,6 +288,46 @@ if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_image
     elif test x$enable_jpg = xyes; then
         AC_MSG_WARN([*** Unable to find JPEG library (http://www.ijg.org/)])
         AC_MSG_WARN([JPG image loading disabled])
+    fi
+fi
+
+if test x$enable_jxl = xyes; then
+    PKG_CHECK_MODULES([LIBJXL], [libjxl], [dnl
+        have_jxl_hdr=yes
+        have_jxl_lib=yes
+        have_jxl_pc=yes
+      ], [dnl
+        AC_CHECK_HEADER([jxl/decode.h], [
+            have_jxl_hdr=yes
+            LIBJXL_CFLAGS=""
+        ])
+        AC_CHECK_LIB([jxl], [JxlSignatureCheck], [
+            have_jxl_lib=yes
+            LIBJXL_LIBS="-ljxl"
+        ])
+      ])
+    if test x$have_jxl_hdr = xyes -a x$have_jxl_lib = xyes; then
+        if test x$enable_jxl = xyes; then
+            AC_DEFINE([LOAD_JXL])
+        fi
+
+        case "$host" in
+            *-*-darwin*)
+                jxl_lib=[`find_lib libjxl.dylib`]
+                ;;
+            *-*-cygwin* | *-*-mingw*)
+                jxl_lib=[`find_lib "libjxl*.dll"`]
+                ;;
+            *)
+                jxl_lib=[`find_lib "libjxl[0-9]*.so.*"`]
+                if test x$jxl_lib = x; then
+                    jxl_lib=[`find_lib "libjxl.so.*"`]
+                fi
+                ;;
+        esac
+    elif test x$enable_jxl = xyes; then
+        AC_MSG_WARN([*** Unable to find JXL library (https://jpegxl.info/)])
+        AC_MSG_WARN([JXL image loading disabled])
     fi
 fi
 
@@ -494,6 +538,20 @@ if test x$enable_jpg = xyes -a x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; t
             PC_REQUIRES="libjpeg $PC_REQUIRES"
         else
             PC_LIBS="$LIBJPEG_LIBS $PC_LIBS"
+        fi
+    fi
+fi
+if test x$enable_jxl = xyes -a x$have_jxl_hdr = xyes -a x$have_jxl_lib = xyes; then
+    CFLAGS="$LIBJXL_CFLAGS $CFLAGS"
+    if test x$enable_jxl_shared = xyes && test x$jxl_lib != x; then
+        echo "-- dynamic libjxl -> $jxl_lib"
+        AC_DEFINE_UNQUOTED(LOAD_JXL_DYNAMIC, "$jxl_lib")
+    else
+        IMG_LIBS="$LIBJXL_LIBS $IMG_LIBS"
+        if test x$have_jxl_pc = xyes; then
+            PC_REQUIRES="libjxl $PC_REQUIRES"
+        else
+            PC_LIBS="$LIBJXL_LIBS $PC_LIBS"
         fi
     fi
 fi

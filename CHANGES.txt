@@ -1,4 +1,6 @@
 2.0.6:
+Sam Lantinga - Sun May  8 14:31:27 PDT 2022
+ * Added support for JXL images (https://jpegxl.info/)
 Thomas Bernard - Mon Oct 26 23:32:10 2020
  * Fixed XCF regression introduced in 2.0.5
 Sam Lantinga - Thu Oct  3 18:09:17 PDT 2019
