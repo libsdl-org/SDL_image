@@ -78,5 +78,5 @@ rpm: $(PACKAGE)-$(VERSION).tar.gz
 	rpmbuild -ta $(PACKAGE)-$(VERSION).tar.gz
 
 dist-hook:
-	-rm -rf `find $(distdir)/external -name .git*`
-	-rm -rf `find $(distdir)/external -name *.yml`
+	-rm -rf `find $(distdir)/external -name '.git*'`
+	-rm -rf `find $(distdir)/external -name '*.yml'`
