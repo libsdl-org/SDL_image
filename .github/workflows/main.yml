@@ -73,6 +73,7 @@ jobs:
           -DBUILD_SHOWIMAGE=ON \
           -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
           -DCMAKE_VERBOSE_MAKEFILE=ON \
+          -DSUPPORT_WEBP=ON \
           ${{ matrix.platform.cmake }}
     - name: Build
       if: "matrix.platform.cmake"
