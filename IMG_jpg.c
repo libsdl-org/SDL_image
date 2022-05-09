@@ -678,9 +678,14 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 
 #if !defined(USE_JPEGLIB) && defined(USE_TINYJPEG)
 
-#define assert SDL_assert
+#ifdef __WATCOMC__ /* watcom has issues.. */
+#define ceilf ceil
+#define floorf floor
+#else
 #define ceilf SDL_ceilf
 #define floorf SDL_floorf
+#endif
+#define assert SDL_assert
 #define memcpy SDL_memcpy
 
 #define tje_log SDL_Log

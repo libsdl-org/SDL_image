@@ -22,7 +22,7 @@ DEPS_LIB=C:\SDL2DEV\lib
 
 SRCS = IMG.c IMG_bmp.c IMG_gif.c IMG_jpg.c IMG_lbm.c IMG_pcx.c IMG_png.c &
        IMG_pnm.c IMG_svg.c IMG_tga.c IMG_tif.c IMG_xcf.c IMG_xpm.c IMG_xv.c &
-       IMG_webp.c IMG_qoi.c
+       IMG_webp.c IMG_qoi.c IMG_jxl.c IMG_stb.c
 
 LIBS = libpng.lib libtiff.lib zlib.lib jpeg.lib webpdec.lib SDL2.lib
 
@@ -44,6 +44,10 @@ CFLAGS+= -DBUILD_SDL
 CFLAGS+= -DLOAD_JPG -DLOAD_PNG -DLOAD_BMP -DLOAD_GIF -DLOAD_LBM &
          -DLOAD_PCX -DLOAD_PNM -DLOAD_TGA -DLOAD_XCF -DLOAD_XPM &
          -DLOAD_XV -DLOAD_SVG -DLOAD_TIF -DLOAD_WEBP -DLOAD_QOI
+
+#CFLAGS+= CFLAGS+= -DUSE_STBIMAGE -DSTBI_NO_SIMD
+# tiny_jpeg.h needs C99 mode
+#CFLAGS+= CFLAGS+= -DUSE_TINYJPEG -za99
 
 CFLAGS+= -DSDL_BUILD_MAJOR_VERSION=$(MAJOR_VERSION)
 CFLAGS+= -DSDL_BUILD_MINOR_VERSION=$(MINOR_VERSION)
