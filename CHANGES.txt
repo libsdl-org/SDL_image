@@ -1,4 +1,6 @@
 2.0.6:
+Sylvain Becker - Sun May  8 21:59:27 PDT 2022
+ * Added IMG_ReadXPMFromArrayToRGB888()
 Sam Lantinga - Sun May  8 14:31:27 PDT 2022
  * Added support for JXL images (https://jpegxl.info/)
 Thomas Bernard - Mon Oct 26 23:32:10 2020

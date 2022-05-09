@@ -35,8 +35,11 @@
  * Besides the standard API, also provides
  *
  *     SDL_Surface *IMG_ReadXPMFromArray(char **xpm)
+ *     SDL_Surface *IMG_ReadXPMFromArrayToRGB888(char **xpm)
  *
- * that reads the image data from an XPM file included in the C source.
+ * that read the image data from an XPM file included in the C source.
+ * - 1st function returns an 8bpp indexed surface if possible, otherwise 32bpp.
+ * - 2nd function returns always a 32bpp (RGB888) surface
  *
  * TODO: include rgb.txt here. The full table (from solaris 2.6) only
  * requires about 13K in binary form.
@@ -910,10 +913,6 @@ static int color_to_argb(char *spec, int speclen, Uint32 *argb)
     }
 }
 
-#ifndef MAX
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
-#endif
-
 static char *linebuf;
 static int buflen;
 static char *error;
@@ -995,7 +994,7 @@ do {                            \
 } while (0)
 
 /* read XPM from either array or RWops */
-static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
+static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src, SDL_bool force_32bit)
 {
     Sint64 start = 0;
     SDL_Surface *image = NULL;
@@ -1052,7 +1051,7 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
     nextkey = keystrings;
 
     /* Create the new surface */
-    if (ncolors <= 256) {
+    if (ncolors <= 256 && !force_32bit) {
         indexed = 1;
         image = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 8,
                          0, 0, 0, 0);
@@ -1112,8 +1111,9 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src)
                 c->g = (Uint8)(argb >> 8);
                 c->b = (Uint8)(argb);
                 pixel = index;
-                if (argb == 0x00000000)
-                        SDL_SetColorKey(image, SDL_TRUE, pixel);
+                if (argb == 0x00000000) {
+                    SDL_SetColorKey(image, SDL_TRUE, pixel);
+                }
             } else {
                 pixel = argb;
             }
@@ -1176,7 +1176,7 @@ SDL_Surface *IMG_LoadXPM_RW(SDL_RWops *src)
         /* The error message has been set in SDL_RWFromFile */
         return NULL;
     }
-    return load_xpm(NULL, src);
+    return load_xpm(NULL, src, 0);
 }
 
 SDL_Surface *IMG_ReadXPMFromArray(char **xpm)
@@ -1185,7 +1185,16 @@ SDL_Surface *IMG_ReadXPMFromArray(char **xpm)
         IMG_SetError("array is NULL");
         return NULL;
     }
-    return load_xpm(xpm, NULL);
+    return load_xpm(xpm, NULL, SDL_FALSE);
+}
+
+SDL_Surface *IMG_ReadXPMFromArrayToRGB888(char **xpm)
+{
+    if (!xpm) {
+        IMG_SetError("array is NULL");
+        return NULL;
+    }
+    return load_xpm(xpm, NULL, SDL_TRUE /* force_32bit */);
 }
 
 #else  /* not LOAD_XPM */
@@ -1210,4 +1219,10 @@ SDL_Surface *IMG_ReadXPMFromArray(char **xpm)
 {
     return NULL;
 }
+
+SDL_Surface *IMG_ReadXPMFromArrayToRGB888(char **xpm)
+{
+    return NULL;
+}
+
 #endif /* not LOAD_XPM */
