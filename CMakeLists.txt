@@ -1,3 +1,10 @@
+# FIXME: CMAKE SUPPORT IN SDL2_image IS VERY INCOMPLETE YET !!!
+#
+# FIXME: make it able build against system codec libraries, too.
+# FIXME: handle library versioning.
+# FIXME: test accross different target platforms.
+#
+
 cmake_minimum_required(VERSION 3.3.2)
 project(SDL_image C)
 
@@ -6,12 +13,6 @@ set(MAJOR_VERSION 2)
 set(MINOR_VERSION 5)
 set(MICRO_VERSION 0)
 set(FULL_VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}")
-
-# FIXME: CMAKE SUPPORT IN SDL2_image IS VERY INCOMPLETE YET !!!
-#
-# FIXME: make it able build against system codec libraries, too.
-# FIXME: handle library versioning.
-# FIXME: test accross different target platforms.
 
 if (NOT ANDROID AND NOT (TARGET SDL2 OR TARGET SDL2-static))
 	find_package(SDL2 REQUIRED)
@@ -111,7 +112,9 @@ endif()
 target_sources(SDL2_image PRIVATE IMG.c IMG_png.c IMG_bmp.c IMG_gif.c
 		IMG_jpg.c IMG_lbm.c IMG_pcx.c IMG_pnm.c IMG_svg.c IMG_tga.c
 		IMG_tif.c IMG_webp.c IMG_WIC.c IMG_xcf.c IMG_xpm.c IMG_xv.c
-		IMG_qoi.c IMG_avif.c IMG_jxl.c IMG_xxx.c ${IMAGEIO_SOURCES})
+		IMG_qoi.c IMG_avif.c IMG_jxl.c IMG_stb.c IMG_xxx.c
+		${IMAGEIO_SOURCES}
+)
 
 target_compile_definitions(SDL2_image PRIVATE
 		-DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM
