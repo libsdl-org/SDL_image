@@ -8,6 +8,7 @@ ref_major=$(sed -ne 's/^#define SDL_IMAGE_MAJOR_VERSION  *//p' SDL_image.h)
 ref_minor=$(sed -ne 's/^#define SDL_IMAGE_MINOR_VERSION  *//p' SDL_image.h)
 ref_micro=$(sed -ne 's/^#define SDL_IMAGE_PATCHLEVEL  *//p' SDL_image.h)
 ref_version="${ref_major}.${ref_minor}.${ref_micro}"
+ref_sdl_req=$(sed -ne 's/^SDL_VERSION=//p' configure.ac)
 
 tests=0
 failed=0
@@ -37,12 +38,18 @@ fi
 major=$(sed -ne 's/^set(MAJOR_VERSION \([0-9]\+\))$/\1/p' CMakeLists.txt)
 minor=$(sed -ne 's/^set(MINOR_VERSION \([0-9]\+\))$/\1/p' CMakeLists.txt)
 micro=$(sed -ne 's/^set(MICRO_VERSION \([0-9]\+\))$/\1/p' CMakeLists.txt)
-version="${major}.${minor}.${micro}"
+sdl_req=$(sed -ne 's/^set(SDL_REQUIRED_VERSION \([0-9.]\+\))$/\1/p' CMakeLists.txt)
 
 if [ "$ref_version" = "$version" ]; then
     ok "CMakeLists.txt $version"
 else
     not_ok "CMakeLists.txt $version disagrees with SDL_image.h $ref_version"
+fi
+
+if [ "$ref_sdl_req" = "$sdl_req" ]; then
+    ok "CMakeLists.txt $sdl_req"
+else
+    not_ok "CMakeLists.txt SDL_REQUIRED_VERSION=$sdl_req disagrees with configure.ac SDL_VERSION=$ref_sdl_req"
 fi
 
 major=$(sed -ne 's/^MAJOR_VERSION *= *//p' Makefile.os2)
