@@ -141,6 +141,8 @@
 		F307EEBE28282912003915D7 /* jmemansi.c in Sources */ = {isa = PBXBuildFile; fileRef = F307EEB828282912003915D7 /* jmemansi.c */; };
 		F354743E2828CA66007E9EDA /* IMG_jxl.c in Sources */ = {isa = PBXBuildFile; fileRef = F354743B2828CA66007E9EDA /* IMG_jxl.c */; };
 		F354743F2828CA66007E9EDA /* IMG_jxl.c in Sources */ = {isa = PBXBuildFile; fileRef = F354743B2828CA66007E9EDA /* IMG_jxl.c */; };
+		F35475FD2829BAF9007E9EDA /* IMG_avif.c in Sources */ = {isa = PBXBuildFile; fileRef = F35475FC2829BAF9007E9EDA /* IMG_avif.c */; };
+		F35475FE2829BAF9007E9EDA /* IMG_avif.c in Sources */ = {isa = PBXBuildFile; fileRef = F35475FC2829BAF9007E9EDA /* IMG_avif.c */; };
 		F3D87C04281DF8FC005DA540 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3D87C03281DF8FC005DA540 /* SDL2.framework */; };
 		F3E1AAEB281CBABD00740E39 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAEA281CBABD00740E39 /* CoreGraphics.framework */; platformFilters = (ios, tvos, ); };
 		F3E1AAEC281CBB1F00740E39 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */; platformFilters = (ios, tvos, ); };
@@ -162,6 +164,34 @@
 			proxyType = 2;
 			remoteGlobalIDString = F307EEDC28288CCF003915D7;
 			remoteInfo = jxl;
+		};
+		F35475DB2829BA80007E9EDA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F35475D42829BA80007E9EDA /* avif.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F35474682829A8B3007E9EDA;
+			remoteInfo = avif;
+		};
+		F35475DD2829BA80007E9EDA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F35475D42829BA80007E9EDA /* avif.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F354757D2829B82B007E9EDA;
+			remoteInfo = dav1d;
+		};
+		F35475DF2829BA80007E9EDA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F35475D42829BA80007E9EDA /* avif.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F354758A2829B839007E9EDA;
+			remoteInfo = "dav1d-8bit";
+		};
+		F35475E12829BA80007E9EDA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F35475D42829BA80007E9EDA /* avif.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F35475972829B847007E9EDA;
+			remoteInfo = "dav1d-16bit";
 		};
 		F3D87D23281EA9D8005DA540 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -259,6 +289,8 @@
 		F307EEB828282912003915D7 /* jmemansi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = jmemansi.c; path = ../external/jpeg/jmemansi.c; sourceTree = "<group>"; };
 		F307EFA82828C8FA003915D7 /* jxl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jxl.xcodeproj; path = jxl/jxl.xcodeproj; sourceTree = "<group>"; };
 		F354743B2828CA66007E9EDA /* IMG_jxl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_jxl.c; path = ../IMG_jxl.c; sourceTree = "<group>"; };
+		F35475D42829BA80007E9EDA /* avif.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = avif.xcodeproj; path = avif/avif.xcodeproj; sourceTree = "<group>"; };
+		F35475FC2829BAF9007E9EDA /* IMG_avif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_avif.c; path = ../IMG_avif.c; sourceTree = "<group>"; };
 		F3D87C03281DF8FC005DA540 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = macOS/SDL2.framework; sourceTree = "<group>"; };
 		F3D87D15281EA88F005DA540 /* webp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = webp.xcodeproj; path = webp/webp.xcodeproj; sourceTree = "<group>"; };
 		F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
@@ -318,6 +350,7 @@
 		0867D691FE84028FC02AAC07 /* SDL_imageFramework */ = {
 			isa = PBXGroup;
 			children = (
+				F35475D42829BA80007E9EDA /* avif.xcodeproj */,
 				F307EFA82828C8FA003915D7 /* jxl.xcodeproj */,
 				F3D87D15281EA88F005DA540 /* webp.xcodeproj */,
 				F59C70FC00D5CB5801000001 /* pkg-support */,
@@ -343,6 +376,7 @@
 				F307EE2E28282608003915D7 /* jpeg */,
 				AA579DF1161C07E6005F809B /* IMG.c */,
 				AA579DE4161C07E6005F809B /* IMG_ImageIO.m */,
+				F35475FC2829BAF9007E9EDA /* IMG_avif.c */,
 				AA579DE2161C07E6005F809B /* IMG_bmp.c */,
 				AA579DE3161C07E6005F809B /* IMG_gif.c */,
 				AA579DE5161C07E6005F809B /* IMG_jpg.c */,
@@ -443,6 +477,17 @@
 			isa = PBXGroup;
 			children = (
 				F307EFAD2828C8FA003915D7 /* jxl.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F35475D52829BA80007E9EDA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F35475DC2829BA80007E9EDA /* avif.framework */,
+				F35475DE2829BA80007E9EDA /* libdav1d.a */,
+				F35475E02829BA80007E9EDA /* libdav1d-8bit.a */,
+				F35475E22829BA80007E9EDA /* libdav1d-16bit.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -576,6 +621,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = F35475D52829BA80007E9EDA /* Products */;
+					ProjectRef = F35475D42829BA80007E9EDA /* avif.xcodeproj */;
+				},
+				{
 					ProductGroup = F307EFA92828C8FA003915D7 /* Products */;
 					ProjectRef = F307EFA82828C8FA003915D7 /* jxl.xcodeproj */;
 				},
@@ -599,6 +648,34 @@
 			fileType = wrapper.framework;
 			path = jxl.framework;
 			remoteRef = F307EFAC2828C8FA003915D7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F35475DC2829BA80007E9EDA /* avif.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = avif.framework;
+			remoteRef = F35475DB2829BA80007E9EDA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F35475DE2829BA80007E9EDA /* libdav1d.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libdav1d.a;
+			remoteRef = F35475DD2829BA80007E9EDA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F35475E02829BA80007E9EDA /* libdav1d-8bit.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libdav1d-8bit.a";
+			remoteRef = F35475DF2829BA80007E9EDA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F35475E22829BA80007E9EDA /* libdav1d-16bit.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libdav1d-16bit.a";
+			remoteRef = F35475E12829BA80007E9EDA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		F3D87D24281EA9D8005DA540 /* webp.framework */ = {
@@ -701,6 +778,7 @@
 				F307EE3D2828264D003915D7 /* jcapistd.c in Sources */,
 				F307EE432828264D003915D7 /* jcdctmgr.c in Sources */,
 				AA579E02161C07E7005F809B /* IMG_tga.c in Sources */,
+				F35475FD2829BAF9007E9EDA /* IMG_avif.c in Sources */,
 				F307EE76282826FC003915D7 /* jfdctint.c in Sources */,
 				F307EEA0282826FC003915D7 /* jcprepct.c in Sources */,
 				F307EEB2282826FC003915D7 /* jquant2.c in Sources */,
@@ -773,6 +851,7 @@
 				F307EE3E2828264D003915D7 /* jcapistd.c in Sources */,
 				F307EE442828264D003915D7 /* jcdctmgr.c in Sources */,
 				AA579E03161C07E7005F809B /* IMG_tga.c in Sources */,
+				F35475FE2829BAF9007E9EDA /* IMG_avif.c in Sources */,
 				F307EE77282826FC003915D7 /* jfdctint.c in Sources */,
 				F307EEA1282826FC003915D7 /* jcprepct.c in Sources */,
 				F307EEB3282826FC003915D7 /* jquant2.c in Sources */,
@@ -831,6 +910,7 @@
 				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/$(PLATFORM)\"";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					LOAD_AVIF,
 					LOAD_BMP,
 					LOAD_GIF,
 					LOAD_JPG,
@@ -878,6 +958,8 @@
 			buildSettings = {
 				OTHER_LDFLAGS = (
 					"-weak_framework",
+					avif,
+					"-weak_framework",
 					jxl,
 					"-weak_framework",
 					webp,
@@ -923,6 +1005,7 @@
 				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/$(PLATFORM)\"";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					LOAD_AVIF,
 					LOAD_BMP,
 					LOAD_GIF,
 					LOAD_JPG,
@@ -968,6 +1051,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				OTHER_LDFLAGS = (
+					"-weak_framework",
+					avif,
 					"-weak_framework",
 					jxl,
 					"-weak_framework",

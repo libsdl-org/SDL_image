@@ -10,6 +10,9 @@
 		F35474502828CAF5007E9EDA /* jxl.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F354744B2828CADB007E9EDA /* jxl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F35474552828CDDB007E9EDA /* jxl.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F354744B2828CADB007E9EDA /* jxl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F35474562828CDE0007E9EDA /* jxl.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F354744B2828CADB007E9EDA /* jxl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F35475F92829BAC7007E9EDA /* avif.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F35475ED2829BAB1007E9EDA /* avif.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F35475FA2829BACC007E9EDA /* avif.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F35475ED2829BAB1007E9EDA /* avif.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F35475FB2829BAD0007E9EDA /* avif.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F35475ED2829BAB1007E9EDA /* avif.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F39CD44A281DC6A4006CF638 /* SDL2.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED810E281DC09600C33C5B /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F39CD44B281DC6C8006CF638 /* SDL2_image.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL2_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F39CD452281DC9CE006CF638 /* SDL2_image.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL2_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -39,6 +42,34 @@
 			proxyType = 2;
 			remoteGlobalIDString = F307EEDC28288CCF003915D7;
 			remoteInfo = jxl;
+		};
+		F35475EC2829BAB1007E9EDA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F35475E52829BAB1007E9EDA /* avif.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F35474682829A8B3007E9EDA;
+			remoteInfo = avif;
+		};
+		F35475EE2829BAB1007E9EDA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F35475E52829BAB1007E9EDA /* avif.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F354757D2829B82B007E9EDA;
+			remoteInfo = dav1d;
+		};
+		F35475F02829BAB1007E9EDA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F35475E52829BAB1007E9EDA /* avif.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F354758A2829B839007E9EDA;
+			remoteInfo = "dav1d-8bit";
+		};
+		F35475F22829BAB1007E9EDA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F35475E52829BAB1007E9EDA /* avif.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F35475972829B847007E9EDA;
+			remoteInfo = "dav1d-16bit";
 		};
 		F3E949D9281EAC1B00B8F4EA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -79,6 +110,7 @@
 			files = (
 				F39CD44A281DC6A4006CF638 /* SDL2.framework in Copy Frameworks */,
 				F39CD44B281DC6C8006CF638 /* SDL2_image.framework in Copy Frameworks */,
+				F35475F92829BAC7007E9EDA /* avif.framework in Copy Frameworks */,
 				F35474562828CDE0007E9EDA /* jxl.framework in Copy Frameworks */,
 				F3E949DB281EAC3500B8F4EA /* webp.framework in Copy Frameworks */,
 			);
@@ -93,6 +125,7 @@
 			files = (
 				F3ED8112281DC11700C33C5B /* SDL2.framework in Copy Frameworks */,
 				F39CD452281DC9CE006CF638 /* SDL2_image.framework in Copy Frameworks */,
+				F35475FA2829BACC007E9EDA /* avif.framework in Copy Frameworks */,
 				F35474552828CDDB007E9EDA /* jxl.framework in Copy Frameworks */,
 				F3E949DC281EAC9600B8F4EA /* webp.framework in Copy Frameworks */,
 			);
@@ -107,6 +140,7 @@
 			files = (
 				F3ED810C281DBEF000C33C5B /* SDL2.framework in Copy Frameworks */,
 				F3ED80FF281DA63000C33C5B /* SDL2_image.framework in Copy Frameworks */,
+				F35475FB2829BAD0007E9EDA /* avif.framework in Copy Frameworks */,
 				F35474502828CAF5007E9EDA /* jxl.framework in Copy Frameworks */,
 				F3E949DD281EAC9C00B8F4EA /* webp.framework in Copy Frameworks */,
 			);
@@ -117,6 +151,7 @@
 
 /* Begin PBXFileReference section */
 		F35474462828CADB007E9EDA /* jxl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jxl.xcodeproj; path = ../jxl/jxl.xcodeproj; sourceTree = "<group>"; };
+		F35475E52829BAB1007E9EDA /* avif.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = avif.xcodeproj; path = ../avif/avif.xcodeproj; sourceTree = "<group>"; };
 		F3E949D5281EAC1B00B8F4EA /* webp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = webp.xcodeproj; path = ../webp/webp.xcodeproj; sourceTree = "<group>"; };
 		F3ED80B3281D9E8900C33C5B /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3ED80B9281D9E8900C33C5B /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -169,6 +204,17 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		F35475E62829BAB1007E9EDA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F35475ED2829BAB1007E9EDA /* avif.framework */,
+				F35475EF2829BAB1007E9EDA /* libdav1d.a */,
+				F35475F12829BAB1007E9EDA /* libdav1d-8bit.a */,
+				F35475F32829BAB1007E9EDA /* libdav1d-16bit.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		F3E949D6281EAC1B00B8F4EA /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -181,6 +227,7 @@
 			isa = PBXGroup;
 			children = (
 				F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */,
+				F35475E52829BAB1007E9EDA /* avif.xcodeproj */,
 				F35474462828CADB007E9EDA /* jxl.xcodeproj */,
 				F3E949D5281EAC1B00B8F4EA /* webp.xcodeproj */,
 				F3ED80AB281D9E8800C33C5B /* Shared */,
@@ -349,6 +396,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = F35475E62829BAB1007E9EDA /* Products */;
+					ProjectRef = F35475E52829BAB1007E9EDA /* avif.xcodeproj */;
+				},
+				{
 					ProductGroup = F35474472828CADB007E9EDA /* Products */;
 					ProjectRef = F35474462828CADB007E9EDA /* jxl.xcodeproj */;
 				},
@@ -376,6 +427,34 @@
 			fileType = wrapper.framework;
 			path = jxl.framework;
 			remoteRef = F354744A2828CADB007E9EDA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F35475ED2829BAB1007E9EDA /* avif.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = avif.framework;
+			remoteRef = F35475EC2829BAB1007E9EDA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F35475EF2829BAB1007E9EDA /* libdav1d.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libdav1d.a;
+			remoteRef = F35475EE2829BAB1007E9EDA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F35475F12829BAB1007E9EDA /* libdav1d-8bit.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libdav1d-8bit.a";
+			remoteRef = F35475F02829BAB1007E9EDA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F35475F32829BAB1007E9EDA /* libdav1d-16bit.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libdav1d-16bit.a";
+			remoteRef = F35475F22829BAB1007E9EDA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		F3E949DA281EAC1B00B8F4EA /* webp.framework */ = {
