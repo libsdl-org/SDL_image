@@ -249,6 +249,9 @@ SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
         goto done;
     }
 
+    /* Be permissive so we can load as many images as possible */
+    decoder->strictFlags = AVIF_STRICT_DISABLED;
+
     context.src = src;
     context.start = start;
     io.destroy = DestroyAVIFIO;
