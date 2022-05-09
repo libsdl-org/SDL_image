@@ -210,6 +210,11 @@ SDL_Surface *IMG_LoadJXL_RW(SDL_RWops *src)
         case JXL_DEC_SUCCESS:
             /* All done! */
             surface = SDL_CreateRGBSurfaceWithFormatFrom(pixels, info.xsize, info.ysize, 0, pitch, SDL_PIXELFORMAT_RGBA32);
+            if (surface) {
+                /* Let SDL manage the memory now */
+                pixels = NULL;
+                surface->flags &= ~SDL_PREALLOC;
+            }
             goto done;
         default:
             IMG_SetError("Unknown JXL decoding status: %d", status);
