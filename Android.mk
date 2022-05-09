@@ -59,6 +59,9 @@ LOCAL_SRC_FILES :=  \
     IMG_xcf.c       \
     IMG_xpm.c.arm   \
     IMG_xv.c        \
+    IMG_avif.c      \
+    IMG_jxl.c       \
+    IMG_stb.c       \
     IMG_xxx.c
 
 LOCAL_CFLAGS := -DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM \

@@ -111,7 +111,7 @@ endif()
 target_sources(SDL2_image PRIVATE IMG.c IMG_png.c IMG_bmp.c IMG_gif.c
 		IMG_jpg.c IMG_lbm.c IMG_pcx.c IMG_pnm.c IMG_svg.c IMG_tga.c
 		IMG_tif.c IMG_webp.c IMG_WIC.c IMG_xcf.c IMG_xpm.c IMG_xv.c
-		IMG_qoi.c IMG_jxl.c IMG_xxx.c ${IMAGEIO_SOURCES})
+		IMG_qoi.c IMG_avif.c IMG_jxl.c IMG_xxx.c ${IMAGEIO_SOURCES})
 
 target_compile_definitions(SDL2_image PRIVATE
 		-DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM
