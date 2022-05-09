@@ -788,6 +788,8 @@ LIBJXL_LIBS
 LIBJXL_CFLAGS
 LIBJPEG_LIBS
 LIBJPEG_CFLAGS
+LIBAVIF_LIBS
+LIBAVIF_CFLAGS
 SDL2_CONFIG
 SDL_LIBS
 SDL_CFLAGS
@@ -941,6 +943,8 @@ enable_libtool_lock
 enable_dependency_tracking
 enable_silent_rules
 enable_imageio
+enable_avif
+enable_avif_shared
 enable_bmp
 enable_gif
 enable_jpg
@@ -983,6 +987,8 @@ PKG_CONFIG_PATH
 PKG_CONFIG_LIBDIR
 SDL_CFLAGS
 SDL_LIBS
+LIBAVIF_CFLAGS
+LIBAVIF_LIBS
 LIBJPEG_CFLAGS
 LIBJPEG_LIBS
 LIBJXL_CFLAGS
@@ -1624,6 +1630,8 @@ Optional Features:
   --disable-silent-rules  verbose build output (undo: "make V=0")
   --enable-imageio        use native Mac OS X frameworks for loading images
                           [default=yes]
+  --enable-avif           support loading AVIF images [default=yes]
+  --enable-avif-shared    dynamically load AVIF support [default=yes]
   --enable-bmp            support loading BMP/ICO/CUR images [default=yes]
   --enable-gif            support loading GIF images [default=yes]
   --enable-jpg            support loading JPG images [default=yes]
@@ -1676,6 +1684,10 @@ Some influential environment variables:
               path overriding pkg-config's built-in search path
   SDL_CFLAGS  C compiler flags for SDL, overriding pkg-config
   SDL_LIBS    linker flags for SDL, overriding pkg-config
+  LIBAVIF_CFLAGS
+              C compiler flags for LIBAVIF, overriding pkg-config
+  LIBAVIF_LIBS
+              linker flags for LIBAVIF, overriding pkg-config
   LIBJPEG_CFLAGS
               C compiler flags for LIBJPEG, overriding pkg-config
   LIBJPEG_LIBS
@@ -4096,13 +4108,13 @@ if ${lt_cv_nm_interface+:} false; then :
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:4099: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:4111: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4102: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:4114: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4105: output\"" >&5)
+  (eval echo "\"\$as_me:4117: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -5316,7 +5328,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5319 "configure"' > conftest.$ac_ext
+  echo '#line 5331 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7141,11 +7153,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7144: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7156: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7148: \$? = $ac_status" >&5
+   echo "$as_me:7160: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7490,11 +7502,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7493: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7505: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7497: \$? = $ac_status" >&5
+   echo "$as_me:7509: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7595,11 +7607,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7598: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7610: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7602: \$? = $ac_status" >&5
+   echo "$as_me:7614: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -7650,11 +7662,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7653: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7665: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7657: \$? = $ac_status" >&5
+   echo "$as_me:7669: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10085,7 +10097,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10088 "configure"
+#line 10100 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10181,7 +10193,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10184 "configure"
+#line 10196 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12783,6 +12795,20 @@ $as_echo "$have_gcc_fvisibility" >&6; }
     fi
 }
 
+# Check whether --enable-avif was given.
+if test "${enable_avif+set}" = set; then :
+  enableval=$enable_avif;
+else
+  enable_avif=yes
+fi
+
+# Check whether --enable-avif-shared was given.
+if test "${enable_avif_shared+set}" = set; then :
+  enableval=$enable_avif_shared;
+else
+  enable_avif_shared=yes
+fi
+
 # Check whether --enable-bmp was given.
 if test "${enable_bmp+set}" = set; then :
   enableval=$enable_bmp;
@@ -13261,6 +13287,213 @@ rm -f core conftest.err conftest.$ac_objext \
 
 CFLAGS="$CFLAGS $SDL_CFLAGS"
 LIBS="$LIBS $SDL_LIBS"
+
+if test x$enable_avif = xyes; then
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libavif" >&5
+$as_echo_n "checking for libavif... " >&6; }
+
+if test -n "$LIBAVIF_CFLAGS"; then
+    pkg_cv_LIBAVIF_CFLAGS="$LIBAVIF_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libavif\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libavif") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBAVIF_CFLAGS=`$PKG_CONFIG --cflags "libavif" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$LIBAVIF_LIBS"; then
+    pkg_cv_LIBAVIF_LIBS="$LIBAVIF_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libavif\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libavif") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBAVIF_LIBS=`$PKG_CONFIG --libs "libavif" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        LIBAVIF_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libavif" 2>&1`
+        else
+	        LIBAVIF_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libavif" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$LIBAVIF_PKG_ERRORS" >&5
+
+	        ac_fn_c_check_header_mongrel "$LINENO" "avif/avif.h" "ac_cv_header_avif_avif_h" "$ac_includes_default"
+if test "x$ac_cv_header_avif_avif_h" = xyes; then :
+
+            have_avif_hdr=yes
+            LIBAVIF_CFLAGS=""
+
+fi
+
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for avifVersion in -lavif" >&5
+$as_echo_n "checking for avifVersion in -lavif... " >&6; }
+if ${ac_cv_lib_avif_avifVersion+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lavif  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char avifVersion ();
+int
+main ()
+{
+return avifVersion ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_avif_avifVersion=yes
+else
+  ac_cv_lib_avif_avifVersion=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_avif_avifVersion" >&5
+$as_echo "$ac_cv_lib_avif_avifVersion" >&6; }
+if test "x$ac_cv_lib_avif_avifVersion" = xyes; then :
+
+            have_avif_lib=yes
+            LIBAVIF_LIBS="-lavif"
+
+fi
+
+
+elif test $pkg_failed = untried; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	        ac_fn_c_check_header_mongrel "$LINENO" "avif/avif.h" "ac_cv_header_avif_avif_h" "$ac_includes_default"
+if test "x$ac_cv_header_avif_avif_h" = xyes; then :
+
+            have_avif_hdr=yes
+            LIBAVIF_CFLAGS=""
+
+fi
+
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for avifVersion in -lavif" >&5
+$as_echo_n "checking for avifVersion in -lavif... " >&6; }
+if ${ac_cv_lib_avif_avifVersion+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lavif  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char avifVersion ();
+int
+main ()
+{
+return avifVersion ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_avif_avifVersion=yes
+else
+  ac_cv_lib_avif_avifVersion=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_avif_avifVersion" >&5
+$as_echo "$ac_cv_lib_avif_avifVersion" >&6; }
+if test "x$ac_cv_lib_avif_avifVersion" = xyes; then :
+
+            have_avif_lib=yes
+            LIBAVIF_LIBS="-lavif"
+
+fi
+
+
+else
+	LIBAVIF_CFLAGS=$pkg_cv_LIBAVIF_CFLAGS
+	LIBAVIF_LIBS=$pkg_cv_LIBAVIF_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	        have_avif_hdr=yes
+        have_avif_lib=yes
+        have_avif_pc=yes
+
+fi
+    if test x$have_avif_hdr = xyes -a x$have_avif_lib = xyes; then
+        if test x$enable_avif = xyes; then
+            $as_echo "#define LOAD_AVIF 1" >>confdefs.h
+
+        fi
+
+        case "$host" in
+            *-*-darwin*)
+                avif_lib=`find_lib libavif.dylib`
+                ;;
+            *-*-cygwin* | *-*-mingw*)
+                avif_lib=`find_lib "libavif*.dll"`
+                ;;
+            *)
+                avif_lib=`find_lib "libavif[0-9]*.so.*"`
+                if test x$avif_lib = x; then
+                    avif_lib=`find_lib "libavif.so.*"`
+                fi
+                ;;
+        esac
+    elif test x$enable_avif = xyes; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find AVIF library (https://github.com/AOMediaCodec/libavif)" >&5
+$as_echo "$as_me: WARNING: *** Unable to find AVIF library (https://github.com/AOMediaCodec/libavif)" >&2;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: AVIF image loading disabled" >&5
+$as_echo "$as_me: WARNING: AVIF image loading disabled" >&2;}
+    fi
+fi
 
 if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_imageio != xyes; then
 
@@ -14373,6 +14606,23 @@ _ACEOF
     fi
 fi
 
+if test x$enable_avif = xyes -a x$have_avif_hdr = xyes -a x$have_avif_lib = xyes; then
+    CFLAGS="$LIBAVIF_CFLAGS $CFLAGS"
+    if test x$enable_avif_shared = xyes && test x$avif_lib != x; then
+        echo "-- dynamic libavif -> $avif_lib"
+        cat >>confdefs.h <<_ACEOF
+#define LOAD_AVIF_DYNAMIC "$avif_lib"
+_ACEOF
+
+    else
+        IMG_LIBS="$LIBAVIF_LIBS $IMG_LIBS"
+        if test x$have_avif_pc = xyes; then
+            PC_REQUIRES="libavif $PC_REQUIRES"
+        else
+            PC_LIBS="$LIBAVIF_LIBS $PC_LIBS"
+        fi
+    fi
+fi
 if test x$enable_tif = xyes -a x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; then
     CFLAGS="$LIBTIFF_CFLAGS $CFLAGS"
     if test x$enable_tif_shared = xyes && test x$tif_lib != x; then

@@ -22,3 +22,11 @@
 	path = external/libjxl
 	url = https://github.com/libsdl-org/libjxl.git
 	branch = v0.6.1-SDL
+[submodule "external/libavif"]
+	path = external/libavif
+	url = https://github.com/libsdl-org/libavif.git
+	branch = v0.10.1-SDL
+[submodule "external/dav1d"]
+	path = external/dav1d
+	url = https://github.com/libsdl-org/dav1d.git
+	branch = 1.0.0-SDL

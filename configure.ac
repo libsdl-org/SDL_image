@@ -196,6 +196,10 @@ CheckVisibilityHidden()
 }
 
 dnl Check command-line options
+AC_ARG_ENABLE([avif], [AS_HELP_STRING([--enable-avif], [support loading AVIF images [default=yes]])],
+ [], [enable_avif=yes])
+AC_ARG_ENABLE([avif-shared], [AS_HELP_STRING([--enable-avif-shared], [dynamically load AVIF support [default=yes]])],
+ [], [enable_avif_shared=yes])
 AC_ARG_ENABLE([bmp], [AS_HELP_STRING([--enable-bmp], [support loading BMP/ICO/CUR images [default=yes]])],
  [], [enable_bmp=yes])
 AC_ARG_ENABLE([gif], [AS_HELP_STRING([--enable-gif], [support loading GIF images [default=yes]])],
@@ -250,6 +254,46 @@ AM_PATH_SDL2($SDL_VERSION,
 )
 CFLAGS="$CFLAGS $SDL_CFLAGS"
 LIBS="$LIBS $SDL_LIBS"
+
+if test x$enable_avif = xyes; then
+    PKG_CHECK_MODULES([LIBAVIF], [libavif], [dnl
+        have_avif_hdr=yes
+        have_avif_lib=yes
+        have_avif_pc=yes
+      ], [dnl
+        AC_CHECK_HEADER([avif/avif.h], [
+            have_avif_hdr=yes
+            LIBAVIF_CFLAGS=""
+        ])
+        AC_CHECK_LIB([avif], [avifVersion], [
+            have_avif_lib=yes
+            LIBAVIF_LIBS="-lavif"
+        ])
+      ])
+    if test x$have_avif_hdr = xyes -a x$have_avif_lib = xyes; then
+        if test x$enable_avif = xyes; then
+            AC_DEFINE([LOAD_AVIF])
+        fi
+
+        case "$host" in
+            *-*-darwin*)
+                avif_lib=[`find_lib libavif.dylib`]
+                ;;
+            *-*-cygwin* | *-*-mingw*)
+                avif_lib=[`find_lib "libavif*.dll"`]
+                ;;
+            *)
+                avif_lib=[`find_lib "libavif[0-9]*.so.*"`]
+                if test x$avif_lib = x; then
+                    avif_lib=[`find_lib "libavif.so.*"`]
+                fi
+                ;;
+        esac
+    elif test x$enable_avif = xyes; then
+        AC_MSG_WARN([*** Unable to find AVIF library (https://github.com/AOMediaCodec/libavif)])
+        AC_MSG_WARN([AVIF image loading disabled])
+    fi
+fi
 
 if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_imageio != xyes; then
     PKG_CHECK_MODULES([LIBJPEG], [libjpeg], [dnl
@@ -509,6 +553,20 @@ if test x$enable_webp = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib = xyes
     fi
 fi
 
+if test x$enable_avif = xyes -a x$have_avif_hdr = xyes -a x$have_avif_lib = xyes; then
+    CFLAGS="$LIBAVIF_CFLAGS $CFLAGS"
+    if test x$enable_avif_shared = xyes && test x$avif_lib != x; then
+        echo "-- dynamic libavif -> $avif_lib"
+        AC_DEFINE_UNQUOTED(LOAD_AVIF_DYNAMIC, "$avif_lib")
+    else
+        IMG_LIBS="$LIBAVIF_LIBS $IMG_LIBS"
+        if test x$have_avif_pc = xyes; then
+            PC_REQUIRES="libavif $PC_REQUIRES"
+        else
+            PC_LIBS="$LIBAVIF_LIBS $PC_LIBS"
+        fi
+    fi
+fi
 if test x$enable_tif = xyes -a x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; then
     CFLAGS="$LIBTIFF_CFLAGS $CFLAGS"
     if test x$enable_tif_shared = xyes && test x$tif_lib != x; then

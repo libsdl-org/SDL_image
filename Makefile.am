@@ -13,6 +13,7 @@ endif
 
 libSDL2_image_la_SOURCES =	\
 	IMG.c			\
+	IMG_avif.c		\
 	IMG_bmp.c		\
 	IMG_gif.c		\
 	IMG_jpg.c		\
