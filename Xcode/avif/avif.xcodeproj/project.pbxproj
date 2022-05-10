@@ -76,6 +76,8 @@
 		F35475D12829B956007E9EDA /* libdav1d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F354757D2829B82B007E9EDA /* libdav1d.a */; };
 		F35475D22829B958007E9EDA /* libdav1d-8bit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F354758A2829B839007E9EDA /* libdav1d-8bit.a */; };
 		F35475D32829B95A007E9EDA /* libdav1d-16bit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F35475972829B847007E9EDA /* libdav1d-16bit.a */; };
+		F354761D282A29E8007E9EDA /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = F354761B282A29E8007E9EDA /* LICENSE */; };
+		F354761E282A29E8007E9EDA /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F354761C282A29E8007E9EDA /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -166,6 +168,8 @@
 		F354757D2829B82B007E9EDA /* libdav1d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libdav1d.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F354758A2829B839007E9EDA /* libdav1d-8bit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libdav1d-8bit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F35475972829B847007E9EDA /* libdav1d-16bit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libdav1d-16bit.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F354761B282A29E8007E9EDA /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = ../../external/libavif/LICENSE; sourceTree = "<group>"; };
+		F354761C282A29E8007E9EDA /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../../external/libavif/README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -260,6 +264,8 @@
 		F35474762829A8F5007E9EDA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F354761B282A29E8007E9EDA /* LICENSE */,
+				F354761C282A29E8007E9EDA /* README.md */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -446,6 +452,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F354761E282A29E8007E9EDA /* README.md in Resources */,
+				F354761D282A29E8007E9EDA /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -704,7 +712,6 @@
 				MARKETING_VERSION = 0.10.1;
 				PRODUCT_BUNDLE_IDENTIFIER = org.libsdl.avif;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Debug;
@@ -730,7 +737,6 @@
 				MARKETING_VERSION = 0.10.1;
 				PRODUCT_BUNDLE_IDENTIFIER = org.libsdl.avif;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Release;
