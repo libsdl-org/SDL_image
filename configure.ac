@@ -302,7 +302,7 @@ if test x$enable_avif = xyes; then
     fi
 fi
 
-if ((test x$enable_jpg = xyes && test x$enable_stb_image != xyes) || test x$enable_tif = xyes) && test x$enable_imageio != xyes; then
+if test x$enable_jpg = xyes -a x$enable_stb_image != xyes -a x$enable_imageio != xyes; then
     PKG_CHECK_MODULES([LIBJPEG], [libjpeg], [dnl
         have_jpg_hdr=yes
         have_jpg_lib=yes

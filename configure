@@ -13513,7 +13513,7 @@ $as_echo "$as_me: WARNING: AVIF image loading disabled" >&2;}
     fi
 fi
 
-if ((test x$enable_jpg = xyes && test x$enable_stb_image != xyes) || test x$enable_tif = xyes) && test x$enable_imageio != xyes; then
+if test x$enable_jpg = xyes -a x$enable_stb_image != xyes -a x$enable_imageio != xyes; then
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libjpeg" >&5
