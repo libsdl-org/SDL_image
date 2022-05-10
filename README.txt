@@ -5,8 +5,8 @@ The latest version of this library is available from:
 http://www.libsdl.org/projects/SDL_image/
 
 This is a simple library to load images of various formats as SDL surfaces.
-This library supports BMP, PNM (PPM/PGM/PBM), XPM, LBM, PCX, GIF, JPEG, PNG,
-TGA, TIFF, and simple SVG formats.
+This library supports AVIF, BMP, GIF, JPEG, JPEG-XL, LBM, PCX, PNG, PNM (PPM/PGM/PBM),
+QOI, TGA, TIFF, WebP, XCF, XPM, and simple SVG formats.
 
 API:
 #include "SDL_image.h"
@@ -26,16 +26,15 @@ To create a surface from an XPM image included in C source, use:
 
 An example program 'showimage' is included, with source in showimage.c
 
-JPEG support requires the JPEG library: http://www.ijg.org/
-PNG support requires the PNG library: http://www.libpng.org/pub/png/libpng.html
-    and the Zlib library: http://www.gzip.org/zlib/
-TIFF support requires the TIFF library: ftp://ftp.sgi.com/graphics/tiff/
-    and the Zlib library: http://www.gzip.org/zlib/
-
-If you have these libraries installed in non-standard places, you can
-try adding those paths to the configure script, e.g.
-sh ./configure CPPFLAGS="-I/somewhere/include" LDFLAGS="-L/somewhere/lib"
-If this works, you may need to add /somewhere/lib to your LD_LIBRARY_PATH
-so shared library loading works correctly.
-
 This library is under the zlib License, see the file "LICENSE.txt" for details.
+
+Note:
+Support for AVIF, JPEG-XL, TIFF, and WebP are not included by default because of the
+size of the decode libraries, but you can get them by running external/download.sh
+- For UNIX platforms, you can build and install them normally and the configure script
+  will pick them up and use them.
+- For Windows platforms, you will need to build them and then add the appropriate LOAD_*
+  preprocessor define to the Visual Studio project.
+- For Apple platforms, you can edit the config at the top of the project to enable them,
+  and you will need to include the appropriate framework in your application.
+- For Android, you can edit the config at the top of Android.mk to enable them.
