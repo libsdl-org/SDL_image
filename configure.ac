@@ -196,6 +196,8 @@ CheckVisibilityHidden()
 }
 
 dnl Check command-line options
+AC_ARG_ENABLE([stb_image], [AS_HELP_STRING([--enable-stb-image], [use stb_image for loading JPG and PNG images [default=yes]])],
+ [], [enable_stb_image=yes])
 AC_ARG_ENABLE([avif], [AS_HELP_STRING([--enable-avif], [support loading AVIF images [default=yes]])],
  [], [enable_avif=yes])
 AC_ARG_ENABLE([avif-shared], [AS_HELP_STRING([--enable-avif-shared], [dynamically load AVIF support [default=yes]])],
@@ -255,6 +257,11 @@ AM_PATH_SDL2($SDL_VERSION,
 CFLAGS="$CFLAGS $SDL_CFLAGS"
 LIBS="$LIBS $SDL_LIBS"
 
+if test x$enable_stb_image = xyes; then
+    AC_DEFINE([LOAD_JPG])
+    AC_DEFINE([LOAD_PNG])
+    AC_DEFINE([USE_STBIMAGE])
+fi
 if test x$enable_avif = xyes; then
     PKG_CHECK_MODULES([LIBAVIF], [libavif], [dnl
         have_avif_hdr=yes
@@ -295,7 +302,7 @@ if test x$enable_avif = xyes; then
     fi
 fi
 
-if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_imageio != xyes; then
+if ((test x$enable_jpg = xyes && test x$enable_stb_image != xyes) || test x$enable_tif = xyes) && test x$enable_imageio != xyes; then
     PKG_CHECK_MODULES([LIBJPEG], [libjpeg], [dnl
         have_jpg_hdr=yes
         have_jpg_lib=yes
@@ -375,7 +382,7 @@ if test x$enable_jxl = xyes; then
     fi
 fi
 
-if test x$enable_png = xyes -a x$enable_imageio != xyes; then
+if test x$enable_png = xyes -a $enable_stb_image != xyes -a x$enable_imageio != xyes; then
     PKG_CHECK_MODULES([LIBPNG], [libpng], [dnl
         have_png_hdr=yes
         have_png_lib=yes

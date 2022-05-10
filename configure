@@ -943,6 +943,7 @@ enable_libtool_lock
 enable_dependency_tracking
 enable_silent_rules
 enable_imageio
+enable_stb_image
 enable_avif
 enable_avif_shared
 enable_bmp
@@ -1629,6 +1630,8 @@ Optional Features:
   --enable-silent-rules   less verbose build output (undo: "make V=1")
   --disable-silent-rules  verbose build output (undo: "make V=0")
   --enable-imageio        use native Mac OS X frameworks for loading images
+                          [default=yes]
+  --enable-stb-image      use stb_image for loading JPG and PNG images
                           [default=yes]
   --enable-avif           support loading AVIF images [default=yes]
   --enable-avif-shared    dynamically load AVIF support [default=yes]
@@ -4108,13 +4111,13 @@ if ${lt_cv_nm_interface+:} false; then :
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:4111: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:4114: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4114: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:4117: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4117: output\"" >&5)
+  (eval echo "\"\$as_me:4120: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -5328,7 +5331,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5331 "configure"' > conftest.$ac_ext
+  echo '#line 5334 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7153,11 +7156,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7156: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7159: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7160: \$? = $ac_status" >&5
+   echo "$as_me:7163: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7502,11 +7505,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7505: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7508: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7509: \$? = $ac_status" >&5
+   echo "$as_me:7512: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7607,11 +7610,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7610: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7613: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7614: \$? = $ac_status" >&5
+   echo "$as_me:7617: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -7662,11 +7665,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7665: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7668: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7669: \$? = $ac_status" >&5
+   echo "$as_me:7672: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10097,7 +10100,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10100 "configure"
+#line 10103 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10193,7 +10196,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10196 "configure"
+#line 10199 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12795,6 +12798,13 @@ $as_echo "$have_gcc_fvisibility" >&6; }
     fi
 }
 
+# Check whether --enable-stb_image was given.
+if test "${enable_stb_image+set}" = set; then :
+  enableval=$enable_stb_image;
+else
+  enable_stb_image=yes
+fi
+
 # Check whether --enable-avif was given.
 if test "${enable_avif+set}" = set; then :
   enableval=$enable_avif;
@@ -13288,6 +13298,14 @@ rm -f core conftest.err conftest.$ac_objext \
 CFLAGS="$CFLAGS $SDL_CFLAGS"
 LIBS="$LIBS $SDL_LIBS"
 
+if test x$enable_stb_image = xyes; then
+    $as_echo "#define LOAD_JPG 1" >>confdefs.h
+
+    $as_echo "#define LOAD_PNG 1" >>confdefs.h
+
+    $as_echo "#define USE_STBIMAGE 1" >>confdefs.h
+
+fi
 if test x$enable_avif = xyes; then
 
 pkg_failed=no
@@ -13495,7 +13513,7 @@ $as_echo "$as_me: WARNING: AVIF image loading disabled" >&2;}
     fi
 fi
 
-if (test x$enable_jpg = xyes || test x$enable_tif = xyes) && test x$enable_imageio != xyes; then
+if ((test x$enable_jpg = xyes && test x$enable_stb_image != xyes) || test x$enable_tif = xyes) && test x$enable_imageio != xyes; then
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libjpeg" >&5
@@ -13909,7 +13927,7 @@ $as_echo "$as_me: WARNING: JXL image loading disabled" >&2;}
     fi
 fi
 
-if test x$enable_png = xyes -a x$enable_imageio != xyes; then
+if test x$enable_png = xyes -a $enable_stb_image != xyes -a x$enable_imageio != xyes; then
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libpng" >&5
