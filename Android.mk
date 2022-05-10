@@ -1,6 +1,12 @@
 SDL_IMAGE_LOCAL_PATH := $(call my-dir)
 
 
+# Enable this if you want to support loading AVIF images
+# The library path should be a relative path to this directory.
+SUPPORT_AVIF ?= true
+AVIF_LIBRARY_PATH := external/libavif
+DAV1D_LIBRARY_PATH := external/dav1d
+
 # Enable this if you want to support loading JPEG images
 # The library path should be a relative path to this directory.
 SUPPORT_JPG ?= true
@@ -17,6 +23,12 @@ PNG_LIBRARY_PATH := external/libpng
 SUPPORT_WEBP ?= true
 WEBP_LIBRARY_PATH := external/libwebp
 
+
+# Build the library
+ifeq ($(SUPPORT_AVIF),true)
+    include $(SDL_IMAGE_LOCAL_PATH)/$(AVIF_LIBRARY_PATH)/Android.mk
+    include $(SDL_IMAGE_LOCAL_PATH)/$(DAV1D_LIBRARY_PATH)/Android.mk
+endif
 
 # Build the library
 ifeq ($(SUPPORT_JPG),true)
@@ -43,9 +55,11 @@ LOCAL_MODULE := SDL2_image
 
 LOCAL_SRC_FILES :=  \
     IMG.c           \
+    IMG_avif.c      \
     IMG_bmp.c       \
     IMG_gif.c       \
     IMG_jpg.c       \
+    IMG_jxl.c       \
     IMG_lbm.c       \
     IMG_pcx.c       \
     IMG_png.c       \
@@ -59,8 +73,6 @@ LOCAL_SRC_FILES :=  \
     IMG_xcf.c       \
     IMG_xpm.c.arm   \
     IMG_xv.c        \
-    IMG_avif.c      \
-    IMG_jxl.c       \
     IMG_stb.c       \
     IMG_xxx.c
 
@@ -70,6 +82,13 @@ LOCAL_CFLAGS := -DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM \
 LOCAL_LDLIBS :=
 LOCAL_STATIC_LIBRARIES :=
 LOCAL_SHARED_LIBRARIES := SDL2
+
+ifeq ($(SUPPORT_AVIF),true)
+    LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(AVIF_LIBRARY_PATH)/include
+    LOCAL_CFLAGS += -DLOAD_AVIF
+    LOCAL_STATIC_LIBRARIES += avif
+    LOCAL_WHOLE_STATIC_LIBRARIES += dav1d dav1d-8bit dav1d-16bit
+endif
 
 ifeq ($(SUPPORT_JPG),true)
     LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(JPG_LIBRARY_PATH)
