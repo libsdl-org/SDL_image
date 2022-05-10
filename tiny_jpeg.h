@@ -497,11 +497,11 @@ static void tjei_write(TJEState* state, const void* data, size_t num_bytes, size
 static void tjei_write_DQT(TJEState* state, const uint8_t* matrix, uint8_t id)
 {
     uint16_t DQT = tjei_be_word(0xffdb);
-    tjei_write(state, &DQT, sizeof(uint16_t), 1);
     uint16_t len = tjei_be_word(0x0043); // 2(len) + 1(id) + 64(matrix) = 67 = 0x43
+    uint8_t precision_and_id = id;  // 0x0000 8 bits | 0x00id
+    tjei_write(state, &DQT, sizeof(uint16_t), 1);
     tjei_write(state, &len, sizeof(uint16_t), 1);
     assert(id < 4);
-    uint8_t precision_and_id = id;  // 0x0000 8 bits | 0x00id
     tjei_write(state, &precision_and_id, sizeof(uint8_t), 1);
     // Write matrix
     tjei_write(state, matrix, 64*sizeof(uint8_t), 1);
@@ -519,17 +519,20 @@ static void tjei_write_DHT(TJEState* state,
                            TJEHuffmanTableClass ht_class,
                            uint8_t id)
 {
-    int num_values = 0;
-    for ( int i = 0; i < 16; ++i ) {
+    int i, num_values = 0;
+    uint16_t DHT, len;
+    uint8_t tc_th;
+
+    for ( i = 0; i < 16; ++i ) {
         num_values += matrix_len[i];
     }
     assert(num_values <= 0xffff);
 
-    uint16_t DHT = tjei_be_word(0xffc4);
+    DHT = tjei_be_word(0xffc4);
     // 2(len) + 1(Tc|th) + 16 (num lengths) + ?? (num values)
-    uint16_t len = tjei_be_word(2 + 1 + 16 + (uint16_t)num_values);
+    len = tjei_be_word(2 + 1 + 16 + (uint16_t)num_values);
     assert(id < 4);
-    uint8_t tc_th = (uint8_t)((((uint8_t)ht_class) << 4) | id);
+    tc_th = (uint8_t)((((uint8_t)ht_class) << 4) | id);
 
     tjei_write(state, &DHT, sizeof(uint16_t), 1);
     tjei_write(state, &len, sizeof(uint16_t), 1);
@@ -544,9 +547,9 @@ static void tjei_write_DHT(TJEState* state,
 // Returns all code sizes from the BITS specification (JPEG C.3)
 static uint8_t* tjei_huff_get_code_lengths(uint8_t huffsize[/*256*/], uint8_t const * bits)
 {
-    int k = 0;
-    for ( int i = 0; i < 16; ++i ) {
-        for ( int j = 0; j < bits[i]; ++j ) {
+    int i, j, k = 0;
+    for ( i = 0; i < 16; ++i ) {
+        for ( j = 0; j < bits[i]; ++j ) {
             huffsize[k++] = (uint8_t)(i + 1);
         }
         huffsize[k] = 0;
@@ -767,8 +770,9 @@ static float slow_fdct(int u, int v, float* data)
     float res = 0.0f;
     float cu = (u == 0) ? 0.70710678118654f : 1;
     float cv = (v == 0) ? 0.70710678118654f : 1;
-    for ( int y = 0; y < 8; ++y ) {
-        for ( int x = 0; x < 8; ++x ) {
+    int x, y;
+    for ( y = 0; y < 8; ++y ) {
+        for ( x = 0; x < 8; ++x ) {
             res += (data[y * 8 + x]) *
                     cosf(((2.0f * x + 1.0f) * u * kPI) / 16.0f) *
                     cosf(((2.0f * y + 1.0f) * v * kPI) / 16.0f);
@@ -798,12 +802,22 @@ static void tjei_encode_and_write_MCU(TJEState* state,
     int du[64];  // Data unit in zig-zag order
 
     float dct_mcu[64];
+    int i;
+#if !TJE_USE_FAST_DCT
+    int u, v;
+#endif
+
+    int last_non_zero_i;
+    int diff;
+    uint16_t vli[2];
+
     memcpy(dct_mcu, mcu, 64 * sizeof(float));
 
 #if TJE_USE_FAST_DCT
     tjei_fdct(dct_mcu);
-    for ( int i = 0; i < 64; ++i ) {
+    for ( i = 0; i < 64; ++i ) {
         float fval = dct_mcu[i];
+        int val;
         fval *= qt[i];
 #if 0
         fval = (fval > 0) ? floorf(fval + 0.5f) : ceilf(fval - 0.5f);
@@ -811,26 +825,24 @@ static void tjei_encode_and_write_MCU(TJEState* state,
         fval = floorf(fval + 1024 + 0.5f);
         fval -= 1024;
 #endif
-        int val = (int)fval;
+        val = (int)fval;
         du[tjei_zig_zag[i]] = val;
     }
 #else
-    for ( int v = 0; v < 8; ++v ) {
-        for ( int u = 0; u < 8; ++u ) {
+    for ( v = 0; v < 8; ++v ) {
+        for ( u = 0; u < 8; ++u ) {
             dct_mcu[v * 8 + u] = slow_fdct(u, v, mcu);
         }
     }
-    for ( int i = 0; i < 64; ++i ) {
+    for ( i = 0; i < 64; ++i ) {
         float fval = dct_mcu[i] / (qt[i]);
         int val = (int)((fval > 0) ? floorf(fval + 0.5f) : ceilf(fval - 0.5f));
         du[tjei_zig_zag[i]] = val;
     }
 #endif
 
-    uint16_t vli[2];
-
     // Encode DC coefficient.
-    int diff = du[0] - *pred;
+    diff = du[0] - *pred;
     *pred = du[0];
     if ( diff != 0 ) {
         tjei_calculate_variable_length_int(diff, vli);
@@ -844,18 +856,19 @@ static void tjei_encode_and_write_MCU(TJEState* state,
 
     // ==== Encode AC coefficients ====
 
-    int last_non_zero_i = 0;
+    last_non_zero_i = 0;
     // Find the last non-zero element.
-    for ( int i = 63; i > 0; --i ) {
+    for ( i = 63; i > 0; --i ) {
         if (du[i] != 0) {
             last_non_zero_i = i;
             break;
         }
     }
 
-    for ( int i = 1; i <= last_non_zero_i; ++i ) {
+    for ( i = 1; i <= last_non_zero_i; ++i ) {
         // If zero, increase count. If >=15, encode (FF,00)
         int zero_count = 0;
+        uint16_t sym1;
         while ( du[i] == 0 ) {
             ++zero_count;
             ++i;
@@ -870,7 +883,7 @@ static void tjei_encode_and_write_MCU(TJEState* state,
         assert(zero_count < 0x10);
         assert(vli[1] <= 10);
 
-        uint16_t sym1 = (uint16_t)((uint16_t)zero_count << 4) | vli[1];
+        sym1 = (uint16_t)((uint16_t)zero_count << 4) | vli[1];
 
         assert(huff_ac_len[sym1] != 0);
 
@@ -905,6 +918,12 @@ struct TJEProcessedQT
 // Set up huffman tables in state.
 static void tjei_huff_expand(TJEState* state)
 {
+    int32_t spec_tables_len[4] = { 0 };
+    uint8_t huffsize[4][257];
+    uint16_t huffcode[4][256];
+
+    int i, k;
+
     assert(state);
 
     state->ht_bits[TJEI_LUMA_DC]   = tjei_default_ht_luma_dc_len;
@@ -918,23 +937,20 @@ static void tjei_huff_expand(TJEState* state)
     state->ht_vals[TJEI_CHROMA_AC] = tjei_default_ht_chroma_ac;
 
     // How many codes in total for each of LUMA_(DC|AC) and CHROMA_(DC|AC)
-    int32_t spec_tables_len[4] = { 0 };
 
-    for ( int i = 0; i < 4; ++i ) {
-        for ( int k = 0; k < 16; ++k ) {
+    for ( i = 0; i < 4; ++i ) {
+        for ( k = 0; k < 16; ++k ) {
             spec_tables_len[i] += state->ht_bits[i][k];
         }
     }
 
     // Fill out the extended tables..
-    uint8_t huffsize[4][257];
-    uint16_t huffcode[4][256];
-    for ( int i = 0; i < 4; ++i ) {
+    for ( i = 0; i < 4; ++i ) {
         assert (256 >= spec_tables_len[i]);
         tjei_huff_get_code_lengths(huffsize[i], state->ht_bits[i]);
         tjei_huff_get_codes(huffcode[i], huffsize[i], spec_tables_len[i]);
     }
-    for ( int i = 0; i < 4; ++i ) {
+    for ( i = 0; i < 4; ++i ) {
         int64_t count = spec_tables_len[i];
         tjei_huff_get_extended(state->ehuffsize[i],
                                state->ehuffcode[i],
@@ -950,16 +966,7 @@ static int tjei_encode_main(TJEState* state,
                             const int height,
                             const int src_num_components)
 {
-    if (src_num_components != 3 && src_num_components != 4) {
-        return 0;
-    }
-
-    if (width > 0xffff || height > 0xffff) {
-        return 0;
-    }
-
 #if TJE_USE_FAST_DCT
-    struct TJEProcessedQT pqt;
     // Again, taken from classic japanese implementation.
     //
     /* For float AA&N IDCT method, divisors are equal to quantization
@@ -974,10 +981,36 @@ static int tjei_encode_main(TJEState* state,
         1.0f, 1.387039845f, 1.306562965f, 1.175875602f,
         1.0f, 0.785694958f, 0.541196100f, 0.275899379f
     };
+    struct TJEProcessedQT pqt;
+#endif
 
+    float du_y[64];
+    float du_b[64];
+    float du_r[64];
+
+    int pred_y;
+    int pred_b;
+    int pred_r;
+
+    int x, y, off_x, off_y;
+
+    uint32_t bitbuffer;
+    uint32_t location;
+
+    uint16_t EOI;
+
+    if (src_num_components != 3 && src_num_components != 4) {
+        return 0;
+    }
+
+    if (width > 0xffff || height > 0xffff) {
+        return 0;
+    }
+
+#if TJE_USE_FAST_DCT
     // build (de)quantization tables
-    for(int y=0; y<8; y++) {
-        for(int x=0; x<8; x++) {
+    for(y=0; y<8; y++) {
+        for(x=0; x<8; x++) {
             int i = y*8 + x;
             pqt.luma[y*8+x] = 1.0f / (8 * aan_scales[x] * aan_scales[y] * state->qt_luma[tjei_zig_zag[i]]);
             pqt.chroma[y*8+x] = 1.0f / (8 * aan_scales[x] * aan_scales[y] * state->qt_chroma[tjei_zig_zag[i]]);
@@ -987,11 +1020,12 @@ static int tjei_encode_main(TJEState* state,
 
     { // Write header
         TJEJPEGHeader header;
+        uint16_t jfif_len;
         // JFIF header.
         header.SOI = tjei_be_word(0xffd8);  // Sequential DCT
         header.APP0 = tjei_be_word(0xffe0);
 
-        uint16_t jfif_len = sizeof(TJEJPEGHeader) - 4 /*SOI & APP0 markers*/;
+        jfif_len = sizeof(TJEJPEGHeader) - 4 /*SOI & APP0 markers*/;
         header.jfif_len = tjei_be_word(jfif_len);
         memcpy(header.jfif_id, (void*)tjeik_jfif_id, 5);
         header.version = tjei_be_word(0x0102);
@@ -1018,6 +1052,13 @@ static int tjei_encode_main(TJEState* state,
 
     {  // Write the frame marker.
         TJEFrameHeader header;
+        uint8_t tables[3] = {
+            0,  // Luma component gets luma table (see tjei_write_DQT call above.)
+            1,  // Chroma component gets chroma table
+            1,  // Chroma component gets chroma table
+        };
+        int i;
+
         header.SOF = tjei_be_word(0xffc0);
         header.len = tjei_be_word(8 + 3 * 3);
         header.precision = 8;
@@ -1026,12 +1067,7 @@ static int tjei_encode_main(TJEState* state,
         header.width = tjei_be_word((uint16_t)width);
         header.height = tjei_be_word((uint16_t)height);
         header.num_components = 3;
-        uint8_t tables[3] = {
-            0,  // Luma component gets luma table (see tjei_write_DQT call above.)
-            1,  // Chroma component gets chroma table
-            1,  // Chroma component gets chroma table
-        };
-        for (int i = 0; i < 3; ++i) {
+        for (i = 0; i < 3; ++i) {
             TJEComponentSpec spec;
             spec.component_id = (uint8_t)(i + 1);  // No particular reason. Just 1, 2, 3.
             spec.sampling_factors = (uint8_t)0x11;
@@ -1051,16 +1087,18 @@ static int tjei_encode_main(TJEState* state,
     // Write start of scan
     {
         TJEScanHeader header;
-        header.SOS = tjei_be_word(0xffda);
-        header.len = tjei_be_word((uint16_t)(6 + (sizeof(TJEFrameComponentSpec) * 3)));
-        header.num_components = 3;
-
         uint8_t tables[3] = {
             0x00,
             0x11,
             0x11,
         };
-        for (int i = 0; i < 3; ++i) {
+        int i;
+
+        header.SOS = tjei_be_word(0xffda);
+        header.len = tjei_be_word((uint16_t)(6 + (sizeof(TJEFrameComponentSpec) * 3)));
+        header.num_components = 3;
+
+        for (i = 0; i < 3; ++i) {
             TJEFrameComponentSpec cs;
             // Must be equal to component_id from frame header above.
             cs.component_id = (uint8_t)(i + 1);
@@ -1074,33 +1112,33 @@ static int tjei_encode_main(TJEState* state,
         tjei_write(state, &header, sizeof(TJEScanHeader), 1);
 
     }
+
     // Write compressed data.
 
-    float du_y[64];
-    float du_b[64];
-    float du_r[64];
-
     // Set diff to 0.
-    int pred_y = 0;
-    int pred_b = 0;
-    int pred_r = 0;
+    pred_y = 0;
+    pred_b = 0;
+    pred_r = 0;
 
     // Bit stack
-    uint32_t bitbuffer = 0;
-    uint32_t location = 0;
+    bitbuffer = 0;
+    location = 0;
 
-
-    for ( int y = 0; y < height; y += 8 ) {
-        for ( int x = 0; x < width; x += 8 ) {
+    for ( y = 0; y < height; y += 8 ) {
+        for ( x = 0; x < width; x += 8 ) {
             // Block loop: ====
-            for ( int off_y = 0; off_y < 8; ++off_y ) {
-                for ( int off_x = 0; off_x < 8; ++off_x ) {
+            for ( off_y = 0; off_y < 8; ++off_y ) {
+                for ( off_x = 0; off_x < 8; ++off_x ) {
                     int block_index = (off_y * 8 + off_x);
 
                     int src_index = (((y + off_y) * width) + (x + off_x)) * src_num_components;
 
                     int col = x + off_x;
                     int row = y + off_y;
+
+                    float luma, cb, cr;
+
+                    uint8_t r, g, b;
 
                     if(row >= height) {
                         src_index -= (width * (row - height + 1)) * src_num_components;
@@ -1110,13 +1148,13 @@ static int tjei_encode_main(TJEState* state,
                     }
                     assert(src_index < width * height * src_num_components);
 
-                    uint8_t r = src_data[src_index + 0];
-                    uint8_t g = src_data[src_index + 1];
-                    uint8_t b = src_data[src_index + 2];
+                    r = src_data[src_index + 0];
+                    g = src_data[src_index + 1];
+                    b = src_data[src_index + 2];
 
-                    float luma = 0.299f   * r + 0.587f    * g + 0.114f    * b - 128;
-                    float cb   = -0.1687f * r - 0.3313f   * g + 0.5f      * b;
-                    float cr   = 0.5f     * r - 0.4187f   * g - 0.0813f   * b;
+                    luma = 0.299f   * r + 0.587f    * g + 0.114f    * b - 128;
+                    cb   = -0.1687f * r - 0.3313f   * g + 0.5f      * b;
+                    cr   = 0.5f     * r - 0.4187f   * g - 0.0813f   * b;
 
                     du_y[block_index] = luma;
                     du_b[block_index] = cb;
@@ -1162,7 +1200,7 @@ static int tjei_encode_main(TJEState* state,
             tjei_write_bits(state, &bitbuffer, &location, (uint16_t)(8 - location), 0);
         }
     }
-    uint16_t EOI = tjei_be_word(0xffd9);
+    EOI = tjei_be_word(0xffd9);
     tjei_write(state, &EOI, sizeof(uint16_t), 1);
 
     if (state->output_buffer_count) {
@@ -1221,17 +1259,19 @@ int tje_encode_with_func(tje_write_func* func,
                          const int num_components,
                          const unsigned char* src_data)
 {
+    TJEState state = { 0 };
+    TJEWriteContext wc = { 0 };
+    uint8_t qt_factor = 1;
+    int i;
+
     if (quality < 1 || quality > 3) {
         tje_log("[ERROR] -- Valid 'quality' values are 1 (lowest), 2, or 3 (highest)\n");
         return 0;
     }
 
-    TJEState state = { 0 };
-
-    uint8_t qt_factor = 1;
     switch(quality) {
     case 3:
-        for ( int i = 0; i < 64; ++i ) {
+        for ( i = 0; i < 64; ++i ) {
             state.qt_luma[i]   = 1;
             state.qt_chroma[i] = 1;
         }
@@ -1240,7 +1280,7 @@ int tje_encode_with_func(tje_write_func* func,
         qt_factor = 10;
         // don't break. fall through.
     case 1:
-        for ( int i = 0; i < 64; ++i ) {
+        for ( i = 0; i < 64; ++i ) {
             state.qt_luma[i]   = tjei_default_qt_luma_from_spec[i] / qt_factor;
             if (state.qt_luma[i] == 0) {
                 state.qt_luma[i] = 1;
@@ -1256,19 +1296,14 @@ int tje_encode_with_func(tje_write_func* func,
         break;
     }
 
-    TJEWriteContext wc = { 0 };
-
     wc.context = context;
     wc.func = func;
 
     state.write_context = wc;
 
-
     tjei_huff_expand(&state);
 
-    int result = tjei_encode_main(&state, src_data, width, height, num_components);
-
-    return result;
+    return tjei_encode_main(&state, src_data, width, height, num_components);
 }
 // ============================================================
 #endif // TJE_IMPLEMENTATION
