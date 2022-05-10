@@ -72,8 +72,12 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DSDL_BUILD_MAJOR_VERSION=${MAJOR_VERSION}")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DSDL_BUILD_MINOR_VERSION=${MINOR_VERSION}")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DSDL_BUILD_MICRO_VERSION=${MICRO_VERSION}")
 
+option(USE_STBIMAGE "Use stb_imge for loading JPEG and PNG images" ON)
+option(SUPPORT_AVIF "Support loading AVIF images" OFF)
 option(SUPPORT_JPG "Support loading JPEG images" ON)
+option(SUPPORT_JXL "Support loading JPEG-XL images" OFF)
 option(SUPPORT_PNG "Support loading PNG images" ON)
+option(SUPPORT_TIFF "Support loading TIFF images" OFF)
 option(SUPPORT_WEBP "Support loading WEBP images" OFF)
 option(BUILD_SHOWIMAGE "Build the showimage sample program" OFF)
 option(BUILD_SHARED_LIBS "Build the library as a shared library" ON)
@@ -109,54 +113,96 @@ if (APPLE)
 	endif()
 endif()
 
-target_sources(SDL2_image PRIVATE IMG.c IMG_png.c IMG_bmp.c IMG_gif.c
-		IMG_jpg.c IMG_lbm.c IMG_pcx.c IMG_pnm.c IMG_svg.c IMG_tga.c
-		IMG_tif.c IMG_webp.c IMG_WIC.c IMG_xcf.c IMG_xpm.c IMG_xv.c
-		IMG_qoi.c IMG_avif.c IMG_jxl.c IMG_stb.c IMG_xxx.c
+target_sources(SDL2_image PRIVATE
+		IMG.c IMG_avif.c IMG_bmp.c IMG_gif.c IMG_jpg.c IMG_jxl.c
+		IMG_lbm.c IMG_pcx.c IMG_png.c IMG_pnm.c IMG_qoi.c IMG_stb.c
+		IMG_svg.c IMG_tga.c IMG_tif.c IMG_webp.c IMG_WIC.c IMG_xcf.c
+		IMG_xpm.c IMG_xv.c IMG_xxx.c
 		${IMAGEIO_SOURCES}
 )
 
 target_compile_definitions(SDL2_image PRIVATE
 		-DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM
-		-DLOAD_TGA -DLOAD_XCF -DLOAD_XPM -DLOAD_XV -DLOAD_XPM
-		-DLOAD_QOI)
+		-DLOAD_QOI -DLOAD_TGA -DLOAD_XCF -DLOAD_XPM -DLOAD_XPM
+		-DLOAD_XV
+)
+
+if (SUPPORT_AVIF)
+	target_compile_definitions(SDL2_image PRIVATE -DLOAD_AVIF)
+	set(AVIF_CODEC_DAV1D ON)
+	add_subdirectory(external/libavif)
+	include_directories(external/libavif/include)
+	target_link_libraries(SDL2_image PRIVATE avif)
+endif()
+
+if (USE_STBIMAGE)
+	target_compile_definitions(SDL2_image PRIVATE -DUSE_STBIMAGE -DLOAD_JPG -DLOAD_PNG)
+endif()
 
 if (SUPPORT_JPG)
 	target_compile_definitions(SDL2_image PRIVATE -DLOAD_JPG)
-	add_subdirectory(external/jpeg)
-	target_link_libraries(SDL2_image PRIVATE jpeg)
+
+	if (NOT USE_STBIMAGE)
+		add_subdirectory(external/jpeg)
+		target_link_libraries(SDL2_image PRIVATE jpeg)
+	endif()
 endif()
 
 if (SUPPORT_PNG)
-	# missing libpng.vers
-	set(HAVE_LD_VERSION_SCRIPT OFF CACHE BOOL "" FORCE)
 	target_compile_definitions(SDL2_image PRIVATE -DLOAD_PNG)
 
-	if (NOT TARGET zlib)
-		# SDL_image doesn't support installing currently
-		set(SKIP_INSTALL_ALL ON CACHE BOOL "" FORCE)
+	if (NOT USE_STBIMAGE)
+		# missing libpng.vers
+		set(HAVE_LD_VERSION_SCRIPT OFF CACHE BOOL "" FORCE)
 
-		# if zlib not included from another source, add_subdirectory
-		add_subdirectory(external/zlib)
+		if (NOT TARGET zlib)
+			# SDL_image doesn't support installing currently
+			set(SKIP_INSTALL_ALL ON CACHE BOOL "" FORCE)
 
-		# libpng find_package(zlib) requires ZLIB_INCLUDE_DIR set
-		get_target_property(ZLIB_INCLUDE_DIR zlib INCLUDE_DIRECTORIES)
+			# if zlib not included from another source, add_subdirectory
+			add_subdirectory(external/zlib)
 
-		# libpng find_package(zlib) requires ZLIB_LIBRARY
+			# libpng find_package(zlib) requires ZLIB_INCLUDE_DIR set
+			get_target_property(ZLIB_INCLUDE_DIR zlib INCLUDE_DIRECTORIES)
+
+			# libpng find_package(zlib) requires ZLIB_LIBRARY
+			if (BUILD_SHARED_LIBS)
+				set(ZLIB_LIBRARY zlib)
+			else()
+				set(ZLIB_LIBRARY zlibstatic)
+			endif()
+		endif()
+
+		add_subdirectory(external/libpng)
+		include_directories(external/libpng)
 		if (BUILD_SHARED_LIBS)
-			set(ZLIB_LIBRARY zlib)
+			target_link_libraries(SDL2_image PRIVATE png)
 		else()
-			set(ZLIB_LIBRARY zlibstatic)
+			target_link_libraries(SDL2_image PRIVATE png_static)
 		endif()
 	endif()
+endif()
 
-	add_subdirectory(external/libpng)
-	include_directories(external/libpng)
-	if(BUILD_SHARED_LIBS)
-		target_link_libraries(SDL2_image PRIVATE png)
-	else()
-		target_link_libraries(SDL2_image PRIVATE png_static)
-	endif()
+if (SUPPORT_JXL)
+	target_compile_definitions(SDL2_image PRIVATE -DLOAD_JXL)
+	set(JPEGXL_ENABLE_FUZZERS false)
+	set(JPEGXL_ENABLE_TOOLS false)
+	set(JPEGXL_ENABLE_MANPAGES false)
+	set(JPEGXL_ENABLE_BENCHMARK false)
+	set(JPEGXL_ENABLE_EXAMPLES false)
+	set(JPEGXL_ENABLE_SJPEG false)
+	set(JPEGXL_ENABLE_OPENEXR false)
+	set(JPEGXL_ENABLE_SKCMS false)
+	add_subdirectory(external/libjxl)
+	include_directories(external/libjxl/lib/include)
+	include_directories(${CMAKE_BINARY_DIR}/external/libjxl/lib/include)
+	target_link_libraries(SDL2_image PRIVATE jxl)
+endif()
+
+if (SUPPORT_TIFF)
+	target_compile_definitions(SDL2_image PRIVATE -DLOAD_TIF)
+	add_subdirectory(external/libtiff)
+	target_link_libraries(SDL2_image PRIVATE tiff)
 endif()
 
 if (SUPPORT_WEBP)
