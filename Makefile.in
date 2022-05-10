@@ -1149,8 +1149,7 @@ rpm: $(PACKAGE)-$(VERSION).tar.gz
 	rpmbuild -ta $(PACKAGE)-$(VERSION).tar.gz
 
 dist-hook:
-	-rm -rf `find $(distdir)/external -name '.git*'`
-	-rm -rf `find $(distdir)/external -name '*.yml'`
+	ls $(distdir)/external | fgrep -v download.sh | while read dir; do rm -rvf "$(distdir)/external/$$dir"; done
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

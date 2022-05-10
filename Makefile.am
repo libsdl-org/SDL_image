@@ -81,5 +81,4 @@ rpm: $(PACKAGE)-$(VERSION).tar.gz
 	rpmbuild -ta $(PACKAGE)-$(VERSION).tar.gz
 
 dist-hook:
-	-rm -rf `find $(distdir)/external -name '.git*'`
-	-rm -rf `find $(distdir)/external -name '*.yml'`
+	ls $(distdir)/external | fgrep -v download.sh | while read dir; do rm -rf "$(distdir)/external/$$dir"; done
