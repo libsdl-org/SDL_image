@@ -4,6 +4,9 @@ SDL_IMAGE_LOCAL_PATH := $(call my-dir)
 # Enable this if you want PNG and JPG support with minimal dependencies
 USE_STBIMAGE ?= true
 
+# The additional formats below require downloading third party dependencies,
+# using the external/download.sh script.
+
 # Enable this if you want to support loading AVIF images
 # The library path should be a relative path to this directory.
 SUPPORT_AVIF ?= false
@@ -12,7 +15,7 @@ DAV1D_LIBRARY_PATH := external/dav1d
 
 # Enable this if you want to support loading JPEG images using libjpeg
 # The library path should be a relative path to this directory.
-SUPPORT_JPG ?= true
+SUPPORT_JPG ?= false
 JPG_LIBRARY_PATH := external/jpeg
 
 # Enable this if you want to support loading JPEG-XL images
@@ -22,7 +25,7 @@ JXL_LIBRARY_PATH := external/libjxl
 
 # Enable this if you want to support loading PNG images using libpng
 # The library path should be a relative path to this directory.
-SUPPORT_PNG ?= true
+SUPPORT_PNG ?= false
 PNG_LIBRARY_PATH := external/libpng
 
 # Enable this if you want to support loading WebP images
