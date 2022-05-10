@@ -31,10 +31,12 @@ This library is under the zlib License, see the file "LICENSE.txt" for details.
 Note:
 Support for AVIF, JPEG-XL, TIFF, and WebP are not included by default because of the
 size of the decode libraries, but you can get them by running external/download.sh
-- For UNIX platforms, you can build and install them normally and the configure script
-  will pick them up and use them.
-- For Windows platforms, you will need to build them and then add the appropriate LOAD_*
-  preprocessor define to the Visual Studio project.
-- For Apple platforms, you can edit the config at the top of the project to enable them,
-  and you will need to include the appropriate framework in your application.
+- When building with CMake, you can enable the appropriate SUPPORT_* options defined
+  in CMakeLists.txt.
+- When building with configure/make, you can build and install them normally and the
+  configure script will detect and use them.
+- When building with Visual Studio, you will need to build the libraries and then add
+  the appropriate LOAD_* preprocessor define to the Visual Studio project.
+- When building with Xcode, you can edit the config at the top of the project to enable
+  them, and you will need to include the appropriate framework in your application.
 - For Android, you can edit the config at the top of Android.mk to enable them.
