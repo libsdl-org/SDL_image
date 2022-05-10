@@ -12,5 +12,5 @@ while true; do
     url=$3
     read line; set -- $line
     branch=$3
-    git clone $url $path -b $branch
+    git clone $url $path -b $branch --recursive
 done
