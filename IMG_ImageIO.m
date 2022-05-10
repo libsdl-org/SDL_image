@@ -368,6 +368,8 @@ void IMG_QuitJPG()
 
 #endif /* JPG_USES_IMAGEIO */
 
+#ifdef PNG_USES_IMAGEIO
+
 int IMG_InitPNG()
 {
     return 0;
@@ -376,6 +378,8 @@ int IMG_InitPNG()
 void IMG_QuitPNG()
 {
 }
+
+#endif /* PNG_USES_IMAGEIO */
 
 int IMG_InitTIF()
 {
@@ -599,10 +603,14 @@ int IMG_isJPG(SDL_RWops *src)
 
 #endif /* JPG_USES_IMAGEIO */
 
+#ifdef PNG_USES_IMAGEIO
+
 int IMG_isPNG(SDL_RWops *src)
 {
     return Internal_isType(src, kUTTypePNG);
 }
+
+#endif /* PNG_USES_IMAGEIO */
 
 // This isn't a public API function. Apple seems to be able to identify tga's.
 int IMG_isTGA(SDL_RWops *src)

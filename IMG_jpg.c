@@ -26,7 +26,15 @@
 #include <stdio.h>
 #include <setjmp.h>
 
-#if defined(SDL_IMAGE_USE_COMMON_BACKEND)
+
+/* We'll have JPG save support by default */
+#ifndef SAVE_JPG
+#define SAVE_JPG    1
+#endif
+
+#if defined(USE_STBIMAGE)
+#undef WANT_JPEGLIB
+#elif defined(SDL_IMAGE_USE_COMMON_BACKEND)
 #define WANT_JPEGLIB
 #elif defined(SDL_IMAGE_USE_WIC_BACKEND)
 #undef WANT_JPEGLIB
@@ -36,9 +44,9 @@
 #define WANT_JPEGLIB
 #endif
 
-#ifdef WANT_JPEGLIB
-
 #ifdef LOAD_JPG
+
+#ifdef WANT_JPEGLIB
 
 #define USE_JPEGLIB
 
@@ -640,6 +648,8 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
     return IMG_LoadSTB_RW(src);
 }
 
+#endif /* WANT_JPEGLIB */
+
 #else
 #if _MSC_VER >= 1300
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
@@ -669,14 +679,7 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 
 #endif /* LOAD_JPG */
 
-#endif /* WANT_JPEGLIB */
-
-/* We'll always have JPG save support */
-#define SAVE_JPG
-
-#ifdef SAVE_JPG
-
-#if !defined(USE_JPEGLIB) && defined(USE_TINYJPEG)
+#if SAVE_JPG
 
 #ifdef __WATCOMC__ /* watcom has issues.. */
 #define ceilf ceil
@@ -754,7 +757,7 @@ done:
     return result;
 }
 
-#endif /* !defined(USE_JPEGLIB) && defined(USE_TINYJPEG) */
+#endif /* SAVE_JPG */
 
 int IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality)
 {
@@ -768,13 +771,17 @@ int IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality)
 
 int IMG_SaveJPG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quality)
 {
+#if SAVE_JPG
 #ifdef USE_JPEGLIB
-    return IMG_SaveJPG_RW_jpeglib(surface, dst, freedst, quality);
-#elif USE_TINYJPEG
+    if ((IMG_Init(IMG_INIT_JPG) & IMG_INIT_JPG) != 0) {
+        if (IMG_SaveJPG_RW_jpeglib(surface, dst, freedst, quality) == 0) {
+            return 0;
+        }
+    }
+#endif
     return IMG_SaveJPG_RW_tinyjpeg(surface, dst, freedst, quality);
+
 #else
-    return IMG_SetError("SDL_image not built with jpeglib/tinyjpeg, saving not supported");
+    return IMG_SetError("SDL_image built without JPEG save support");
 #endif
 }
-
-#endif /* SAVE_JPG */
