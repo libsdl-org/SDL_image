@@ -382,7 +382,7 @@ if test x$enable_jxl = xyes; then
     fi
 fi
 
-if test x$enable_png = xyes -a $enable_stb_image != xyes -a x$enable_imageio != xyes; then
+if test x$enable_png = xyes -a x$enable_stb_image != xyes -a x$enable_imageio != xyes; then
     PKG_CHECK_MODULES([LIBPNG], [libpng], [dnl
         have_png_hdr=yes
         have_png_lib=yes

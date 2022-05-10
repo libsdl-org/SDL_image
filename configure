@@ -13927,7 +13927,7 @@ $as_echo "$as_me: WARNING: JXL image loading disabled" >&2;}
     fi
 fi
 
-if test x$enable_png = xyes -a $enable_stb_image != xyes -a x$enable_imageio != xyes; then
+if test x$enable_png = xyes -a x$enable_stb_image != xyes -a x$enable_imageio != xyes; then
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libpng" >&5
