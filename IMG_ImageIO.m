@@ -768,10 +768,14 @@ SDL_Surface* IMG_LoadJPG_RW (SDL_RWops *src)
 
 #endif /* JPG_USES_IMAGEIO */
 
+#ifdef PNG_USES_IMAGEIO
+
 SDL_Surface* IMG_LoadPNG_RW (SDL_RWops *src)
 {
     return LoadImageFromRWops (src, kUTTypePNG);
 }
+
+#endif /* PNG_USES_IMAGEIO */
 
 SDL_Surface* IMG_LoadTGA_RW (SDL_RWops *src)
 {
