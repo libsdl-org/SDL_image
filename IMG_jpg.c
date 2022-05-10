@@ -684,9 +684,11 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 #ifdef __WATCOMC__ /* watcom has issues.. */
 #define ceilf ceil
 #define floorf floor
+#define cosf cos
 #else
 #define ceilf SDL_ceilf
 #define floorf SDL_floorf
+#define cosf SDL_cosf
 #endif
 #define assert SDL_assert
 #define memcpy SDL_memcpy
