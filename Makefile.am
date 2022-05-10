@@ -36,7 +36,9 @@ libSDL2_image_la_SOURCES =	\
 	miniz.h			\
 	nanosvg.h		\
 	nanosvgrast.h		\
-	qoi.h
+	qoi.h			\
+	stb_image.h		\
+	tiny_jpeg.h
 
 EXTRA_DIST = CHANGES.txt LICENSE.txt README.txt README-emscripten.txt \
 	IMG_xxx.c		\

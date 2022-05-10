@@ -149,7 +149,8 @@ am__libSDL2_image_la_SOURCES_DIST = IMG.c IMG_avif.c IMG_bmp.c \
 	IMG_gif.c IMG_jpg.c IMG_jxl.c IMG_lbm.c IMG_pcx.c IMG_png.c \
 	IMG_pnm.c IMG_qoi.c IMG_svg.c IMG_stb.c IMG_tga.c IMG_tif.c \
 	IMG_xcf.c IMG_xpm.c IMG_xv.c IMG_webp.c IMG_WIC.c \
-	IMG_ImageIO.m miniz.h nanosvg.h nanosvgrast.h qoi.h
+	IMG_ImageIO.m miniz.h nanosvg.h nanosvgrast.h qoi.h \
+	stb_image.h tiny_jpeg.h
 @USE_IMAGEIO_TRUE@am__objects_1 = IMG_ImageIO.lo
 am_libSDL2_image_la_OBJECTS = IMG.lo IMG_avif.lo IMG_bmp.lo IMG_gif.lo \
 	IMG_jpg.lo IMG_jxl.lo IMG_lbm.lo IMG_pcx.lo IMG_png.lo \
@@ -428,6 +429,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -470,7 +472,9 @@ libSDL2_image_la_SOURCES = \
 	miniz.h			\
 	nanosvg.h		\
 	nanosvgrast.h		\
-	qoi.h
+	qoi.h			\
+	stb_image.h		\
+	tiny_jpeg.h
 
 EXTRA_DIST = CHANGES.txt LICENSE.txt README.txt README-emscripten.txt \
 	IMG_xxx.c		\
