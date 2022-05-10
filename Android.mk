@@ -1,31 +1,33 @@
 SDL_IMAGE_LOCAL_PATH := $(call my-dir)
 
 
+# Enable this if you want PNG and JPG support with minimal dependencies
+USE_STBIMAGE ?= true
+
 # Enable this if you want to support loading AVIF images
 # The library path should be a relative path to this directory.
-SUPPORT_AVIF ?= true
+SUPPORT_AVIF ?= false
 AVIF_LIBRARY_PATH := external/libavif
 DAV1D_LIBRARY_PATH := external/dav1d
 
-# Enable this if you want to support loading JPEG images
+# Enable this if you want to support loading JPEG images using libjpeg
 # The library path should be a relative path to this directory.
 SUPPORT_JPG ?= true
 JPG_LIBRARY_PATH := external/jpeg
 
 # Enable this if you want to support loading JPEG-XL images
 # The library path should be a relative path to this directory.
-SUPPORT_JXL ?= true
+SUPPORT_JXL ?= false
 JXL_LIBRARY_PATH := external/libjxl
 
-# Enable this if you want to support loading PNG images
+# Enable this if you want to support loading PNG images using libpng
 # The library path should be a relative path to this directory.
 SUPPORT_PNG ?= true
-SUPPORT_SAVE_PNG ?= true
 PNG_LIBRARY_PATH := external/libpng
 
 # Enable this if you want to support loading WebP images
 # The library path should be a relative path to this directory.
-SUPPORT_WEBP ?= true
+SUPPORT_WEBP ?= false
 WEBP_LIBRARY_PATH := external/libwebp
 
 
@@ -75,6 +77,7 @@ LOCAL_SRC_FILES :=  \
     IMG_png.c       \
     IMG_pnm.c       \
     IMG_qoi.c       \
+    IMG_stb.c       \
     IMG_svg.c       \
     IMG_tga.c       \
     IMG_tif.c       \
@@ -83,7 +86,6 @@ LOCAL_SRC_FILES :=  \
     IMG_xcf.c       \
     IMG_xpm.c.arm   \
     IMG_xv.c        \
-    IMG_stb.c       \
     IMG_xxx.c
 
 LOCAL_CFLAGS := -DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM \
@@ -92,6 +94,10 @@ LOCAL_CFLAGS := -DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM \
 LOCAL_LDLIBS :=
 LOCAL_STATIC_LIBRARIES :=
 LOCAL_SHARED_LIBRARIES := SDL2
+
+ifeq ($(USE_STBIMAGE),true)
+    LOCAL_CFLAGS += -DLOAD_JPG -DLOAD_PNG -DUSE_STBIMAGE
+endif
 
 ifeq ($(SUPPORT_AVIF),true)
     LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(AVIF_LIBRARY_PATH)/include
@@ -118,11 +124,6 @@ ifeq ($(SUPPORT_PNG),true)
     LOCAL_CFLAGS += -DLOAD_PNG
     LOCAL_STATIC_LIBRARIES += png
     LOCAL_LDLIBS += -lz
-ifeq ($(SUPPORT_SAVE_PNG),true)
-    LOCAL_CFLAGS += -DSDL_IMAGE_SAVE_PNG=1
-else
-    LOCAL_CFLAGS += -DSDL_IMAGE_SAVE_PNG=0
-endif
 endif
 
 ifeq ($(SUPPORT_WEBP),true)
