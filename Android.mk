@@ -12,6 +12,11 @@ DAV1D_LIBRARY_PATH := external/dav1d
 SUPPORT_JPG ?= true
 JPG_LIBRARY_PATH := external/jpeg
 
+# Enable this if you want to support loading JPEG-XL images
+# The library path should be a relative path to this directory.
+SUPPORT_JXL ?= true
+JXL_LIBRARY_PATH := external/libjxl
+
 # Enable this if you want to support loading PNG images
 # The library path should be a relative path to this directory.
 SUPPORT_PNG ?= true
@@ -33,6 +38,11 @@ endif
 # Build the library
 ifeq ($(SUPPORT_JPG),true)
     include $(SDL_IMAGE_LOCAL_PATH)/$(JPG_LIBRARY_PATH)/Android.mk
+endif
+
+# Build the library
+ifeq ($(SUPPORT_JXL),true)
+    include $(SDL_IMAGE_LOCAL_PATH)/$(JXL_LIBRARY_PATH)/Android.mk
 endif
 
 # Build the library
@@ -94,6 +104,13 @@ ifeq ($(SUPPORT_JPG),true)
     LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(JPG_LIBRARY_PATH)
     LOCAL_CFLAGS += -DLOAD_JPG
     LOCAL_STATIC_LIBRARIES += jpeg
+endif
+
+ifeq ($(SUPPORT_JXL),true)
+    LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(JXL_LIBRARY_PATH)/lib/include \
+                        $(LOCAL_PATH)/$(JXL_LIBRARY_PATH)/android
+    LOCAL_CFLAGS += -DLOAD_JXL
+    LOCAL_STATIC_LIBRARIES += jxl
 endif
 
 ifeq ($(SUPPORT_PNG),true)
