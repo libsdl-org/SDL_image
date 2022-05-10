@@ -52,7 +52,7 @@ EXTRA_DIST = CHANGES.txt LICENSE.txt README.txt README-emscripten.txt \
 	Xcode			\
 	external		\
 	SDL2_image.spec		\
-	autogen.sh gcc-fat.sh
+	autogen.sh
 
 
 libSDL2_image_la_LDFLAGS = 	\
