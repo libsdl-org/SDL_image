@@ -5,6 +5,8 @@ Sylvain Becker - Sun May  8 21:59:27 PDT 2022
  * Added IMG_ReadXPMFromArrayToRGB888()
 Sam Lantinga - Sun May  8 14:31:27 PDT 2022
  * Added support for JXL images (https://jpegxl.info/)
+Nika Starceva - Mon Dec 20 14:33:50 2021
+ * Added support for QOI images (https://qoiformat.org/)
 Thomas Bernard - Mon Oct 26 23:32:10 2020
  * Fixed XCF regression introduced in 2.0.5
 Sam Lantinga - Thu Oct  3 18:09:17 PDT 2019
