@@ -89,8 +89,7 @@ int main(int argc, char *argv[])
         }
 
         if ( SDL_strcmp(argv[i], "-quit") == 0 ) {
-            done = 1;
-            continue;
+            break;
         }
 
         if ( SDL_strcmp(argv[i], "-save") == 0 && argv[i+1] ) {
