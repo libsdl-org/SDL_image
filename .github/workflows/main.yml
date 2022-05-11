@@ -70,10 +70,11 @@ jobs:
       if: "matrix.platform.cmake"
       run: |
         cmake -B build \
-          -DBUILD_SHOWIMAGE=ON \
+          -DBUILD_SAMPLES=ON \
           -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
           -DCMAKE_VERBOSE_MAKEFILE=ON \
           -DSUPPORT_JXL=OFF \
+          -DSUPPORT_TIF=ON \
           -DSUPPORT_WEBP=ON \
           ${{ matrix.platform.cmake }}
     - name: Build

@@ -62,20 +62,137 @@ function(read_absolute_symlink DEST PATH)
     set("${DEST}" "${p}" PARENT_SCOPE)
 endfunction()
 
+function(win32_implib_identify_dll DEST IMPLIB)
+    cmake_parse_arguments(ARGS "NOTFATAL" "" "" ${ARGN})
+    if (CMAKE_DLLTOOL)
+        execute_process(
+            COMMAND "${CMAKE_DLLTOOL}" --identify "${IMPLIB}"
+            RESULT_VARIABLE retcode
+            OUTPUT_VARIABLE stdout
+            ERROR_VARIABLE stderr)
+        if (NOT retcode EQUAL 0)
+            if (NOT ARGS_NOTFATAL)
+                message(FATAL_ERROR "${CMAKE_DLLTOOL} failed.")
+            else()
+                set("${DEST}" "${DEST}-NOTFOUND" PARENT_SCOPE)
+                return()
+            endif()
+        endif()
+        string(STRIP "${stdout}" result)
+        set(${DEST} "${result}" PARENT_SCOPE)
+    elseif (MSVC)
+        get_filename_component(CMAKE_C_COMPILER_DIRECTORY "${CMAKE_C_COMPILER}" DIRECTORY CACHE)
+        find_program(CMAKE_DUMPBIN NAMES dumpbin PATHS "${CMAKE_C_COMPILER_DIRECTORY}")
+        if (CMAKE_DUMPBIN)
+            execute_process(
+                COMMAND "${CMAKE_DUMPBIN}" "-headers" "${IMPLIB}"
+                RESULT_VARIABLE retcode
+                OUTPUT_VARIABLE stdout
+                ERROR_VARIABLE stderr)
+            if (NOT retcode EQUAL 0)
+                if (NOT ARGS_NOTFATAL)
+                    message(FATAL_ERROR "dumpbin failed.")
+                else()
+                    set(${DEST} "${DEST}-NOTFOUND" PARENT_SCOPE)
+                    return()
+                endif()
+            endif()
+            string(REGEX MATCH "DLL name[ ]+:[ ]+([^\n]+)\n" match "${stdout}")
+            if (NOT match)
+                if (NOT ARGS_NOTFATAL)
+                    message(FATAL_ERROR "dumpbin did not find any associated dll for ${IMPLIB}.")
+                else()
+                    set(${DEST} "${DEST}-NOTFOUND" PARENT_SCOPE)
+                    return()
+                endif()
+            endif()
+            set(result "${CMAKE_MATCH_1}")
+            set(${DEST} "${result}" PARENT_SCOPE)
+        else()
+            message(FATAL_ERROR "Cannot find dumpbin, please set CMAKE_DUMPBIN cmake variable")
+        endif()
+    else()
+        if (NOT ARGS_NOTFATAL)
+            message(FATAL_ERROR "Don't know how to identify dll from import library. Set CMAKE_DLLTOOL (for mingw) or CMAKE_DUMPBIN (for MSVC)")
+        else()
+            set(${DEST} "${DEST}-NOTFOUND")
+        endif()
+    endif()
+endfunction()
+
 function(target_get_dynamic_library DEST TARGET)
     set(result)
-    if (NOT result)
-        get_target_property(result "${TARGET}" IMPORTED_LOCATION)
-        while (IS_SYMLINK "${result}" AND NOT result MATCHES ".*[0-9]$")
-            read_absolute_symlink(result "${result}")
-        endwhile()
-        get_filename_component(result "${result}" NAME)
+    get_target_property(alias "${TARGET}" ALIASED_TARGET)
+    while (alias)
+        set(TARGET "${alias}")
+        get_target_property(alias "${TARGET}" ALIASED_TARGET)
+    endwhile()
+    if (WIN32)
+        # Use the target dll of the import library
+        set(props_to_check IMPORTED_IMPLIB)
+        if (CMAKE_BUILD_TYPE)
+            list(APPEND props_to_check IMPORTED_IMPLIB_${CMAKE_BUILD_TYPE})
+        endif()
+        list(APPEND props_to_check IMPORTED_LOCATION)
+        if (CMAKE_BUILD_TYPE)
+            list(APPEND props_to_check IMPORTED_LOCATION_${CMAKE_BUILD_TYPE})
+        endif()
+        foreach (config_type ${CMAKE_CONFIGURATION_TYPES} RELEASE DEBUG RELWITHDEBINFO MINSIZEREL)
+            list(APPEND props_to_check IMPORTED_IMPLIB_${config_type})
+            list(APPEND props_to_check IMPORTED_LOCATION_${config_type})
+        endforeach()
+
+        foreach(prop_to_check ${props_to_check})
+            if (NOT result)
+                get_target_property(propvalue "${TARGET}" ${prop_to_check})
+                if (propvalue AND EXISTS "${propvalue}")
+                    win32_implib_identify_dll(result "${propvalue}" NOTFATAL)
+                endif()
+            endif()
+        endforeach()
+    else()
+        # 1. find the target library a file might be symbolic linking to
+        # 2. find all other files in the same folder that symolic link to it
+        # 3. sort all these files, and select the 2nd item
+        set(props_to_check IMPORTED_LOCATION)
+        if (CMAKE_BUILD_TYPE)
+            list(APPEND props_to_check IMPORTED_LOCATION_${CMAKE_BUILD_TYPE})
+        endif()
+        foreach (config_type ${CMAKE_CONFIGURATION_TYPES} RELEASE DEBUG RELWITHDEBINFO MINSIZEREL)
+            list(APPEND props_to_check IMPORTED_LOCATION_${config_type})
+        endforeach()
+        foreach(prop_to_check ${props_to_check})
+            if (NOT result)
+                get_target_property(propvalue "${TARGET}" ${prop_to_check})
+                if (EXISTS "${propvalue}")
+                    while (IS_SYMLINK "${propvalue}")
+                        read_absolute_symlink(propvalue "${propvalue}")
+                    endwhile()
+                    get_filename_component(libdir "${propvalue}" DIRECTORY)
+                    file(GLOB subfiles "${libdir}/*")
+                    set(similar_files "${propvalue}")
+                    foreach(subfile ${subfiles})
+                        if (IS_SYMLINK "${subfile}")
+                            read_absolute_symlink(subfile_target "${subfile}")
+                            if (subfile_target STREQUAL propvalue)
+                                list(APPEND similar_files "${subfile}")
+                            endif()
+                        endif()
+                    endforeach()
+                    list(SORT similar_files)
+                    list(LENGTH similar_files eq_length)
+                    if (eq_length GREATER 1)
+                        list(GET similar_files 1 item)
+                    else()
+                        list(GET similar_files 0 item)
+                    endif()
+                    get_filename_component(result "${item}" NAME)
+                endif()
+            endif()
+        endforeach()
     endif()
     if (NOT result)
         set (result "$<TARGET_FILE_NAME:${TARGET}>")
-    endif()
-    if(NOT result)
-        message(FATAL_ERROR "Don't know how to read symlink for this target type")
     endif()
     set(${DEST} ${result} PARENT_SCOPE)
 endfunction()
@@ -246,7 +363,7 @@ if (SUPPORT_AVIF)
         list(APPEND PC_REQUIRES libavif)
     endif()
     if (SUPPORT_AVIF_SHARED)
-        target_include_Directories(SDL2_image PRIVATE
+        target_include_directories(SDL2_image PRIVATE
             $<TARGET_PROPERTY:avif,INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:avif,INTERFACE_INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:avif,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
@@ -283,7 +400,7 @@ if (SUPPORT_JPG)
             list(APPEND PC_REQUIRES libjpeg)
         endif()
         if (SUPPORT_JPG_SHARED)
-            target_include_Directories(SDL2_image PRIVATE
+            target_include_directories(SDL2_image PRIVATE
                 $<TARGET_PROPERTY:JPEG::JPEG,INCLUDE_DIRECTORIES>
                 $<TARGET_PROPERTY:JPEG::JPEG,INTERFACE_INCLUDE_DIRECTORIES>
                 $<TARGET_PROPERTY:JPEG::JPEG,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
@@ -330,7 +447,7 @@ if (SUPPORT_JXL)
         set(jxl_lib jxl)
     endif()
     if (SUPPORT_JXL_SHARED)
-        target_include_Directories(SDL2_image PRIVATE
+        target_include_directories(SDL2_image PRIVATE
             $<TARGET_PROPERTY:${jxl_lib},INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:${jxl_lib},INTERFACE_INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:${jxl_lib},INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
@@ -385,7 +502,7 @@ if (SUPPORT_PNG)
             list(APPEND PC_REQUIRES libpng)
         endif()
         if (SUPPORT_PNG_SHARED)
-            target_include_Directories(SDL2_image PRIVATE
+            target_include_directories(SDL2_image PRIVATE
                 $<TARGET_PROPERTY:PNG::PNG,INCLUDE_DIRECTORIES>
                 $<TARGET_PROPERTY:PNG::PNG,INTERFACE_INCLUDE_DIRECTORIES>
                 $<TARGET_PROPERTY:PNG::PNG,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
@@ -418,18 +535,6 @@ if (SUPPORT_TGA)
     target_compile_definitions(SDL2_image PRIVATE LOAD_TGA)
 endif()
 
-if (SUPPORT_XCF)
-    target_compile_definitions(SDL2_image PRIVATE LOAD_XCF)
-endif()
-
-if (SUPPORT_XPM)
-    target_compile_definitions(SDL2_image PRIVATE LOAD_XPM)
-endif()
-
-if (SUPPORT_XV)
-    target_compile_definitions(SDL2_image PRIVATE LOAD_XV)
-endif()
-
 if (SUPPORT_TIF)
     target_compile_definitions(SDL2_image PRIVATE LOAD_TIF)
     # FIXME: libtiff might need zlib
@@ -442,7 +547,7 @@ if (SUPPORT_TIF)
         list(APPEND PC_REQUIRES libtiff-4)
     endif()
     if (SUPPORT_TIF_SHARED)
-        target_include_Directories(SDL2_image PRIVATE
+        target_include_directories(SDL2_image PRIVATE
             $<TARGET_PROPERTY:TIFF::TIFF,INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:TIFF::TIFF,INTERFACE_INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:TIFF::TIFF,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
@@ -484,7 +589,7 @@ if (SUPPORT_WEBP)
         add_library(WebP::webp ALIAS webp)
     endif()
     if (SUPPORT_WEBP_SHARED)
-        target_include_Directories(SDL2_image PRIVATE
+        target_include_directories(SDL2_image PRIVATE
             $<TARGET_PROPERTY:WebP::webp,INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:WebP::webp,INTERFACE_INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:WebP::webp,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
@@ -498,6 +603,18 @@ if (SUPPORT_WEBP)
     else()
         target_link_libraries(SDL2_image PRIVATE WebP::webp)
     endif()
+endif()
+
+if (SUPPORT_XCF)
+    target_compile_definitions(SDL2_image PRIVATE LOAD_XCF)
+endif()
+
+if (SUPPORT_XPM)
+    target_compile_definitions(SDL2_image PRIVATE LOAD_XPM)
+endif()
+
+if (SUPPORT_XV)
+    target_compile_definitions(SDL2_image PRIVATE LOAD_XV)
 endif()
 
 target_include_directories(SDL2_image
