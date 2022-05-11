@@ -234,6 +234,7 @@ include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
 option(VENDORED_DEFAULT "Default value for *_VENDORED options. Can be overridden for each library. Is only used in the first configure run." ON)
+option(SDL2_IMAGE_DISABLE_INSTALL "Disable installing SDL2_image" OFF)
 
 option(BACKEND_STB "Use stb_image for loading JPEG and PNG files" ON)
 cmake_dependent_option(BACKEND_WIC "Add WIC backend (Windows Imaging Component)" OFF "WIN32" OFF)
@@ -315,7 +316,7 @@ add_library(SDL2_image
     IMG_xv.c
     IMG_xxx.c
     )
-add_library(SDL2::image ALIAS SDL2_image)
+add_library(SDL2_image::SDL2_image ALIAS SDL2_image)
 
 target_compile_definitions(SDL2_image PRIVATE
     SDL_BUILD_MAJOR_VERSION=${MAJOR_VERSION}
@@ -646,56 +647,58 @@ if (BUILD_SHARED_LIBS)
     endif()
 endif()
 
-if (BUILD_SHARED_LIBS)
-    target_link_libraries(SDL2_image PRIVATE SDL2::SDL2)
-else()
-    target_link_libraries(SDL2_image PRIVATE SDL2::SDL2-static)
-endif()
+if (NOT SDL2_IMAGE_DISABLE_INSTALL)
+    if (BUILD_SHARED_LIBS)
+        target_link_libraries(SDL2_image PRIVATE SDL2::SDL2)
+    else()
+        target_link_libraries(SDL2_image PRIVATE SDL2::SDL2-static)
+    endif()
 
-install(TARGETS SDL2_image EXPORT SDL2ImageExports
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SDL2"
-    )
-
-if (INSTALL_EXTRA_TARGETS)
-    install(TARGETS ${INSTALL_EXTRA_TARGETS} EXPORT SDL2ImageExports
+    install(TARGETS SDL2_image EXPORT SDL2ImageExports
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        PUBLIC_HEADER DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/external_include"
+        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SDL2"
         )
-endif()
 
-configure_package_config_file(SDL2_image-config.cmake.in SDL2_image-config.cmake
-    INSTALL_DESTINATION "${CMAKE_INSTALL_LBDIR}/cmake/SDL2_image")
+    if (INSTALL_EXTRA_TARGETS)
+        install(TARGETS ${INSTALL_EXTRA_TARGETS} EXPORT SDL2ImageExports
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+            PUBLIC_HEADER DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/external_include"
+            )
+    endif()
 
-set(prefix "${CMAKE_INSTALL_PREFIX}")
-set(exec_prefix "${CMAKE_INSTALL_FULL_LIBEXECDIR}")
-set(libdir "${CMAKE_INSTALL_FULL_LIBDIR}")
-set(includedir "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
-set(PACKAGE "${PROJECT_NAME}")
-set(VERSION "${FULL_VERSION}")
-set(SDL_VERSION "${SDL_REQUIRED_VERSION}")
-string(JOIN " " PC_REQUIRES ${PC_REQUIRES})
-configure_file(SDL2_image.pc.in SDL2_image.pc @ONLY)
+    configure_package_config_file(SDL2_image-config.cmake.in SDL2_image-config.cmake
+        INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/SDL2_image")
 
-install(EXPORT SDL2ImageExports NAMESPACE SDL2::
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/SDL2_image" FILE SDL2_image-targets.cmake)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/SDL2_image-config.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/SDL2_image")
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/SDL2_image.pc" DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
-install(FILES "LICENSE.txt" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/licenses/${PROJECT_NAME}")
-if (NOT (WIN32 OR CYGWIN OR MINGW))
-    if(BUILD_SHARED_LIBS)
-        set(SOEXT ${CMAKE_SHARED_LIBRARY_SUFFIX}) # ".so", ".dylib", etc.
-        get_target_property(SONAME SDL2_image OUTPUT_NAME)
-        if(NOT ANDROID)
-            install(CODE "
-				execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
-					\"lib${SONAME}${SOEXT}\" \"libSDL2_image${SOEXT}\"
-					WORKING_DIRECTORY \"${PROJECT_BINARY_DIR}\")")
-            install(FILES ${PROJECT_BINARY_DIR}/libSDL2_image${SOEXT} DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+    set(prefix "${CMAKE_INSTALL_PREFIX}")
+    set(exec_prefix "\${prefix}")
+    set(libdir "\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}")
+    set(includedir "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
+    set(PACKAGE "${PROJECT_NAME}")
+    set(VERSION "${FULL_VERSION}")
+    set(SDL_VERSION "${SDL_REQUIRED_VERSION}")
+    string(JOIN " " PC_REQUIRES ${PC_REQUIRES})
+    file(GENERATE OUTPUT SDL2_image.pc INPUT SD2_image.pc.in)
+
+    install(EXPORT SDL2ImageExports NAMESPACE SDL2_image::
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/SDL2_image" FILE SDL2_image-targets.cmake)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/SDL2_image-config.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/SDL2_image")
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/SDL2_image.pc" DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+    install(FILES "LICENSE.txt" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/licenses/${PROJECT_NAME}")
+    if (NOT (WIN32 OR CYGWIN OR MINGW))
+        if(BUILD_SHARED_LIBS)
+            set(SOEXT ${CMAKE_SHARED_LIBRARY_SUFFIX}) # ".so", ".dylib", etc.
+            get_target_property(SONAME SDL2_image OUTPUT_NAME)
+            if(NOT ANDROID)
+                install(CODE "
+                    execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
+                        \"lib${SONAME}${SOEXT}\" \"libSDL2_image${SOEXT}\"
+                        WORKING_DIRECTORY \"${PROJECT_BINARY_DIR}\")")
+                install(FILES ${PROJECT_BINARY_DIR}/libSDL2_image${SOEXT} DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+            endif()
         endif()
     endif()
 endif()
@@ -709,7 +712,7 @@ if (BUILD_SAMPLES)
             target_link_libraries(${prog} PRIVATE mingw32)
             target_link_options(${prog} PRIVATE -mwindows)
         endif()
-        target_link_libraries(${prog} PRIVATE SDL2::image)
+        target_link_libraries(${prog} PRIVATE SDL2_image::SDL2_image)
         if (TARGET SDL2::SDL2main)
             target_link_libraries(${prog} PRIVATE SDL2::SDL2main)
         endif()
