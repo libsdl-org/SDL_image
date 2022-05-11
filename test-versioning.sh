@@ -63,39 +63,41 @@ else
     not_ok "Makefile.os2 $version disagrees with SDL_image.h $ref_version"
 fi
 
-tuple=$(sed -ne 's/^ *FILEVERSION *//p' VisualC/Version.rc | tr -d '\r')
-ref_tuple="${ref_major},${ref_minor},${ref_micro},0"
+for rcfile in version.rc VisualC/Version.rc; do
+    tuple=$(sed -ne 's/^ *FILEVERSION *//p' "$rcfile" | tr -d '\r')
+    ref_tuple="${ref_major},${ref_minor},${ref_micro},0"
 
-if [ "$ref_tuple" = "$tuple" ]; then
-    ok "Version.rc FILEVERSION $tuple"
-else
-    not_ok "Version.rc FILEVERSION $tuple disagrees with SDL_image.h $ref_tuple"
-fi
+    if [ "$ref_tuple" = "$tuple" ]; then
+        ok "$rcfile FILEVERSION $tuple"
+    else
+        not_ok "$rcfile FILEVERSION $tuple disagrees with SDL_image.h $ref_tuple"
+    fi
 
-tuple=$(sed -ne 's/^ *PRODUCTVERSION *//p' VisualC/Version.rc | tr -d '\r')
+    tuple=$(sed -ne 's/^ *PRODUCTVERSION *//p' "$rcfile" | tr -d '\r')
 
-if [ "$ref_tuple" = "$tuple" ]; then
-    ok "Version.rc PRODUCTVERSION $tuple"
-else
-    not_ok "Version.rc PRODUCTVERSION $tuple disagrees with SDL_image.h $ref_tuple"
-fi
+    if [ "$ref_tuple" = "$tuple" ]; then
+        ok "$rcfile PRODUCTVERSION $tuple"
+    else
+        not_ok "$rcfile PRODUCTVERSION $tuple disagrees with SDL_image.h $ref_tuple"
+    fi
 
-tuple=$(sed -Ene 's/^ *VALUE "FileVersion", "([0-9, ]+)\\0"\r?$/\1/p' VisualC/Version.rc | tr -d '\r')
-ref_tuple="${ref_major}, ${ref_minor}, ${ref_micro}, 0"
+    tuple=$(sed -Ene 's/^ *VALUE "FileVersion", "([0-9, ]+)\\0"\r?$/\1/p' "$rcfile" | tr -d '\r')
+    ref_tuple="${ref_major}, ${ref_minor}, ${ref_micro}, 0"
 
-if [ "$ref_tuple" = "$tuple" ]; then
-    ok "Version.rc FileVersion $tuple"
-else
-    not_ok "Version.rc FileVersion $tuple disagrees with SDL_image.h $ref_tuple"
-fi
+    if [ "$ref_tuple" = "$tuple" ]; then
+        ok "$rcfile FileVersion $tuple"
+    else
+        not_ok "$rcfile FileVersion $tuple disagrees with SDL_image.h $ref_tuple"
+    fi
 
-tuple=$(sed -Ene 's/^ *VALUE "ProductVersion", "([0-9, ]+)\\0"\r?$/\1/p' VisualC/Version.rc | tr -d '\r')
+    tuple=$(sed -Ene 's/^ *VALUE "ProductVersion", "([0-9, ]+)\\0"\r?$/\1/p' "$rcfile" | tr -d '\r')
 
-if [ "$ref_tuple" = "$tuple" ]; then
-    ok "Version.rc ProductVersion $tuple"
-else
-    not_ok "Version.rc ProductVersion $tuple disagrees with SDL_image.h $ref_tuple"
-fi
+    if [ "$ref_tuple" = "$tuple" ]; then
+        ok "$rcfile ProductVersion $tuple"
+    else
+        not_ok "$rcfile ProductVersion $tuple disagrees with SDL_image.h $ref_tuple"
+    fi
+done
 
 version=$(sed -Ene '/CFBundleShortVersionString/,+1 s/.*<string>(.*)<\/string>.*/\1/p' Xcode/Info-Framework.plist)
 
