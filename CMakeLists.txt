@@ -260,7 +260,6 @@ option(SUPPORT_XV "Support loading XV images" ON)
 
 option(BUILD_SAMPLES "Build the SDL2_image sample program(s)" ON)
 option(BUILD_SHARED_LIBS "Build the library as a shared library" ON)
-
 # FIXME: use vendored libavif when available
 set(SUPPORT_AVIF_VENDORED OFF)
 #cmake_dependent_option(SUPPORT_AVIF_VENDORED "Use vendored libavif" ${VENDORED_DEFAULT} SUPPORT_AVIF OFF)
@@ -293,6 +292,14 @@ if (NOT BUILD_SHARED_LIBS)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
+if(BUILD_SHARED_LIBS)
+    set(sdl2_image_export_name SDL2_image)
+    set(sdl2_image_install_name_infix shared)
+else()
+    set(sdl2_image_export_name SDL2_image-static)
+    set(sdl2_image_install_name_infix static)
+endif()
+
 add_library(SDL2_image
     IMG.c
     IMG_avif.c
@@ -316,7 +323,7 @@ add_library(SDL2_image
     IMG_xv.c
     IMG_xxx.c
     )
-add_library(SDL2_image::SDL2_image ALIAS SDL2_image)
+add_library(SDL2_image::${sdl2_image_export_name} ALIAS SDL2_image)
 
 target_compile_definitions(SDL2_image PRIVATE
     SDL_BUILD_MAJOR_VERSION=${MAJOR_VERSION}
@@ -352,13 +359,17 @@ endif()
 
 set(INSTALL_EXTRA_TARGETS)
 set(PC_REQUIRES)
+set(PC_LIBS)
 
 if (SUPPORT_AVIF)
     target_compile_definitions(SDL2_image PRIVATE LOAD_AVIF)
     if (SUPPORT_AVIF_VENDORED)
         message(FATAL_ERROR "libavif is not vendored yet")
         add_subdirectory(external/libavif EXCLUDE_FROM_ALL)
-        # list(APPEND INSTALL_EXTRA_TARGETS libavif)
+        list(APPEND INSTALL_EXTRA_TARGETS libavif)
+        if (NOT SUPPORT_AVIF_SHARED)
+            list(APPEND PC_LIBS -l$<TARGET_FILE_BASE_NAME:avif>)
+        endif()
     else()
         find_package(libavif REQUIRED)
         list(APPEND PC_REQUIRES libavif)
@@ -396,6 +407,9 @@ if (SUPPORT_JPG)
             add_subdirectory(external/jpeg EXCLUDE_FROM_ALL)
             add_library(JPEG::JPEG ALIAS jpeg)
             list(APPEND INSTALL_EXTRA_TARGETS jpeg)
+            if (NOT SUPPORT_JPG_SHARED)
+                list(APPEND PC_LIBS -l$<TARGET_FILE_BASE_NAME:jpeg>)
+            endif()
         else()
             find_package(JPEG REQUIRED)
             list(APPEND PC_REQUIRES libjpeg)
@@ -426,6 +440,11 @@ if (SUPPORT_JXL)
         if (BUILD_SHARED_LIBS)
             set(jxl_lib jxl)
             list(APPEND INSTALL_EXTRA_TARGETS brotlidec brotlicommon brotlienc ${jxl_lib})
+            if (NOT SUPPORT_JXL_SHARED)
+                list(APPEND PC_LIBS
+                    -l$<TARGET_FILE_BASE_NAME:brotlidec> -l$<TARGET_FILE_BASE_NAME:brotlicommon>
+                    -l$<TARGET_FILE_BASE_NAME:brotlienc> -l$<TARGET_FILE_BASE_NAME:${jxl_lib}>)
+            endif()
         else()
             set(jxl_lib jxl-static)
             list(APPEND INSTALL_EXTRA_TARGETS brotlidec-static brotlicommon-static brotlienc-static hwy ${jxl_lib})
@@ -487,6 +506,9 @@ if (SUPPORT_PNG)
                     set(ZLIB_LIBRARY zlibstatic)
                 endif()
                 list(APPEND INSTALL_EXTRA_TARGETS ${ZLIB_LIBRARY})
+                if (NOT SUPPORT_PNG_SHARED)
+                    list(APPEND PC_LIBS -l$<TARGET_FILE_BASE_NAME:${ZLIB_LIBRARY}>)
+                endif()
             endif()
             set(SKIP_INSTALL_EXPORT ON)
             add_subdirectory(external/libpng EXCLUDE_FROM_ALL)
@@ -498,6 +520,9 @@ if (SUPPORT_PNG)
             add_library(PNG::PNG ALIAS ${PNG_LIBRARY})
             target_include_directories(SDL2_image PRIVATE external/libpng)
             list(APPEND INSTALL_EXTRA_TARGETS ${PNG_LIBRARY})
+            if (NOT SUPPORT_PNG_SHARED)
+                list(APPEND PC_LIBS -l$<TARGET_FILE_BASE_NAME:${PNG_LIBRARY}>)
+            endif()
         else()
             find_package(PNG REQUIRED)
             list(APPEND PC_REQUIRES libpng)
@@ -543,6 +568,9 @@ if (SUPPORT_TIF)
         add_subdirectory(external/libtiff EXCLUDE_FROM_ALL)
         add_library(TIFF::TIFF ALIAS tiff)
         list(APPEND INSTALL_EXTRA_TARGETS tiff)
+        if (NOT SUPPORT_TIF_SHARED)
+            list(APPEND PC_LIBS -l$<TARGET_FILE_BASE_NAME:tiff>)
+        endif()
     else()
         find_package(TIFF REQUIRED)
         list(APPEND PC_REQUIRES libtiff-4)
@@ -626,7 +654,7 @@ target_include_directories(SDL2_image
 set_target_properties(SDL2_image PROPERTIES
     DEFINE_SYMBOL DLL_EXPORT
     PUBLIC_HEADER SDL_image.h
-    EXPORT_NAME SDL2_image
+    EXPORT_NAME ${sdl2_image_export_name}
     C_VISIBILITY_PRESET "hidden"
     )
 if (UNIX AND NOT APPLE AND NOT ANDROID)
@@ -670,7 +698,7 @@ if (NOT SDL2_IMAGE_DISABLE_INSTALL)
             )
     endif()
 
-    configure_package_config_file(SDL2_image-config.cmake.in SDL2_image-config.cmake
+    configure_package_config_file(SDL2_imageConfig.cmake.in SDL2_imageConfig.cmake
         INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/SDL2_image")
 
     set(prefix "${CMAKE_INSTALL_PREFIX}")
@@ -681,11 +709,11 @@ if (NOT SDL2_IMAGE_DISABLE_INSTALL)
     set(VERSION "${FULL_VERSION}")
     set(SDL_VERSION "${SDL_REQUIRED_VERSION}")
     string(JOIN " " PC_REQUIRES ${PC_REQUIRES})
-    file(GENERATE OUTPUT SDL2_image.pc INPUT SD2_image.pc.in)
+    file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/SDL2_image.pc" INPUT "${PROJECT_SOURCE_DIR}/SDL2_image.pc.in")
 
     install(EXPORT SDL2ImageExports NAMESPACE SDL2_image::
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/SDL2_image" FILE SDL2_image-targets.cmake)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/SDL2_image-config.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/SDL2_image")
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/SDL2_image" FILE SDL2_image-${sdl2_image_install_name_infix}-targets.cmake)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/SDL2_imageConfig.cmake" DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/SDL2_image")
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/SDL2_image.pc" DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
     install(FILES "LICENSE.txt" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/licenses/${PROJECT_NAME}")
     if (NOT (WIN32 OR CYGWIN OR MINGW))
@@ -712,7 +740,7 @@ if (BUILD_SAMPLES)
             target_link_libraries(${prog} PRIVATE mingw32)
             target_link_options(${prog} PRIVATE -mwindows)
         endif()
-        target_link_libraries(${prog} PRIVATE SDL2_image::SDL2_image)
+        target_link_libraries(${prog} PRIVATE SDL2_image::${sdl2_image_export_name})
         if (TARGET SDL2::SDL2main)
             target_link_libraries(${prog} PRIVATE SDL2::SDL2main)
         endif()

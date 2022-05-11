@@ -50,7 +50,29 @@ if(SDL2_IMAGE_SUPPORT_TIF AND NOT @SUPPORT_TIF_VENDORED@)
 endif()
 
 if(SDL2_IMAGE_SUPPORT_WEBP AND NOT @SUPPORT_WEBP_VENDORED@)
-	find_package(WebP REQUIRED)
+	if (NOT TARGET WebP::webp)
+		find_library(WEBP_LIBRARY NAMES webp)
+		if (NOT WEBP_LIBRARY)
+			message(FATAL_ERROR "Could not find webp library")
+		endif()
+		find_path(WEBP_INCLUDE NAMES webp/decode.h)
+		if (NOT WEBP_INCLUDE)
+			message(FATAL_ERROR "Could not find webp include directory")
+		endif()
+		add_library(webp UNKNOWN IMPORTED)
+		set_target_properties(webp PROPERTIES
+			IMPORTED_LOCATION "${WEBP_LIBRARY}"
+			INTERFACE_INCLUDE_DIRECTORIES "${WEBP_INCLUDE}"
+			)
+		list(APPEND PC_REQUIRES libwebp)
+		add_library(WebP::webp ALIAS webp)
+	endif()
 endif()
 
-include("${CMAKE_CURRENT_LIST_DIR}/SDL2_image-targets.cmake")
+if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/SDL2_image-shared-targets.cmake")
+	include("${CMAKE_CURRENT_LIST_DIR}/SDL2_image-shared-targets.cmake")
+endif()
+
+if (EXISTS "${CMAKE_CURRENT_LIST_DIR}/SDL2_image-static-targets.cmake")
+	include("${CMAKE_CURRENT_LIST_DIR}/SDL2_image-static-targets.cmake")
+endif()
