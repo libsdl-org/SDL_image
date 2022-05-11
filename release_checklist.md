@@ -14,6 +14,8 @@
         `MAJOR_VERSION`, `MINOR_VERSION`, `MICRO_VERSION`
     * `Makefile.os2`:
         `MAJOR_VERSION`, `MINOR_VERSION`, `MICRO_VERSION`
+    * `version.rc`:
+        `FILEVERSION`, `PRODUCTVERSION`, `FileVersion`, `ProductVersion`
     * `VisualC/Version.rc`:
         `FILEVERSION`, `PRODUCTVERSION`, `FileVersion`, `ProductVersion`
 
