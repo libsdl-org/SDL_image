@@ -679,6 +679,7 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
 
 #endif /* USE_LIBPNG */
 
+#if defined(LOAD_PNG_DYNAMIC) || !defined(WANT_LIBPNG)
 /* Replace C runtime functions with SDL C runtime functions for building on Windows */
 #define MINIZ_NO_STDIO
 #define MINIZ_NO_TIME
@@ -729,6 +730,7 @@ static int IMG_SavePNG_RW_miniz(SDL_Surface *surface, SDL_RWops *dst, int freeds
     }
     return result;
 }
+#endif /* LOAD_PNG_DYNAMIC || !WANT_LIBPNG */
 
 #endif /* SAVE_PNG */
 
@@ -752,7 +754,11 @@ int IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
         }
     }
 #endif
+#if defined(LOAD_PNG_DYNAMIC) || !defined(WANT_LIBPNG)
     return IMG_SavePNG_RW_miniz(surface, dst, freedst);
+#else
+    return -1;
+#endif
 
 #else
     return IMG_SetError("SDL_image built without PNG save support");
