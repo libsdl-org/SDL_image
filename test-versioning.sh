@@ -126,6 +126,15 @@ else
     not_ok "project.pbxproj DYLIB_COMPATIBILITY_VERSION is inconsistent"
 fi
 
+dylib_compat=$(sed -ne 's/^set(DYLIB_COMPATIBILITY_VERSION "\([0-9.]\+\)")$/\1/p' CMakeLists.txt)
+ref='3.0.0'
+
+if [ "$ref" = "$dylib_compat" ]; then
+    ok "CMakeLists.txt DYLIB_COMPATIBILITY_VERSION is consistent"
+else
+    not_ok "CMakeLists.txt DYLIB_COMPATIBILITY_VERSION is inconsistent"
+fi
+
 dylib_cur=$(sed -Ene 's/.*DYLIB_CURRENT_VERSION = (.*);$/\1/p' Xcode/SDL_image.xcodeproj/project.pbxproj)
 
 case "$ref_minor" in
