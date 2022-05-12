@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3.2)
+cmake_minimum_required(VERSION 3.14)
 
 # See docs/release_checklist.md
 set(MAJOR_VERSION 2)
