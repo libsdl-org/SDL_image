@@ -33,15 +33,10 @@ set(TESTS_ENVIRONMENT
 foreach(prog ${ALL_TESTS})
     target_compile_definitions(${prog} PRIVATE $<TARGET_PROPERTY:SDL2_image,COMPILE_DEFINITIONS>)
     target_link_libraries(${prog} PRIVATE SDL2_image::${sdl2_image_export_name})
-    if (TARGET SDL2::SDL2main)
+    if(TARGET SDL2::SDL2main)
         target_link_libraries(${prog} PRIVATE SDL2::SDL2main)
     endif()
-    target_link_libraries(${prog} PRIVATE SDL2_test)
-    if (BUILD_SHARED_LIBS)
-        target_link_libraries(${prog} PRIVATE SDL2::SDL2)
-    else()
-        target_link_libraries(${prog} PRIVATE SDL2::SDL2-static)
-    endif()
+    target_link_libraries(${prog} PRIVATE SDL2_test ${sdl2_target_name})
 
     add_test(
         NAME ${prog}
@@ -54,24 +49,24 @@ foreach(prog ${ALL_TESTS})
         ENVIRONMENT "${TESTS_ENVIRONMENT}"
         TIMEOUT 30
     )
-    if(INSTALL_TESTS)
+    if(SDL2IMAGE_TESTS_INSTALL)
         set(exe ${prog})
-        set(installedtestsdir "${CMAKE_INSTALL_FULL_LIBEXECDIR}/installed-tests/${CMAKE_PROJECT_NAME}")
+        set(installedtestsdir "${CMAKE_INSTALL_FULL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}")
         configure_file(template.test.in "${exe}.test" @ONLY)
         install(
             FILES "${CMAKE_CURRENT_BINARY_DIR}/${exe}.test"
-            DESTINATION "${CMAKE_INSTALL_DATADIR}/installed-tests/${CMAKE_PROJECT_NAME}"
+            DESTINATION "${CMAKE_INSTALL_DATADIR}/installed-tests/${PROJECT_NAME}"
         )
     endif()
 endforeach()
 
-if(INSTALL_TESTS)
+if(SDL2IMAGE_TESTS_INSTALL)
     install(
         TARGETS ${ALL_TESTS}
-        DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/${CMAKE_PROJECT_NAME}"
+        DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}"
     )
     install(
         FILES ${RESOURCE_FILES}
-        DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/${CMAKE_PROJECT_NAME}"
+        DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}"
     )
 endif()

@@ -15,10 +15,13 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows (mingw32),      os: windows-latest, shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686 }
-        - { name: Windows (mingw64),      os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64 }
-        - { name: Linux (CMake),          os: ubuntu-20.04,   shell: sh,   cmake: '-GNinja' }
-        - { name: Linux (autotools),      os: ubuntu-20.04,   shell: sh }
+        - { name: Windows (mingw32+autotools),  os: windows-latest, shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686 }
+        - { name: Windows (mingw64+CMake),      os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64,
+            cmake: '-DSDL2IMAGE_BACKEND_STB=OFF -DSDL2IMAGE_BACKEND_WIC=OFF -DSDL2IMAGE_VENDORED=OFF -DSDL2IMAGE_AVIF=ON -G "Ninja Multi-Config"' }
+        - { name: Linux (autotools),            os: ubuntu-20.04,   shell: sh }
+        - { name: Linux (CMake),                os: ubuntu-20.04,   shell: sh,   cmake: '-DSDL2IMAGE_VENDORED=ON -GNinja' }
+        - { name: Macos (autotools),            os: macos-latest,   shell: sh }
+        - { name: Macos (CMake),                os: macos-latest,   shell: sh,   cmake: '-DSDL2IMAGE_VENDORED=ON -GNinja' }
 
     steps:
     - name: Set up MSYS2
@@ -31,14 +34,32 @@ jobs:
           ${{ matrix.platform.msys-env }}-autotools
           ${{ matrix.platform.msys-env }}-cmake
           ${{ matrix.platform.msys-env }}-gcc
+          ${{ matrix.platform.msys-env }}-libavif
           ${{ matrix.platform.msys-env }}-libjpeg-turbo
+          ${{ matrix.platform.msys-env }}-libjxl
           ${{ matrix.platform.msys-env }}-libpng
           ${{ matrix.platform.msys-env }}-libtiff
           ${{ matrix.platform.msys-env }}-libwebp
           ${{ matrix.platform.msys-env }}-ninja
           ${{ matrix.platform.msys-env }}-pkg-config
           ${{ matrix.platform.msys-env }}-zlib
-
+    - name: Setup Macos dependencies
+      if: runner.os == 'macOS'
+      run: |
+          brew install \
+            autoconf \
+            automake \
+            jpeg \
+            libavif \
+            libpng \
+            libtiff \
+            libtool \
+            ninja \
+            pkg-config \
+            sdl2 \
+            webp \
+            zlib \
+            ${NULL+}
     - name: Setup Linux dependencies
       if: runner.os == 'Linux'
       run: |
@@ -47,7 +68,6 @@ jobs:
           autoconf \
           automake \
           cmake \
-          gnome-desktop-testing \
           libjpeg-dev \
           libpng-dev \
           libsdl2-dev \
@@ -58,6 +78,7 @@ jobs:
           pkg-config \
           zlib1g-dev \
           ${NULL+}
+
     - uses: actions/checkout@v2
       with:
         submodules: recursive
@@ -70,23 +91,23 @@ jobs:
       if: "matrix.platform.cmake"
       run: |
         cmake -B build \
-          -DBUILD_SAMPLES=ON \
-          -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-          -DCMAKE_VERBOSE_MAKEFILE=ON \
-          -DSUPPORT_JXL=OFF \
-          -DSUPPORT_TIF=ON \
-          -DSUPPORT_WEBP=ON \
+          -DBUILD_SHARED_LIBS=ON \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DSDL2IMAGE_SAMPLES=ON \
+          -DSDL2IMAGE_JXL=ON \
+          -DSDL2IMAGE_TIF=ON \
+          -DSDL2IMAGE_WEBP=ON \
           ${{ matrix.platform.cmake }}
     - name: Build
       if: "matrix.platform.cmake"
-      run: cmake --build build/ --config Release
+      run: cmake --build build/ --config Release --verbose
     - name: Install
       if: "matrix.platform.shell == 'sh' && matrix.platform.cmake"
       run: |
         set -eu
         rm -fr DESTDIR-cmake
         DESTDIR=$(pwd)/DESTDIR-cmake cmake --install build/ --config Release
-        ( cd DESTDIR-cmake; find ) | LC_ALL=C sort -u
+        find DESTDIR-cmake | LC_ALL=C sort -u
 
     - name: Configure Autotools
       if: "! matrix.platform.cmake"
@@ -147,7 +168,7 @@ jobs:
         rm -fr DESTDIR-autotools
         mkdir DESTDIR-autotools
         make -j"${parallel}" -C build-autotools install DESTDIR="${curdir}/DESTDIR-autotools" V=1
-        ( cd DESTDIR-autotools; find ) | LC_ALL=C sort -u
+        find DESTDIR-autotools | LC_ALL=C sort -u
     - name: Distcheck with Autotools
       if: "runner.os == 'Linux' && ! matrix.platform.cmake"
       run: |
