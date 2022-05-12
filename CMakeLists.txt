@@ -205,7 +205,7 @@ endfunction()
 
 # Workaround for Ubuntu 20.04's SDL being older than
 # https://github.com/libsdl-org/SDL/issues/3531
-if (NOT TARGET SDL2::SDL2)
+if (NOT (TARGET SDL2::SDL2 OR TARGET SDL2::SDL2-static))
     find_library(SDL2_LIBRARY
         NAMES SDL2
         HINTS "${SDL2_EXEC_PREFIX}"
