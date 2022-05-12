@@ -679,7 +679,8 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 
 #endif /* LOAD_JPG */
 
-#if SAVE_JPG
+/* Use tinyjpeg as a fallback if we don't have a hard dependency on libjpeg */
+#if SAVE_JPG && (defined(LOAD_JPG_DYNAMIC) || !defined(WANT_JPEGLIB))
 
 #ifdef __WATCOMC__ /* watcom has issues.. */
 #define ceilf ceil
@@ -759,7 +760,7 @@ done:
     return result;
 }
 
-#endif /* SAVE_JPG */
+#endif /* SAVE_JPG && (defined(LOAD_JPG_DYNAMIC) || !defined(WANT_JPEGLIB)) */
 
 int IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality)
 {
@@ -781,7 +782,12 @@ int IMG_SaveJPG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst, int qualit
         }
     }
 #endif
+
+#if defined(LOAD_JPG_DYNAMIC) || !defined(WANT_JPEGLIB)
     return IMG_SaveJPG_RW_tinyjpeg(surface, dst, freedst, quality);
+#else
+    return -1;
+#endif
 
 #else
     return IMG_SetError("SDL_image built without JPEG save support");
