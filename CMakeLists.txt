@@ -7,6 +7,12 @@ set(MICRO_VERSION 0)
 set(FULL_VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}")
 set(SDL_REQUIRED_VERSION 2.0.8)
 
+# Set defaults preventing destination file conflicts
+set(SDL_CMAKE_DEBUG_POSTFIX "d"
+    CACHE STRING "Name suffix for debug builds")
+
+mark_as_advanced(CMAKE_IMPORT_LIBRARY_SUFFIX SDL_CMAKE_DEBUG_POSTFIX)
+
 # Calculate a libtool-like version number
 math(EXPR BINARY_AGE "${MINOR_VERSION} * 100 + ${MICRO_VERSION}")
 math(EXPR SDL2_IMAGE_DEVELOPMENT "${MINOR_VERSION} % 2")
@@ -657,6 +663,10 @@ set_target_properties(SDL2_image PROPERTIES
     EXPORT_NAME ${sdl2_image_export_name}
     C_VISIBILITY_PRESET "hidden"
     )
+if (NOT ANDROID)
+    set_target_properties(SDL2_image PROPERTIES
+        DEBUG_POSTFIX "${SDL_CMAKE_DEBUG_POSTFIX}")
+endif()
 if (UNIX AND NOT APPLE AND NOT ANDROID)
     set_target_properties(SDL2_image PROPERTIES
         SOVERSION "${LT_MAJOR}"
