@@ -210,6 +210,8 @@ AC_ARG_ENABLE([jpg], [AS_HELP_STRING([--enable-jpg], [support loading JPG images
  [], [enable_jpg=yes])
 AC_ARG_ENABLE([jpg-shared], [AS_HELP_STRING([--enable-jpg-shared], [dynamically load JPG support [default=yes]])],
  [], [enable_jpg_shared=yes])
+AC_ARG_ENABLE([save-jpg], [AS_HELP_STRING([--enable-save-jpg], [support saving JPG images [default=yes]])],
+ [], [enable_save_jpg=yes])
 AC_ARG_ENABLE([jxl], [AS_HELP_STRING([--enable-jxl], [support loading JXL images [default=yes]])],
  [], [enable_jxl=yes])
 AC_ARG_ENABLE([jxl-shared], [AS_HELP_STRING([--enable-jxl-shared], [dynamically load JXL support [default=yes]])],
@@ -222,6 +224,8 @@ AC_ARG_ENABLE([png], [AS_HELP_STRING([--enable-png], [support loading PNG images
  [], [enable_png=yes])
 AC_ARG_ENABLE([png-shared], [AS_HELP_STRING([--enable-png-shared], [dynamically load PNG support [default=yes]])],
  [], [enable_png_shared=yes])
+AC_ARG_ENABLE([save-png], [AS_HELP_STRING([--enable-save-png], [support saving PNG images [default=yes]])],
+ [], [enable_save_png=yes])
 AC_ARG_ENABLE([pnm], [AS_HELP_STRING([--enable-pnm], [support loading PNM images [default=yes]])],
  [], [enable_pnm=yes])
 AC_ARG_ENABLE([svg], [AS_HELP_STRING([--enable-svg], [support loading SVG images [default=yes]])],
@@ -633,6 +637,16 @@ if test x$enable_png = xyes -a x$have_png_hdr = xyes -a x$have_png_lib = xyes; t
             PC_LIBS="$LIBPNG_LIBS $PC_LIBS"
         fi
     fi
+fi
+if test x$enable_save_png = xyes; then
+    AC_DEFINE([SDL_IMAGE_SAVE_PNG])
+else
+    AC_DEFINE([SDL_IMAGE_SAVE_PNG], 0)
+fi
+if test x$enable_save_jpg = xyes; then
+    AC_DEFINE([SDL_IMAGE_SAVE_JPG])
+else
+    AC_DEFINE([SDL_IMAGE_SAVE_JPG], 0)
 fi
 
 AC_SUBST([IMG_LIBS])

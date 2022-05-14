@@ -16,6 +16,7 @@ DAV1D_LIBRARY_PATH := external/dav1d
 # Enable this if you want to support loading JPEG images using libjpeg
 # The library path should be a relative path to this directory.
 SUPPORT_JPG ?= false
+SUPPORT_SAVE_JPG ?= true
 JPG_LIBRARY_PATH := external/jpeg
 
 # Enable this if you want to support loading JPEG-XL images
@@ -26,6 +27,7 @@ JXL_LIBRARY_PATH := external/libjxl
 # Enable this if you want to support loading PNG images using libpng
 # The library path should be a relative path to this directory.
 SUPPORT_PNG ?= false
+SUPPORT_SAVE_PNG ?= true
 PNG_LIBRARY_PATH := external/libpng
 
 # Enable this if you want to support loading WebP images
@@ -113,6 +115,11 @@ ifeq ($(SUPPORT_JPG),true)
     LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(JPG_LIBRARY_PATH)
     LOCAL_CFLAGS += -DLOAD_JPG
     LOCAL_STATIC_LIBRARIES += jpeg
+ifeq ($(SUPPORT_SAVE_JPG),true)
+    LOCAL_CFLAGS += -DSDL_IMAGE_SAVE_JPG=1
+else
+    LOCAL_CFLAGS += -DSDL_IMAGE_SAVE_JPG=0
+endif
 endif
 
 ifeq ($(SUPPORT_JXL),true)
@@ -127,6 +134,11 @@ ifeq ($(SUPPORT_PNG),true)
     LOCAL_CFLAGS += -DLOAD_PNG
     LOCAL_STATIC_LIBRARIES += png
     LOCAL_LDLIBS += -lz
+ifeq ($(SUPPORT_SAVE_PNG),true)
+    LOCAL_CFLAGS += -DSDL_IMAGE_SAVE_PNG=1
+else
+    LOCAL_CFLAGS += -DSDL_IMAGE_SAVE_PNG=0
+endif
 endif
 
 ifeq ($(SUPPORT_WEBP),true)
