@@ -639,12 +639,12 @@ if test x$enable_png = xyes -a x$have_png_hdr = xyes -a x$have_png_lib = xyes; t
     fi
 fi
 if test x$enable_save_png = xyes; then
-    AC_DEFINE([SDL_IMAGE_SAVE_PNG])
+    AC_DEFINE([SDL_IMAGE_SAVE_PNG], 1)
 else
     AC_DEFINE([SDL_IMAGE_SAVE_PNG], 0)
 fi
 if test x$enable_save_jpg = xyes; then
-    AC_DEFINE([SDL_IMAGE_SAVE_JPG])
+    AC_DEFINE([SDL_IMAGE_SAVE_JPG], 1)
 else
     AC_DEFINE([SDL_IMAGE_SAVE_JPG], 0)
 fi
