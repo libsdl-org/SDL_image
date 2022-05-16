@@ -13317,10 +13317,6 @@ CFLAGS="$CFLAGS $SDL_CFLAGS"
 LIBS="$LIBS $SDL_LIBS"
 
 if test x$enable_stb_image = xyes; then
-    $as_echo "#define LOAD_JPG 1" >>confdefs.h
-
-    $as_echo "#define LOAD_PNG 1" >>confdefs.h
-
     $as_echo "#define USE_STBIMAGE 1" >>confdefs.h
 
 fi
@@ -13531,7 +13527,16 @@ $as_echo "$as_me: WARNING: AVIF image loading disabled" >&2;}
     fi
 fi
 
-if test x$enable_jpg = xyes -a x$enable_stb_image != xyes -a x$enable_imageio != xyes; then
+if test x$enable_jpg = xyes; then
+    if test x$enable_stb_image = xyes; then
+        $as_echo "#define LOAD_JPG 1" >>confdefs.h
+
+    elif test x$enable_imageio = xyes; then
+        $as_echo "#define LOAD_JPG 1" >>confdefs.h
+
+        $as_echo "#define JPG_USES_IMAGEIO 1" >>confdefs.h
+
+    else
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libjpeg" >&5
@@ -13591,16 +13596,16 @@ fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$LIBJPEG_PKG_ERRORS" >&5
 
-	        ac_fn_c_check_header_mongrel "$LINENO" "jpeglib.h" "ac_cv_header_jpeglib_h" "$ac_includes_default"
+	            ac_fn_c_check_header_mongrel "$LINENO" "jpeglib.h" "ac_cv_header_jpeglib_h" "$ac_includes_default"
 if test "x$ac_cv_header_jpeglib_h" = xyes; then :
 
-            have_jpg_hdr=yes
-            LIBJPEG_CFLAGS=""
+                have_jpg_hdr=yes
+                LIBJPEG_CFLAGS=""
 
 fi
 
 
-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for jpeg_CreateDecompress in -ljpeg" >&5
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking for jpeg_CreateDecompress in -ljpeg" >&5
 $as_echo_n "checking for jpeg_CreateDecompress in -ljpeg... " >&6; }
 if ${ac_cv_lib_jpeg_jpeg_CreateDecompress+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -13638,8 +13643,8 @@ fi
 $as_echo "$ac_cv_lib_jpeg_jpeg_CreateDecompress" >&6; }
 if test "x$ac_cv_lib_jpeg_jpeg_CreateDecompress" = xyes; then :
 
-            have_jpg_lib=yes
-            LIBJPEG_LIBS="-ljpeg"
+                have_jpg_lib=yes
+                LIBJPEG_LIBS="-ljpeg"
 
 fi
 
@@ -13647,16 +13652,16 @@ fi
 elif test $pkg_failed = untried; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-	        ac_fn_c_check_header_mongrel "$LINENO" "jpeglib.h" "ac_cv_header_jpeglib_h" "$ac_includes_default"
+	            ac_fn_c_check_header_mongrel "$LINENO" "jpeglib.h" "ac_cv_header_jpeglib_h" "$ac_includes_default"
 if test "x$ac_cv_header_jpeglib_h" = xyes; then :
 
-            have_jpg_hdr=yes
-            LIBJPEG_CFLAGS=""
+                have_jpg_hdr=yes
+                LIBJPEG_CFLAGS=""
 
 fi
 
 
-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for jpeg_CreateDecompress in -ljpeg" >&5
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking for jpeg_CreateDecompress in -ljpeg" >&5
 $as_echo_n "checking for jpeg_CreateDecompress in -ljpeg... " >&6; }
 if ${ac_cv_lib_jpeg_jpeg_CreateDecompress+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -13694,8 +13699,8 @@ fi
 $as_echo "$ac_cv_lib_jpeg_jpeg_CreateDecompress" >&6; }
 if test "x$ac_cv_lib_jpeg_jpeg_CreateDecompress" = xyes; then :
 
-            have_jpg_lib=yes
-            LIBJPEG_LIBS="-ljpeg"
+                have_jpg_lib=yes
+                LIBJPEG_LIBS="-ljpeg"
 
 fi
 
@@ -13705,36 +13710,37 @@ else
 	LIBJPEG_LIBS=$pkg_cv_LIBJPEG_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-	        have_jpg_hdr=yes
-        have_jpg_lib=yes
-        have_jpg_pc=yes
+	            have_jpg_hdr=yes
+            have_jpg_lib=yes
+            have_jpg_pc=yes
 
 fi
-    if test x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; then
-        if test x$enable_jpg = xyes; then
-            $as_echo "#define LOAD_JPG 1" >>confdefs.h
+        if test x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; then
+            if test x$enable_jpg = xyes; then
+                $as_echo "#define LOAD_JPG 1" >>confdefs.h
 
-        fi
+            fi
 
-        case "$host" in
-            *-*-darwin*)
-                jpg_lib=`find_lib libjpeg.dylib`
-                ;;
-            *-*-cygwin* | *-*-mingw*)
-                jpg_lib=`find_lib "libjpeg*.dll"`
-                ;;
-            *)
-                jpg_lib=`find_lib "libjpeg[0-9]*.so.*"`
-                if test x$jpg_lib = x; then
-                    jpg_lib=`find_lib "libjpeg.so.*"`
-                fi
-                ;;
-        esac
-    elif test x$enable_jpg = xyes; then
-        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find JPEG library (http://www.ijg.org/)" >&5
+            case "$host" in
+                *-*-darwin*)
+                    jpg_lib=`find_lib libjpeg.dylib`
+                    ;;
+                *-*-cygwin* | *-*-mingw*)
+                    jpg_lib=`find_lib "libjpeg*.dll"`
+                    ;;
+                *)
+                    jpg_lib=`find_lib "libjpeg[0-9]*.so.*"`
+                    if test x$jpg_lib = x; then
+                        jpg_lib=`find_lib "libjpeg.so.*"`
+                    fi
+                    ;;
+            esac
+        else
+            { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find JPEG library (http://www.ijg.org/)" >&5
 $as_echo "$as_me: WARNING: *** Unable to find JPEG library (http://www.ijg.org/)" >&2;}
-        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: JPG image loading disabled" >&5
+            { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: JPG image loading disabled" >&5
 $as_echo "$as_me: WARNING: JPG image loading disabled" >&2;}
+        fi
     fi
 fi
 
@@ -13945,7 +13951,16 @@ $as_echo "$as_me: WARNING: JXL image loading disabled" >&2;}
     fi
 fi
 
-if test x$enable_png = xyes -a x$enable_stb_image != xyes -a x$enable_imageio != xyes; then
+if test x$enable_png = xyes; then
+    if test x$enable_stb_image = xyes; then
+        $as_echo "#define LOAD_PNG 1" >>confdefs.h
+
+    elif test x$enable_imageio = xyes; then
+        $as_echo "#define LOAD_PNG 1" >>confdefs.h
+
+        $as_echo "#define PNG_USES_IMAGEIO 1" >>confdefs.h
+
+    else
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libpng" >&5
@@ -14005,16 +14020,16 @@ fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$LIBPNG_PKG_ERRORS" >&5
 
-	        ac_fn_c_check_header_mongrel "$LINENO" "png.h" "ac_cv_header_png_h" "$ac_includes_default"
+	            ac_fn_c_check_header_mongrel "$LINENO" "png.h" "ac_cv_header_png_h" "$ac_includes_default"
 if test "x$ac_cv_header_png_h" = xyes; then :
 
-            have_png_hdr=yes
-            LIBPNG_CFLAGS=""
+                have_png_hdr=yes
+                LIBPNG_CFLAGS=""
 
 fi
 
 
-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for png_create_read_struct in -lpng" >&5
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking for png_create_read_struct in -lpng" >&5
 $as_echo_n "checking for png_create_read_struct in -lpng... " >&6; }
 if ${ac_cv_lib_png_png_create_read_struct+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -14052,8 +14067,8 @@ fi
 $as_echo "$ac_cv_lib_png_png_create_read_struct" >&6; }
 if test "x$ac_cv_lib_png_png_create_read_struct" = xyes; then :
 
-            have_png_lib=yes
-            LIBPNG_LIBS="-lpng -lz"
+                have_png_lib=yes
+                LIBPNG_LIBS="-lpng -lz"
 
 fi
 
@@ -14061,16 +14076,16 @@ fi
 elif test $pkg_failed = untried; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-	        ac_fn_c_check_header_mongrel "$LINENO" "png.h" "ac_cv_header_png_h" "$ac_includes_default"
+	            ac_fn_c_check_header_mongrel "$LINENO" "png.h" "ac_cv_header_png_h" "$ac_includes_default"
 if test "x$ac_cv_header_png_h" = xyes; then :
 
-            have_png_hdr=yes
-            LIBPNG_CFLAGS=""
+                have_png_hdr=yes
+                LIBPNG_CFLAGS=""
 
 fi
 
 
-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for png_create_read_struct in -lpng" >&5
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking for png_create_read_struct in -lpng" >&5
 $as_echo_n "checking for png_create_read_struct in -lpng... " >&6; }
 if ${ac_cv_lib_png_png_create_read_struct+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -14108,8 +14123,8 @@ fi
 $as_echo "$ac_cv_lib_png_png_create_read_struct" >&6; }
 if test "x$ac_cv_lib_png_png_create_read_struct" = xyes; then :
 
-            have_png_lib=yes
-            LIBPNG_LIBS="-lpng -lz"
+                have_png_lib=yes
+                LIBPNG_LIBS="-lpng -lz"
 
 fi
 
@@ -14119,34 +14134,35 @@ else
 	LIBPNG_LIBS=$pkg_cv_LIBPNG_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-	        have_png_hdr=yes
-        have_png_lib=yes
-        have_png_pc=yes
+	            have_png_hdr=yes
+            have_png_lib=yes
+            have_png_pc=yes
 
 fi
-    if test x$have_png_hdr = xyes -a x$have_png_lib = xyes; then
-        $as_echo "#define LOAD_PNG 1" >>confdefs.h
+        if test x$have_png_hdr = xyes -a x$have_png_lib = xyes; then
+            $as_echo "#define LOAD_PNG 1" >>confdefs.h
 
 
-        case "$host" in
-            *-*-darwin*)
-                png_lib=`find_lib libpng.dylib`
-                ;;
-            *-*-cygwin* | *-*-mingw*)
-                png_lib=`find_lib "libpng*.dll"`
-                ;;
-            *)
-                png_lib=`find_lib "libpng[0-9]*.so.*"`
-                if test x$png_lib = x; then
-                    png_lib=`find_lib "libpng.so.*"`
-                fi
-                ;;
-        esac
-    else
-        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find PNG library (http://www.libpng.org/pub/png/libpng.html)" >&5
+            case "$host" in
+                *-*-darwin*)
+                    png_lib=`find_lib libpng.dylib`
+                    ;;
+                *-*-cygwin* | *-*-mingw*)
+                    png_lib=`find_lib "libpng*.dll"`
+                    ;;
+                *)
+                    png_lib=`find_lib "libpng[0-9]*.so.*"`
+                    if test x$png_lib = x; then
+                        png_lib=`find_lib "libpng.so.*"`
+                    fi
+                    ;;
+            esac
+        else
+            { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find PNG library (http://www.libpng.org/pub/png/libpng.html)" >&5
 $as_echo "$as_me: WARNING: *** Unable to find PNG library (http://www.libpng.org/pub/png/libpng.html)" >&2;}
-        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: PNG image loading disabled" >&5
+            { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: PNG image loading disabled" >&5
 $as_echo "$as_me: WARNING: PNG image loading disabled" >&2;}
+        fi
     fi
 fi
 
