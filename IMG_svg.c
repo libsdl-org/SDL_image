@@ -95,13 +95,13 @@ int IMG_isSVG(SDL_RWops *src)
     char magic[4096];
     size_t magic_len;
 
-    if ( !src )
+    if (!src)
         return 0;
     start = SDL_RWtell(src);
     is_SVG = 0;
     magic_len = SDL_RWread(src, magic, 1, sizeof(magic) - 1);
     magic[magic_len] = '\0';
-    if ( SDL_strstr(magic, "<svg") ) {
+    if (SDL_strstr(magic, "<svg")) {
         is_SVG = 1;
     }
     SDL_RWseek(src, start, RW_SEEK_SET);
@@ -109,7 +109,7 @@ int IMG_isSVG(SDL_RWops *src)
 }
 
 /* Load a SVG type image from an SDL datasource */
-SDL_Surface *IMG_LoadSVG_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadSizedSVG_RW(SDL_RWops *src, int width, int height)
 {
     char *data;
     struct NSVGimage *image;
@@ -118,42 +118,55 @@ SDL_Surface *IMG_LoadSVG_RW(SDL_RWops *src)
     float scale = 1.0f;
 
     data = (char *)SDL_LoadFile_RW(src, NULL, SDL_FALSE);
-    if ( !data ) {
+    if (!data) {
         return NULL;
     }
 
     /* For now just use default units of pixels at 96 DPI */
     image = nsvgParse(data, "px", 96.0f);
     SDL_free(data);
-    if ( !image ) {
+    if (!image || image->width <= 0.0f || image->height <= 0.0f) {
         IMG_SetError("Couldn't parse SVG image");
         return NULL;
     }
 
     rasterizer = nsvgCreateRasterizer();
-    if ( !rasterizer ) {
+    if (!rasterizer) {
         IMG_SetError("Couldn't create SVG rasterizer");
-        nsvgDelete( image );
+        nsvgDelete(image);
         return NULL;
     }
 
+    if (width > 0 && height > 0) {
+        float scale_x = (float)width / image->width;
+        float scale_y = (float)height / image->height;
+
+        scale = SDL_min(scale_x, scale_y);
+    } else if (width > 0) {
+        scale = (float)width / image->width;
+    } else if (height > 0) {
+        scale = (float)height / image->height;
+    } else {
+        scale = 1.0f;
+    }
+
     surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
-                                   (int)(image->width * scale),
-                                   (int)(image->height * scale),
+                                   (int)SDL_ceilf(image->width * scale),
+                                   (int)SDL_ceilf(image->height * scale),
                                    32,
                                    0x000000FF,
                                    0x0000FF00,
                                    0x00FF0000,
                                    0xFF000000);
-    if ( !surface ) {
-        nsvgDeleteRasterizer( rasterizer );
-        nsvgDelete( image );
+    if (!surface) {
+        nsvgDeleteRasterizer(rasterizer);
+        nsvgDelete(image);
         return NULL;
     }
 
     nsvgRasterize(rasterizer, image, 0.0f, 0.0f, scale, (unsigned char *)surface->pixels, surface->w, surface->h, surface->pitch);
-    nsvgDeleteRasterizer( rasterizer );
-    nsvgDelete( image );
+    nsvgDeleteRasterizer(rasterizer);
+    nsvgDelete(image);
 
     return surface;
 }
@@ -170,9 +183,16 @@ int IMG_isSVG(SDL_RWops *src)
 }
 
 /* Load a SVG type image from an SDL datasource */
-SDL_Surface *IMG_LoadSVG_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadSizedSVG_RW(SDL_RWops *src, int width, int height)
 {
     return(NULL);
 }
 
 #endif /* LOAD_SVG */
+
+/* Load a SVG type image from an SDL datasource */
+SDL_Surface *IMG_LoadSVG_RW(SDL_RWops *src)
+{
+    return IMG_LoadSizedSVG_RW(src, 0, 0);
+}
+

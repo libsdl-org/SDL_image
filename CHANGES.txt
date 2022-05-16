@@ -1,4 +1,6 @@
 2.0.6:
+Sam Lantinga - Mon May 16 09:30:10 PDT 2022
+ * Added IMG_LoadSizedSVG_RW()
 Sam Lantinga - Mon May  9 12:42:05 PDT 2022
  * Added support for AVIF images (https://github.com/AOMediaCodec/libavif)
 Sylvain Becker - Sun May  8 21:59:27 PDT 2022
