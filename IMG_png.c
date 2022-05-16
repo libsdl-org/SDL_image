@@ -540,7 +540,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 
 #endif /* LOAD_PNG */
 
-#if SAVE_PNG
+#if SDL_IMAGE_SAVE_PNG
 
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
 static const Uint32 png_format = SDL_PIXELFORMAT_ABGR8888;
@@ -732,7 +732,7 @@ static int IMG_SavePNG_RW_miniz(SDL_Surface *surface, SDL_RWops *dst, int freeds
 }
 #endif /* LOAD_PNG_DYNAMIC || !WANT_LIBPNG */
 
-#endif /* SAVE_PNG */
+#endif /* SDL_IMAGE_SAVE_PNG */
 
 int IMG_SavePNG(SDL_Surface *surface, const char *file)
 {
@@ -746,7 +746,7 @@ int IMG_SavePNG(SDL_Surface *surface, const char *file)
 
 int IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
 {
-#if SAVE_PNG
+#if SDL_IMAGE_SAVE_PNG
 #ifdef USE_LIBPNG
     if ((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) != 0) {
         if (IMG_SavePNG_RW_libpng(surface, dst, freedst) == 0) {
@@ -763,5 +763,5 @@ int IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
 #else
     return IMG_SetError("SDL_image built without PNG save support");
 
-#endif /* SAVE_PNG */
+#endif /* SDL_IMAGE_SAVE_PNG */
 }
