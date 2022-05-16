@@ -40,10 +40,8 @@
 #define strncmp SDL_strncmp
 #define strtol SDL_strtol
 
-#ifndef __WATCOMC__ /* watcom has issues */
 #define pow SDL_pow
 #define ldexp SDL_scalbn
-#endif
 
 #define STB_IMAGE_STATIC
 #define STBI_NO_STDIO

@@ -682,17 +682,12 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 /* Use tinyjpeg as a fallback if we don't have a hard dependency on libjpeg */
 #if SDL_IMAGE_SAVE_JPG && (defined(LOAD_JPG_DYNAMIC) || !defined(WANT_JPEGLIB))
 
-#ifdef __WATCOMC__ /* watcom has issues.. */
-#define ceilf ceil
-#define floorf floor
-#define cosf cos
-#else
+#define assert SDL_assert
+#define memcpy SDL_memcpy
+
 #define ceilf SDL_ceilf
 #define floorf SDL_floorf
 #define cosf SDL_cosf
-#endif
-#define assert SDL_assert
-#define memcpy SDL_memcpy
 
 #define tje_log SDL_Log
 #define TJE_IMPLEMENTATION
