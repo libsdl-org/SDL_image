@@ -28,12 +28,13 @@
 #ifdef LOAD_SVG
 
 /* Replace C runtime functions with SDL C runtime functions for building on Windows */
-#if defined(__WATCOMC__) && defined(HAVE_LIBC)
-  /* With SDL math functions, Watcom builds are very much broken. */
+#if defined(__WATCOMC__)
+  /* Watcom builds are broken with SDL math functions. */
 #define acosf(x)    (float)acos((double)(x))
 #define atan2f(x,y) (float)atan2((double)(x),(double)(y))
 #define cosf(x)     (float)cos((double)(x))
 #define ceilf(x)    (float)ceil((double)(x))
+#define SDL_ceilf(x) (float)ceil((double)(x))
 #define fabsf(x)    (float)fabs((double)(x))
 #define floorf(x)   (float)floor((double)(x))
 #define fmodf(x,y)  (float)fmod((double)(x),(double)(y))
