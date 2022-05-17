@@ -250,6 +250,12 @@ AC_ARG_ENABLE([webp-shared], [AS_HELP_STRING([--enable-webp-shared], [dynamicall
  [], [enable_webp_shared=yes])
 AC_ARG_ENABLE([qoi], [AS_HELP_STRING([--enable-qoi], [support loading QOI images [default=yes]])],
  [], [enable_qoi=yes])
+AC_ARG_ENABLE([tests],
+              [AS_HELP_STRING([--enable-tests], [build tests [default=no]])],
+              [], [enable_tests=no])
+AC_ARG_ENABLE([installed-tests],
+              [AS_HELP_STRING([--enable-installed-tests], [install tests [default=no]])],
+              [], [enable_installed_tests=no])
 
 dnl Check for SDL
 SDL_VERSION=2.0.8
@@ -665,6 +671,9 @@ AC_SUBST([IMG_LIBS])
 AC_SUBST([PC_LIBS])
 AC_SUBST([PC_REQUIRES])
 
+AM_CONDITIONAL([BUILD_TESTS], [test "x$enable_tests" = xyes])
+AM_CONDITIONAL([INSTALL_TESTS], [test "x$enable_installed_tests" = xyes])
+
 dnl check for GCC warning options
 CheckWarnAll
 
@@ -678,5 +687,6 @@ AC_CONFIG_FILES([
 Makefile
 SDL2_image.spec
 SDL2_image.pc
+test/Makefile
 ])
 AC_OUTPUT

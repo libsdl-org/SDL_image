@@ -74,6 +74,12 @@ noinst_PROGRAMS = showimage showanim
 showimage_LDADD = libSDL2_image.la
 showanim_LDADD = libSDL2_image.la
 
+SUBDIRS = .
+
+if BUILD_TESTS
+SUBDIRS += test
+endif
+
 # Rule to build tar-gzipped distribution package
 $(PACKAGE)-$(VERSION).tar.gz: distcheck
 

@@ -239,6 +239,8 @@ include(CMakeDependentOption)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
+option(BUILD_TESTS "Build unit tests?" OFF)
+cmake_dependent_option(INSTALL_TESTS "Install unit tests?" OFF BUILD_TESTS OFF)
 option(VENDORED_DEFAULT "Default value for *_VENDORED options. Can be overridden for each library. Is only used in the first configure run." ON)
 option(SDL2_IMAGE_DISABLE_INSTALL "Disable installing SDL2_image" OFF)
 
@@ -766,4 +768,9 @@ if (BUILD_SAMPLES)
             target_link_libraries(${prog} PRIVATE SDL2::SDL2-static)
         endif()
     endforeach()
+endif()
+
+if (BUILD_TESTS)
+  include(CTest)
+  add_subdirectory(test)
 endif()
