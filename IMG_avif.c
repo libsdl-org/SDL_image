@@ -26,6 +26,7 @@
 #ifdef LOAD_AVIF
 
 #include <avif/avif.h>
+#include <limits.h> /* for INT_MAX */
 
 
 static struct {
@@ -87,7 +88,7 @@ void IMG_QuitAVIF()
 static SDL_bool ReadAVIFHeader(SDL_RWops *src, Uint8 **header_data, size_t *header_size)
 {
     Uint8 magic[16];
-    size_t size;
+    Uint64 size;
     size_t read = 0;
     Uint8 *data;
 
@@ -124,6 +125,9 @@ static SDL_bool ReadAVIFHeader(SDL_RWops *src, Uint8 **header_data, size_t *head
                 ((size_t)magic[15] << 0));
     }
 
+    if (size > INT_MAX) {
+        return SDL_FALSE;
+    }
     if (size <= read) {
         return SDL_FALSE;
     }
@@ -140,7 +144,7 @@ static SDL_bool ReadAVIFHeader(SDL_RWops *src, Uint8 **header_data, size_t *head
         return SDL_FALSE;
     }
     *header_data = data;
-    *header_size = size;
+    *header_size = (size_t)size;
     return SDL_TRUE;
 }
 
