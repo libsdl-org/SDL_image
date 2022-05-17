@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
     Uint32 flags;
     int i, w, h;
     int done = 0;
+    int quit = 0;
     SDL_Event event;
     const char *saveFile = NULL;
 
@@ -89,7 +90,8 @@ int main(int argc, char *argv[])
         }
 
         if ( SDL_strcmp(argv[i], "-quit") == 0 ) {
-            break;
+            quit = 1;
+            continue;
         }
 
         if ( SDL_strcmp(argv[i], "-save") == 0 && argv[i+1] ) {
@@ -132,7 +134,7 @@ int main(int argc, char *argv[])
         SDL_SetWindowSize(window, w, h);
         SDL_ShowWindow(window);
 
-        done = 0;
+        done = quit;
         while ( !done ) {
             while ( SDL_PollEvent(&event) ) {
                 switch (event.type) {
