@@ -95,13 +95,49 @@ jobs:
         rm -fr build-autotools
         mkdir build-autotools
         ./autogen.sh
-        ( cd build-autotools && ../configure )
+        # We do the CMake build with stb_image and the Autotools build without
+        set -- --disable-stb-image
+        # mingw-w64-*-SDL2 doesn't have SDL_test, so only build this on Unix
+        if [ "${{ matrix.platform.shell }}" = 'sh' ]; then
+          set -- "$@" --enable-tests
+          set -- "$@" --enable-installed-tests
+        fi
+        ( cd build-autotools && ../configure "$@" )
     - name: Build with Autotools
       if: "! matrix.platform.cmake"
       run: |
         set -eu
         parallel="$(getconf _NPROCESSORS_ONLN)"
         make -j"${parallel}" -C build-autotools V=1
+    - name: Run tests with Autotools
+      if: "! matrix.platform.cmake"
+      run: |
+        set -eu
+        parallel="$(getconf _NPROCESSORS_ONLN)"
+
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=0
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_BMP=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_CUR=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_GIF=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_ICO=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_JPG=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_JXL=0
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_LBM=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_PCX=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_PNG=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_PNM=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_QOI=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_SVG=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_TGA=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_TIF=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_WEBP=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_XPM=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_XV=1
+
+        export SDL_IMAGE_TEST_REQUIRE_SAVE_JPG=1
+        export SDL_IMAGE_TEST_REQUIRE_SAVE_PNG=1
+
+        make -j"${parallel}" -C build-autotools check V=1 VERBOSE=1
     - name: Install with Autotools
       if: "! matrix.platform.cmake"
       run: |
@@ -118,3 +154,14 @@ jobs:
         set -eu
         parallel="$(getconf _NPROCESSORS_ONLN)"
         make -j"${parallel}" -C build-autotools distcheck V=1
+    - name: Upload artifacts
+      if: "failure() && runner.os == 'Linux' && ! matrix.platform.cmake"
+      uses: actions/upload-artifact@v3
+      with:
+        name: Autotools artifacts
+        path: |
+          build-autotools/test/*.bmp
+          build-autotools/test/*.jpg
+          build-autotools/test/*.log
+          build-autotools/test/*.png
+        if-no-files-found: ignore
