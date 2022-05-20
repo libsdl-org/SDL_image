@@ -132,7 +132,7 @@ jobs:
         parallel="$(getconf _NPROCESSORS_ONLN)"
         make -j"${parallel}" -C build-autotools V=1
     - name: Run tests with Autotools
-      if: "! matrix.platform.cmake"
+      if: "runner.os == 'Linux' && ! matrix.platform.cmake"
       run: |
         set -eu
         parallel="$(getconf _NPROCESSORS_ONLN)"
