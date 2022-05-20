@@ -523,6 +523,8 @@ EXTRA_DIST = \
 	Android.mk		\
 	CHANGES.txt 		\
 	CMakeLists.txt		\
+	cmake			\
+	SDL2_imageConfig.cmake.in \
 	IMG_ImageIO.m		\
 	IMG_xxx.c		\
 	LICENSE.txt 		\
