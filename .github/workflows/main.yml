@@ -76,13 +76,44 @@ jobs:
           -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
           -DCMAKE_VERBOSE_MAKEFILE=ON \
           -DINSTALL_TESTS=ON \
+          -DSHARED_DEFAULT=OFF \
           -DSUPPORT_JXL=OFF \
           -DSUPPORT_TIF=ON \
           -DSUPPORT_WEBP=ON \
+          -DVENDORED_DEFAULT=ON \
           ${{ matrix.platform.cmake }}
     - name: Build
       if: "matrix.platform.cmake"
       run: cmake --build build/ --config Release
+    - name: Run build-time tests
+      if: "matrix.platform.shell == 'sh' && matrix.platform.cmake"
+      run: |
+        set -eu
+
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=0
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_BMP=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_CUR=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_GIF=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_ICO=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_JPG=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_JXL=0
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_LBM=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_PCX=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_PNG=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_PNM=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_QOI=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_SVG=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_TGA=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_TIF=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_WEBP=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_XPM=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_XV=1
+
+        # TODO: https://github.com/libsdl-org/SDL_image/issues/243
+        export SDL_IMAGE_TEST_REQUIRE_SAVE_JPG=0
+        export SDL_IMAGE_TEST_REQUIRE_SAVE_PNG=0
+
+        ctest -VV --test-dir build/test
     - name: Install
       if: "matrix.platform.shell == 'sh' && matrix.platform.cmake"
       run: |
@@ -90,6 +121,16 @@ jobs:
         rm -fr DESTDIR-cmake
         DESTDIR=$(pwd)/DESTDIR-cmake cmake --install build/ --config Release
         ( cd DESTDIR-cmake; find ) | LC_ALL=C sort -u
+    - name: Upload artifacts
+      if: "failure() && matrix.platform.shell == 'sh' && matrix.platform.cmake"
+      uses: actions/upload-artifact@v3
+      with:
+        name: CMake artifacts
+        path: |
+          build/test/*.bmp
+          build/test/*.jpg
+          build/test/*.png
+        if-no-files-found: ignore
 
     - name: Configure Autotools
       if: "! matrix.platform.cmake"
