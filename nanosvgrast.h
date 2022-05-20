@@ -850,7 +850,8 @@ static void nsvg__flattenShapeStroke(NSVGrasterizer* r, NSVGshape* shape, float 
 	}
 }
 
-static int nsvg__cmpEdge(const void *p, const void *q)
+static int SDLCALL
+nsvg__cmpEdge(const void *p, const void *q)
 {
 	const NSVGedge* a = (const NSVGedge*)p;
 	const NSVGedge* b = (const NSVGedge*)q;
