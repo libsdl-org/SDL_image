@@ -775,6 +775,10 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+INSTALL_TESTS_FALSE
+INSTALL_TESTS_TRUE
+BUILD_TESTS_FALSE
+BUILD_TESTS_TRUE
 PC_REQUIRES
 PC_LIBS
 IMG_LIBS
@@ -970,6 +974,8 @@ enable_webp
 enable_webpdec
 enable_webp_shared
 enable_qoi
+enable_tests
+enable_installed_tests
 with_sdl_prefix
 with_sdl_exec_prefix
 enable_sdltest
@@ -1662,6 +1668,9 @@ Optional Features:
                           instead of libwebp [default=no]
   --enable-webp-shared    dynamically load WEBP support [default=yes]
   --enable-qoi            support loading QOI images [default=yes]
+  --enable-tests          build tests [default=no]
+  --enable-installed-tests
+                          install tests [default=no]
   --disable-sdltest       Do not try to compile and run a test SDL program
 
 Optional Packages:
@@ -4115,13 +4124,13 @@ if ${lt_cv_nm_interface+:} false; then :
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:4118: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:4127: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4121: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:4130: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4124: output\"" >&5)
+  (eval echo "\"\$as_me:4133: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -5335,7 +5344,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5338 "configure"' > conftest.$ac_ext
+  echo '#line 5347 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7160,11 +7169,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7163: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7172: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7167: \$? = $ac_status" >&5
+   echo "$as_me:7176: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7509,11 +7518,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7512: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7521: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7516: \$? = $ac_status" >&5
+   echo "$as_me:7525: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7614,11 +7623,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7617: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7626: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7621: \$? = $ac_status" >&5
+   echo "$as_me:7630: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -7669,11 +7678,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7672: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7681: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7676: \$? = $ac_status" >&5
+   echo "$as_me:7685: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10104,7 +10113,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10107 "configure"
+#line 10116 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10200,7 +10209,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10203 "configure"
+#line 10212 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12991,6 +13000,20 @@ else
   enable_qoi=yes
 fi
 
+# Check whether --enable-tests was given.
+if test "${enable_tests+set}" = set; then :
+  enableval=$enable_tests;
+else
+  enable_tests=no
+fi
+
+# Check whether --enable-installed-tests was given.
+if test "${enable_installed_tests+set}" = set; then :
+  enableval=$enable_installed_tests;
+else
+  enable_installed_tests=no
+fi
+
 
 SDL_VERSION=2.0.8
 
@@ -14766,6 +14789,23 @@ fi
 
 
 
+ if test "x$enable_tests" = xyes; then
+  BUILD_TESTS_TRUE=
+  BUILD_TESTS_FALSE='#'
+else
+  BUILD_TESTS_TRUE='#'
+  BUILD_TESTS_FALSE=
+fi
+
+ if test "x$enable_installed_tests" = xyes; then
+  INSTALL_TESTS_TRUE=
+  INSTALL_TESTS_FALSE='#'
+else
+  INSTALL_TESTS_TRUE='#'
+  INSTALL_TESTS_FALSE=
+fi
+
+
 CheckWarnAll
 
 CheckVisibilityHidden
@@ -14773,7 +14813,7 @@ CheckVisibilityHidden
 OBJCFLAGS=$CFLAGS
 
 # Finally create all the generated files
-ac_config_files="$ac_config_files Makefile SDL2_image.spec SDL2_image.pc"
+ac_config_files="$ac_config_files Makefile SDL2_image.spec SDL2_image.pc test/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -14954,6 +14994,14 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${USE_VERSION_RC_TRUE}" && test -z "${USE_VERSION_RC_FALSE}"; then
   as_fn_error $? "conditional \"USE_VERSION_RC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BUILD_TESTS_TRUE}" && test -z "${BUILD_TESTS_FALSE}"; then
+  as_fn_error $? "conditional \"BUILD_TESTS\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${INSTALL_TESTS_TRUE}" && test -z "${INSTALL_TESTS_FALSE}"; then
+  as_fn_error $? "conditional \"INSTALL_TESTS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
@@ -15789,6 +15837,7 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "SDL2_image.spec") CONFIG_FILES="$CONFIG_FILES SDL2_image.spec" ;;
     "SDL2_image.pc") CONFIG_FILES="$CONFIG_FILES SDL2_image.pc" ;;
+    "test/Makefile") CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
