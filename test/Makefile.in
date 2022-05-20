@@ -566,7 +566,7 @@ AM_TESTS_ENVIRONMENT = \
 	$(NULL)
 
 EXTRA_DIST = \
-	CMakeLists.txt Makefile.os2
+	CMakeLists.txt Makefile.os2 template.test.in
 
 @INSTALL_TESTS_TRUE@dist_testexec_DATA = \
 @INSTALL_TESTS_TRUE@	palette.bmp \
