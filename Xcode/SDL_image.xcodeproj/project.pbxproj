@@ -649,6 +649,7 @@
 					LOAD_TIF,
 					LOAD_XPM,
 					LOAD_XV,
+					"$(CONFIG_PREPROCESSOR_DEFINITIONS)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
@@ -679,6 +680,7 @@
 		007288120F0DA5BA00C302A9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_LDFLAGS = "$(CONFIG_FRAMEWORK_LDFLAGS)";
 			};
 			name = Debug;
 		};
@@ -735,6 +737,7 @@
 					LOAD_TIF,
 					LOAD_XPM,
 					LOAD_XV,
+					"$(CONFIG_PREPROCESSOR_DEFINITIONS)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
@@ -764,6 +767,7 @@
 		007288160F0DA5C400C302A9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				OTHER_LDFLAGS = "$(CONFIG_FRAMEWORK_LDFLAGS)";
 			};
 			name = Release;
 		};
