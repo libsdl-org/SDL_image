@@ -683,6 +683,7 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 #if SDL_IMAGE_SAVE_JPG && (defined(LOAD_JPG_DYNAMIC) || !defined(WANT_JPEGLIB))
 
 #define assert SDL_assert
+#undef memcpy
 #define memcpy SDL_memcpy
 
 #define ceilf SDL_ceilf
