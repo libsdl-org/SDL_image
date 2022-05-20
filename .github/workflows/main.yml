@@ -176,10 +176,10 @@ jobs:
         parallel="$(getconf _NPROCESSORS_ONLN)"
         make -j"${parallel}" -C build-autotools distcheck V=1
     - name: Upload artifacts
-      if: "failure() && runner.os == 'Linux' && ! matrix.platform.cmake"
+      if: "failure() && ! matrix.platform.cmake"
       uses: actions/upload-artifact@v3
       with:
-        name: Autotools artifacts
+        name: ${{ matrix.platform.name }} artifacts
         path: |
           build-autotools/test/*.bmp
           build-autotools/test/*.jpg
