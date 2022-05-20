@@ -18,6 +18,7 @@ jobs:
         - { name: Windows (mingw32),      os: windows-latest, shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686 }
         - { name: Windows (mingw64),      os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64 }
         - { name: Linux (CMake),          os: ubuntu-20.04,   shell: sh,   cmake: '-GNinja' }
+        - { name: Linux (CMake static),   os: ubuntu-20.04,   shell: sh,   cmake: '-GNinja -DBUILD_SHARED_LIBS=OFF' }
         - { name: Linux (autotools),      os: ubuntu-20.04,   shell: sh }
 
     steps:
