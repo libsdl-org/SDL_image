@@ -64,7 +64,8 @@ generatetestmeta:
 
 install-data-hook: installtestmeta
 installtestmeta: generatetestmeta
-	install -m644 -D -t $(DESTDIR)$(testmetadir) *.test
+	install -d $(DESTDIR)$(testmetadir)
+	install -m644 *.test $(DESTDIR)$(testmetadir)
 
 clean-local:
 	rm -f *.test
