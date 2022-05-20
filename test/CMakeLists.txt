@@ -50,7 +50,9 @@ foreach(prog ${ALL_TESTS})
     )
     set_tests_properties(
         ${prog}
-        PROPERTIES ENVIRONMENT "${TESTS_ENVIRONMENT}"
+        PROPERTIES
+        ENVIRONMENT "${TESTS_ENVIRONMENT}"
+        TIMEOUT 30
     )
     if(INSTALL_TESTS)
         set(exe ${prog})
