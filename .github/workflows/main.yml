@@ -91,22 +91,26 @@ jobs:
     - name: Configure CMake
       if: "matrix.platform.cmake"
       run: |
-        cmake -B build \
+        set -- \
           -DBUILD_SHARED_LIBS=ON \
           -DCMAKE_BUILD_TYPE=Release \
           -DSDL2IMAGE_DEPS_SHARED=OFF \
           -DSDL2IMAGE_SAMPLES=ON \
-          -DSDL2IMAGE_TESTS=ON \
-          -DSDL2IMAGE_TESTS_INSTALL=ON \
           -DSDL2IMAGE_JXL=ON \
           -DSDL2IMAGE_TIF=ON \
           -DSDL2IMAGE_WEBP=ON \
           ${{ matrix.platform.cmake }}
+        # mingw-w64-*-SDL2 doesn't have SDL_test, so only build this on Unix
+        if [ "${{ matrix.platform.shell }}" = 'sh' ]; then
+          set -- "$@" -DSDL2IMAGE_TESTS=ON
+          set -- "$@" -DSDL2IMAGE_TESTS_INSTALL=ON
+        fi
+        cmake -B build "$@"
     - name: Build
       if: "matrix.platform.cmake"
       run: cmake --build build/ --config Release --verbose
     - name: Run build-time tests
-      if: "matrix.platform.cmake"
+      if: "matrix.platform.shell == 'sh' && matrix.platform.cmake"
       run: |
         set -eu
 
