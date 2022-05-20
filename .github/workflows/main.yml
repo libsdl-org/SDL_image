@@ -20,7 +20,7 @@ jobs:
             cmake: '-DSDL2IMAGE_BACKEND_STB=OFF -DSDL2IMAGE_BACKEND_WIC=OFF -DSDL2IMAGE_VENDORED=OFF -DSDL2IMAGE_AVIF=ON -G "Ninja Multi-Config"' }
         - { name: Linux (autotools),            os: ubuntu-20.04,   shell: sh }
         - { name: Linux (CMake),                os: ubuntu-20.04,   shell: sh,   cmake: '-DSDL2IMAGE_VENDORED=ON -GNinja' }
-        - { name: Linux (CMake, static),        os: ubuntu-20.04,   shell: sh,   cmake: '-DSDL2IMAGE_VENDORED=ON -DBUILD_SHARED_LIBS=OFF -GNinja' }
+        - { name: 'Linux (CMake, static)',      os: ubuntu-20.04,   shell: sh,   cmake: '-DSDL2IMAGE_VENDORED=ON -DBUILD_SHARED_LIBS=OFF -GNinja' }
         - { name: Macos (autotools),            os: macos-latest,   shell: sh }
         - { name: Macos (CMake),                os: macos-latest,   shell: sh,   cmake: '-DSDL2IMAGE_VENDORED=ON -GNinja' }
 
