@@ -20,7 +20,7 @@ AM_TESTS_ENVIRONMENT = \
 	$(NULL)
 
 EXTRA_DIST = \
-	CMakeLists.txt Makefile.os2
+	CMakeLists.txt Makefile.os2 template.test.in
 
 if INSTALL_TESTS
 testexec_PROGRAMS = $(test_programs)
