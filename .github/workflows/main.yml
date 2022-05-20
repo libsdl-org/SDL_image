@@ -94,7 +94,10 @@ jobs:
         cmake -B build \
           -DBUILD_SHARED_LIBS=ON \
           -DCMAKE_BUILD_TYPE=Release \
+          -DSDL2IMAGE_DEPS_SHARED=OFF \
           -DSDL2IMAGE_SAMPLES=ON \
+          -DSDL2IMAGE_TESTS=ON \
+          -DSDL2IMAGE_TESTS_INSTALL=ON \
           -DSDL2IMAGE_JXL=ON \
           -DSDL2IMAGE_TIF=ON \
           -DSDL2IMAGE_WEBP=ON \
@@ -102,6 +105,34 @@ jobs:
     - name: Build
       if: "matrix.platform.cmake"
       run: cmake --build build/ --config Release --verbose
+    - name: Run build-time tests
+      if: "matrix.platform.cmake"
+      run: |
+        set -eu
+
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=0
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_BMP=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_CUR=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_GIF=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_ICO=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_JPG=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_JXL=0
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_LBM=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_PCX=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_PNG=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_PNM=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_QOI=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_SVG=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_TGA=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_TIF=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_WEBP=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_XPM=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_XV=1
+
+        export SDL_IMAGE_TEST_REQUIRE_SAVE_JPG=1
+        export SDL_IMAGE_TEST_REQUIRE_SAVE_PNG=1
+
+        ctest -VV --test-dir build/test
     - name: Install
       if: "matrix.platform.shell == 'sh' && matrix.platform.cmake"
       run: |
@@ -109,6 +140,16 @@ jobs:
         rm -fr DESTDIR-cmake
         DESTDIR=$(pwd)/DESTDIR-cmake cmake --install build/ --config Release
         find DESTDIR-cmake | LC_ALL=C sort -u
+    - name: Upload artifacts
+      if: "failure() && matrix.platform.shell == 'sh' && matrix.platform.cmake"
+      uses: actions/upload-artifact@v3
+      with:
+        name: "${{ matrix.platform.name }} artifacts"
+        path: |
+          build/test/*.bmp
+          build/test/*.jpg
+          build/test/*.png
+        if-no-files-found: ignore
 
     - name: Configure Autotools
       if: "! matrix.platform.cmake"
