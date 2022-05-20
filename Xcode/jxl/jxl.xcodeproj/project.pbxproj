@@ -88,6 +88,9 @@
 		F307EFB52828CA09003915D7 /* huffman.c in Sources */ = {isa = PBXBuildFile; fileRef = F307EFB12828CA09003915D7 /* huffman.c */; };
 		F307EFB62828CA09003915D7 /* state.c in Sources */ = {isa = PBXBuildFile; fileRef = F307EFB22828CA09003915D7 /* state.c */; };
 		F35474412828CA97007E9EDA /* jxl_export.h in Headers */ = {isa = PBXBuildFile; fileRef = F35474402828CA97007E9EDA /* jxl_export.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F37A8CA12838083800C38E95 /* platform.c in Sources */ = {isa = PBXBuildFile; fileRef = F37A8CA02838083800C38E95 /* platform.c */; };
+		F37A8CA32838086E00C38E95 /* constants.c in Sources */ = {isa = PBXBuildFile; fileRef = F37A8CA22838086E00C38E95 /* constants.c */; };
+		F37A8CA52838089400C38E95 /* context.c in Sources */ = {isa = PBXBuildFile; fileRef = F37A8CA42838089400C38E95 /* context.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -173,6 +176,9 @@
 		F307EFB12828CA09003915D7 /* huffman.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = huffman.c; path = ../../external/libjxl/third_party/brotli/c/dec/huffman.c; sourceTree = "<group>"; };
 		F307EFB22828CA09003915D7 /* state.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = state.c; path = ../../external/libjxl/third_party/brotli/c/dec/state.c; sourceTree = "<group>"; };
 		F35474402828CA97007E9EDA /* jxl_export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = jxl_export.h; path = jxl/jxl_export.h; sourceTree = "<group>"; };
+		F37A8CA02838083800C38E95 /* platform.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = platform.c; path = ../../external/libjxl/third_party/brotli/c/common/platform.c; sourceTree = "<group>"; };
+		F37A8CA22838086E00C38E95 /* constants.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = constants.c; path = ../../external/libjxl/third_party/brotli/c/common/constants.c; sourceTree = "<group>"; };
+		F37A8CA42838089400C38E95 /* context.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = context.c; path = ../../external/libjxl/third_party/brotli/c/common/context.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -372,7 +378,10 @@
 		F307EFA22828C81B003915D7 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				F37A8CA22838086E00C38E95 /* constants.c */,
+				F37A8CA42838089400C38E95 /* context.c */,
 				F307EFA32828C84E003915D7 /* dictionary.c */,
+				F37A8CA02838083800C38E95 /* platform.c */,
 				F307EFA42828C84E003915D7 /* transform.c */,
 			);
 			name = common;
@@ -471,6 +480,7 @@
 				F307EFB42828CA09003915D7 /* decode.c in Sources */,
 				F307EF6B282891AE003915D7 /* descriptive_statistics.cc in Sources */,
 				F307EF0928289000003915D7 /* dec_external_image.cc in Sources */,
+				F37A8CA52838089400C38E95 /* context.c in Sources */,
 				F307EF352828909A003915D7 /* enc_bit_writer.cc in Sources */,
 				F307EF432828909A003915D7 /* epf.cc in Sources */,
 				F307EF0D28289000003915D7 /* blending.cc in Sources */,
@@ -493,6 +503,7 @@
 				F307EF5B2828912C003915D7 /* encoding.cc in Sources */,
 				F307EF4C2828909A003915D7 /* image.cc in Sources */,
 				F307EF482828909A003915D7 /* image_metadata.cc in Sources */,
+				F37A8CA12838083800C38E95 /* platform.c in Sources */,
 				F307EF372828909A003915D7 /* entropy_coder.cc in Sources */,
 				F307EF0428289000003915D7 /* compressed_dc.cc in Sources */,
 				F307EF3E2828909A003915D7 /* image_bundle.cc in Sources */,
@@ -517,6 +528,7 @@
 				F307EF1A28289000003915D7 /* dec_context_map.cc in Sources */,
 				F307EF3D2828909A003915D7 /* memory_manager_internal.cc in Sources */,
 				F307EF1028289000003915D7 /* dec_group.cc in Sources */,
+				F37A8CA32838086E00C38E95 /* constants.c in Sources */,
 				F307EF5628289103003915D7 /* squeeze.cc in Sources */,
 				F307EF8A28289919003915D7 /* decode_to_jpeg.cc in Sources */,
 				F307EF5A2828912C003915D7 /* dec_ma.cc in Sources */,
