@@ -7,16 +7,16 @@
 // https://help.apple.com/xcode/#/dev745c5c974
 
 // Uncomment these lines to enable AVIF support
-// If you do this, you should run external/download.sh to download the AVIF decode library and add avif.framework to your application bundle.
+// If you do this, you should run external/download.sh to download the decode libraries and add avif.framework to your application bundle.
 //GCC_PREPROCESSOR_DEFINITIONS = $(inherited) -DLOAD_AVIF
 //OTHER_LDFLAGS = $(inherited) -weak_framework avif
 
 // Uncomment these lines to enable JPEG-XL support
-// If you do this, you should run external/download.sh to download the JPEG-XL decode library and add jxl.framework to your application bundle.
+// If you do this, you should run external/download.sh to download the decode libraries and add jxl.framework to your application bundle.
 //GCC_PREPROCESSOR_DEFINITIONS = $(inherited) -DLOAD_JXL
 //OTHER_LDFLAGS = $(inherited) -weak_framework jxl
 
 // Uncomment these lines to enable WebP support
-// If you do this, you should run external/download.sh to download the WebP decode library and add webp.framework to your application bundle.
+// If you do this, you should run external/download.sh to download the decode libraries and add webp.framework to your application bundle.
 //GCC_PREPROCESSOR_DEFINITIONS = $(inherited) -DLOAD_WEBP
 //OTHER_LDFLAGS = $(inherited) -weak_framework webp
