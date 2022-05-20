@@ -242,6 +242,7 @@ include(GNUInstallDirs)
 option(BUILD_TESTS "Build unit tests?" OFF)
 cmake_dependent_option(INSTALL_TESTS "Install unit tests?" OFF BUILD_TESTS OFF)
 option(VENDORED_DEFAULT "Default value for *_VENDORED options. Can be overridden for each library. Is only used in the first configure run." ON)
+option(SHARED_DEFAULT "Default value for *_SHARED options. Can be overridden for each library. Is only used in the first configure run." ON)
 option(SDL2_IMAGE_DISABLE_INSTALL "Disable installing SDL2_image" OFF)
 
 option(BACKEND_STB "Use stb_image for loading JPEG and PNG files" ON)
@@ -271,28 +272,28 @@ option(BUILD_SHARED_LIBS "Build the library as a shared library" ON)
 # FIXME: use vendored libavif when available
 set(SUPPORT_AVIF_VENDORED OFF)
 #cmake_dependent_option(SUPPORT_AVIF_VENDORED "Use vendored libavif" ${VENDORED_DEFAULT} SUPPORT_AVIF OFF)
-cmake_dependent_option(SUPPORT_AVIF_SHARED "Dynamically load AVIF support (requires shared libavif)" ON
+cmake_dependent_option(SUPPORT_AVIF_SHARED "Dynamically load AVIF support (requires shared libavif)" ${SHARED_DEFAULT}
     "SUPPORT_AVIF;(SUPPORT_AVIF_VENDORED AND BUILD_SHARED_LIBS) OR NOT SUPPORT_AVIF_VENDORED" OFF)
 
 cmake_dependent_option(SUPPORT_JPG_VENDORED "Use vendored libjpeg" ${VENDORED_DEFAULT} "SUPPORT_JPG;NOT BACKEND_WIC;NOT BACKEND_STB;NOT BACKEND_IMAGEIO;" OFF)
-cmake_dependent_option(SUPPORT_JPG_SHARED "Dynamically load JPG support (requires shared libjpeg)" ON
+cmake_dependent_option(SUPPORT_JPG_SHARED "Dynamically load JPG support (requires shared libjpeg)" ${SHARED_DEFAULT}
     "SUPPORT_JPG;NOT BACKEND_WIC;NOT BACKEND_STB;NOT BACKEND_IMAGEIO;(SUPPORT_JPG_VENDORED AND BUILD_SHARED_LIBS) OR NOT SUPPORT_JPG_VENDORED" OFF)
 
 cmake_dependent_option(SUPPORT_JXL_VENDORED "Use vendored libjxl" ${VENDORED_DEFAULT} SUPPORT_JXL OFF)
-cmake_dependent_option(SUPPORT_JXL_SHARED "Dynamically load JXL support (requires shared libjxl)" ON
+cmake_dependent_option(SUPPORT_JXL_SHARED "Dynamically load JXL support (requires shared libjxl)" ${SHARED_DEFAULT}
     "SUPPORT_JXL;(SUPPORT_JXL_VENDORED AND BUILD_SHARED_LIBS) OR NOT SUPPORT_JXL_VENDORED" OFF)
 
 cmake_dependent_option(SUPPORT_PNG_VENDORED "Use vendored PNG" ${VENDORED_DEFAULT} "SUPPORT_PNG;NOT BACKEND_WIC;NOT BACKEND_STB;NOT BACKEND_IMAGEIO" OFF)
-cmake_dependent_option(SUPPORT_PNG_SHARED "Dynamically load PNG support (requires shared libpng)" ON
+cmake_dependent_option(SUPPORT_PNG_SHARED "Dynamically load PNG support (requires shared libpng)" ${SHARED_DEFAULT}
     "SUPPORT_PNG;NOT BACKEND_WIC;NOT BACKEND_STB;NOT BACKEND_IMAGEIO;(SUPPORT_PNG_VENDORED AND BUILD_SHARED_LIBS) OR NOT SUPPORT_PNG_VENDORED" OFF)
 cmake_dependent_option(SUPPORT_ZLIB_VENDORED "Use vendored ZLIB (required by PNG)" ${VENDORED_DEFAULT} SUPPORT_PNG_VENDORED OFF)
 
 cmake_dependent_option(SUPPORT_TIF_VENDORED "Use vendored libtiff" ${VENDORED_DEFAULT} SUPPORT_TIF OFF)
-cmake_dependent_option(SUPPORT_TIF_SHARED "Dynamically load TIFF support (requires shared libtiff)" ON
+cmake_dependent_option(SUPPORT_TIF_SHARED "Dynamically load TIFF support (requires shared libtiff)" ${SHARED_DEFAULT}
     "SUPPORT_TIF;(SUPPORT_TIF_VENDORED AND BUILD_SHARED_LIBS) OR NOT SUPPORT_TIF_VENDORED" OFF)
 
 cmake_dependent_option(SUPPORT_WEBP_VENDORED "Use vendored WEBP" ${VENDORED_DEFAULT} SUPPORT_WEBP OFF)
-cmake_dependent_option(SUPPORT_WEBP_SHARED "Dynamically load WEBP support (requires shared libwebp)" ON
+cmake_dependent_option(SUPPORT_WEBP_SHARED "Dynamically load WEBP support (requires shared libwebp)" ${SHARED_DEFAULT}
     "SUPPORT_WEBP;(SUPPORT_WEBP_VENDORED AND BUILD_SHARED_LIBS) OR NOT SUPPORT_WEBP_VENDORED" OFF)
 
 # FIXME: ????
