@@ -19,6 +19,9 @@ AM_TESTS_ENVIRONMENT = \
 	SDL_VIDEODRIVER=dummy \
 	$(NULL)
 
+EXTRA_DIST = \
+	CMakeLists.txt Makefile.os2
+
 if INSTALL_TESTS
 testexec_PROGRAMS = $(test_programs)
 else

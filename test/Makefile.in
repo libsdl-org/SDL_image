@@ -565,6 +565,9 @@ AM_TESTS_ENVIRONMENT = \
 	SDL_VIDEODRIVER=dummy \
 	$(NULL)
 
+EXTRA_DIST = \
+	CMakeLists.txt Makefile.os2
+
 @INSTALL_TESTS_TRUE@dist_testexec_DATA = \
 @INSTALL_TESTS_TRUE@	palette.bmp \
 @INSTALL_TESTS_TRUE@	palette.gif \
