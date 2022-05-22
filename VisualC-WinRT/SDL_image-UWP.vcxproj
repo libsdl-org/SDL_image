@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|ARM">
       <Configuration>Debug</Configuration>
@@ -27,112 +27,75 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\external\jpeg\cderror.h" />
-    <ClInclude Include="..\..\external\jpeg\cdjpeg.h" />
-    <ClInclude Include="..\..\external\jpeg\jconfig.h" />
-    <ClInclude Include="..\..\external\jpeg\jdct.h" />
-    <ClInclude Include="..\..\external\jpeg\jerror.h" />
-    <ClInclude Include="..\..\external\jpeg\jinclude.h" />
-    <ClInclude Include="..\..\external\jpeg\jmemsys.h" />
-    <ClInclude Include="..\..\external\jpeg\jmorecfg.h" />
-    <ClInclude Include="..\..\external\jpeg\jpegint.h" />
-    <ClInclude Include="..\..\external\jpeg\jpeglib.h" />
-    <ClInclude Include="..\..\external\jpeg\jversion.h" />
-    <ClInclude Include="..\..\external\jpeg\transupp.h" />
+    <ClInclude Include="..\SDL_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\external\jpeg\jaricom.c" />
-    <ClCompile Include="..\..\external\jpeg\jcapimin.c" />
-    <ClCompile Include="..\..\external\jpeg\jcapistd.c" />
-    <ClCompile Include="..\..\external\jpeg\jcarith.c" />
-    <ClCompile Include="..\..\external\jpeg\jccoefct.c" />
-    <ClCompile Include="..\..\external\jpeg\jccolor.c" />
-    <ClCompile Include="..\..\external\jpeg\jcdctmgr.c" />
-    <ClCompile Include="..\..\external\jpeg\jchuff.c" />
-    <ClCompile Include="..\..\external\jpeg\jcinit.c" />
-    <ClCompile Include="..\..\external\jpeg\jcmainct.c" />
-    <ClCompile Include="..\..\external\jpeg\jcmarker.c" />
-    <ClCompile Include="..\..\external\jpeg\jcmaster.c" />
-    <ClCompile Include="..\..\external\jpeg\jcomapi.c" />
-    <ClCompile Include="..\..\external\jpeg\jcparam.c" />
-    <ClCompile Include="..\..\external\jpeg\jcprepct.c" />
-    <ClCompile Include="..\..\external\jpeg\jcsample.c" />
-    <ClCompile Include="..\..\external\jpeg\jctrans.c" />
-    <ClCompile Include="..\..\external\jpeg\jdapimin.c" />
-    <ClCompile Include="..\..\external\jpeg\jdapistd.c" />
-    <ClCompile Include="..\..\external\jpeg\jdarith.c" />
-    <ClCompile Include="..\..\external\jpeg\jdatadst.c" />
-    <ClCompile Include="..\..\external\jpeg\jdatasrc.c" />
-    <ClCompile Include="..\..\external\jpeg\jdcoefct.c" />
-    <ClCompile Include="..\..\external\jpeg\jdcolor.c" />
-    <ClCompile Include="..\..\external\jpeg\jddctmgr.c" />
-    <ClCompile Include="..\..\external\jpeg\jdhuff.c" />
-    <ClCompile Include="..\..\external\jpeg\jdinput.c" />
-    <ClCompile Include="..\..\external\jpeg\jdmainct.c" />
-    <ClCompile Include="..\..\external\jpeg\jdmarker.c" />
-    <ClCompile Include="..\..\external\jpeg\jdmaster.c" />
-    <ClCompile Include="..\..\external\jpeg\jdmerge.c" />
-    <ClCompile Include="..\..\external\jpeg\jdpostct.c" />
-    <ClCompile Include="..\..\external\jpeg\jdsample.c" />
-    <ClCompile Include="..\..\external\jpeg\jdtrans.c" />
-    <ClCompile Include="..\..\external\jpeg\jerror.c" />
-    <ClCompile Include="..\..\external\jpeg\jfdctflt.c" />
-    <ClCompile Include="..\..\external\jpeg\jfdctfst.c" />
-    <ClCompile Include="..\..\external\jpeg\jfdctint.c" />
-    <ClCompile Include="..\..\external\jpeg\jidctflt.c" />
-    <ClCompile Include="..\..\external\jpeg\jidctfst.c" />
-    <ClCompile Include="..\..\external\jpeg\jidctint.c" />
-    <ClCompile Include="..\..\external\jpeg\jmemansi.c" />
-    <ClCompile Include="..\..\external\jpeg\jmemmgr.c" />
-    <ClCompile Include="..\..\external\jpeg\jquant1.c" />
-    <ClCompile Include="..\..\external\jpeg\jquant2.c" />
-    <ClCompile Include="..\..\external\jpeg\jutils.c" />
+    <ProjectReference Include="..\..\SDL\VisualC-WinRT\SDL-UWP.vcxproj">
+      <Project>{89e9b32e-a86a-47c3-a948-d2b1622925ce}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="jpeg.def" />
+    <ClCompile Include="..\IMG.c" />
+    <ClCompile Include="..\IMG_avif.c" />
+    <ClCompile Include="..\IMG_bmp.c" />
+    <ClCompile Include="..\IMG_gif.c" />
+    <ClCompile Include="..\IMG_jpg.c" />
+    <ClCompile Include="..\IMG_jxl.c" />
+    <ClCompile Include="..\IMG_lbm.c" />
+    <ClCompile Include="..\IMG_pcx.c" />
+    <ClCompile Include="..\IMG_png.c" />
+    <ClCompile Include="..\IMG_pnm.c" />
+    <ClCompile Include="..\IMG_qoi.c" />
+    <ClCompile Include="..\IMG_stb.c" />
+    <ClCompile Include="..\IMG_svg.c" />
+    <ClCompile Include="..\IMG_tga.c" />
+    <ClCompile Include="..\IMG_tif.c" />
+    <ClCompile Include="..\IMG_webp.c" />
+    <ClCompile Include="..\IMG_WIC.c" />
+    <ClCompile Include="..\IMG_xcf.c" />
+    <ClCompile Include="..\IMG_xpm.c" />
+    <ClCompile Include="..\IMG_xv.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{cc6cf4c7-bd07-4738-854c-a6c5bae62ea9}</ProjectGuid>
-    <Keyword>Win32Proj</Keyword>
-    <ProjectName>jpeg-WinRT80</ProjectName>
-    <RootNamespace>jpeg_WinRT_VS2012</RootNamespace>
+    <ProjectGuid>{18665277-e558-4484-93f4-e4dc7bb614cb}</ProjectGuid>
+    <Keyword>DynamicLibrary</Keyword>
+    <ProjectName>SDL2_image-UWP</ProjectName>
+    <RootNamespace>SDL2_image_UWP</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>8.2</ApplicationTypeRevision>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.0.0</WindowsTargetPlatformMinVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -159,114 +122,114 @@
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <IntDir>Objs\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
-    <TargetName>jpeg</TargetName>
+    <TargetName>SDL2_image</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <IntDir>Objs\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
-    <TargetName>jpeg</TargetName>
+    <TargetName>SDL2_image</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <IntDir>Objs\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
-    <TargetName>jpeg</TargetName>
+    <TargetName>SDL2_image</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <IntDir>Objs\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
-    <TargetName>jpeg</TargetName>
+    <TargetName>SDL2_image</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <IntDir>Objs\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
-    <TargetName>jpeg</TargetName>
+    <TargetName>SDL2_image</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <IntDir>Objs\$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
-    <TargetName>jpeg</TargetName>
+    <TargetName>SDL2_image</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;NO_GETENV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;..\src;..\src\codecs;..\src\codecs\timidity;..\external\ogg\include;..\external\vorbis\include;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <ModuleDefinitionFile>..\jpeg.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;NO_GETENV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;..\src;..\src\codecs;..\src\codecs\timidity;..\external\ogg\include;..\external\vorbis\include;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <ModuleDefinitionFile>..\jpeg.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;NO_GETENV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;..\src;..\src\codecs;..\src\codecs\timidity;..\external\ogg\include;..\external\vorbis\include;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <ModuleDefinitionFile>..\jpeg.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;NO_GETENV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;..\src;..\src\codecs;..\src\codecs\timidity;..\external\ogg\include;..\external\vorbis\include;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <ModuleDefinitionFile>..\jpeg.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;NO_GETENV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;..\src;..\src\codecs;..\src\codecs\timidity;..\external\ogg\include;..\external\vorbis\include;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <ModuleDefinitionFile>..\jpeg.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;NO_GETENV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;..\src;..\src\codecs;..\src\codecs\timidity;..\external\ogg\include;..\external\vorbis\include;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <ModuleDefinitionFile>..\jpeg.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
