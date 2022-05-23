@@ -17,11 +17,6 @@
 #include <Foundation/Foundation.h>
 
 #if (TARGET_OS_IPHONE == 1) || (TARGET_IPHONE_SIMULATOR == 1)
-#ifdef ALLOW_UIIMAGE_FALLBACK
-#define USE_UIIMAGE_BACKEND() ([UIImage instancesRespondToSelector:@selector(initWithCGImage:scale:orientation:)] == NO)
-#else
-#define USE_UIIMAGE_BACKEND() (Internal_checkImageIOisAvailable())
-#endif
 #import <MobileCoreServices/MobileCoreServices.h> // for UTCoreTypes.h
 #import <ImageIO/ImageIO.h>
 #import <UIKit/UIImage.h>
@@ -342,19 +337,6 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage(CGImageRef image_ref)
 }
 
 
-#pragma mark -
-#pragma mark IMG_Init stubs
-#if !defined(ALLOW_UIIMAGE_FALLBACK) && ((TARGET_OS_IPHONE == 1) || (TARGET_IPHONE_SIMULATOR == 1))
-static int Internal_checkImageIOisAvailable() {
-    // just check if we are running on ios 4 or more, else throw exception
-    if ([UIImage instancesRespondToSelector:@selector(initWithCGImage:scale:orientation:)])
-        return 0;
-    [NSException raise:@"UIImage fallback not enabled at compile time"
-                format:@"ImageIO is not available on your platform, please recompile SDL_Image with ALLOW_UIIMAGE_FALLBACK."];
-    return -1;
-}
-#endif
-
 #ifdef JPG_USES_IMAGEIO
 
 int IMG_InitJPG()
@@ -390,138 +372,12 @@ void IMG_QuitTIF()
 {
 }
 
-#pragma mark -
-#pragma mark Get type of image
-static int Internal_isType_UIImage (SDL_RWops *rw_ops, CFStringRef uti_string_to_test)
+static int Internal_isType (SDL_RWops *rw_ops, CFStringRef uti_string_to_test)
 {
     int is_type = 0;
 
-#if defined(ALLOW_UIIMAGE_FALLBACK) && ((TARGET_OS_IPHONE == 1) || (TARGET_IPHONE_SIMULATOR == 1))
-    Sint64 start = SDL_RWtell(rw_ops);
-    if ((0 == CFStringCompare(uti_string_to_test, kUTTypeICO, 0)) ||
-        (0 == CFStringCompare(uti_string_to_test, CFSTR("com.microsoft.cur"), 0))) {
-
-        // The Win32 ICO file header (14 bytes)
-        Uint16 bfReserved;
-        Uint16 bfType;
-        Uint16 bfCount;
-        int type = (0 == CFStringCompare(uti_string_to_test, kUTTypeICO, 0)) ? 1 : 2;
-
-        bfReserved = SDL_ReadLE16(rw_ops);
-        bfType = SDL_ReadLE16(rw_ops);
-        bfCount = SDL_ReadLE16(rw_ops);
-        if ((bfReserved == 0) && (bfType == type) && (bfCount != 0))
-            is_type = 1;
-    } else if (0 == CFStringCompare(uti_string_to_test, kUTTypeBMP, 0)) {
-        char magic[2];
-
-        if ( SDL_RWread(rw_ops, magic, sizeof(magic), 1) ) {
-            if ( strncmp(magic, "BM", 2) == 0 ) {
-                is_type = 1;
-            }
-        }
-    } else if (0 == CFStringCompare(uti_string_to_test, kUTTypeGIF, 0)) {
-        char magic[6];
-
-        if ( SDL_RWread(rw_ops, magic, sizeof(magic), 1) ) {
-            if ( (strncmp(magic, "GIF", 3) == 0) &&
-                ((memcmp(magic + 3, "87a", 3) == 0) ||
-                 (memcmp(magic + 3, "89a", 3) == 0)) ) {
-                    is_type = 1;
-                }
-        }
-    } else if (0 == CFStringCompare(uti_string_to_test, kUTTypeJPEG, 0)) {
-        int in_scan = 0;
-        Uint8 magic[4];
-
-        // This detection code is by Steaphan Greene <stea@cs.binghamton.edu>
-        // Blame me, not Sam, if this doesn't work right. */
-        // And don't forget to report the problem to the the sdl list too! */
-
-        if ( SDL_RWread(rw_ops, magic, 2, 1) ) {
-            if ( (magic[0] == 0xFF) && (magic[1] == 0xD8) ) {
-                is_type = 1;
-                while (is_type == 1) {
-                    if(SDL_RWread(rw_ops, magic, 1, 2) != 2) {
-                        is_type = 0;
-                    } else if( (magic[0] != 0xFF) && (in_scan == 0) ) {
-                        is_type = 0;
-                    } else if( (magic[0] != 0xFF) || (magic[1] == 0xFF) ) {
-                        /* Extra padding in JPEG (legal) */
-                        /* or this is data and we are scanning */
-                        SDL_RWseek(rw_ops, -1, SEEK_CUR);
-                    } else if(magic[1] == 0xD9) {
-                        /* Got to end of good JPEG */
-                        break;
-                    } else if( (in_scan == 1) && (magic[1] == 0x00) ) {
-                        /* This is an encoded 0xFF within the data */
-                    } else if( (magic[1] >= 0xD0) && (magic[1] < 0xD9) ) {
-                        /* These have nothing else */
-                    } else if(SDL_RWread(rw_ops, magic+2, 1, 2) != 2) {
-                        is_type = 0;
-                    } else {
-                        /* Yes, it's big-endian */
-                        Uint32 start;
-                        Uint32 size;
-                        Uint32 end;
-                        start = SDL_RWtell(rw_ops);
-                        size = (magic[2] << 8) + magic[3];
-                        end = SDL_RWseek(rw_ops, size-2, SEEK_CUR);
-                        if ( end != start + size - 2 ) is_type = 0;
-                        if ( magic[1] == 0xDA ) {
-                            /* Now comes the actual JPEG meat */
-#ifdef  FAST_IS_JPEG
-                            /* Ok, I'm convinced.  It is a JPEG. */
-                            break;
-#else
-                            /* I'm not convinced.  Prove it! */
-                            in_scan = 1;
-#endif
-                        }
-                    }
-                }
-            }
-        }
-    } else if (0 == CFStringCompare(uti_string_to_test, kUTTypePNG, 0)) {
-        Uint8 magic[4];
-
-        if ( SDL_RWread(rw_ops, magic, 1, sizeof(magic)) == sizeof(magic) ) {
-            if ( magic[0] == 0x89 &&
-                magic[1] == 'P' &&
-                magic[2] == 'N' &&
-                magic[3] == 'G' ) {
-                is_type = 1;
-            }
-        }
-    } else if (0 == CFStringCompare(uti_string_to_test, CFSTR("com.truevision.tga-image"), 0)) {
-        //TODO: fill me!
-    } else if (0 == CFStringCompare(uti_string_to_test, kUTTypeTIFF, 0)) {
-        Uint8 magic[4];
-
-        if ( SDL_RWread(rw_ops, magic, 1, sizeof(magic)) == sizeof(magic) ) {
-            if ( (magic[0] == 'I' &&
-                  magic[1] == 'I' &&
-                  magic[2] == 0x2a &&
-                  magic[3] == 0x00) ||
-                (magic[0] == 'M' &&
-                 magic[1] == 'M' &&
-                 magic[2] == 0x00 &&
-                 magic[3] == 0x2a) ) {
-                    is_type = 1;
-                }
-        }
-    }
-
-    // reset the file pointer
-    SDL_RWseek(rw_ops, start, SEEK_SET);
-
-#endif  /* #if defined(ALLOW_UIIMAGE_FALLBACK) && ((TARGET_OS_IPHONE == 1) || (TARGET_IPHONE_SIMULATOR == 1)) */
-    return is_type;
-}
-
-static int Internal_isType_ImageIO (SDL_RWops *rw_ops, CFStringRef uti_string_to_test)
-{
-    int is_type = 0;
+    if (rw_ops == NULL)
+        return 0;
 
     Sint64 start = SDL_RWtell(rw_ops);
     CFDictionaryRef hint_dictionary = CreateHintDictionary(uti_string_to_test);
@@ -553,19 +409,6 @@ static int Internal_isType_ImageIO (SDL_RWops *rw_ops, CFStringRef uti_string_to
     // reset the file pointer
     SDL_RWseek(rw_ops, start, SEEK_SET);
     return is_type;
-}
-
-static int Internal_isType (SDL_RWops *rw_ops, CFStringRef uti_string_to_test)
-{
-    if (rw_ops == NULL)
-        return 0;
-
-#if (TARGET_OS_IPHONE == 1) || (TARGET_IPHONE_SIMULATOR == 1)
-    if (USE_UIIMAGE_BACKEND())
-        return Internal_isType_UIImage(rw_ops, uti_string_to_test);
-    else
-#endif
-        return Internal_isType_ImageIO(rw_ops, uti_string_to_test);
 }
 
 #ifdef BMP_USES_IMAGEIO
@@ -623,39 +466,7 @@ int IMG_isTIF(SDL_RWops *src)
     return Internal_isType(src, kUTTypeTIFF);
 }
 
-#pragma mark -
-#pragma mark Load image engine
-static SDL_Surface *LoadImageFromRWops_UIImage (SDL_RWops* rw_ops, CFStringRef uti_string_hint)
-{
-    SDL_Surface *sdl_surface = NULL;
-
-#if defined(ALLOW_UIIMAGE_FALLBACK) && ((TARGET_OS_IPHONE == 1) || (TARGET_IPHONE_SIMULATOR == 1))
-    NSAutoreleasePool* autorelease_pool = [[NSAutoreleasePool alloc] init];
-    UIImage *ui_image;
-    int bytes_read = 0;
-    // I don't know what a good size is.
-    // Max recommended texture size is 1024x1024 on iPhone so maybe base it on that?
-    const int block_size = 1024*4;
-    char temp_buffer[block_size];
-
-    NSMutableData* ns_data = [[NSMutableData alloc] initWithCapacity:1024*1024*4];
-    do {
-        bytes_read = SDL_RWread(rw_ops, temp_buffer, 1, block_size);
-        [ns_data appendBytes:temp_buffer length:bytes_read];
-    } while (bytes_read > 0);
-
-    ui_image = [[UIImage alloc] initWithData:ns_data];
-    if (ui_image != nil)
-        sdl_surface = Create_SDL_Surface_From_CGImage([ui_image CGImage]);
-    [ui_image release];
-    [ns_data release];
-    [autorelease_pool drain];
-
-#endif  /* #if defined(ALLOW_UIIMAGE_FALLBACK) && ((TARGET_OS_IPHONE == 1) || (TARGET_IPHONE_SIMULATOR == 1)) */
-    return sdl_surface;
-}
-
-static SDL_Surface *LoadImageFromRWops_ImageIO (SDL_RWops *rw_ops, CFStringRef uti_string_hint)
+static SDL_Surface *LoadImageFromRWops (SDL_RWops *rw_ops, CFStringRef uti_string_hint)
 {
     CFDictionaryRef hint_dictionary = CreateHintDictionary(uti_string_hint);
     CGImageSourceRef image_source = CreateCGImageSourceFromRWops(rw_ops, hint_dictionary);
@@ -677,35 +488,7 @@ static SDL_Surface *LoadImageFromRWops_ImageIO (SDL_RWops *rw_ops, CFStringRef u
     return sdl_surface;
 }
 
-static SDL_Surface *LoadImageFromRWops (SDL_RWops *rw_ops, CFStringRef uti_string_hint)
-{
-#if (TARGET_OS_IPHONE == 1) || (TARGET_IPHONE_SIMULATOR == 1)
-    if (USE_UIIMAGE_BACKEND())
-        return LoadImageFromRWops_UIImage(rw_ops, uti_string_hint);
-    else
-#endif
-        return LoadImageFromRWops_ImageIO(rw_ops, uti_string_hint);
-}
-
-static SDL_Surface* LoadImageFromFile_UIImage (const char *file)
-{
-    SDL_Surface *sdl_surface = NULL;
-
-#if defined(ALLOW_UIIMAGE_FALLBACK) && ((TARGET_OS_IPHONE == 1) || (TARGET_IPHONE_SIMULATOR == 1))
-    NSAutoreleasePool* autorelease_pool = [[NSAutoreleasePool alloc] init];
-    NSString *ns_string = [[NSString alloc] initWithUTF8String:file];
-    UIImage *ui_image = [[UIImage alloc] initWithContentsOfFile:ns_string];
-    if (ui_image != nil)
-        sdl_surface = Create_SDL_Surface_From_CGImage([ui_image CGImage]);
-    [ui_image release];
-    [ns_string release];
-    [autorelease_pool drain];
-
-#endif  /* #if defined(ALLOW_UIIMAGE_FALLBACK) && ((TARGET_OS_IPHONE == 1) || (TARGET_IPHONE_SIMULATOR == 1)) */
-    return sdl_surface;
-}
-
-static SDL_Surface* LoadImageFromFile_ImageIO (const char *file)
+static SDL_Surface* LoadImageFromFile (const char *file)
 {
     CGImageSourceRef image_source = NULL;
 
@@ -722,16 +505,6 @@ static SDL_Surface* LoadImageFromFile_ImageIO (const char *file)
     SDL_Surface *sdl_surface = Create_SDL_Surface_From_CGImage(image_ref);
     CFRelease(image_ref);
     return sdl_surface;
-}
-
-static SDL_Surface* LoadImageFromFile (const char *file)
-{
-#if (TARGET_OS_IPHONE == 1) || (TARGET_IPHONE_SIMULATOR == 1)
-    if (USE_UIIMAGE_BACKEND())
-        return LoadImageFromFile_UIImage(file);
-    else
-#endif
-        return LoadImageFromFile_ImageIO(file);
 }
 
 #ifdef BMP_USES_IMAGEIO
