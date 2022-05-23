@@ -139,7 +139,7 @@ static const Format formats[] =
         "sample.bmp",
         23,
         42,
-        0,              /* lossless */
+        300,
         IMG_INIT_AVIF,
 #ifdef LOAD_AVIF
         SDL_TRUE,
