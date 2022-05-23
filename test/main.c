@@ -513,7 +513,7 @@ ConvertToRgba32(SDL_Surface **surface_p)
         SDLTest_AssertCheck(temp != NULL,
                             "Converting to RGBA should succeed (%s)",
                             SDL_GetError());
-        if (temp != NULL) {
+        if (temp == NULL) {
             return SDL_FALSE;
         }
         SDL_FreeSurface(*surface_p);
