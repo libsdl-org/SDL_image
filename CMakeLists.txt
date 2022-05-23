@@ -400,6 +400,7 @@ endif()
 if(SDL2IMAGE_JXL)
     target_compile_definitions(SDL2_image PRIVATE LOAD_JXL)
     if(SDL2IMAGE_JXL_VENDORED)
+        enable_language(CXX)
         message(STATUS "${PROJECT_NAME}: Using vendored libjxl")
         set(BUILD_TESTING OFF)
         # JPEGXL_ENABLE_MANPAGES variable is used by libjxl
