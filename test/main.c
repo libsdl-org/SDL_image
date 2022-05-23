@@ -298,7 +298,7 @@ static const Format formats[] =
         42,
         0,              /* lossless */
         IMG_INIT_PNG,
-#ifdef LOAD_PNM
+#ifdef LOAD_PNG
         SDL_TRUE,
 #else
         SDL_FALSE,
