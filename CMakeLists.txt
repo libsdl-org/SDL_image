@@ -129,6 +129,12 @@ endif()
 cmake_dependent_option(SDL2IMAGE_WEBP_SHARED "Dynamically load WEBP support (requires shared libwebp)"
     ${SDL2IMAGE_DEPS_SHARED} SDL2IMAGE_WEBP OFF)
 
+if(SDL2IMAGE_PNG_VENDORED)
+    set(SDL2IMAGE_ZLIB ON)
+else()
+    set(SDL2IMAGE_ZLIB OFF)
+endif()
+
 if(SDL2IMAGE_VENDORED AND SDL2IMAGE_PNG_VENDORED)
     set(SDL2IMAGE_ZLIB_VENDORED ON)
 else()
@@ -289,24 +295,26 @@ if(SDL2IMAGE_BACKEND_WIC)
     target_compile_definitions(SDL2_image PRIVATE SDL_IMAGE_USE_WIC_BACKEND)
 endif()
 
-if(SDL2IMAGE_ZLIB_VENDORED)
-    message(STATUS "${PROJECT_NAME}: Using vendored zlib")
-    sdl_check_project_in_subfolder(external/zlib zlib)
-    add_subdirectory(external/zlib EXCLUDE_FROM_ALL)
-    # PNG_BUILD_ZLIB variable is used by vendored libpng
-    set(PNG_BUILD_ZLIB ON CACHE BOOL "libpng option to tell it should use 'our' vendored ZLIB library" FORCE)
-    # ZLIB_INCLUDE_DIR variable is used by vendored libpng
-    set(ZLIB_INCLUDE_DIR "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/external/zlib;${CMAKE_CURRENT_BINARY_DIR}/external/zlib>" CACHE STRING "path of zlib, passed to libpng" FORCE)
-    # ZLIB_LIBRARY variable is used by vendored libpng
-    if(SDL2IMAGE_ZLIB_SHARED)
-        set(ZLIB_LIBRARY zlib)
+if(SDL2IMAGE_ZLIB)
+    if(SDL2IMAGE_ZLIB_VENDORED)
+        message(STATUS "${PROJECT_NAME}: Using vendored zlib")
+        sdl_check_project_in_subfolder(external/zlib zlib)
+        add_subdirectory(external/zlib EXCLUDE_FROM_ALL)
+        # PNG_BUILD_ZLIB variable is used by vendored libpng
+        set(PNG_BUILD_ZLIB ON CACHE BOOL "libpng option to tell it should use 'our' vendored ZLIB library" FORCE)
+        # ZLIB_INCLUDE_DIR variable is used by vendored libpng
+        set(ZLIB_INCLUDE_DIR "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/external/zlib;${CMAKE_CURRENT_BINARY_DIR}/external/zlib>" CACHE STRING "path of zlib, passed to libpng" FORCE)
+        # ZLIB_LIBRARY variable is used by vendored libpng
+        if(SDL2IMAGE_ZLIB_SHARED)
+            set(ZLIB_LIBRARY zlib)
+        else()
+            set(ZLIB_LIBRARY zlibstatic)
+        endif()
+        list(APPEND INSTALL_EXTRA_TARGETS ${ZLIB_LIBRARY})
     else()
-        set(ZLIB_LIBRARY zlibstatic)
+        message(STATUS "${PROJECT_NAME}: Using system zlib")
+        find_package(ZLIB REQUIRED)
     endif()
-    list(APPEND INSTALL_EXTRA_TARGETS ${ZLIB_LIBRARY})
-else()
-    message(STATUS "${PROJECT_NAME}: Using system zlib")
-    find_package(ZLIB REQUIRED)
 endif()
 
 if(SDL2IMAGE_AVIF)
@@ -743,8 +751,12 @@ endif()
 add_library(SDL2::image INTERFACE IMPORTED GLOBAL)
 set_target_properties(SDL2::image PROPERTIES
     INTERFACE_LINK_LIBRARIES "SDL2_image"
-    DEPRECATION "Use SDL2_image::SDL2_image or SDL2_image::SDL2_image-static instead"
 )
+if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.17")
+    set_target_properties(SDL2::image PROPERTIES
+        DEPRECATION "Use SDL2_image::SDL2_image or SDL2_image::SDL2_image-static instead"
+    )
+endif()
 
 if(SDL2IMAGE_TESTS)
     enable_testing()
