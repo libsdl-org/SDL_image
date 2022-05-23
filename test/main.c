@@ -523,6 +523,94 @@ ConvertToRgba32(SDL_Surface **surface_p)
 }
 
 static void
+DumpPixels(const char *filename, SDL_Surface *surface)
+{
+    const unsigned char *pixels = surface->pixels;
+    const unsigned char *p;
+    size_t w, h, pitch;
+    size_t i, j;
+
+    fprintf(stderr, "%s:\n", filename);
+
+    if (surface->format->palette) {
+        size_t n = 0;
+
+        if (surface->format->palette->ncolors >= 0) {
+            n = (size_t) surface->format->palette->ncolors;
+        }
+
+        fprintf(stderr, "  Palette:\n");
+        for (i = 0; i < n; i++) {
+            fprintf(stderr, "    RGBA[0x%02x] = %02x%02x%02x%02x\n",
+                    (unsigned) i,
+                    surface->format->palette->colors[i].r,
+                    surface->format->palette->colors[i].g,
+                    surface->format->palette->colors[i].b,
+                    surface->format->palette->colors[i].a);
+        }
+    }
+
+    if (surface->w < 0) {
+        fprintf(stderr, "    Invalid width %d\n", surface->w);
+        return;
+    }
+
+    if (surface->h < 0) {
+        fprintf(stderr, "    Invalid height %d\n", surface->h);
+        return;
+    }
+
+    if (surface->pitch < 0) {
+        fprintf(stderr, "    Invalid pitch %d\n", surface->pitch);
+        return;
+    }
+
+    w = (size_t) surface->w;
+    h = (size_t) surface->h;
+    pitch = (size_t) surface->pitch;
+
+    fprintf(stderr, "  Pixels:\n");
+
+    for (j = 0; j < h; j++) {
+        fprintf(stderr, "    ");
+
+        for (i = 0; i < w; i++) {
+            p = pixels + (j * pitch) + (i * surface->format->BytesPerPixel);
+
+            switch (surface->format->BitsPerPixel) {
+                case 1:
+                case 4:
+                case 8:
+                    fprintf(stderr, "%02x ", *p);
+                    break;
+
+                case 12:
+                case 15:
+                case 16:
+                    fprintf(stderr, "%02x", *p++);
+                    fprintf(stderr, "%02x ", *p);
+                    break;
+
+                case 24:
+                    fprintf(stderr, "%02x", *p++);
+                    fprintf(stderr, "%02x", *p++);
+                    fprintf(stderr, "%02x ", *p);
+                    break;
+
+                case 32:
+                    fprintf(stderr, "%02x", *p++);
+                    fprintf(stderr, "%02x", *p++);
+                    fprintf(stderr, "%02x", *p++);
+                    fprintf(stderr, "%02x ", *p);
+                    break;
+            }
+        }
+
+        fprintf(stderr, "\n");
+    }
+}
+
+static void
 FormatLoadTest(const Format *format,
                LoadMode mode)
 {
@@ -648,6 +736,10 @@ FormatLoadTest(const Format *format,
                         "Expected height %d px, got %d",
                         format->h, surface->h);
 
+    if (GetStringBoolean(SDL_getenv("SDL_IMAGE_TEST_DEBUG"), SDL_FALSE)) {
+        DumpPixels(filename, surface);
+    }
+
     if (reference != NULL) {
         ConvertToRgba32(&reference);
         ConvertToRgba32(&surface);
@@ -655,6 +747,10 @@ FormatLoadTest(const Format *format,
         SDLTest_AssertCheck(diff == 0,
                             "Surface differed from reference by at most %d in %d pixels",
                             format->tolerance, diff);
+        if (diff != 0 || GetStringBoolean(SDL_getenv("SDL_IMAGE_TEST_DEBUG"), SDL_FALSE)) {
+            DumpPixels(filename, surface);
+            DumpPixels(refFilename, reference);
+        }
     }
 
 out:
@@ -752,6 +848,9 @@ FormatSaveTest(const Format *format,
             goto out;
         }
 
+        ConvertToRgba32(&reference);
+        ConvertToRgba32(&surface);
+
         SDLTest_AssertCheck(surface->w == format->w,
                             "Expected width %d px, got %d",
                             format->w, surface->w);
@@ -763,6 +862,10 @@ FormatSaveTest(const Format *format,
         SDLTest_AssertCheck(diff == 0,
                             "Surface differed from reference by at most %d in %d pixels",
                             format->tolerance, diff);
+        if (diff != 0 || GetStringBoolean(SDL_getenv("SDL_IMAGE_TEST_DEBUG"), SDL_FALSE)) {
+            DumpPixels(filename, surface);
+            DumpPixels(refFilename, reference);
+        }
     }
 
 out:
