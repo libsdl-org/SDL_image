@@ -653,7 +653,7 @@ FormatLoadTest(const Format *format,
         ConvertToRgba32(&surface);
         diff = SDLTest_CompareSurfaces(surface, reference, format->tolerance);
         SDLTest_AssertCheck(diff == 0,
-                            "Surface differed from reference by at least %d in %d pixels",
+                            "Surface differed from reference by at most %d in %d pixels",
                             format->tolerance, diff);
     }
 
@@ -764,7 +764,7 @@ FormatSaveTest(const Format *format,
 
         diff = SDLTest_CompareSurfaces(surface, reference, format->tolerance);
         SDLTest_AssertCheck(diff == 0,
-                            "Surface differed from reference by at least %d in %d pixels",
+                            "Surface differed from reference by at most %d in %d pixels",
                             format->tolerance, diff);
     }
 
