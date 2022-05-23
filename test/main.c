@@ -28,6 +28,12 @@ static const char pathsep[] = ".";
 static const char pathsep[] = "/";
 #endif
 
+#if defined(__APPLE__) && !defined(SDL_IMAGE_USE_COMMON_BACKEND)
+# define USING_IMAGEIO 1
+#else
+# define USING_IMAGEIO 0
+#endif
+
 typedef enum
 {
     TEST_FILE_DIST,
@@ -192,7 +198,7 @@ static const Format formats[] =
         42,
         0,              /* lossless */
         0,              /* no initialization */
-#ifdef LOAD_GIF
+#if USING_IMAGEIO || defined(LOAD_GIF)
         SDL_TRUE,
 #else
         SDL_FALSE,
@@ -226,7 +232,7 @@ static const Format formats[] =
         42,
         100,
         IMG_INIT_JPG,
-#ifdef LOAD_JPG
+#if (USING_IMAGEIO && defined(JPG_USES_IMAGEIO)) || defined(SDL_IMAGE_USE_WIC_BACKEND) || defined(LOAD_JPG)
         SDL_TRUE,
 #else
         SDL_FALSE,
@@ -298,7 +304,7 @@ static const Format formats[] =
         42,
         0,              /* lossless */
         IMG_INIT_PNG,
-#ifdef LOAD_PNG
+#if (USING_IMAGEIO && defined(PNG_USES_IMAGEIO)) || defined(SDL_IMAGE_USE_WIC_BACKEND) || defined(LOAD_PNG)
         SDL_TRUE,
 #else
         SDL_FALSE,
@@ -384,7 +390,7 @@ static const Format formats[] =
         42,
         0,              /* lossless? */
         0,              /* no initialization */
-#ifdef LOAD_TGA
+#if USING_IMAGEIO || defined(LOAD_TGA)
         SDL_TRUE,
 #else
         SDL_FALSE,
@@ -402,7 +408,7 @@ static const Format formats[] =
         42,
         0,              /* lossless */
         IMG_INIT_TIF,
-#ifdef LOAD_TIF
+#if USING_IMAGEIO || defined(SDL_IMAGE_USE_WIC_BACKEND) || defined(LOAD_TIF)
         SDL_TRUE,
 #else
         SDL_FALSE,
