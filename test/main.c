@@ -28,14 +28,6 @@ static const char pathsep[] = ".";
 static const char pathsep[] = "/";
 #endif
 
-/* TODO: https://github.com/libsdl-org/SDL_image/issues/243 */
-#ifndef SDL_IMAGE_SAVE_JPG
-# define SDL_IMAGE_SAVE_JPG 0
-#endif
-#ifndef SDL_IMAGE_SAVE_PNG
-# define SDL_IMAGE_SAVE_PNG 0
-#endif
-
 typedef enum
 {
     TEST_FILE_DIST,
