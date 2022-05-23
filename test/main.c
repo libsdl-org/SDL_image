@@ -241,7 +241,7 @@ static const Format formats[] =
         "sample.bmp",
         23,
         42,
-        100,
+        300,
         IMG_INIT_JXL,
 #ifdef LOAD_JXL
         SDL_TRUE,
