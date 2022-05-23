@@ -738,7 +738,8 @@ static int IMG_SaveJPG_RW_tinyjpeg(SDL_Surface *surface, SDL_RWops *dst, int fre
         jpeg_surface->w,
         jpeg_surface->h,
         3,
-        jpeg_surface->pixels
+        jpeg_surface->pixels,
+        jpeg_surface->pitch
     ) - 1; /* tinyjpeg returns 0 on error, 1 on success */
 
     if (jpeg_surface != surface) {
