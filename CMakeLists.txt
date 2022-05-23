@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.16)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
@@ -704,8 +704,10 @@ if(SDL2IMAGE_INSTALL)
         endif()
         # Only install a SDL2_image.pc file in Release mode
         install(CODE "
-            file(COPY_FILE \"${CMAKE_CURRENT_BINARY_DIR}/SDL2_image-$<CONFIG>.pc\"
-                \"${CMAKE_CURRENT_BINARY_DIR}/SDL2_image.pc\" ONLY_IF_DIFFERENT)
+            # FIXME: use file(COPY_FILE) if minimum CMake version >= 3.21
+            execute_process(COMMAND \"\${CMAKE_COMMAND}\" -E copy_if_different
+                \"${CMAKE_CURRENT_BINARY_DIR}/SDL2_image-$<CONFIG>.pc\"
+                \"${CMAKE_CURRENT_BINARY_DIR}/SDL2_image.pc\")
             file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${PC_DESTDIR}\"
                 TYPE FILE
                 FILES \"${CMAKE_CURRENT_BINARY_DIR}/SDL2_image.pc\")" CONFIG Release COMPONENT devel)
@@ -733,7 +735,7 @@ if(SDL2IMAGE_SAMPLES)
     find_package(SDL2main)
 
     foreach(prog showanim showimage)
-        # FIXME: mingw should be handles by SDL2::SDL2(-static) target
+        # FIXME: mingw should be handled by SDL2::SDL2(-static) target
         if(MINGW)
             target_link_libraries(${prog} PRIVATE mingw32)
             target_link_options(${prog} PRIVATE -mwindows)
