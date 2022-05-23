@@ -792,25 +792,28 @@ SDL_Surface* IMG_LoadTIF_RW (SDL_RWops *src)
 // Potentially, Apple can optimize for either case.
 SDL_Surface* IMG_Load (const char *file)
 {
-    SDL_Surface* sdl_surface = NULL;
+    SDL_Surface *surface = NULL;
+    char *ext = strrchr(file, '.');
+    if (ext) {
+        ext++;
+    }
 
-    sdl_surface = LoadImageFromFile(file);
-    if(NULL == sdl_surface)
-    {
+    if (ext && (SDL_strcasecmp(ext, "ico") == 0 || SDL_strcasecmp(ext, "cur") == 0)) {
+        /* CreateCGImageSourceFromFile() doesn't detect the correct format, skip it */
+    } else {
+        surface = LoadImageFromFile(file);
+    }
+    if (!surface) {
         // Either the file doesn't exist or ImageIO doesn't understand the format.
         // For the latter case, fallback to the native SDL_image handlers.
         SDL_RWops *src = SDL_RWFromFile(file, "rb");
-        char *ext = strrchr(file, '.');
-        if (ext) {
-            ext++;
-        }
         if (!src) {
             /* The error message has been set in SDL_RWFromFile */
             return NULL;
         }
-        sdl_surface = IMG_LoadTyped_RW(src, 1, ext);
+        surface = IMG_LoadTyped_RW(src, 1, ext);
     }
-    return sdl_surface;
+    return surface;
 }
 
 #endif /* defined(__APPLE__) && !defined(SDL_IMAGE_USE_COMMON_BACKEND) */
