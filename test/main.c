@@ -683,13 +683,18 @@ FormatSaveTest(const Format *format,
                SDL_bool rw)
 {
     char *refFilename = GetTestFilename(TEST_FILE_DIST, "sample.bmp");
-    const char *filename;
+    char filename[64] = { 0 };
     SDL_Surface *reference = NULL;
     SDL_Surface *surface = NULL;
     SDL_RWops *dest = NULL;
     int initResult = 0;
     int diff;
     int result;
+
+    SDL_snprintf(filename, sizeof(filename),
+                 "save%s.%s",
+                 rw ? "Rwops" : "",
+                 format->name);
 
     if (!SDLTest_AssertCheck(refFilename != NULL,
                              "Building ref filename should succeed (%s)",
@@ -717,8 +722,6 @@ FormatSaveTest(const Format *format,
     }
 
     if (strcmp (format->name, "PNG") == 0) {
-        filename = "save.png";
-
         if (rw) {
             dest = SDL_RWFromFile(filename, "wb");
             result = IMG_SavePNG_RW(reference, dest, SDL_FALSE);
@@ -727,14 +730,12 @@ FormatSaveTest(const Format *format,
             result = IMG_SavePNG(reference, filename);
         }
     } else if (strcmp(format->name, "JPG") == 0) {
-        filename = "save.jpg";
-
         if (rw) {
             dest = SDL_RWFromFile(filename, "wb");
             result = IMG_SaveJPG_RW(reference, dest, SDL_FALSE, 90);
             SDL_RWclose(dest);
         } else {
-            result = IMG_SaveJPG(reference, "save.jpg", 90);
+            result = IMG_SaveJPG(reference, filename, 90);
         }
     } else {
         SDLTest_AssertCheck(SDL_FALSE, "How do I save %s?", format->name);
@@ -744,11 +745,7 @@ FormatSaveTest(const Format *format,
     SDLTest_AssertCheck(result == 0, "Save %s (%s)", filename, SDL_GetError());
 
     if (format->canLoad) {
-        if (strcmp (format->name, "PNG") == 0) {
-            surface = IMG_Load("save.png");
-        } else if (strcmp (format->name, "JPG") == 0) {
-            surface = IMG_Load("save.jpg");
-        }
+        surface = IMG_Load(filename);
 
         if (!SDLTest_AssertCheck(surface != NULL,
                                  "Load %s (%s)", "saved file", SDL_GetError())) {
