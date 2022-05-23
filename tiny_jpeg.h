@@ -83,13 +83,6 @@ extern "C"
 {
 #endif
 
-#if defined(__GNUC__) || defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"  // We use {0}, which will zero-out the struct.
-#pragma GCC diagnostic ignored "-Wmissing-braces"
-#pragma GCC diagnostic ignored "-Wpadded"
-#endif
-
 // ============================================================
 // Public interface:
 // ============================================================
@@ -647,6 +640,7 @@ TJEI_FORCE_INLINE void tjei_write_bits(TJEState* state,
     }
 }
 
+#if TJE_USE_FAST_DCT
 // DCT implementation by Thomas G. Lane.
 // Obtained through NVIDIA
 //  http://developer.download.nvidia.com/SDK/9.5/Samples/vidimaging_samples.html#gpgpu_dct
@@ -766,6 +760,8 @@ static void tjei_fdct (float * data)
         dataptr++;          /* advance pointer to next column */
     }
 }
+#endif
+
 #if !TJE_USE_FAST_DCT
 static float slow_fdct(int u, int v, float* data)
 {
@@ -921,13 +917,15 @@ struct TJEProcessedQT
 // Set up huffman tables in state.
 static void tjei_huff_expand(TJEState* state)
 {
-    int32_t spec_tables_len[4] = { 0 };
+    int32_t spec_tables_len[4];
     uint8_t huffsize[4][257];
     uint16_t huffcode[4][256];
 
     int i, k;
 
     assert(state);
+
+    memset(spec_tables_len, 0, sizeof(spec_tables_len));
 
     state->ht_bits[TJEI_LUMA_DC]   = tjei_default_ht_luma_dc_len;
     state->ht_bits[TJEI_LUMA_AC]   = tjei_default_ht_luma_ac_len;
@@ -1266,15 +1264,19 @@ int tje_encode_with_func(tje_write_func* func,
                          const unsigned char* src_data,
                          const int pitch)
 {
-    TJEState state = { 0 };
-    TJEWriteContext wc = { 0 };
-    uint8_t qt_factor = 1;
+    TJEState state;
+    TJEWriteContext wc;
+    uint8_t qt_factor;
     int i;
 
     if (quality < 1 || quality > 3) {
         tje_log("[ERROR] -- Valid 'quality' values are 1 (lowest), 2, or 3 (highest)\n");
         return 0;
     }
+
+    qt_factor = 1;
+    memset(&state, 0, sizeof(state));
+    memset(&wc, 0, sizeof(wc));
 
     switch(quality) {
     case 3:
@@ -1285,7 +1287,7 @@ int tje_encode_with_func(tje_write_func* func,
         break;
     case 2:
         qt_factor = 10;
-        // don't break. fall through.
+        /* fallthrough */
     case 1:
         for ( i = 0; i < 64; ++i ) {
             state.qt_luma[i]   = tjei_default_qt_luma_from_spec[i] / qt_factor;
@@ -1316,9 +1318,6 @@ int tje_encode_with_func(tje_write_func* func,
 #endif // TJE_IMPLEMENTATION
 // ============================================================
 //
-#if defined(__GNUC__) || defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
 
 
 #ifdef __cplusplus

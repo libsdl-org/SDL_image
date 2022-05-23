@@ -685,6 +685,8 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 #define assert SDL_assert
 #undef memcpy
 #define memcpy SDL_memcpy
+#undef memset
+#define memset SDL_memset
 
 #define ceilf SDL_ceilf
 #define floorf SDL_floorf
