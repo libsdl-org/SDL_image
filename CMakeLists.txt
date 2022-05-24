@@ -6,7 +6,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 set(MAJOR_VERSION 2)
 set(MINOR_VERSION 5)
 set(MICRO_VERSION 0)
-set(SDL_REQUIRED_VERSION 2.0.8)
+set(SDL_REQUIRED_VERSION 2.0.9)
 
 # For historical reasons this is 3.0.0 rather than the expected 1.0.0
 set(DYLIB_COMPATIBILITY_VERSION "3.0.0")

@@ -13015,7 +13015,7 @@ else
 fi
 
 
-SDL_VERSION=2.0.8
+SDL_VERSION=2.0.9
 
 
 # Check whether --with-sdl-prefix was given.

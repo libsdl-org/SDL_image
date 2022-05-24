@@ -258,7 +258,7 @@ AC_ARG_ENABLE([installed-tests],
               [], [enable_installed_tests=no])
 
 dnl Check for SDL
-SDL_VERSION=2.0.8
+SDL_VERSION=2.0.9
 AC_SUBST(SDL_VERSION)
 AM_PATH_SDL2($SDL_VERSION,
             :,
