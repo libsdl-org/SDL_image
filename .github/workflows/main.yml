@@ -191,6 +191,8 @@ jobs:
         set -eu
         parallel="$(getconf _NPROCESSORS_ONLN)"
 
+        # Expect to support all formats except AVIF and JXL in these builds.
+        # See test/README.md for how this works.
         export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=0
         export SDL_IMAGE_TEST_REQUIRE_LOAD_BMP=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_CUR=1
