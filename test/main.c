@@ -381,7 +381,6 @@ static const Format formats[] =
         IMG_isSVG,
         IMG_LoadSVG_RW,
     },
-#if 0
     {
         "TGA",
         "sample.tga",
@@ -399,7 +398,6 @@ static const Format formats[] =
         NULL,
         IMG_LoadTGA_RW,
     },
-#endif
     {
         "TIF",
         "sample.tif",
@@ -911,7 +909,13 @@ FormatTest(const Format *format)
             FormatLoadTest(format, LOAD_SIZED);
         } else {
             FormatLoadTest(format, LOAD_CONVENIENCE);
-            FormatLoadTest(format, LOAD_RW);
+
+            if (strcmp(format->name, "TGA") == 0) {
+                SDLTest_Log("SKIP: Recognising %s by magic number is not supported", format->name);
+            } else {
+                FormatLoadTest(format, LOAD_RW);
+            }
+
             FormatLoadTest(format, LOAD_TYPED_RW);
 
             if (format->loadFunction != NULL) {
