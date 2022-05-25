@@ -231,9 +231,10 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
                         error = "decoding out of bounds (corrupt?)";
                         goto done;
                     }
-                    *dst = *innerSrc++;
+                    *dst = innerSrc[x];
                     dst += pcxh.NPlanes;
                 }
+                innerSrc += pcxh.BytesPerLine;
             }
         }
 
