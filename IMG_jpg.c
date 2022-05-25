@@ -492,11 +492,9 @@ static void jpeg_SDL_RW_dest(j_compress_ptr cinfo, SDL_RWops *ctx)
 
 static int IMG_SaveJPG_RW_jpeglib(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quality)
 {
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+    /* The JPEG library reads bytes in R,G,B order, so this is the right
+     * encoding for either endianness */
     static const Uint32 jpg_format = SDL_PIXELFORMAT_RGB24;
-#else
-    static const Uint32 jpg_format = SDL_PIXELFORMAT_BGR24;
-#endif
     struct jpeg_compress_struct cinfo;
     struct my_error_mgr jerr;
     JSAMPROW row_pointer[1];
@@ -703,11 +701,9 @@ static void IMG_SaveJPG_RW_tinyjpeg_callback(void* context, void* data, int size
 
 static int IMG_SaveJPG_RW_tinyjpeg(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quality)
 {
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+    /* The JPEG library reads bytes in R,G,B order, so this is the right
+     * encoding for either endianness */
     static const Uint32 jpg_format = SDL_PIXELFORMAT_RGB24;
-#else
-    static const Uint32 jpg_format = SDL_PIXELFORMAT_BGR24;
-#endif
     SDL_Surface* jpeg_surface = surface;
     int result = -1;
 
