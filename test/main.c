@@ -277,7 +277,6 @@ static const Format formats[] =
         IMG_LoadLBM_RW,
     },
 #endif
-#if 0
     {
         "PCX",
         "sample.pcx",
@@ -295,7 +294,6 @@ static const Format formats[] =
         IMG_isPCX,
         IMG_LoadPCX_RW,
     },
-#endif
     {
         "PNG",
         "sample.png",
