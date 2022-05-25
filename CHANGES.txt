@@ -1,21 +1,12 @@
 2.0.6:
-Sam Lantinga - Mon May 16 09:30:10 PDT 2022
  * Added IMG_LoadSizedSVG_RW()
-Sam Lantinga - Mon May  9 12:42:05 PDT 2022
  * Added support for AVIF images (https://github.com/AOMediaCodec/libavif)
-Sylvain Becker - Sun May  8 21:59:27 PDT 2022
  * Added IMG_ReadXPMFromArrayToRGB888()
-Sam Lantinga - Sun May  8 14:31:27 PDT 2022
  * Added support for JXL images (https://jpegxl.info/)
-Nika Starceva - Mon Dec 20 14:33:50 2021
  * Added support for QOI images (https://qoiformat.org/)
-Thomas Bernard - Mon Oct 26 23:32:10 2020
  * Fixed XCF regression introduced in 2.0.5
-Sam Lantinga - Thu Oct  3 18:09:17 PDT 2019
  * Added support for loading animated GIFs
-Sylvain Becker Sat Aug 31 22:55:31 2019
  * LoadBMP() now loads files using SDL2.
-Ozkan Sezer - Mon Aug 19 21:35:04 2019
  * Allow using libwebpdecoder instead libwebp.
 
 2.0.5:
