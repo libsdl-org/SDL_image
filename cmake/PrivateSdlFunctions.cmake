@@ -44,38 +44,26 @@ macro(sdl_calculate_derived_version_variables)
 endmacro()
 
 macro(sdl_find_sdl2 TARGET VERSION)
-    if (NOT TARGET ${TARGET})
-        # FIXME: can't add REQUIRED since not all SDL2 installs ship SDL2ConfigVersion.cmake
-        find_package(SDL2 ${VERSION})
+    if(NOT TARGET ${TARGET})
+        # FIXME: can't add REQUIRED since not all SDL2 installs ship SDL2ConfigVersion.cmake (or sdl2-config-version.cmake)
+        find_package(SDL2 ${VERSION} QUIET)
     endif()
-    if (NOT TARGET ${TARGET})
-        find_package(SDL2 REQUIRED)
-        message(WARNING "Could not verify SDL2 version. Assuming SDL2 has version of at least ${VERSION}.")
+    if(NOT TARGET ${TARGET})
+        # FIXME: can't add REQUIRED since not all SDL2 installs ship SDL2Config.cmake (or sdl2-config.cmake)
+        find_package(SDL2 QUIET)
+        if(SDL2_FOUND)
+            message(WARNING "Could not verify SDL2 version. Assuming SDL2 has version of at least ${VERSION}.")
+        endif()
     endif()
 
-    # Workaround for Ubuntu 20.04's SDL being older than
-    # https://github.com/libsdl-org/SDL/issues/3531
+    # Use Private FindSDL2.cmake module to find SDL2 for installations where no SDL2Config.cmake is available,
+    # or for those installations where no target is generated.
     if (NOT TARGET ${TARGET})
-        find_library(SDL2_LIBRARY
-            NAMES SDL2
-            HINTS "${SDL2_EXEC_PREFIX}"
-        )
-        if (NOT SDL2_LIBRARY)
-            message(FATAL_ERROR "Could not find SDL2 library. Please define SDL2_EXEC_PREFIX and/or SLD2_LIBRARY")
-        endif()
-        find_path(SDL2_INCLUDE_DIRS
-            NAMES SDL.h
-            PATH_SUFFIXES SDL2
-            HINTS "${SDL2_EXEC_PREFIX}"
-        )
-        if (NOT SDL2_INCLUDE_DIRS)
-            message(FATAL_ERROR "Could not find SDL2 include directory. Please define SDL2_EXEC_PREFIX and/or SDL2_INCLUDE_DIRS")
-        endif()
-        add_library(${TARGET} UNKNOWN IMPORTED)
+        message(STATUS "Using private SDL2 find module")
+        find_package(PrivateSDL2 ${VERSION} REQUIRED)
+        add_library(${TARGET} INTERFACE IMPORTED)
         set_target_properties(${TARGET} PROPERTIES
-            INTERFACE_INCLUDE_DIRECTORIES "${SDL2_INCLUDE_DIRS}"
-            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-            IMPORTED_LOCATION "${SDL2_LIBRARY}"
+            INTERFACE_LINK_LIBRARIES "PrivateSDL2::PrivateSDL2"
         )
     endif()
 endmacro()
