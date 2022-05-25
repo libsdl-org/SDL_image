@@ -268,6 +268,10 @@ set_property(TARGET SDL2_image PROPERTY INTERFACE_SDL2_SHARED ${SDL2IMAGE_BUILD_
 set_property(TARGET SDL2_image APPEND PROPERTY COMPATIBLE_INTERFACE_BOOL SDL2_SHARED)
 
 if(SDL2IMAGE_BUILD_SHARED_LIBS)
+    sdl_target_link_options_no_undefined(SDL2_image)
+endif()
+
+if(SDL2IMAGE_BUILD_SHARED_LIBS)
     # Make sure static library dependencies are built with -fPIC when building a shared SDL2_image
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
