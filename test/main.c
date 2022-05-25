@@ -1033,8 +1033,13 @@ main(int argc, char *argv[])
             }
         }
         if (consumed < 0) {
+
+#if SDL_VERSION_ATLEAST(2, 0, 10)
             static const char *options[] = { "[--iterations #]", "[--execKey #]", "[--seed string]", "[--filter suite_name|test_name]", NULL };
             SDLTest_CommonLogUsage(state, argv[0], options);
+#else
+            SDLTest_CommonUsage(state);
+#endif
             quit(1);
         }
 
