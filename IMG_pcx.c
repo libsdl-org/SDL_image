@@ -227,7 +227,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
                 Uint8 *dst = row + plane;
                 Uint8 *end2= row + surface->pitch;
                 for ( x = 0; x < width; x++ ) {
-                    if ( innerSrc >= end1 || dst >= end2 ) {
+                    if ( (innerSrc + x) >= end1 || dst >= end2 ) {
                         error = "decoding out of bounds (corrupt?)";
                         goto done;
                     }
