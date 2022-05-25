@@ -137,6 +137,24 @@ find_lib()
     done
 }
 
+CheckNoUndef()
+{
+AC_MSG_CHECKING(for linker option --no-undefined)
+    have_no_undefined=no
+    case "${host_os}" in
+dnl Skip this on platforms where it is just simply busted.
+    openbsd*) ;;
+    darwin*) have_no_undefined="-Wl,-undefined,error"
+       LDFLAGS="$LDFLAGS -Wl,-undefined,error" ;;
+    *) save_LDFLAGS="$LDFLAGS"
+       LDFLAGS="$LDFLAGS -Wl,--no-undefined"
+       AC_LINK_IFELSE([AC_LANG_PROGRAM],
+          [have_no_undefined=yes],[LDFLAGS="$save_LDFLAGS"])
+       ;;
+    esac
+    AC_MSG_RESULT($have_no_undefined)
+}
+
 dnl See if GCC's -Wall is supported.
 CheckWarnAll()
 {
@@ -436,7 +454,7 @@ if test x$enable_png = xyes; then
                     ;;
             esac
         else
-            AC_MSG_WARN([*** Unable to find PNG library (http://www.libpng.org/pub/png/libpng.html)])
+            AC_MSG_WARN([*** Unable to find PNG library (http://www.libpng.org/pub/png/)])
             AC_MSG_WARN([PNG image loading disabled])
         fi
     fi
@@ -475,7 +493,7 @@ if test x$enable_tif = xyes -a x$enable_imageio != xyes; then
                 ;;
         esac
     else
-        AC_MSG_WARN([*** Unable to find Tiff library (http://www.remotesensing.org/libtiff/)])
+        AC_MSG_WARN([*** Unable to find Tiff library (http://www.simplesystems.org/libtiff/)])
         AC_MSG_WARN([TIF image loading disabled])
     fi
 fi
@@ -518,8 +536,8 @@ if test x$enable_webp = xyes; then
                 ;;
         esac
     else
-        AC_MSG_WARN([*** Unable to find WEBP library (http://code.google.com/intl/en-US/speed/webp/index.html)])
-        AC_MSG_WARN([WEBP Pimage loading disabled])
+        AC_MSG_WARN([*** Unable to find WEBP library (https://developers.google.com/speed/webp)])
+        AC_MSG_WARN([WEBP image loading disabled])
     fi
 fi
 
@@ -673,6 +691,9 @@ AC_SUBST([PC_REQUIRES])
 
 AM_CONDITIONAL([BUILD_TESTS], [test "x$enable_tests" = xyes])
 AM_CONDITIONAL([INSTALL_TESTS], [test "x$enable_installed_tests" = xyes])
+
+dnl check for LD --no-undefined option
+CheckNoUndef
 
 dnl check for GCC warning options
 CheckWarnAll

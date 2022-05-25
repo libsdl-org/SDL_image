@@ -12721,6 +12721,41 @@ find_lib()
     done
 }
 
+CheckNoUndef()
+{
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for linker option --no-undefined" >&5
+$as_echo_n "checking for linker option --no-undefined... " >&6; }
+    have_no_undefined=no
+    case "${host_os}" in
+    openbsd*) ;;
+    darwin*) have_no_undefined="-Wl,-undefined,error"
+       LDFLAGS="$LDFLAGS -Wl,-undefined,error" ;;
+    *) save_LDFLAGS="$LDFLAGS"
+       LDFLAGS="$LDFLAGS -Wl,--no-undefined"
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  have_no_undefined=yes
+else
+  LDFLAGS="$save_LDFLAGS"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+       ;;
+    esac
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $have_no_undefined" >&5
+$as_echo "$have_no_undefined" >&6; }
+}
+
 CheckWarnAll()
 {
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for GCC -Wall option" >&5
@@ -14181,8 +14216,8 @@ fi
                     ;;
             esac
         else
-            { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find PNG library (http://www.libpng.org/pub/png/libpng.html)" >&5
-$as_echo "$as_me: WARNING: *** Unable to find PNG library (http://www.libpng.org/pub/png/libpng.html)" >&2;}
+            { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find PNG library (http://www.libpng.org/pub/png/)" >&5
+$as_echo "$as_me: WARNING: *** Unable to find PNG library (http://www.libpng.org/pub/png/)" >&2;}
             { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: PNG image loading disabled" >&5
 $as_echo "$as_me: WARNING: PNG image loading disabled" >&2;}
         fi
@@ -14387,8 +14422,8 @@ fi
                 ;;
         esac
     else
-        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find Tiff library (http://www.remotesensing.org/libtiff/)" >&5
-$as_echo "$as_me: WARNING: *** Unable to find Tiff library (http://www.remotesensing.org/libtiff/)" >&2;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find Tiff library (http://www.simplesystems.org/libtiff/)" >&5
+$as_echo "$as_me: WARNING: *** Unable to find Tiff library (http://www.simplesystems.org/libtiff/)" >&2;}
         { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: TIF image loading disabled" >&5
 $as_echo "$as_me: WARNING: TIF image loading disabled" >&2;}
     fi
@@ -14601,10 +14636,10 @@ fi
                 ;;
         esac
     else
-        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find WEBP library (http://code.google.com/intl/en-US/speed/webp/index.html)" >&5
-$as_echo "$as_me: WARNING: *** Unable to find WEBP library (http://code.google.com/intl/en-US/speed/webp/index.html)" >&2;}
-        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: WEBP Pimage loading disabled" >&5
-$as_echo "$as_me: WARNING: WEBP Pimage loading disabled" >&2;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find WEBP library (https://developers.google.com/speed/webp)" >&5
+$as_echo "$as_me: WARNING: *** Unable to find WEBP library (https://developers.google.com/speed/webp)" >&2;}
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: WEBP image loading disabled" >&5
+$as_echo "$as_me: WARNING: WEBP image loading disabled" >&2;}
     fi
 fi
 
@@ -14805,6 +14840,8 @@ else
   INSTALL_TESTS_FALSE=
 fi
 
+
+CheckNoUndef
 
 CheckWarnAll
 
