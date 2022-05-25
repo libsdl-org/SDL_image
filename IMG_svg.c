@@ -137,14 +137,12 @@ SDL_Surface *IMG_LoadSizedSVG_RW(SDL_RWops *src, int width, int height)
         scale = 1.0f;
     }
 
-    surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
-                                   (int)SDL_ceilf(image->width * scale),
-                                   (int)SDL_ceilf(image->height * scale),
-                                   32,
-                                   0x000000FF,
-                                   0x0000FF00,
-                                   0x00FF0000,
-                                   0xFF000000);
+    surface = SDL_CreateRGBSurfaceWithFormat(0,
+                                             (int)SDL_ceilf(image->width * scale),
+                                             (int)SDL_ceilf(image->height * scale),
+                                             32,
+                                             SDL_PIXELFORMAT_RGBA32);
+
     if (!surface) {
         nsvgDeleteRasterizer(rasterizer);
         nsvgDelete(image);
