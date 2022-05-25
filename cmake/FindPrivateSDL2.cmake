@@ -3,9 +3,6 @@
 include(FindPackageHandleStandardArgs)
 include("${CMAKE_CURRENT_LIST_DIR}/CommonFindSDL2.cmake")
 
-message("_lib_suffixes: ${_lib_suffixes}")
-message("_inc_suffixes: ${_inc_suffixes}")
-
 find_library(SDL2_LIBRARY
     NAMES SDL2
     HINTS ${SDL2_DIR} ENV SDL2_DIR
