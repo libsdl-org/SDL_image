@@ -164,8 +164,9 @@ am__can_run_installinfo = \
   esac
 am__dist_testexec_DATA_DIST = palette.bmp palette.gif sample.avif \
 	sample.bmp sample.cur sample.ico sample.jpg sample.jxl \
-	sample.png sample.pnm sample.qoi sample.tif sample.webp \
-	sample.xcf sample.xpm svg.bmp svg.svg svg64.bmp
+	sample.pcx sample.png sample.pnm sample.qoi sample.tga \
+	sample.tif sample.webp sample.xcf sample.xpm svg.bmp svg.svg \
+	svg64.bmp
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -577,9 +578,11 @@ EXTRA_DIST = \
 @INSTALL_TESTS_TRUE@	sample.ico \
 @INSTALL_TESTS_TRUE@	sample.jpg \
 @INSTALL_TESTS_TRUE@	sample.jxl \
+@INSTALL_TESTS_TRUE@	sample.pcx \
 @INSTALL_TESTS_TRUE@	sample.png \
 @INSTALL_TESTS_TRUE@	sample.pnm \
 @INSTALL_TESTS_TRUE@	sample.qoi \
+@INSTALL_TESTS_TRUE@	sample.tga \
 @INSTALL_TESTS_TRUE@	sample.tif \
 @INSTALL_TESTS_TRUE@	sample.webp \
 @INSTALL_TESTS_TRUE@	sample.xcf \
