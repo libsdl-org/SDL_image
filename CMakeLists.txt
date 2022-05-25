@@ -730,6 +730,8 @@ if(SDL2IMAGE_SAMPLES)
     add_executable(showanim showanim.c)
     add_executable(showimage showimage.c)
 
+    find_package(SDL2main)
+
     foreach(prog showanim showimage)
         # FIXME: mingw should be handles by SDL2::SDL2(-static) target
         if(MINGW)
