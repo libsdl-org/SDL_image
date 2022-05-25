@@ -385,12 +385,17 @@ static const uint8_t tjei_zig_zag[64] =
     35, 36, 48, 49, 57, 58, 62, 63,
 };
 
-// Memory order as big endian. 0xhilo -> 0xlohi which looks as 0xhilo in memory.
-static uint16_t tjei_be_word(const uint16_t le_word)
+// Memory order as big endian.
+// On little-endian machines: 0xhilo -> 0xlohi which looks as 0xhi 0xlo in memory
+// On big-endian machines: leave 0xhilo unchanged
+static uint16_t tjei_be_word(const uint16_t native_word)
 {
-    uint16_t lo = (le_word & 0x00ff);
-    uint16_t hi = ((le_word & 0xff00) >> 8);
-    return (uint16_t)((lo << 8) | hi);
+    uint8_t bytes[2];
+    uint16_t result;
+    bytes[1] = (native_word & 0x00ff);
+    bytes[0] = ((native_word & 0xff00) >> 8);
+    memcpy(&result, bytes, sizeof(bytes));
+    return result;
 }
 
 // ============================================================
