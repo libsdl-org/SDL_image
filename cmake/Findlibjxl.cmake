@@ -8,7 +8,7 @@ find_path(libjxl_INCLUDE_PATH
     NAMES jxl/decode.h
 )
 
-set(libjxl_COMPILE_FLAGS "" CACHE STRING "Extra compile flags of libjxl")
+set(libjxl_COMPILE_OPTIONS "" CACHE STRING "Extra compile options of libjxl")
 
 set(libjxl_LINK_LIBRARIES "" CACHE STRING "Extra link libraries of libjxl")
 
@@ -24,7 +24,7 @@ if (libjxl_FOUND)
         set_target_properties(libjxl::libjxl PROPERTIES
             IMPORTED_LOCATION "${libjxl_LIBRARY}"
             INTERFACE_INCLUDE_DIRECTORIES "${libjxl_INCLUDE_PATH}"
-            COMPILE_FLAGS "${libjxl_COMPILE_FLAGS}"
+            INTERFACE_COMPILE_OPTIONS "${libjxl_COMPILE_OPTIONS}"
             INTERFACE_LINK_LIBRARIES "${libjxl_LINK_LIBRARIES}"
             INTERFACE_LINK_FLAGS "${libjxl_LINK_FLAGS}"
         )

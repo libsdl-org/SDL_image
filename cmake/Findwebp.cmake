@@ -8,7 +8,7 @@ find_path(webp_INCLUDE_PATH
     NAMES webp/decode.h
 )
 
-set(webp_COMPILE_FLAGS "" CACHE STRING "Extra compile flags of webp")
+set(webp_COMPILE_OPTIONS "" CACHE STRING "Extra compile options of webp")
 
 set(webp_LINK_LIBRARIES "" CACHE STRING "Extra link libraries of webp")
 
@@ -24,7 +24,7 @@ if (webp_FOUND)
         set_target_properties(WebP::webp PROPERTIES
             IMPORTED_LOCATION "${webp_LIBRARY}"
             INTERFACE_INCLUDE_DIRECTORIES "${webp_INCLUDE_PATH}"
-            COMPILE_FLAGS "${webp_COMPILE_FLAGS}"
+            INTERFACE_COMPILE_OPTIONS "${webp_COMPILE_FLAGS}"
             INTERFACE_LINK_LIBRARIES "${webp_LINK_LIBRARIES}"
             INTERFACE_LINK_FLAGS "${webp_LINK_FLAGS}"
         )
