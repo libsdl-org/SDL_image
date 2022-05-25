@@ -219,7 +219,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 		} else if(src_bits == 8) {
 			/* Copy the row directly */
 			memcpy(row, buf, SDL_min(width, bpl));
- 		} else if(src_bits == 24) {
+		} else if(src_bits == 24) {
 			/* de-interlace planes */
 			Uint8 *innerSrc = buf;
 			Uint8 *end1 = buf+bpl;
@@ -229,13 +229,14 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 				Uint8 *dst = row + plane;
 				Uint8 *end2= row + surface->pitch;
 				for(x = 0; x < width; x++) {
-					if (innerSrc >= end1 || dst >= end2) {
+					if ((innerSrc + x) >= end1 || dst >= end2) {
 						error = "decoding out of bounds (corrupt?)";
 						goto done;
 					}
-					*dst = *innerSrc++;
+					*dst = innerSrc[x];
 					dst += pcxh.NPlanes;
 				}
+				innerSrc += pcxh.BytesPerLine;
 			}
 		}
 
