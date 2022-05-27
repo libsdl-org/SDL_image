@@ -38,7 +38,6 @@ static float SDLCALL SDL_roundf(float x)
 /* Replace C runtime functions with SDL C runtime functions for building on Windows */
 #define free    SDL_free
 #define malloc  SDL_malloc
-#define calloc  SDL_calloc
 #undef memcpy
 #define memcpy  SDL_memcpy
 #undef memset

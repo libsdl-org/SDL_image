@@ -631,11 +631,13 @@ static void nsvg__curveBounds(float* bounds, float* curve)
 static NSVGparser* nsvg__createParser(void)
 {
 	NSVGparser* p;
-	p = (NSVGparser*)calloc(1, sizeof(NSVGparser));
+	p = (NSVGparser*)malloc(sizeof(NSVGparser));
 	if (p == NULL) goto error;
+	memset(p, 0, sizeof(NSVGparser));
 
-	p->image = (NSVGimage*)calloc(1, sizeof(NSVGimage));
+	p->image = (NSVGimage*)malloc(sizeof(NSVGimage));
 	if (p->image == NULL) goto error;
+	memset(p->image, 0, sizeof(NSVGimage));
 
 	// Init style
 	nsvg__xformIdentity(p->attr[0].xform);
@@ -663,6 +665,7 @@ error:
 	}
 	return NULL;
 }
+
 static void nsvg__deleteStyles(NSVGstyles* style) {
 	while (style) {
 		NSVGstyles *next = style->next;
@@ -978,8 +981,9 @@ static void nsvg__addShape(NSVGparser* p)
 	if (p->plist == NULL)
 		return;
 
-	shape = (NSVGshape*)calloc(1, sizeof(NSVGshape));
+	shape = (NSVGshape*)malloc(sizeof(NSVGshape));
 	if (shape == NULL) goto error;
+	memset(shape, 0, sizeof(NSVGshape));
 
 	memcpy(shape->id, attr->id, sizeof shape->id);
 	scale = nsvg__getAverageScale(attr->xform);
@@ -1076,8 +1080,9 @@ static void nsvg__addPath(NSVGparser* p, char closed)
 	if ((p->npts % 3) != 1)
 		return;
 
-	path = (NSVGpath*)calloc(1, sizeof(NSVGpath));
+	path = (NSVGpath*)malloc(sizeof(NSVGpath));
 	if (path == NULL) goto error;
+	memset(path, 0, sizeof(NSVGpath));
 
 	path->pts = (float*)malloc(p->npts*2*sizeof(float));
 	if (path->pts == NULL) goto error;
@@ -2623,8 +2628,9 @@ static void nsvg__parseSVG(NSVGparser* p, const char** attr)
 static void nsvg__parseGradient(NSVGparser* p, const char** attr, char type)
 {
 	int i;
-	NSVGgradientData* grad = (NSVGgradientData*)calloc(1, sizeof(NSVGgradientData));
+	NSVGgradientData* grad = (NSVGgradientData*)malloc(sizeof(NSVGgradientData));
 	if (grad == NULL) return;
+	memset(grad, 0, sizeof(NSVGgradientData));
 	grad->units = NSVG_OBJECT_SPACE;
 	grad->type = type;
 	if (grad->type == NSVG_PAINT_LINEAR_GRADIENT) {
@@ -2839,9 +2845,10 @@ static void nsvg__content(void* ud, const char* s)
 				if (state == 1) {
 					NSVGstyles* next = p->styles;
 
-					p->styles = (NSVGstyles*)calloc(1, sizeof(NSVGstyles));
+					p->styles = (NSVGstyles*)malloc(sizeof(NSVGstyles));
 					p->styles->next = next;
 					p->styles->name = nsvg__strndup(start, (size_t)(s - start));
+					p->styles->description = NULL;
 					start = s + 1;
 					state = 2;
 				}
@@ -3069,8 +3076,9 @@ NSVG_EXPORT NSVGpath* nsvgDuplicatePath(NSVGpath* p)
     if (p == NULL)
         return NULL;
 
-    res = (NSVGpath*)calloc(1, sizeof(NSVGpath));
+    res = (NSVGpath*)malloc(sizeof(NSVGpath));
     if (res == NULL) goto error;
+    memset(res, 0, sizeof(NSVGpath));
 
     res->pts = (float*)malloc(p->npts*2*sizeof(float));
     if (res->pts == NULL) goto error;
