@@ -58,19 +58,19 @@ static int IMG_isICOCUR(SDL_RWops *src, int type)
 	int is_ICOCUR;
 
 	/* The Win32 ICO file header (14 bytes) */
-    Uint16 bfReserved;
-    Uint16 bfType;
-    Uint16 bfCount;
+	Uint16 bfReserved;
+	Uint16 bfType;
+	Uint16 bfCount;
 
 	if ( !src )
 		return 0;
 	start = SDL_RWtell(src);
 	is_ICOCUR = 0;
-    bfReserved = SDL_ReadLE16(src);
-    bfType = SDL_ReadLE16(src);
-    bfCount = SDL_ReadLE16(src);
-    if ((bfReserved == 0) && (bfType == type) && (bfCount != 0)) 
-    	is_ICOCUR = 1;
+	bfReserved = SDL_ReadLE16(src);
+	bfType = SDL_ReadLE16(src);
+	bfCount = SDL_ReadLE16(src);
+	if ((bfReserved == 0) && (bfType == type) && (bfCount != 0))
+		is_ICOCUR = 1;
 	SDL_RWseek(src, start, RW_SEEK_SET);
 
 	return (is_ICOCUR);
@@ -203,23 +203,27 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 
 	/* The Win32 BMP file header (14 bytes) */
 	char   magic[2];
+	/*
 	Uint32 bfSize;
 	Uint16 bfReserved1;
 	Uint16 bfReserved2;
+	*/
 	Uint32 bfOffBits;
 
 	/* The Win32 BITMAPINFOHEADER struct (40 bytes) */
 	Uint32 biSize;
 	Sint32 biWidth;
 	Sint32 biHeight;
-	Uint16 biPlanes;
+	/* Uint16 biPlanes; */
 	Uint16 biBitCount;
 	Uint32 biCompression;
+	/*
 	Uint32 biSizeImage;
 	Sint32 biXPelsPerMeter;
 	Sint32 biYPelsPerMeter;
-	Uint32 biClrUsed;
 	Uint32 biClrImportant;
+	*/
+	Uint32 biClrUsed;
 
 	/* Make sure we are passed a valid data source */
 	surface = NULL;
@@ -242,9 +246,9 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 		was_error = SDL_TRUE;
 		goto done;
 	}
-	bfSize		= SDL_ReadLE32(src);
-	bfReserved1	= SDL_ReadLE16(src);
-	bfReserved2	= SDL_ReadLE16(src);
+	/* bfSize	= */ SDL_ReadLE32(src);
+	/* bfReserved1	= */ SDL_ReadLE16(src);
+	/* bfReserved2	= */ SDL_ReadLE16(src);
 	bfOffBits	= SDL_ReadLE32(src);
 
 	/* Read the Win32 BITMAPINFOHEADER */
@@ -252,25 +256,27 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 	if ( biSize == 12 ) {
 		biWidth		= (Uint32)SDL_ReadLE16(src);
 		biHeight	= (Uint32)SDL_ReadLE16(src);
-		biPlanes	= SDL_ReadLE16(src);
+		/* biPlanes	= */ SDL_ReadLE16(src);
 		biBitCount	= SDL_ReadLE16(src);
 		biCompression	= BI_RGB;
+		/*
 		biSizeImage	= 0;
 		biXPelsPerMeter	= 0;
 		biYPelsPerMeter	= 0;
+		*/
 		biClrUsed	= 0;
-		biClrImportant	= 0;
+		/*biClrImportant	= 0; */
 	} else {
 		biWidth		= SDL_ReadLE32(src);
 		biHeight	= SDL_ReadLE32(src);
-		biPlanes	= SDL_ReadLE16(src);
+		/* biPlanes	= */ SDL_ReadLE16(src);
 		biBitCount	= SDL_ReadLE16(src);
 		biCompression	= SDL_ReadLE32(src);
-		biSizeImage	= SDL_ReadLE32(src);
-		biXPelsPerMeter	= SDL_ReadLE32(src);
-		biYPelsPerMeter	= SDL_ReadLE32(src);
+		/* biSizeImage	= */ SDL_ReadLE32(src);
+		/* biXPelsPerMeter	= */ SDL_ReadLE32(src);
+		/* biYPelsPerMeter	= */ SDL_ReadLE32(src);
 		biClrUsed	= SDL_ReadLE32(src);
-		biClrImportant	= SDL_ReadLE32(src);
+		/* biClrImportant	= */ SDL_ReadLE32(src);
 	}
 	if (biWidth <= 0 || biHeight == 0) {
 		IMG_SetError("BMP file with bad dimensions (%dx%d)", biWidth, biHeight);
@@ -552,9 +558,11 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
     int bmpPitch;
     int i, pad;
     SDL_Surface *surface;
+    /*
     Uint32 Rmask;
     Uint32 Gmask;
     Uint32 Bmask;
+    */
     Uint8 *bits;
     int ExpandBMP;
     int maxCol = 0;
@@ -570,14 +578,16 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
     Uint32 biSize;
     Sint32 biWidth;
     Sint32 biHeight;
-    Uint16 biPlanes;
+    /* Uint16 biPlanes; */
     Uint16 biBitCount;
     Uint32 biCompression;
+    /*
     Uint32 biSizeImage;
     Sint32 biXPelsPerMeter;
     Sint32 biYPelsPerMeter;
-    Uint32 biClrUsed;
     Uint32 biClrImportant;
+    */
+    Uint32 biClrUsed;
 
     /* Make sure we are passed a valid data source */
     surface = NULL;
@@ -606,12 +616,14 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
         int bWidth = SDL_Read8(src);    /* Uint8, but 0 = 256 ! */
         int bHeight = SDL_Read8(src);   /* Uint8, but 0 = 256 ! */
         int bColorCount = SDL_Read8(src);       /* Uint8, but 0 = 256 ! */
-        /* Uint8 bReserved;
+        /*
+        Uint8 bReserved;
         Uint16 wPlanes;
         Uint16 wBitCount;
-        Uint32 dwBytesInRes; */
+        Uint32 dwBytesInRes;
+        */
         Uint32 dwImageOffset;
-        
+
         /* bReserved = */ SDL_Read8(src);
         /* wPlanes = */ SDL_ReadLE16(src);
         /* wBitCount = */ SDL_ReadLE16(src);
@@ -645,14 +657,14 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
     if (biSize == 40) {
         biWidth = SDL_ReadLE32(src);
         biHeight = SDL_ReadLE32(src);
-        biPlanes = SDL_ReadLE16(src);
+        /* biPlanes = */ SDL_ReadLE16(src);
         biBitCount = SDL_ReadLE16(src);
         biCompression = SDL_ReadLE32(src);
-        biSizeImage = SDL_ReadLE32(src);
-        biXPelsPerMeter = SDL_ReadLE32(src);
-        biYPelsPerMeter = SDL_ReadLE32(src);
+        /* biSizeImage = */ SDL_ReadLE32(src);
+        /* biXPelsPerMeter = */ SDL_ReadLE32(src);
+        /* biYPelsPerMeter = */ SDL_ReadLE32(src);
         biClrUsed = SDL_ReadLE32(src);
-        biClrImportant = SDL_ReadLE32(src);
+        /* biClrImportant = */ SDL_ReadLE32(src);
     } else {
         IMG_SetError("Unsupported ICO bitmap format");
         was_error = SDL_TRUE;
@@ -679,9 +691,11 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
             ExpandBMP = 8;
             break;
         case 32:
+            /*
             Rmask = 0x00FF0000;
             Gmask = 0x0000FF00;
             Bmask = 0x000000FF;
+            */
             ExpandBMP = 0;
             break;
         default:
