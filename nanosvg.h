@@ -189,8 +189,6 @@ NSVG_EXPORT void nsvgDelete(NSVGimage* image);
 #endif
 #endif
 
-#endif // NANOSVG_H
-
 #ifdef NANOSVG_IMPLEMENTATION
 
 /*
@@ -1246,35 +1244,23 @@ static const char* nsvg__getNextPathItem(const char* s, char* it)
 
 static unsigned int nsvg__parseColorHex(const char* str)
 {
-	unsigned int c = 0, r = 0, g = 0, b = 0;
-	int n = 0;
-	str++; // skip #
-	// Calculate number of characters.
-	while(str[n] && !nsvg__isspace(str[n]))
-		n++;
-	if (n == 6) {
-		sscanf(str, "%x", &c);
-	} else if (n == 3) {
-		sscanf(str, "%x", &c);
-		c = (c&0xf) | ((c&0xf0) << 4) | ((c&0xf00) << 8);
-		c |= c<<4;
-	}
-	r = (c >> 16) & 0xff;
-	g = (c >> 8) & 0xff;
-	b = c & 0xff;
-	return NSVG_RGB(r,g,b);
+	unsigned int r=0, g=0, b=0;
+	if (sscanf(str, "#%2x%2x%2x", &r, &g, &b) == 3 )		// 2 digit hex
+		return NSVG_RGB(r, g, b);
+	if (sscanf(str, "#%1x%1x%1x", &r, &g, &b) == 3 )		// 1 digit hex, e.g. #abc -> 0xccbbaa
+		return NSVG_RGB(r*17, g*17, b*17);			// same effect as (r<<4|r), (g<<4|g), ..
+	return NSVG_RGB(128, 128, 128);
 }
 
 static unsigned int nsvg__parseColorRGB(const char* str)
 {
-	int r = -1, g = -1, b = -1;
-	char s1[32]="", s2[32]="";
-	sscanf(str + 4, "%d%[%%, \t]%d%[%%, \t]%d", &r, s1, &g, s2, &b);
-	if (strchr(s1, '%')) {
-		return NSVG_RGB((r*255)/100,(g*255)/100,(b*255)/100);
-	} else {
-		return NSVG_RGB(r,g,b);
-	}
+	unsigned int r=0, g=0, b=0;
+	float rf=0, gf=0, bf=0;
+	if (sscanf(str, "rgb(%u, %u, %u)", &r, &g, &b) == 3)		// decimal integers
+		return NSVG_RGB(r, g, b);
+	if (sscanf(str, "rgb(%f%%, %f%%, %f%%)", &rf, &gf, &bf) == 3)	// decimal integer percentage
+		return NSVG_RGB(roundf(rf*2.55f), roundf(gf*2.55f), roundf(bf*2.55f)); // (255 / 100.0f)
+	return NSVG_RGB(128, 128, 128);
 }
 
 typedef struct NSVGNamedColor {
@@ -1849,10 +1835,9 @@ static int nsvg__parseAttr(NSVGparser* p, const char* name, const char* value)
 		if (style) {
 			nsvg__parseStyle(p, style->description);
 		}
-	} 
-	else {
+	} else {
 		return 0;
-	} 
+	}
 	return 1;
 }
 
@@ -2232,7 +2217,12 @@ static void nsvg__pathArcTo(NSVGparser* p, float* cpx, float* cpy, float* args, 
 	// The loop assumes an iteration per end point (including start and end), this +1.
 	ndivs = (int)(fabsf(da) / (NSVG_PI*0.5f) + 1.0f);
 	hda = (da / (float)ndivs) / 2.0f;
-	kappa = fabsf(4.0f / 3.0f * (1.0f - cosf(hda)) / sinf(hda));
+	// Fix for ticket #179: division by 0: avoid cotangens around 0 (infinite)
+	if ((hda < 1e-3f) && (hda > -1e-3f))
+		hda *= 0.5f;
+	else
+		hda = (1.0f - cosf(hda)) / sinf(hda);
+	kappa = fabsf(4.0f / 3.0f * hda);
 	if (da < 0.0f)
 		kappa = -kappa;
 
@@ -2844,10 +2834,10 @@ static char *nsvg__strndup(const char *s, size_t n)
 static void nsvg__content(void* ud, const char* s)
 {
 	NSVGparser* p = (NSVGparser*)ud;
-	if (p->styleFlag) {
 
+	if (p->styleFlag) {
 		int state = 0;
-		const char* start = s;		
+		const char* start = s;
 		while (*s) {
 			char c = *s;
 			if (nsvg__isspace(c) || c == '{') {
@@ -2859,15 +2849,14 @@ static void nsvg__content(void* ud, const char* s)
 					p->styles->name = nsvg__strndup(start, (size_t)(s - start));
 					start = s + 1;
 					state = 2;
-				}				
+				}
 			} else if (state == 2 && c == '}') {
 				p->styles->description = nsvg__strndup(start, (size_t)(s - start));
 				state = 0;
-			}
-			else if (state == 0) {
+			} else if (state == 0) {
 				start = s;
 				state = 1;
-			}  
+			}
 			s++;
 		}
 		//	if (*s == '{' && state == NSVG_XML_CONTENT) {
@@ -2888,9 +2877,7 @@ static void nsvg__content(void* ud, const char* s)
 		//		s++;
 		//	}
 		//}
-
 	}
-	// empty
 }
 
 static void nsvg__imageBounds(NSVGparser* p, float* bounds)
@@ -3109,7 +3096,7 @@ error:
     }
     return NULL;
 }
-#endif // 0
+#endif
 
 NSVG_EXPORT void nsvgDelete(NSVGimage* image)
 {
@@ -3128,3 +3115,5 @@ NSVG_EXPORT void nsvgDelete(NSVGimage* image)
 }
 
 #endif
+
+#endif // NANOSVG_H

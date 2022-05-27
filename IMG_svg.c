@@ -27,6 +27,10 @@
 
 #ifdef LOAD_SVG
 
+static float SDLCALL SDLIMAGE_roundf(float x) {
+    return (x >= 0.0f) ? SDL_floorf(x + 0.5f) : SDL_ceilf(x - 0.5f);
+}
+
 /* Replace C runtime functions with SDL C runtime functions for building on Windows */
 #define free    SDL_free
 #define malloc  SDL_malloc
@@ -63,6 +67,7 @@
 #define sqrt    SDL_sqrt
 #define sqrtf   SDL_sqrtf
 #define tanf    SDL_tanf
+#define roundf  SDLIMAGE_roundf
 #ifndef FLT_MAX
 #define FLT_MAX     3.402823466e+38F
 #endif
