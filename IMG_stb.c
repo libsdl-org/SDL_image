@@ -47,6 +47,9 @@
 #define STBI_NO_STDIO
 #define STBI_ONLY_PNG
 #define STBI_ONLY_JPEG
+#define STBI_NO_GIF
+#define STBI_NO_HDR
+#define STBI_NO_LINEAR
 #define STBI_ASSERT SDL_assert
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -140,7 +143,7 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
     );
     if ( !surface ) {
         /* The error message should already be set */
-        SDL_free(pixels);
+        stbi_image_free(pixels); /* calls SDL_free() */
         SDL_RWseek(src, start, RW_SEEK_SET);
     } else {
         /* FIXME: This sucks. It'd be better to allocate the surface first, then
