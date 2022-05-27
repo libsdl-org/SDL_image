@@ -76,8 +76,6 @@ NSVG_EXPORT void nsvgDeleteRasterizer(NSVGrasterizer*);
 #endif
 #endif
 
-#endif // NANOSVGRAST_H
-
 #ifdef NANOSVGRAST_IMPLEMENTATION
 
 /*
@@ -1463,3 +1461,5 @@ NSVG_EXPORT void nsvgRasterize(NSVGrasterizer* r,
 }
 
 #endif
+
+#endif // NANOSVGRAST_H
