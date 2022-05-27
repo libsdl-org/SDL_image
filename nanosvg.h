@@ -166,15 +166,19 @@ typedef struct NSVGimage
 	NSVGshape* shapes;			// Linked list of shapes in the image.
 } NSVGimage;
 
+#ifdef HAVE_STDIO_H
 // Parses SVG file from a file, returns SVG image as paths.
 NSVG_EXPORT NSVGimage* nsvgParseFromFile(const char* filename, const char* units, float dpi);
+#endif
 
 // Parses SVG file from a null terminated string, returns SVG image as paths.
 // Important note: changes the string.
 NSVG_EXPORT NSVGimage* nsvgParse(char* input, const char* units, float dpi);
 
+#if 0
 // Duplicates a path.
 NSVG_EXPORT NSVGpath* nsvgDuplicatePath(NSVGpath* p);
+#endif
 
 // Deletes an image.
 NSVG_EXPORT void nsvgDelete(NSVGimage* image);
