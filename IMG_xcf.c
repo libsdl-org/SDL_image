@@ -524,7 +524,6 @@ static unsigned char * load_xcf_tile_none (SDL_RWops * src, Uint32 len, int bpp,
 
 static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, int x, int y) {
   unsigned char * load, * t, * data, * d;
-  Uint32 reallen;
   int i, size, count, j, length;
   unsigned char val;
 
@@ -535,7 +534,8 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
   t = load = (unsigned char *) SDL_malloc (len);
   if (load == NULL)
     return NULL;
-  reallen = SDL_RWread (src, t, 1, len);
+
+  SDL_RWread (src, t, 1, len); /* reallen */
 
   data = (unsigned char *) SDL_calloc (1, x*y*bpp);
   for (i = 0; i < bpp; i++) {
@@ -633,7 +633,6 @@ do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_
     xcf_level      *level;
     unsigned char  *tile;
     Uint8          *p8;
-    Uint16         *p16;
     Uint32         *p;
     int            i, j;
     Uint32         x, y, tx, ty, ox, oy;
@@ -686,7 +685,6 @@ do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_
             }
 
             p8 = tile;
-            p16 = (Uint16 *) p8;
             p = (Uint32 *) p8;
             for (y = ty; y < ty + oy; y++) {
                 if ((y >= surface->h) || ((tx+ox) > surface->w)) {
