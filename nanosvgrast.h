@@ -152,11 +152,10 @@ struct NSVGrasterizer
 	int width, height, stride;
 };
 
-NSVG_EXPORT NSVGrasterizer* nsvgCreateRasterizer()
+NSVG_EXPORT NSVGrasterizer* nsvgCreateRasterizer(void)
 {
-	NSVGrasterizer* r = (NSVGrasterizer*)malloc(sizeof(NSVGrasterizer));
+	NSVGrasterizer* r = (NSVGrasterizer*)calloc(1, sizeof(NSVGrasterizer));
 	if (r == NULL) goto error;
-	memset(r, 0, sizeof(NSVGrasterizer));
 
 	r->tessTol = 0.25f;
 	r->distTol = 0.01f;
@@ -199,9 +198,8 @@ static NSVGmemPage* nsvg__nextPage(NSVGrasterizer* r, NSVGmemPage* cur)
 	}
 
 	// Alloc new page
-	newp = (NSVGmemPage*)malloc(sizeof(NSVGmemPage));
+	newp = (NSVGmemPage*)calloc(1, sizeof(NSVGmemPage));
 	if (newp == NULL) return NULL;
-	memset(newp, 0, sizeof(NSVGmemPage));
 
 	// Add to linked list
 	if (cur != NULL)
