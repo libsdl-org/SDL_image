@@ -1477,13 +1477,17 @@ const char *mz_error(int err)
     if (temp >= 0) { \
       code_len = temp >> 9; \
       if ((code_len) && (num_bits >= code_len)) \
-      break; \
+          break; \
     } else if (num_bits > TINFL_FAST_LOOKUP_BITS) { \
        code_len = TINFL_FAST_LOOKUP_BITS; \
        do { \
           temp = (pHuff)->m_tree[~temp + ((bit_buf >> code_len++) & 1)]; \
-       } while ((temp < 0) && (num_bits >= (code_len + 1))); if (temp >= 0) break; \
-    } TINFL_GET_BYTE(state_index, c); bit_buf |= (((tinfl_bit_buf_t)c) << num_bits); num_bits += 8; \
+       } while ((temp < 0) && (num_bits >= (code_len + 1))); \
+       if (temp >= 0) break; \
+    } \
+    TINFL_GET_BYTE(state_index, c); \
+    bit_buf |= (((tinfl_bit_buf_t)c) << num_bits); \
+    num_bits += 8; \
   } while (num_bits < 15);
 
 // TINFL_HUFF_DECODE() decodes the next Huffman coded symbol. It's more complex than you would initially expect because the zlib API expects the decompressor to never read
@@ -1995,8 +1999,8 @@ static void tdefl_optimize_huffman_table(tdefl_compressor *d, int table_num, int
   while (d->m_bits_in >= 8) { \
     if (d->m_pOutput_buf < d->m_pOutput_buf_end) \
       *d->m_pOutput_buf++ = (mz_uint8)(d->m_bit_buffer); \
-      d->m_bit_buffer >>= 8; \
-      d->m_bits_in -= 8; \
+    d->m_bit_buffer >>= 8; \
+    d->m_bits_in -= 8; \
   } \
 } MZ_MACRO_END
 
@@ -2365,7 +2369,9 @@ static MZ_FORCEINLINE void tdefl_find_match(tdefl_compressor *d, mz_uint lookahe
         if ((!next_probe_pos) || ((dist = (mz_uint16)(lookahead_pos - next_probe_pos)) > max_dist)) return; \
         probe_pos = next_probe_pos & TDEFL_LZ_DICT_SIZE_MASK; \
         if (TDEFL_READ_UNALIGNED_WORD(&d->m_dict[probe_pos + match_len - 1]) == c01) break;
-      TDEFL_PROBE; TDEFL_PROBE; TDEFL_PROBE;
+      TDEFL_PROBE;
+      TDEFL_PROBE;
+      TDEFL_PROBE;
     }
     if (!dist) break;
     q = (const mz_uint16*)(d->m_dict + probe_pos);
@@ -2402,7 +2408,9 @@ static MZ_FORCEINLINE void tdefl_find_match(tdefl_compressor *d, mz_uint lookahe
         if ((!next_probe_pos) || ((dist = (mz_uint16)(lookahead_pos - next_probe_pos)) > max_dist)) return; \
         probe_pos = next_probe_pos & TDEFL_LZ_DICT_SIZE_MASK; \
         if ((d->m_dict[probe_pos + match_len] == c0) && (d->m_dict[probe_pos + match_len - 1] == c1)) break;
-      TDEFL_PROBE; TDEFL_PROBE; TDEFL_PROBE;
+      TDEFL_PROBE;
+      TDEFL_PROBE;
+      TDEFL_PROBE;
     }
     if (!dist) break; p = s; q = d->m_dict + probe_pos; for (probe_len = 0; probe_len < max_match_len; probe_len++) if (*p++ != *q++) break;
     if (probe_len > match_len)
