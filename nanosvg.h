@@ -1829,12 +1829,9 @@ static int nsvg__parseAttr(NSVGparser* p, const char* name, const char* value)
 		NSVGstyles* style = p->styles;
 		while (style) {
 			if (strcmp(style->name + 1, value) == 0) {
-				break;
+				nsvg__parseStyle(p, style->description);
 			}
 			style = style->next;
-		}
-		if (style) {
-			nsvg__parseStyle(p, style->description);
 		}
 	} else {
 		return 0;
@@ -2742,13 +2739,15 @@ static void nsvg__startElement(void* ud, const char* el, const char** attr)
 	NSVGparser* p = (NSVGparser*)ud;
 
 	if (p->defsFlag) {
-		// Skip everything but gradients in defs
+		// Skip everything but gradients and styles in defs
 		if (strcmp(el, "linearGradient") == 0) {
 			nsvg__parseGradient(p, attr, NSVG_PAINT_LINEAR_GRADIENT);
 		} else if (strcmp(el, "radialGradient") == 0) {
 			nsvg__parseGradient(p, attr, NSVG_PAINT_RADIAL_GRADIENT);
 		} else if (strcmp(el, "stop") == 0) {
 			nsvg__parseGradientStop(p, attr);
+		} else if (strcmp(el, "style") == 0) {
+			p->styleFlag = 1;
 		}
 		return;
 	}
@@ -2835,50 +2834,44 @@ static char *nsvg__strndup(const char *s, size_t n)
 static void nsvg__content(void* ud, const char* s)
 {
 	NSVGparser* p = (NSVGparser*)ud;
-
 	if (p->styleFlag) {
+
 		int state = 0;
+		int class_count = 0;
 		const char* start = s;
 		while (*s) {
 			char c = *s;
-			if (nsvg__isspace(c) || c == '{') {
-				if (state == 1) {
-					NSVGstyles* next = p->styles;
-
-					p->styles = (NSVGstyles*)malloc(sizeof(NSVGstyles));
-					p->styles->next = next;
-					p->styles->name = nsvg__strndup(start, (size_t)(s - start));
-					p->styles->description = NULL;
+			if (state == 2) {
+				if (c == '{') {
 					start = s + 1;
-					state = 2;
+				} else if (c == '}') {
+					NSVGstyles *style = p->styles;
+					while (class_count > 0) {
+						style->description = nsvg__strndup(start, (size_t)(s - start));
+						style = style->next;
+						--class_count;
+					}
+					state = 0;
 				}
-			} else if (state == 2 && c == '}') {
-				p->styles->description = nsvg__strndup(start, (size_t)(s - start));
-				state = 0;
+			} else if (nsvg__isspace(c) || c == '{' || c == ',') {
+				if (state == 1) {
+					if (*start == '.') {
+						NSVGstyles* next = p->styles;
+						p->styles = (NSVGstyles*)malloc(sizeof(NSVGstyles));
+						p->styles->description = NULL;
+						p->styles->next = next;
+						p->styles->name = nsvg__strndup(start, (size_t)(s - start));
+						++class_count;
+					}
+					start = s + 1;
+					state = c == ',' ? 0 : 2;
+				}
 			} else if (state == 0) {
 				start = s;
 				state = 1;
 			}
 			s++;
 		}
-		//	if (*s == '{' && state == NSVG_XML_CONTENT) {
-		//		// Start of a tag
-		//		*s++ = '\0';
-		//		nsvg__parseContent(mark, contentCb, ud);
-		//		mark = s;
-		//		state = NSVG_XML_TAG;
-		//	}
-		//	else if (*s == '>' && state == NSVG_XML_TAG) {
-		//		// Start of a content or new tag.
-		//		*s++ = '\0';
-		//		nsvg__parseElement(mark, startelCb, endelCb, ud);
-		//		mark = s;
-		//		state = NSVG_XML_CONTENT;
-		//	}
-		//	else {
-		//		s++;
-		//	}
-		//}
 	}
 }
 
