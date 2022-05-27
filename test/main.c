@@ -376,6 +376,23 @@ static const Format formats[] =
         IMG_LoadSVG_RW,
     },
     {
+        "SVG-class",
+        "svg-class.svg",
+        "svg-class.bmp",
+        82,
+        82,
+        0,              /* lossless? */
+        0,              /* no initialization */
+#ifdef LOAD_SVG
+        SDL_TRUE,
+#else
+        SDL_FALSE,
+#endif
+        SDL_FALSE,      /* can save */
+        IMG_isSVG,
+        IMG_LoadSVG_RW,
+    },
+    {
         "TGA",
         "sample.tga",
         "sample.bmp",
