@@ -695,6 +695,7 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
 #else
 #define MINIZ_LITTLE_ENDIAN 0
 #endif
+#define MINIZ_USE_UNALIGNED_LOADS_AND_STORES 0
 #define MINIZ_SDL_NOUNUSED
 #include "miniz.h"
 
