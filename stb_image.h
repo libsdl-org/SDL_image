@@ -108,7 +108,7 @@ RECENT REVISION HISTORY:
     Cass Everitt            Ryamond Barbiero                        github:grim210
     Paul Du Bois            Engin Manap        Aldo Culquicondor    github:sammyhw
     Philipp Wiesemann       Dale Weiler        Oriol Ferrer Mesia   github:phprus
-    Josh Tobin                                 Matthew Gregan       github:poppolopoppo
+    Josh Tobin              Neil Bickford      Matthew Gregan       github:poppolopoppo
     Julian Raschke          Gregory Mullen     Christian Floisand   github:darealshinji
     Baldur Karlsson         Kevin Schmidt      JR Smith             github:Michaelangel007
                             Brad Weinberger    Matvey Cherevko      github:mosra
@@ -593,9 +593,21 @@ STBIDEF int   stbi_zlib_decode_noheader_buffer(char *obuffer, int olen, const ch
 #if !defined(STBI_NO_LINEAR) || !defined(STBI_NO_HDR)
 #include <math.h>  // ldexp, pow
 #endif
-#else
+#else /* SDL_image change */
 #ifndef UINT_MAX
 #define UINT_MAX SDL_MAX_UINT32
+#endif
+#ifndef INT_MAX
+#define INT_MAX SDL_MAX_SINT32
+#endif
+#ifndef INT_MIN
+#define INT_MIN SDL_MIN_SINT32
+#endif
+#ifndef SHRT_MAX
+#define SHRT_MAX SDL_MAX_SINT16
+#endif
+#ifndef SHRT_MIN
+#define SHRT_MIN SDL_MIN_SINT16
 #endif
 #endif
 
@@ -1077,6 +1089,23 @@ static void *stbi__malloc_mad4(int a, int b, int c, int d, int add)
    return stbi__malloc(a*b*c*d + add);
 }
 #endif
+
+// returns 1 if the sum of two signed ints is valid (between -2^31 and 2^31-1 inclusive), 0 on overflow.
+static int stbi__addints_valid(int a, int b)
+{
+   if ((a >= 0) != (b >= 0)) return 1; // a and b have different signs, so no overflow
+   if (a < 0 && b < 0) return a >= INT_MIN - b; // same as a + b >= INT_MIN; INT_MIN - b cannot overflow since b < 0.
+   return a <= INT_MAX - b;
+}
+
+// returns 1 if the product of two signed shorts is valid, 0 on overflow.
+static int stbi__mul2shorts_valid(short a, short b)
+{
+   if (b == 0 || b == -1) return 1; // multiplication by 0 is always 0; check for -1 so SHRT_MIN/b doesn't overflow
+   if ((a >= 0) == (b >= 0)) return a <= SHRT_MAX/b; // product is positive, so similar to mul2sizes_valid
+   if (b < 0) return a <= SHRT_MIN / b; // same as a * b >= SHRT_MIN
+   return a >= SHRT_MIN / b;
+}
 
 // stbi__err - error
 // stbi__errpf - error returning pointer to float
@@ -2002,9 +2031,12 @@ static int stbi__build_huffman(stbi__huffman *h, int *count)
    int i,j,k=0;
    unsigned int code;
    // build size list for each symbol (from JPEG spec)
-   for (i=0; i < 16; ++i)
-      for (j=0; j < count[i]; ++j)
+   for (i=0; i < 16; ++i) {
+      for (j=0; j < count[i]; ++j) {
          h->size[k++] = (stbi_uc) (i+1);
+         if(k >= 257) return stbi__err("bad size list","Corrupt JPEG");
+      }
+   }
    h->size[k] = 0;
 
    // compute actual symbols (from jpeg spec)
@@ -2129,6 +2161,8 @@ stbi_inline static int stbi__jpeg_huff_decode(stbi__jpeg *j, stbi__huffman *h)
 
    // convert the huffman code to the symbol id
    c = ((j->code_buffer >> (32 - k)) & stbi__bmask[k]) + h->delta[k];
+   if(c < 0 || c >= 256) // symbol id out of bounds!
+       return -1;
    STBI_ASSERT((((j->code_buffer) >> (32 - h->size[c])) & stbi__bmask[h->size[c]]) == h->code[c]);
 
    // convert the id to a symbol
@@ -2147,6 +2181,7 @@ stbi_inline static int stbi__extend_receive(stbi__jpeg *j, int n)
    unsigned int k;
    int sgn;
    if (j->code_bits < n) stbi__grow_buffer_unsafe(j);
+   if (j->code_bits < n) return 0; // ran out of bits from stream, return 0s intead of continuing
 
    sgn = j->code_buffer >> 31; // sign bit always in MSB; 0 if MSB clear (positive), 1 if MSB set (negative)
    k = stbi_lrot(j->code_buffer, n);
@@ -2161,6 +2196,7 @@ stbi_inline static int stbi__jpeg_get_bits(stbi__jpeg *j, int n)
 {
    unsigned int k;
    if (j->code_bits < n) stbi__grow_buffer_unsafe(j);
+   if (j->code_bits < n) return 0; // ran out of bits from stream, return 0s intead of continuing
    k = stbi_lrot(j->code_buffer, n);
    j->code_buffer = k & ~stbi__bmask[n];
    k &= stbi__bmask[n];
@@ -2172,6 +2208,7 @@ stbi_inline static int stbi__jpeg_get_bit(stbi__jpeg *j)
 {
    unsigned int k;
    if (j->code_bits < 1) stbi__grow_buffer_unsafe(j);
+   if (j->code_bits < 1) return 0; // ran out of bits from stream, return 0s intead of continuing
    k = j->code_buffer;
    j->code_buffer <<= 1;
    --j->code_bits;
@@ -2209,8 +2246,10 @@ static int stbi__jpeg_decode_block(stbi__jpeg *j, short data[64], stbi__huffman 
    memset(data,0,64*sizeof(data[0]));
 
    diff = t ? stbi__extend_receive(j, t) : 0;
+   if (!stbi__addints_valid(j->img_comp[b].dc_pred, diff)) return stbi__err("bad delta","Corrupt JPEG");
    dc = j->img_comp[b].dc_pred + diff;
    j->img_comp[b].dc_pred = dc;
+   if (!stbi__mul2shorts_valid(dc, dequant[0])) return stbi__err("can't merge dc and ac", "Corrupt JPEG");
    data[0] = (short) (dc * dequant[0]);
 
    // decode AC components, see JPEG spec
@@ -2224,6 +2263,7 @@ static int stbi__jpeg_decode_block(stbi__jpeg *j, short data[64], stbi__huffman 
       if (r) { // fast-AC path
          k += (r >> 4) & 15; // run
          s = r & 15; // combined length
+         if (s > j->code_bits) return stbi__err("bad huffman code", "Combined length longer than code bits available");
          j->code_buffer <<= s;
          j->code_bits -= s;
          // decode into unzigzag'd location
@@ -2263,8 +2303,10 @@ static int stbi__jpeg_decode_block_prog_dc(stbi__jpeg *j, short data[64], stbi__
       if (t < 0 || t > 15) return stbi__err("can't merge dc and ac", "Corrupt JPEG");
       diff = t ? stbi__extend_receive(j, t) : 0;
 
+      if (!stbi__addints_valid(j->img_comp[b].dc_pred, diff)) return stbi__err("bad delta", "Corrupt JPEG");
       dc = j->img_comp[b].dc_pred + diff;
       j->img_comp[b].dc_pred = dc;
+      if (!stbi__mul2shorts_valid(dc, 1 << j->succ_low)) return stbi__err("can't merge dc and ac", "Corrupt JPEG");
       data[0] = (short) (dc * (1 << j->succ_low));
    } else {
       // refinement scan for DC coefficient
@@ -2299,6 +2341,7 @@ static int stbi__jpeg_decode_block_prog_ac(stbi__jpeg *j, short data[64], stbi__
          if (r) { // fast-AC path
             k += (r >> 4) & 15; // run
             s = r & 15; // combined length
+            if (s > j->code_bits) return stbi__err("bad huffman code", "Combined length longer than code bits available");
             j->code_buffer <<= s;
             j->code_bits -= s;
             zig = stbi__jpeg_dezigzag[k++];
@@ -3119,6 +3162,7 @@ static int stbi__process_marker(stbi__jpeg *z, int m)
                sizes[i] = stbi__get8(z->s);
                n += sizes[i];
             }
+            if(n > 256) return stbi__err("bad DHT header","Corrupt JPEG"); // Loop over i < n would write past end of values!
             L -= 17;
             if (tc == 0) {
                if (!stbi__build_huffman(z->huff_dc+th, sizes)) return 0;
@@ -3993,6 +4037,7 @@ static void *stbi__jpeg_load(stbi__context *s, int *x, int *y, int *comp, int re
    unsigned char* result;
    stbi__jpeg* j = (stbi__jpeg*) stbi__malloc(sizeof(stbi__jpeg));
    if (!j) return stbi__errpuc("outofmem", "Out of memory");
+   memset(j, 0, sizeof(stbi__jpeg));
    STBI_NOTUSED(ri);
    j->s = s;
    stbi__setup_jpeg(j);
@@ -4006,6 +4051,7 @@ static int stbi__jpeg_test(stbi__context *s)
    int r;
    stbi__jpeg* j = (stbi__jpeg*)stbi__malloc(sizeof(stbi__jpeg));
    if (!j) return stbi__err("outofmem", "Out of memory");
+   memset(j, 0, sizeof(stbi__jpeg));
    j->s = s;
    stbi__setup_jpeg(j);
    r = stbi__decode_jpeg_header(j, STBI__SCAN_type);
@@ -4031,6 +4077,7 @@ static int stbi__jpeg_info(stbi__context *s, int *x, int *y, int *comp)
    int result;
    stbi__jpeg* j = (stbi__jpeg*) (stbi__malloc(sizeof(stbi__jpeg)));
    if (!j) return stbi__err("outofmem", "Out of memory");
+   memset(j, 0, sizeof(stbi__jpeg));
    j->s = s;
    result = stbi__jpeg_info_raw(j, x, y, comp);
    STBI_FREE(j);
@@ -4273,11 +4320,12 @@ static int stbi__parse_huffman_block(stbi__zbuf *a)
             a->zout = zout;
             return 1;
          }
+         if (z >= 286) return stbi__err("bad huffman code","Corrupt PNG"); // per DEFLATE, length codes 286 and 287 must not appear in compressed data
          z -= 257;
          len = stbi__zlength_base[z];
          if (stbi__zlength_extra[z]) len += stbi__zreceive(a, stbi__zlength_extra[z]);
          z = stbi__zhuffman_decode(a, &a->z_distance);
-         if (z < 0) return stbi__err("bad huffman code","Corrupt PNG");
+         if (z < 0 || z >= 30) return stbi__err("bad huffman code","Corrupt PNG"); // per DEFLATE, distance codes 30 and 31 must not appear in compressed data
          dist = stbi__zdist_base[z];
          if (stbi__zdist_extra[z]) dist += stbi__zreceive(a, stbi__zdist_extra[z]);
          if (zout - a->zout_start < dist) return stbi__err("bad dist","Corrupt PNG");
@@ -5133,6 +5181,7 @@ static int stbi__parse_png_file(stbi__png *z, int scan, int req_comp)
             if (first) return stbi__err("first not IHDR", "Corrupt PNG");
             if (pal_img_n && !pal_len) return stbi__err("no PLTE","Corrupt PNG");
             if (scan == STBI__SCAN_header) { s->img_n = pal_img_n; return 1; }
+            if (c.length > (1u << 30)) return stbi__err("IDAT size limit", "IDAT section larger than 2^30 bytes");
             if ((int)(ioff + c.length) < (int)ioff) return 0;
             if (ioff + c.length > idata_limit) {
                stbi__uint32 idata_limit_old = idata_limit;
@@ -7204,12 +7253,12 @@ static float *stbi__hdr_load(stbi__context *s, int *x, int *y, int *comp, int re
                   // Run
                   value = stbi__get8(s);
                   count -= 128;
-                  if (count > nleft) { STBI_FREE(hdr_data); STBI_FREE(scanline); return stbi__errpf("corrupt", "bad RLE data in HDR"); }
+                  if ((count == 0) || (count > nleft)) { STBI_FREE(hdr_data); STBI_FREE(scanline); return stbi__errpf("corrupt", "bad RLE data in HDR"); }
                   for (z = 0; z < count; ++z)
                      scanline[i++ * 4 + k] = value;
                } else {
                   // Dump
-                  if (count > nleft) { STBI_FREE(hdr_data); STBI_FREE(scanline); return stbi__errpf("corrupt", "bad RLE data in HDR"); }
+                  if ((count == 0) || (count > nleft)) { STBI_FREE(hdr_data); STBI_FREE(scanline); return stbi__errpf("corrupt", "bad RLE data in HDR"); }
                   for (z = 0; z < count; ++z)
                      scanline[i++ * 4 + k] = stbi__get8(s);
                }
@@ -7463,10 +7512,17 @@ static void *stbi__pnm_load(stbi__context *s, int *x, int *y, int *comp, int req
 
    out = (stbi_uc *) stbi__malloc_mad4(s->img_n, s->img_x, s->img_y, ri->bits_per_channel / 8, 0);
    if (!out) return stbi__errpuc("outofmem", "Out of memory");
-   stbi__getn(s, out, s->img_n * s->img_x * s->img_y * (ri->bits_per_channel / 8));
+   if (!stbi__getn(s, out, s->img_n * s->img_x * s->img_y * (ri->bits_per_channel / 8))) {
+      STBI_FREE(out);
+      return stbi__errpuc("bad PNM", "PNM file truncated");
+   }
 
    if (req_comp && req_comp != s->img_n) {
-      out = stbi__convert_format(out, s->img_n, req_comp, s->img_x, s->img_y);
+      if (ri->bits_per_channel == 16) {
+         out = (stbi_uc *) stbi__convert_format16((stbi__uint16 *) out, s->img_n, req_comp, s->img_x, s->img_y);
+      } else {
+         out = stbi__convert_format(out, s->img_n, req_comp, s->img_x, s->img_y);
+      }
       if (out == NULL) return out; // stbi__convert_format frees input on failure
    }
    return out;
@@ -7503,6 +7559,8 @@ static int      stbi__pnm_getinteger(stbi__context *s, char *c)
    while (!stbi__at_eof(s) && stbi__pnm_isdigit(*c)) {
       value = value*10 + (*c - '0');
       *c = (char) stbi__get8(s);
+      if((value > 214748364) || (value == 214748364 && *c > '7'))
+          return stbi__err("integer parse overflow", "Parsing an integer in the PPM header overflowed a 32-bit int");
    }
 
    return value;
@@ -7533,9 +7591,13 @@ static int      stbi__pnm_info(stbi__context *s, int *x, int *y, int *comp)
    stbi__pnm_skip_whitespace(s, &c);
 
    *x = stbi__pnm_getinteger(s, &c); // read width
+   if(*x == 0)
+       return stbi__err("invalid width", "PPM image header had zero or overflowing width");
    stbi__pnm_skip_whitespace(s, &c);
 
    *y = stbi__pnm_getinteger(s, &c); // read height
+   if (*y == 0)
+       return stbi__err("invalid width", "PPM image header had zero or overflowing width");
    stbi__pnm_skip_whitespace(s, &c);
 
    maxv = stbi__pnm_getinteger(s, &c);  // read max value
