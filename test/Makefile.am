@@ -49,6 +49,8 @@ dist_testexec_DATA = \
 	sample.webp \
 	sample.xcf \
 	sample.xpm \
+	svg-class.bmp \
+	svg-class.svg \
 	svg.bmp \
 	svg.svg \
 	svg64.bmp \

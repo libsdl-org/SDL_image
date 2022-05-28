@@ -165,8 +165,8 @@ am__can_run_installinfo = \
 am__dist_testexec_DATA_DIST = palette.bmp palette.gif sample.avif \
 	sample.bmp sample.cur sample.ico sample.jpg sample.jxl \
 	sample.pcx sample.png sample.pnm sample.qoi sample.tga \
-	sample.tif sample.webp sample.xcf sample.xpm svg.bmp svg.svg \
-	svg64.bmp
+	sample.tif sample.webp sample.xcf sample.xpm svg-class.bmp \
+	svg-class.svg svg.bmp svg.svg svg64.bmp
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -537,6 +537,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -586,6 +587,8 @@ EXTRA_DIST = \
 @INSTALL_TESTS_TRUE@	sample.webp \
 @INSTALL_TESTS_TRUE@	sample.xcf \
 @INSTALL_TESTS_TRUE@	sample.xpm \
+@INSTALL_TESTS_TRUE@	svg-class.bmp \
+@INSTALL_TESTS_TRUE@	svg-class.svg \
 @INSTALL_TESTS_TRUE@	svg.bmp \
 @INSTALL_TESTS_TRUE@	svg.svg \
 @INSTALL_TESTS_TRUE@	svg64.bmp \
