@@ -409,8 +409,7 @@ static const uint8_t tjeik_jfif_id[] = "JFIF";
 static const uint8_t tjeik_com_str[] = "Created by Tiny JPEG Encoder";
 
 // TODO: Get rid of packed structs!
-#pragma pack(push)
-#pragma pack(1)
+#pragma pack(push,1)
 typedef struct
 {
     uint16_t SOI;
