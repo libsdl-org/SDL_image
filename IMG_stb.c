@@ -44,6 +44,8 @@
 #define ldexp SDL_scalbn
 
 #define STB_IMAGE_STATIC
+#define STBI_NO_THREAD_LOCALS
+#define STBI_FAILURE_USERMSG
 #define STBI_NO_STDIO
 #define STBI_ONLY_PNG
 #define STBI_ONLY_JPEG
@@ -109,7 +111,6 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
     );
     if ( !pixels ) {
         SDL_RWseek(src, start, RW_SEEK_SET);
-        IMG_SetError("%s", stbi_failure_reason());
         return NULL;
     }
 
