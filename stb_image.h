@@ -380,9 +380,14 @@ enum
    STBI_rgb_alpha  = 4
 };
 
+#if 0 /* SDL_image change */
 #include <stdlib.h>
 typedef unsigned char stbi_uc;
 typedef unsigned short stbi_us;
+#else
+typedef Uint8  stbi_uc;
+typedef Uint16 stbi_us;
+#endif
 
 #ifdef __cplusplus
 extern "C" {
