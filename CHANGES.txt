@@ -1,4 +1,6 @@
 2.0.6:
+ * Added stb_image as the default backend for JPG and PNG images loading.
+   To use libpng and libjpg instead configure using --disable-stb-image
  * Added IMG_LoadSizedSVG_RW()
  * Added support for AVIF images (https://github.com/AOMediaCodec/libavif)
  * Added IMG_ReadXPMFromArrayToRGB888()
