@@ -263,9 +263,11 @@ if(SDL2IMAGE_BUILD_SHARED_LIBS)
     endif()
 endif()
 
-# Use `Compatible Interface Properties` to ensure all linked SDL2 libraries are built with the same "sharedness".
-set_property(TARGET SDL2_image PROPERTY INTERFACE_SDL2_SHARED ${SDL2IMAGE_BUILD_SHARED_LIBS})
-set_property(TARGET SDL2_image APPEND PROPERTY COMPATIBLE_INTERFACE_BOOL SDL2_SHARED)
+# Use `Compatible Interface Properties` to ensure a shared SDL2_image is built with a shared SDL2
+if(SDL2IMAGE_BUILD_SHARED_LIBS)
+    set_property(TARGET SDL2_image PROPERTY INTERFACE_SDL2_SHARED ${SDL2IMAGE_BUILD_SHARED_LIBS})
+    set_property(TARGET SDL2_image APPEND PROPERTY COMPATIBLE_INTERFACE_BOOL SDL2_SHARED)
+endif()
 
 if(SDL2IMAGE_BUILD_SHARED_LIBS)
     sdl_target_link_options_no_undefined(SDL2_image)
