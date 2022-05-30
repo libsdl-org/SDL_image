@@ -46,6 +46,9 @@
 #define STB_IMAGE_STATIC
 #define STBI_NO_THREAD_LOCALS
 #define STBI_FAILURE_USERMSG
+#if defined(__ARM_NEON)
+#define STBI_NEON
+#endif
 #define STBI_NO_STDIO
 #define STBI_ONLY_PNG
 #define STBI_ONLY_JPEG

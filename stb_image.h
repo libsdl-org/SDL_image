@@ -3884,9 +3884,11 @@ static void stbi__setup_jpeg(stbi__jpeg *j)
 #endif
 
 #ifdef STBI_NEON
+  if (SDL_HasNEON()) { /* SDL_image change */
    j->idct_block_kernel = stbi__idct_simd;
    j->YCbCr_to_RGB_kernel = stbi__YCbCr_to_RGB_simd;
    j->resample_row_hv_2_kernel = stbi__resample_row_hv_2_simd;
+  } /**/
 #endif
 }
 
