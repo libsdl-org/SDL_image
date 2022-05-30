@@ -261,6 +261,12 @@ if(SDL2IMAGE_BUILD_SHARED_LIBS)
             OUTPUT_NAME "SDL2_image-${LT_RELEASE}"
         )
     endif()
+else()
+    if(MSVC OR (WATCOM AND (WIN32 OR OS2)))
+        set_target_properties(SDL2_image PROPERTIES
+            OUTPUT_NAME "SDL2_image-static"
+        )
+    endif()
 endif()
 
 # Use `Compatible Interface Properties` to ensure a shared SDL2_image is built with a shared SDL2
