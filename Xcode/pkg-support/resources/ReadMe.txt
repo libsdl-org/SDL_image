@@ -15,6 +15,16 @@ Copy the SDL2_image.framework to /Library/Frameworks
 You may alternatively install it in <your home directory>/Library/Frameworks if your access privileges are not high enough. (Be aware that the Xcode templates we provide in the SDL Developer Extras package may require some adjustment for your system if you do this.)
 
 
+Use in CMake projects:
+SDL2_image.framework can be used in CMake projects using the following pattern:
+```
+find_package(SDL2_image REQUIRED)
+add_executable(my_game ${MY_SOURCES})
+target_link_libraries(my_game PRIVATE SDL2_image::SDL2_image)
+```
+If SDL2_image.framework is installed in a non-standard location,
+please refer to the following link for ways to configure CMake:
+https://cmake.org/cmake/help/latest/command/find_package.html#config-mode-search-procedure
 
 
 (Partial) History of PB/Xcode projects:
@@ -22,5 +32,5 @@ You may alternatively install it in <your home directory>/Library/Frameworks if 
 	Switched to 10.4 minimum requirement.
 	Switched to ImageIO backend for distribution.
 	Static libraries of libpng and libjpeg are no longer maintained and may eventually be removed.
-	
+
 2006-01-31 - First entry in history. Updated for Universal Binaries. Static libraries of libpng and libjpeg have been brought up-to-date and built as Universal.
