@@ -112,7 +112,8 @@ DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
-CONFIG_CLEAN_FILES = SDL2_image.spec SDL2_image.pc
+CONFIG_CLEAN_FILES = sdl2_image-config.cmake \
+	sdl2_image-config-version.cmake SDL2_image.spec SDL2_image.pc
 CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -281,8 +282,10 @@ am__define_uniq_tagged_files = \
   done | $(am__uniquify_input)`
 DIST_SUBDIRS = . test
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/SDL2_image.pc.in \
-	$(srcdir)/SDL2_image.spec.in compile config.guess config.sub \
-	depcomp install-sh ltmain.sh missing
+	$(srcdir)/SDL2_image.spec.in \
+	$(srcdir)/sdl2_image-config-version.cmake.in \
+	$(srcdir)/sdl2_image-config.cmake.in compile config.guess \
+	config.sub depcomp install-sh ltmain.sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -382,6 +385,23 @@ LIBWEBP_CFLAGS = @LIBWEBP_CFLAGS@
 LIBWEBP_LIBS = @LIBWEBP_LIBS@
 LIPO = @LIPO@
 LN_S = @LN_S@
+LOAD_AVIF = @LOAD_AVIF@
+LOAD_BMP = @LOAD_BMP@
+LOAD_GIF = @LOAD_GIF@
+LOAD_JPG = @LOAD_JPG@
+LOAD_JXL = @LOAD_JXL@
+LOAD_LBM = @LOAD_LBM@
+LOAD_PCX = @LOAD_PCX@
+LOAD_PNG = @LOAD_PNG@
+LOAD_PNM = @LOAD_PNM@
+LOAD_QOI = @LOAD_QOI@
+LOAD_SVG = @LOAD_SVG@
+LOAD_TGA = @LOAD_TGA@
+LOAD_TIF = @LOAD_TIF@
+LOAD_WEBP = @LOAD_WEBP@
+LOAD_XCF = @LOAD_XCF@
+LOAD_XPM = @LOAD_XPM@
+LOAD_XV = @LOAD_XV@
 LTLIBOBJS = @LTLIBOBJS@
 LT_AGE = @LT_AGE@
 LT_CURRENT = @LT_CURRENT@
@@ -417,6 +437,8 @@ PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 RANLIB = @RANLIB@
 RC = @RC@
+SDL2IMAGE_JPG_SAVE = @SDL2IMAGE_JPG_SAVE@
+SDL2IMAGE_PNG_SAVE = @SDL2IMAGE_PNG_SAVE@
 SDL2_CONFIG = @SDL2_CONFIG@
 SDL_CFLAGS = @SDL_CFLAGS@
 SDL_LIBS = @SDL_LIBS@
@@ -425,6 +447,9 @@ SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+USE_IMAGEIO = @USE_IMAGEIO@
+USE_STBIMAGE = @USE_STBIMAGE@
+USE_WIC = @USE_WIC@
 VERSION = @VERSION@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -445,6 +470,7 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 builddir = @builddir@
+cmake_prefix_relpath = @cmake_prefix_relpath@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
@@ -588,6 +614,10 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 $(am__aclocal_m4_deps):
+sdl2_image-config.cmake: $(top_builddir)/config.status $(srcdir)/sdl2_image-config.cmake.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+sdl2_image-config-version.cmake: $(top_builddir)/config.status $(srcdir)/sdl2_image-config-version.cmake.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 SDL2_image.spec: $(top_builddir)/config.status $(srcdir)/SDL2_image.spec.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 SDL2_image.pc: $(top_builddir)/config.status $(srcdir)/SDL2_image.pc.in
@@ -1166,8 +1196,8 @@ info: info-recursive
 
 info-am:
 
-install-data-am: install-libSDL2_imageincludeHEADERS \
-	install-pkgconfigDATA
+install-data-am: install-data-local \
+	install-libSDL2_imageincludeHEADERS install-pkgconfigDATA
 
 install-dvi: install-dvi-recursive
 
@@ -1239,8 +1269,9 @@ ps-am:
 
 uninstall-am: uninstall-libLTLIBRARIES \
 	uninstall-libSDL2_imageincludeHEADERS uninstall-pkgconfigDATA
-
-.MAKE: $(am__recursive_targets) install-am install-strip
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
+.MAKE: $(am__recursive_targets) install-am install-strip uninstall-am
 
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
 	am--depfiles am--refresh check check-am clean clean-cscope \
@@ -1251,17 +1282,18 @@ uninstall-am: uninstall-libLTLIBRARIES \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distcleancheck distdir distuninstallcheck dvi \
 	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-libLTLIBRARIES \
-	install-libSDL2_imageincludeHEADERS install-man install-pdf \
-	install-pdf-am install-pkgconfigDATA install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-libLTLIBRARIES \
-	uninstall-libSDL2_imageincludeHEADERS uninstall-pkgconfigDATA
+	install-data install-data-am install-data-local install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am \
+	install-libLTLIBRARIES install-libSDL2_imageincludeHEADERS \
+	install-man install-pdf install-pdf-am install-pkgconfigDATA \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags tags-am uninstall uninstall-am uninstall-hook \
+	uninstall-libLTLIBRARIES uninstall-libSDL2_imageincludeHEADERS \
+	uninstall-pkgconfigDATA
 
 .PRECIOUS: Makefile
 
@@ -1278,6 +1310,16 @@ rpm: $(PACKAGE)-$(VERSION).tar.gz
 
 dist-hook:
 	ls $(distdir)/external | fgrep -v download.sh | while read dir; do rm -rf "$(distdir)/external/$$dir"; done
+
+install-data-local:
+	$(MKDIR_P) $(DESTDIR)$(libdir)/cmake/SDL2_image
+	$(INSTALL) -m 644 sdl2_image-config.cmake $(DESTDIR)$(libdir)/cmake/SDL2_image
+	$(INSTALL) -m 644 sdl2_image-config-version.cmake $(DESTDIR)$(libdir)/cmake/SDL2_image
+
+uninstall-hook:
+	rm $(DESTDIR)$(libdir)/cmake/SDL2_image/sdl2_image-config.cmake
+	rm $(DESTDIR)$(libdir)/cmake/SDL2_image/sdl2_image-config-version.cmake
+	rm -r $(DESTDIR)$(libdir)/cmake/SDL2_image
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
