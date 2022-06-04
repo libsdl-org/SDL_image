@@ -97,3 +97,13 @@ rpm: $(PACKAGE)-$(VERSION).tar.gz
 
 dist-hook:
 	ls $(distdir)/external | fgrep -v download.sh | while read dir; do rm -rf "$(distdir)/external/$$dir"; done
+
+install-data-local:
+	$(MKDIR_P) $(DESTDIR)$(libdir)/cmake/SDL2_image
+	$(INSTALL) -m 644 sdl2_image-config.cmake $(DESTDIR)$(libdir)/cmake/SDL2_image
+	$(INSTALL) -m 644 sdl2_image-config-version.cmake $(DESTDIR)$(libdir)/cmake/SDL2_image
+
+uninstall-hook:
+	rm $(DESTDIR)$(libdir)/cmake/SDL2_image/sdl2_image-config.cmake
+	rm $(DESTDIR)$(libdir)/cmake/SDL2_image/sdl2_image-config-version.cmake
+	rm -r $(DESTDIR)$(libdir)/cmake/SDL2_image

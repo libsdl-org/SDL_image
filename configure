@@ -775,6 +775,7 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+cmake_prefix_relpath
 INSTALL_TESTS_FALSE
 INSTALL_TESTS_TRUE
 BUILD_TESTS_FALSE
@@ -782,24 +783,46 @@ BUILD_TESTS_TRUE
 PC_REQUIRES
 PC_LIBS
 IMG_LIBS
+SDL2IMAGE_JPG_SAVE
+SDL2IMAGE_PNG_SAVE
+LOAD_QOI
+LOAD_XV
+LOAD_XPM
+LOAD_XCF
+LOAD_TGA
+LOAD_SVG
+LOAD_PNM
+LOAD_PCX
+LOAD_LBM
+LOAD_GIF
+LOAD_BMP
+LOAD_WEBP
 LIBWEBP_LIBS
 LIBWEBP_CFLAGS
+LOAD_TIF
 LIBTIFF_LIBS
 LIBTIFF_CFLAGS
+LOAD_PNG
 LIBPNG_LIBS
 LIBPNG_CFLAGS
+LOAD_JXL
 LIBJXL_LIBS
 LIBJXL_CFLAGS
+LOAD_JPG
 LIBJPEG_LIBS
 LIBJPEG_CFLAGS
+LOAD_AVIF
 LIBAVIF_LIBS
 LIBAVIF_CFLAGS
+USE_WIC
+USE_STBIMAGE
 SDL2_CONFIG
 SDL_LIBS
 SDL_CFLAGS
 SDL_VERSION
 USE_VERSION_RC_FALSE
 USE_VERSION_RC_TRUE
+USE_IMAGEIO
 USE_IMAGEIO_FALSE
 USE_IMAGEIO_TRUE
 PKG_CONFIG_LIBDIR
@@ -4124,13 +4147,13 @@ if ${lt_cv_nm_interface+:} false; then :
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:4127: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:4150: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4130: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:4153: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4133: output\"" >&5)
+  (eval echo "\"\$as_me:4156: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -5344,7 +5367,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5347 "configure"' > conftest.$ac_ext
+  echo '#line 5370 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7169,11 +7192,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7172: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7195: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7176: \$? = $ac_status" >&5
+   echo "$as_me:7199: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7518,11 +7541,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7521: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7544: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7525: \$? = $ac_status" >&5
+   echo "$as_me:7548: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7623,11 +7646,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7626: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7649: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7630: \$? = $ac_status" >&5
+   echo "$as_me:7653: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -7678,11 +7701,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7681: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7704: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7685: \$? = $ac_status" >&5
+   echo "$as_me:7708: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10113,7 +10136,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10116 "configure"
+#line 10139 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10209,7 +10232,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10212 "configure"
+#line 10235 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12690,6 +12713,13 @@ else
   USE_IMAGEIO_FALSE=
 fi
 
+if test x$enable_imageio = xyes; then
+    USE_IMAGEIO=1
+
+else
+    USE_IMAGEIO=0
+
+fi
  if test x$use_version_rc = xtrue; then
   USE_VERSION_RC_TRUE=
   USE_VERSION_RC_FALSE='#'
@@ -13377,7 +13407,17 @@ LIBS="$LIBS $SDL_LIBS"
 if test x$enable_stb_image = xyes; then
     $as_echo "#define USE_STBIMAGE 1" >>confdefs.h
 
+    USE_STBIMAGE=1
+
+else
+    USE_STBIMAGE=0
+
 fi
+
+USE_WIC=0
+
+
+load_avif=0
 if test x$enable_avif = xyes; then
 
 pkg_failed=no
@@ -13577,6 +13617,7 @@ fi
                 fi
                 ;;
         esac
+        load_avif=1
     elif test x$enable_avif = xyes; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find AVIF library (https://github.com/AOMediaCodec/libavif)" >&5
 $as_echo "$as_me: WARNING: *** Unable to find AVIF library (https://github.com/AOMediaCodec/libavif)" >&2;}
@@ -13584,14 +13625,19 @@ $as_echo "$as_me: WARNING: *** Unable to find AVIF library (https://github.com/A
 $as_echo "$as_me: WARNING: AVIF image loading disabled" >&2;}
     fi
 fi
+LOAD_AVIF=$load_avif
 
+
+load_jpg=0
 if test x$enable_jpg = xyes; then
     if test x$enable_stb_image = xyes; then
         $as_echo "#define LOAD_JPG 1" >>confdefs.h
 
+        load_jpg=1
     elif test x$enable_imageio = xyes; then
         $as_echo "#define LOAD_JPG 1" >>confdefs.h
 
+        load_jpg=1
         $as_echo "#define JPG_USES_IMAGEIO 1" >>confdefs.h
 
     else
@@ -13777,6 +13823,7 @@ fi
             if test x$enable_jpg = xyes; then
                 $as_echo "#define LOAD_JPG 1" >>confdefs.h
 
+                load_jpg=1
             fi
 
             case "$host" in
@@ -13801,7 +13848,10 @@ $as_echo "$as_me: WARNING: JPG image loading disabled" >&2;}
         fi
     fi
 fi
+LOAD_JPG=$load_jpg
 
+
+load_jxl=0
 if test x$enable_jxl = xyes; then
 
 pkg_failed=no
@@ -13985,6 +14035,7 @@ fi
         if test x$enable_jxl = xyes; then
             $as_echo "#define LOAD_JXL 1" >>confdefs.h
 
+            load_jxl=1
         fi
 
         case "$host" in
@@ -14008,16 +14059,21 @@ $as_echo "$as_me: WARNING: *** Unable to find JXL library (https://jpegxl.info/)
 $as_echo "$as_me: WARNING: JXL image loading disabled" >&2;}
     fi
 fi
+LOAD_JXL=$load_jxl
 
+
+load_png=0
 if test x$enable_png = xyes; then
     if test x$enable_stb_image = xyes; then
         $as_echo "#define LOAD_PNG 1" >>confdefs.h
 
+        load_png=1
     elif test x$enable_imageio = xyes; then
         $as_echo "#define LOAD_PNG 1" >>confdefs.h
 
         $as_echo "#define PNG_USES_IMAGEIO 1" >>confdefs.h
 
+        load_png=1
     else
 
 pkg_failed=no
@@ -14200,6 +14256,7 @@ fi
         if test x$have_png_hdr = xyes -a x$have_png_lib = xyes; then
             $as_echo "#define LOAD_PNG 1" >>confdefs.h
 
+            load_png=1
 
             case "$host" in
                 *-*-darwin*)
@@ -14223,7 +14280,10 @@ $as_echo "$as_me: WARNING: PNG image loading disabled" >&2;}
         fi
     fi
 fi
+LOAD_PNG=$load_png
 
+
+load_tif=0
 if test x$enable_tif = xyes -a x$enable_imageio != xyes; then
 
 pkg_failed=no
@@ -14406,6 +14466,7 @@ fi
     if test x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; then
         $as_echo "#define LOAD_TIF 1" >>confdefs.h
 
+        load_tif=1
 
         case "$host" in
             *-*-darwin*)
@@ -14428,7 +14489,10 @@ $as_echo "$as_me: WARNING: *** Unable to find Tiff library (http://www.simplesys
 $as_echo "$as_me: WARNING: TIF image loading disabled" >&2;}
     fi
 fi
+LOAD_TIF=$load_tif
 
+
+load_webp=0
 if test x$enable_webpdec = xyes; then
   webplib=webpdecoder
 else
@@ -14620,6 +14684,7 @@ fi
     if test x$have_webp_hdr = xyes -a x$have_webp_lib = xyes; then
         $as_echo "#define LOAD_WEBP 1" >>confdefs.h
 
+        load_webp=1
 
         case "$host" in
             *-*-darwin*)
@@ -14642,61 +14707,107 @@ $as_echo "$as_me: WARNING: *** Unable to find WEBP library (https://developers.g
 $as_echo "$as_me: WARNING: WEBP image loading disabled" >&2;}
     fi
 fi
+LOAD_WEBP=$load_webp
 
+
+load_bmp=0
 if test x$enable_bmp = xyes; then
     $as_echo "#define LOAD_BMP 1" >>confdefs.h
 
+    load_bmp=1
 fi
+LOAD_BMP=$load_bmp
 
+
+load_gif=0
 if test x$enable_gif = xyes; then
     $as_echo "#define LOAD_GIF 1" >>confdefs.h
 
+    load_gif=1
 fi
+LOAD_GIF=$load_gif
 
+
+load_lbm=0
 if test x$enable_lbm = xyes; then
     $as_echo "#define LOAD_LBM 1" >>confdefs.h
 
+    load_lbm=1
 fi
+LOAD_LBM=$load_lbm
 
+
+load_pcx=0
 if test x$enable_pcx = xyes; then
     $as_echo "#define LOAD_PCX 1" >>confdefs.h
 
+    load_pcx=1
 fi
+LOAD_PCX=$load_pcx
 
+
+load_pnm = 0
 if test x$enable_pnm = xyes; then
     $as_echo "#define LOAD_PNM 1" >>confdefs.h
 
+    load_pnm=1
 fi
+LOAD_PNM=$load_pnm
 
+
+load_svg=0
 if test x$enable_svg = xyes; then
     $as_echo "#define LOAD_SVG 1" >>confdefs.h
 
+    load_svg=1
 fi
+LOAD_SVG=$load_svg
 
+
+load_tga=0
 if test x$enable_tga = xyes; then
     $as_echo "#define LOAD_TGA 1" >>confdefs.h
 
+    load_tga=1
 fi
+LOAD_TGA=$load_tga
 
+
+load_xcf=0
 if test x$enable_xcf = xyes; then
     $as_echo "#define LOAD_XCF 1" >>confdefs.h
 
+    load_xcf=1
 fi
+LOAD_XCF=$load_xcf
 
+
+load_xpm=0
 if test x$enable_xpm = xyes; then
     $as_echo "#define LOAD_XPM 1" >>confdefs.h
 
+    load_xpm=1
 fi
+LOAD_XPM=$load_xpm
 
+
+load_xv=0
 if test x$enable_xv = xyes; then
     $as_echo "#define LOAD_XV 1" >>confdefs.h
 
+    load_xv=1
 fi
+LOAD_XV=$load_xv
 
+
+load_qoi=0
 if test x$enable_qoi = xyes; then
     $as_echo "#define LOAD_QOI 1" >>confdefs.h
 
+    load_qoi=1
 fi
+LOAD_QOI=$load_qoi
+
 
 if test x$enable_webp = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib = xyes; then
     CFLAGS="$LIBWEBP_CFLAGS $CFLAGS"
@@ -14808,15 +14919,23 @@ fi
 if test x$enable_save_png = xyes; then
     $as_echo "#define SDL_IMAGE_SAVE_PNG 1" >>confdefs.h
 
+    SDL2IMAGE_PNG_SAVE=1
+
 else
     $as_echo "#define SDL_IMAGE_SAVE_PNG 0" >>confdefs.h
+
+    SDL2IMAGE_PNG_SAVE=0
 
 fi
 if test x$enable_save_jpg = xyes; then
     $as_echo "#define SDL_IMAGE_SAVE_JPG 1" >>confdefs.h
 
+    SDL2IMAGE_JPG_SAVE=1
+
 else
     $as_echo "#define SDL_IMAGE_SAVE_JPG 0" >>confdefs.h
+
+    SDL2IMAGE_JPG_SAVE=0
 
 fi
 
@@ -14841,6 +14960,11 @@ else
 fi
 
 
+eval pkg_prefix=$prefix
+eval pkg_cmakedir=$libdir/cmake/SDL2_image
+cmake_prefix_relpath="$(echo -n "$pkg_cmakedir" | sed -E "s#^$pkg_prefix##" | sed -E "s#[A-Za-z0-9_ .-]+#..#g")"
+
+
 CheckNoUndef
 
 CheckWarnAll
@@ -14850,7 +14974,7 @@ CheckVisibilityHidden
 OBJCFLAGS=$CFLAGS
 
 # Finally create all the generated files
-ac_config_files="$ac_config_files Makefile SDL2_image.spec SDL2_image.pc test/Makefile"
+ac_config_files="$ac_config_files Makefile sdl2_image-config.cmake sdl2_image-config-version.cmake SDL2_image.spec SDL2_image.pc test/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -15872,6 +15996,8 @@ do
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "sdl2_image-config.cmake") CONFIG_FILES="$CONFIG_FILES sdl2_image-config.cmake" ;;
+    "sdl2_image-config-version.cmake") CONFIG_FILES="$CONFIG_FILES sdl2_image-config-version.cmake" ;;
     "SDL2_image.spec") CONFIG_FILES="$CONFIG_FILES SDL2_image.spec" ;;
     "SDL2_image.pc") CONFIG_FILES="$CONFIG_FILES SDL2_image.pc" ;;
     "test/Makefile") CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;

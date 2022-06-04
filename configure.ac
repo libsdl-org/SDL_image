@@ -111,6 +111,11 @@ case "$host" in
         ;;
 esac
 AM_CONDITIONAL(USE_IMAGEIO, test x$enable_imageio = xyes)
+if test x$enable_imageio = xyes; then
+    AC_SUBST([USE_IMAGEIO], 1)
+else
+    AC_SUBST([USE_IMAGEIO], 0)
+fi
 AM_CONDITIONAL(USE_VERSION_RC, test x$use_version_rc = xtrue)
 
 dnl set this to use on systems that use lib64 instead of lib
@@ -287,7 +292,14 @@ LIBS="$LIBS $SDL_LIBS"
 
 if test x$enable_stb_image = xyes; then
     AC_DEFINE([USE_STBIMAGE])
+    AC_SUBST([USE_STBIMAGE], 1)
+else
+    AC_SUBST([USE_STBIMAGE], 0)
 fi
+
+AC_SUBST([USE_WIC], 0)
+
+load_avif=0
 if test x$enable_avif = xyes; then
     PKG_CHECK_MODULES([LIBAVIF], [libavif], [dnl
         have_avif_hdr=yes
@@ -322,17 +334,22 @@ if test x$enable_avif = xyes; then
                 fi
                 ;;
         esac
+        load_avif=1
     elif test x$enable_avif = xyes; then
         AC_MSG_WARN([*** Unable to find AVIF library (https://github.com/AOMediaCodec/libavif)])
         AC_MSG_WARN([AVIF image loading disabled])
     fi
 fi
+AC_SUBST([LOAD_AVIF], $load_avif)
 
+load_jpg=0
 if test x$enable_jpg = xyes; then
     if test x$enable_stb_image = xyes; then
         AC_DEFINE([LOAD_JPG])
+        load_jpg=1
     elif test x$enable_imageio = xyes; then
         AC_DEFINE([LOAD_JPG])
+        load_jpg=1
         AC_DEFINE([JPG_USES_IMAGEIO])
     else
         PKG_CHECK_MODULES([LIBJPEG], [libjpeg], [dnl
@@ -352,6 +369,7 @@ if test x$enable_jpg = xyes; then
         if test x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; then
             if test x$enable_jpg = xyes; then
                 AC_DEFINE([LOAD_JPG])
+                load_jpg=1
             fi
 
             case "$host" in
@@ -374,7 +392,9 @@ if test x$enable_jpg = xyes; then
         fi
     fi
 fi
+AC_SUBST([LOAD_JPG], $load_jpg)
 
+load_jxl=0
 if test x$enable_jxl = xyes; then
     PKG_CHECK_MODULES([LIBJXL], [libjxl], [dnl
         have_jxl_hdr=yes
@@ -393,6 +413,7 @@ if test x$enable_jxl = xyes; then
     if test x$have_jxl_hdr = xyes -a x$have_jxl_lib = xyes; then
         if test x$enable_jxl = xyes; then
             AC_DEFINE([LOAD_JXL])
+            load_jxl=1
         fi
 
         case "$host" in
@@ -414,13 +435,17 @@ if test x$enable_jxl = xyes; then
         AC_MSG_WARN([JXL image loading disabled])
     fi
 fi
+AC_SUBST([LOAD_JXL], $load_jxl)
 
+load_png=0
 if test x$enable_png = xyes; then
     if test x$enable_stb_image = xyes; then
         AC_DEFINE([LOAD_PNG])
+        load_png=1
     elif test x$enable_imageio = xyes; then
         AC_DEFINE([LOAD_PNG])
         AC_DEFINE([PNG_USES_IMAGEIO])
+        load_png=1
     else
         PKG_CHECK_MODULES([LIBPNG], [libpng], [dnl
             have_png_hdr=yes
@@ -438,6 +463,7 @@ if test x$enable_png = xyes; then
           ])
         if test x$have_png_hdr = xyes -a x$have_png_lib = xyes; then
             AC_DEFINE([LOAD_PNG])
+            load_png=1
 
             case "$host" in
                 *-*-darwin*)
@@ -459,7 +485,9 @@ if test x$enable_png = xyes; then
         fi
     fi
 fi
+AC_SUBST([LOAD_PNG], $load_png)
 
+load_tif=0
 if test x$enable_tif = xyes -a x$enable_imageio != xyes; then
     PKG_CHECK_MODULES([LIBTIFF], [libtiff-4], [dnl
         have_tif_hdr=yes
@@ -477,6 +505,7 @@ if test x$enable_tif = xyes -a x$enable_imageio != xyes; then
       ])
     if test x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; then
         AC_DEFINE([LOAD_TIF])
+        load_tif=1
 
         case "$host" in
             *-*-darwin*)
@@ -497,7 +526,9 @@ if test x$enable_tif = xyes -a x$enable_imageio != xyes; then
         AC_MSG_WARN([TIF image loading disabled])
     fi
 fi
+AC_SUBST([LOAD_TIF], $load_tif)
 
+load_webp=0
 if test x$enable_webpdec = xyes; then
   webplib=webpdecoder
 else
@@ -520,6 +551,7 @@ if test x$enable_webp = xyes; then
       ])
     if test x$have_webp_hdr = xyes -a x$have_webp_lib = xyes; then
         AC_DEFINE([LOAD_WEBP])
+        load_webp=1
 
         case "$host" in
             *-*-darwin*)
@@ -540,50 +572,84 @@ if test x$enable_webp = xyes; then
         AC_MSG_WARN([WEBP image loading disabled])
     fi
 fi
+AC_SUBST([LOAD_WEBP], $load_webp)
 
+load_bmp=0
 if test x$enable_bmp = xyes; then
     AC_DEFINE([LOAD_BMP])
+    load_bmp=1
 fi
+AC_SUBST([LOAD_BMP], $load_bmp)
 
+load_gif=0
 if test x$enable_gif = xyes; then
     AC_DEFINE([LOAD_GIF])
+    load_gif=1
 fi
+AC_SUBST([LOAD_GIF], $load_gif)
 
+load_lbm=0
 if test x$enable_lbm = xyes; then
     AC_DEFINE([LOAD_LBM])
+    load_lbm=1
 fi
+AC_SUBST([LOAD_LBM], $load_lbm)
 
+load_pcx=0
 if test x$enable_pcx = xyes; then
     AC_DEFINE([LOAD_PCX])
+    load_pcx=1
 fi
+AC_SUBST([LOAD_PCX], $load_pcx)
 
+load_pnm = 0
 if test x$enable_pnm = xyes; then
     AC_DEFINE([LOAD_PNM])
+    load_pnm=1
 fi
+AC_SUBST([LOAD_PNM], $load_pnm)
 
+load_svg=0
 if test x$enable_svg = xyes; then
     AC_DEFINE([LOAD_SVG])
+    load_svg=1
 fi
+AC_SUBST([LOAD_SVG], $load_svg)
 
+load_tga=0
 if test x$enable_tga = xyes; then
     AC_DEFINE([LOAD_TGA])
+    load_tga=1
 fi
+AC_SUBST([LOAD_TGA], $load_tga)
 
+load_xcf=0
 if test x$enable_xcf = xyes; then
     AC_DEFINE([LOAD_XCF])
+    load_xcf=1
 fi
+AC_SUBST([LOAD_XCF], $load_xcf)
 
+load_xpm=0
 if test x$enable_xpm = xyes; then
     AC_DEFINE([LOAD_XPM])
+    load_xpm=1
 fi
+AC_SUBST([LOAD_XPM], $load_xpm)
 
+load_xv=0
 if test x$enable_xv = xyes; then
     AC_DEFINE([LOAD_XV])
+    load_xv=1
 fi
+AC_SUBST([LOAD_XV], $load_xv)
 
+load_qoi=0
 if test x$enable_qoi = xyes; then
     AC_DEFINE([LOAD_QOI])
+    load_qoi=1
 fi
+AC_SUBST([LOAD_QOI], $load_qoi)
 
 if test x$enable_webp = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib = xyes; then
     CFLAGS="$LIBWEBP_CFLAGS $CFLAGS"
@@ -676,13 +742,17 @@ if test x$enable_png = xyes -a x$have_png_hdr = xyes -a x$have_png_lib = xyes; t
 fi
 if test x$enable_save_png = xyes; then
     AC_DEFINE([SDL_IMAGE_SAVE_PNG], 1)
+    AC_SUBST([SDL2IMAGE_PNG_SAVE], 1)
 else
     AC_DEFINE([SDL_IMAGE_SAVE_PNG], 0)
+    AC_SUBST([SDL2IMAGE_PNG_SAVE], 0)
 fi
 if test x$enable_save_jpg = xyes; then
     AC_DEFINE([SDL_IMAGE_SAVE_JPG], 1)
+    AC_SUBST([SDL2IMAGE_JPG_SAVE], 1)
 else
     AC_DEFINE([SDL_IMAGE_SAVE_JPG], 0)
+    AC_SUBST([SDL2IMAGE_JPG_SAVE], 0)
 fi
 
 AC_SUBST([IMG_LIBS])
@@ -691,6 +761,12 @@ AC_SUBST([PC_REQUIRES])
 
 AM_CONDITIONAL([BUILD_TESTS], [test "x$enable_tests" = xyes])
 AM_CONDITIONAL([INSTALL_TESTS], [test "x$enable_installed_tests" = xyes])
+
+dnl Calculate the location of the prefix, relative to the cmake folder
+eval pkg_prefix=$prefix
+eval pkg_cmakedir=$libdir/cmake/SDL2_image
+cmake_prefix_relpath="$(echo -n "$pkg_cmakedir" | sed -E "s#^$pkg_prefix##" | sed -E "s#[A-Za-z0-9_ .-]+#..#g")"
+AC_SUBST([cmake_prefix_relpath])
 
 dnl check for LD --no-undefined option
 CheckNoUndef
@@ -706,6 +782,8 @@ OBJCFLAGS=$CFLAGS
 # Finally create all the generated files
 AC_CONFIG_FILES([
 Makefile
+sdl2_image-config.cmake
+sdl2_image-config-version.cmake
 SDL2_image.spec
 SDL2_image.pc
 test/Makefile
