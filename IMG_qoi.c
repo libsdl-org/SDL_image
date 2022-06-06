@@ -101,6 +101,7 @@ SDL_Surface *IMG_LoadQOI_RW(SDL_RWops *src)
     }
 
     SDL_memcpy(surface->pixels, pixel_data, image_info.width*image_info.height*4);
+    SDL_free(pixel_data);
 
     return surface;
 }
