@@ -88,19 +88,20 @@ SDL_Surface *IMG_LoadQOI_RW(SDL_RWops *src)
         return NULL;
     }
 
-    surface = SDL_CreateRGBSurfaceWithFormat(0,
-                                             image_info.width,
-                                             image_info.height,
-                                             32,
-                                             SDL_PIXELFORMAT_RGBA32);
-
+    surface = SDL_CreateRGBSurfaceWithFormatFrom(pixel_data,
+                                                 image_info.width,
+                                                 image_info.height,
+                                                 32,
+					         (image_info.width * 4),
+                                                 SDL_PIXELFORMAT_RGBA32);
     if ( !surface ) {
         SDL_free(pixel_data);
         IMG_SetError("Couldn't create SDL_Surface");
         return NULL;
     }
 
-    SDL_memcpy(surface->pixels, pixel_data, image_info.width*image_info.height*4);
+    /* Let SDL manage the memory now */
+    surface->flags &= ~SDL_PREALLOC;
 
     return surface;
 }
