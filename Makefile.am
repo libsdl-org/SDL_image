@@ -51,6 +51,7 @@ EXTRA_DIST = \
 	IMG_xxx.c		\
 	LICENSE.txt 		\
 	Makefile.os2		\
+	mingw			\
 	README-emscripten.txt 	\
 	README.txt 		\
 	SDL2_image.spec		\
