@@ -602,7 +602,7 @@ if test x$enable_pcx = xyes; then
 fi
 AC_SUBST([LOAD_PCX], $load_pcx)
 
-load_pnm = 0
+load_pnm=0
 if test x$enable_pnm = xyes; then
     AC_DEFINE([LOAD_PNM])
     load_pnm=1

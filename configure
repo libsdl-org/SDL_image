@@ -14746,7 +14746,7 @@ fi
 LOAD_PCX=$load_pcx
 
 
-load_pnm = 0
+load_pnm=0
 if test x$enable_pnm = xyes; then
     $as_echo "#define LOAD_PNM 1" >>confdefs.h
 
