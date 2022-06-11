@@ -247,8 +247,6 @@ jobs:
         set -eu
         curdir="$(pwd)"
         parallel="$(getconf _NPROCESSORS_ONLN)"
-        rm -fr DESTDIR-autotools
-        mkdir DESTDIR-autotools
         make -j"${parallel}" -C build-autotools install V=1
         echo "SDL2_image_DIR=$(pwd)/prefix_autotools" >> $GITHUB_ENV
         ( cd prefix_autotools; find . ) | LC_ALL=C sort -u
