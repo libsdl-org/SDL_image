@@ -65,6 +65,8 @@ if(NOT TARGET SDL2_image::SDL2_image)
     set_target_properties(SDL2_image::SDL2_image
         PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${_sdl2image_incdir}"
+            COMPATIBLE_INTERFACE_BOOL "SDL2_SHARED"
+            INTERFACE_SDL2_SHARED "ON"
     )
     if(WIN32)
         set_target_properties(SDL2_image::SDL2_image
