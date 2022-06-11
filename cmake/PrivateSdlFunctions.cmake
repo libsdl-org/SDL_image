@@ -212,10 +212,10 @@ function(target_get_dynamic_library DEST TARGET)
     set(${DEST} ${result} PARENT_SCOPE)
 endfunction()
 
-macro(sdl_check_project_in_subfolder relative_subfolder name)
+macro(sdl_check_project_in_subfolder relative_subfolder name vendored_option)
     if(NOT EXISTS "${PROJECT_SOURCE_DIR}/${relative_subfolder}/CMakeLists.txt")
         message(FATAL_ERROR "No cmake project for ${name} found in ${relative_subfolder}.\n"
-            "Run the download script in the external folder, or re-configure with -DSDL2IMAGE_VENDORED=OFF to use system packages.")
+            "Run the download script in the external folder, or re-configure with -D${vendored_option}=OFF to use system packages.")
     endif()
 endmacro()
 
