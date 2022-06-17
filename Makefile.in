@@ -548,21 +548,21 @@ EXTRA_DIST = \
 	Android.mk		\
 	CHANGES.txt 		\
 	CMakeLists.txt		\
-	cmake			\
-	SDL2_imageConfig.cmake.in \
 	IMG_ImageIO.m		\
 	IMG_xxx.c		\
 	LICENSE.txt 		\
 	Makefile.os2		\
-	mingw			\
 	README-emscripten.txt 	\
 	README.txt 		\
 	SDL2_image.spec		\
+	SDL2_imageConfig.cmake.in \
 	VisualC			\
 	VisualC-WinRT		\
 	Xcode			\
 	autogen.sh		\
+	cmake			\
 	external		\
+	mingw			\
 	version.rc
 
 libSDL2_image_la_LDFLAGS = \
