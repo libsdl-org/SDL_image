@@ -1,4 +1,4 @@
-2.0.6:
+2.6.0:
  * Added stb_image as the default backend for JPG and PNG images loading.
    To use libpng and libjpg instead configure using --disable-stb-image
  * Added IMG_LoadSizedSVG_RW()
@@ -8,7 +8,7 @@
  * Added support for QOI images (https://qoiformat.org/)
  * Fixed XCF regression introduced in 2.0.5
  * Added support for loading animated GIFs
- * LoadBMP() now loads files using SDL2.
+ * LoadBMP() now loads files using SDL2
  * Allow using libwebpdecoder instead libwebp.
 
 2.0.5:
