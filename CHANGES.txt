@@ -9,7 +9,7 @@
  * Fixed XCF regression introduced in 2.0.5
  * Added support for loading animated GIFs
  * LoadBMP() now loads files using SDL2
- * Allow using libwebpdecoder instead libwebp.
+ * Allow using libwebpdecoder instead libwebp
 
 2.0.5:
 Sam Lantinga - Wed Jun 19 07:30:51 PDT 2019
