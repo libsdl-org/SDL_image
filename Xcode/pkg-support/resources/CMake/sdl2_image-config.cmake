@@ -41,7 +41,7 @@ set(SDL2IMAGE_BACKEND_WIC       FALSE)
 
 string(REGEX REPLACE "SDL2_image\\.framework.*" "SDL2_image.framework" _sdl2image_framework_path "${CMAKE_CURRENT_LIST_DIR}")
 string(REGEX REPLACE "SDL2_image\\.framework.*" "" _sdl2image_framework_parent_path "${CMAKE_CURRENT_LIST_DIR}")
-f
+
 # All targets are created, even when some might not be requested though COMPONENTS.
 # This is done for compatibility with CMake generated SDL2_image-target.cmake files.
 
