@@ -134,7 +134,7 @@ extern DECLSPEC void SDLCALL IMG_Quit(void);
  * \param freesrc can be set so that the RWops is freed after this function is
  *                called
  * \param type may be one of: "BMP", "GIF", "PNG", etc.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \sa IMG_Load
  * \sa IMG_Load_RW
@@ -146,7 +146,7 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTyped_RW(SDL_RWops *src, int frees
  * Load an image from file
  *
  * \param file file name
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \sa IMG_LoadTyped_RW
  * \sa IMG_Load_RW
@@ -175,7 +175,7 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_Load_RW(SDL_RWops *src, int freesrc);
  *
  * \param renderer SDL Render
  * \param file image file name
- * \returns SDL Texture, or NULL on error
+ * \returns SDL Texture, or NULL on error.
  *
  * \sa IMG_LoadTexture_RW
  * \sa IMG_LoadTextureTyped_RW
@@ -410,7 +410,7 @@ typedef struct
  * Load an animation from file
  *
  * \param file file name
- * \returns IMG Animation, or NULL on error
+ * \returns IMG Animation, or NULL on error.
  *
  * \sa IMG_FreeAnimation
  */
