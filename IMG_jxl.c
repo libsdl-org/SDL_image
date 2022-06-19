@@ -199,7 +199,11 @@ SDL_Surface *IMG_LoadJXL_RW(SDL_RWops *src)
                 SDL_OutOfMemory();
                 goto done;
             }
-            pitch = outputsize / info.ysize;
+            if ((outputsize / info.ysize) > SDL_MAX_SINT32) {
+                SDL_OutOfMemory();
+                goto done;
+            }
+            pitch = (int)(outputsize / info.ysize);
             if (lib.JxlDecoderSetImageOutBuffer(decoder, &format, pixels, outputsize) != JXL_DEC_SUCCESS) {
                 IMG_SetError("Couldn't set JXL output buffer");
                 goto done;
