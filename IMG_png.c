@@ -629,9 +629,18 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
             }
         }
         else if (surface->format->format == SDL_PIXELFORMAT_RGB24) {
+            /* If the surface is exactly the right RGB format it is just passed through */
             png_color_type = PNG_COLOR_TYPE_RGB;
         }
+        else if (!SDL_ISPIXELFORMAT_ALPHA(surface->format->format)) {
+            /* If the surface is not exactly the right RGB format but does not have alpha
+               information, it should be converted to RGB24 before being passed through */
+            png_color_type = PNG_COLOR_TYPE_RGB;
+            source = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGB24, 0);
+        }
         else if (surface->format->format != png_format) {
+            /* Otherwise, (surface has alpha data), and it is not in the exact right
+               format , so it should be converted to that */
             source = SDL_ConvertSurfaceFormat(surface, png_format, 0);
         }
 
