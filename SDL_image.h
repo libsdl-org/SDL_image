@@ -80,10 +80,11 @@ extern "C" {
 
 /**
  * This function gets the version of the dynamically linked SDL_image library.
- *  it should NOT be used to fill a version structure, instead you should
- *  use the SDL_IMAGE_VERSION() macro.
  *
- *  \returns SDL_image version
+ * it should NOT be used to fill a version structure, instead you should use
+ * the SDL_IMAGE_VERSION() macro.
+ *
+ * \returns SDL_image version
  */
 extern DECLSPEC const SDL_version * SDLCALL IMG_Linked_Version(void);
 
@@ -101,11 +102,11 @@ typedef enum
 } IMG_InitFlags;
 
 /**
- * Loads dynamic libraries and prepares them for use.  Flags should be
- * one or more flags from IMG_InitFlags OR'd together.
+ * Loads dynamic libraries and prepares them for use.
+ *
+ * Flags should be one or more flags from IMG_InitFlags OR'd together.
  *
  * \param flags initialization flags
- *
  * \returns flags successfully initialized, or 0 on failure.
  *
  * \sa IMG_Quit
@@ -125,20 +126,19 @@ extern DECLSPEC void SDLCALL IMG_Quit(void);
 /**
  * Load an image from an SDL data source.
  *
- * If the image format supports a transparent pixel, SDL will set the
- * colorkey for the surface.  You can enable RLE acceleration on the
- * surface afterwards by calling:
- * SDL_SetColorKey(image, SDL_RLEACCEL, image->format->colorkey);
+ * If the image format supports a transparent pixel, SDL will set the colorkey
+ * for the surface. You can enable RLE acceleration on the surface afterwards
+ * by calling: SDL_SetColorKey(image, SDL_RLEACCEL, image->format->colorkey);
  *
  * \param src RWops
- * \param freesrc can be set so that the RWops is freed after this function is called
+ * \param freesrc can be set so that the RWops is freed after this function is
+ *                called
  * \param type may be one of: "BMP", "GIF", "PNG", etc.
- *
  * \returns SDL surface, or NULL on error
  *
  * \sa IMG_Load
  * \sa IMG_Load_RW
- * \sa SDL_FreeSurface
+ * \sa [[SDL_FreeSurface]]
  */
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, const char *type);
 
@@ -146,12 +146,11 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTyped_RW(SDL_RWops *src, int frees
  * Load an image from file
  *
  * \param file file name
- *
  * \returns SDL surface, or NULL on error
  *
  * \sa IMG_LoadTyped_RW
  * \sa IMG_Load_RW
- * \sa SDL_FreeSurface
+ * \sa [[SDL_FreeSurface]]
  */
 extern DECLSPEC SDL_Surface * SDLCALL IMG_Load(const char *file);
 
@@ -159,28 +158,28 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_Load(const char *file);
  * Load an image from a SDL datasource
  *
  * \param src RWops
- * \param freesrc can be set so that the RWops is freed after this function is called
- *
+ * \param freesrc can be set so that the RWops is freed after this function is
+ *                called
  * \returns SDL surface, or NULL on error
  *
  * \sa IMG_Load
  * \sa IMG_LoadTyped_RW
- * \sa SDL_FreeSurface
+ * \sa [[SDL_FreeSurface]]
  */
 extern DECLSPEC SDL_Surface * SDLCALL IMG_Load_RW(SDL_RWops *src, int freesrc);
 
 #if SDL_VERSION_ATLEAST(2,0,0)
+
 /**
  * Load an image directly into a render texture.
  *
  * \param renderer SDL Render
- * \param file  image file name
- *
+ * \param file image file name
  * \returns SDL Texture, or NULL on error
  *
  * \sa IMG_LoadTexture_RW
  * \sa IMG_LoadTextureTyped_RW
- * \sa SDL_DestroyTexture
+ * \sa [[SDL_DestroyTexture]]
  */
 extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *renderer, const char *file);
 
@@ -189,13 +188,13 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *renderer, co
  *
  * \param renderer SDL Render
  * \param src RWops
- * \param freesrc can be set so that the RWops is freed after this function is called
- *
+ * \param freesrc can be set so that the RWops is freed after this function is
+ *                called
  * \returns SDL Texture, or NULL on error
  *
  * \sa IMG_LoadTexture
  * \sa IMG_LoadTextureTyped_RW
- * \sa SDL_DestroyTexture
+ * \sa [[SDL_DestroyTexture]]
  */
 extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_RW(SDL_Renderer *renderer, SDL_RWops *src, int freesrc);
 
@@ -204,14 +203,14 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_RW(SDL_Renderer *renderer,
  *
  * \param renderer SDL Render
  * \param src RWops
- * \param freesrc can be set so that the RWops is freed after this function is called
+ * \param freesrc can be set so that the RWops is freed after this function is
+ *                called
  * \param type may be one of: "BMP", "GIF", "PNG", etc.
- *
  * \returns SDL Texture, or NULL on error
  *
  * \sa IMG_LoadTexture
  * \sa IMG_LoadTexture_RW
- * \sa SDL_DestroyTexture
+ * \sa [[SDL_DestroyTexture]]
  */
 extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_RW(SDL_Renderer *renderer, SDL_RWops *src, int freesrc, const char *type);
 #endif /* SDL 2.0 */
@@ -220,7 +219,6 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_RW(SDL_Renderer *rend
  * Functions to detect a file type, given a seekable source
  *
  * \param src RWops
- *
  * \returns 1 if file type is detected, 0 otherwise
  *
  * \sa IMG_isAVIF
@@ -265,7 +263,6 @@ extern DECLSPEC int SDLCALL IMG_isWEBP(SDL_RWops *src);
  * Individual loading functions
  *
  * \param src RWops
- *
  * \returns SDL surface, or NULL on error
  *
  * \sa IMG_LoadAVIF_RW
@@ -308,23 +305,21 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadXV_RW(SDL_RWops *src);
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadWEBP_RW(SDL_RWops *src);
 
 /**
- * Load an SVG scaled to a specific size
- * Either width or height may be 0 and will be auto-sized to preserve aspect ratio.
+ * Load an SVG scaled to a specific size Either width or height may be 0 and
+ * will be auto-sized to preserve aspect ratio.
  *
  * \param src RWops
  * \param width width
  * \param height height
- *
  * \returns SDL surface, or NULL on error
  */
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadSizedSVG_RW(SDL_RWops *src, int width, int height);
 
 /**
- * Load a XPM image from a an array
- * Returns an 8bpp indexed surface if possible, otherwise 32bpp.
+ * Load a XPM image from a an array Returns an 8bpp indexed surface if
+ * possible, otherwise 32bpp.
  *
  * \param xpm null terminated array of strings
- *
  * \returns SDL surface, or NULL on error
  *
  * \sa IMG_ReadXPMFromArrayToRGB888
@@ -332,11 +327,9 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadSizedSVG_RW(SDL_RWops *src, int wi
 extern DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArray(char **xpm);
 
 /**
- * Load a XPM image from a an array
- * Returns always a 32bpp (RGB888) surface
+ * Load a XPM image from a an array Returns always a 32bpp (RGB888) surface
  *
  * \param xpm null terminated array of strings
- *
  * \returns SDL surface, or NULL on error
  *
  * \sa IMG_ReadXPMFromArray
@@ -348,7 +341,6 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArrayToRGB888(char **xpm);
  *
  * \param surface SDL surface to save
  * \param file file name
- *
  * \returns 0 if successful, -1 on error
  *
  * \sa IMG_SavePNG_RW
@@ -363,7 +355,6 @@ extern DECLSPEC int SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
  * \param surface SDL surface to save
  * \param dst RWops
  * \param freedst free dst
- *
  * \returns 0 if successful, -1 on error
  *
  * \sa IMG_SavePNG
@@ -377,8 +368,8 @@ extern DECLSPEC int SDLCALL IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst,
  *
  * \param surface SDL surface to save
  * \param file file name
- * \param quality [0; 33] is Lowest quality, [34; 66] is Middle quality, [67; 100] is Highest quality
- *
+ * \param quality [0; 33] is Lowest quality, [34; 66] is Middle quality, [67;
+ *                100] is Highest quality
  * \returns 0 if successful, -1 on error
  *
  * \sa IMG_SavePNG
@@ -393,8 +384,8 @@ extern DECLSPEC int SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *file, 
  * \param surface SDL surface to save
  * \param dst RWops
  * \param freedst free dst
- * \param quality [0; 33] is Lowest quality, [34; 66] is Middle quality, [67; 100] is Highest quality
- *
+ * \param quality [0; 33] is Lowest quality, [34; 66] is Middle quality, [67;
+ *                100] is Highest quality
  * \returns 0 if successful, -1 on error
  *
  * \sa IMG_SavePNG
@@ -419,7 +410,6 @@ typedef struct
  * Load an animation from file
  *
  * \param file file name
- *
  * \returns IMG Animation, or NULL on error
  *
  * \sa IMG_FreeAnimation
@@ -430,8 +420,8 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation(const char *file);
  * Load an animation from an SDL datasource
  *
  * \param src RWops
- * \param freesrc can be set so that the RWops is freed after this function is called
- *
+ * \param freesrc can be set so that the RWops is freed after this function is
+ *                called
  * \returns IMG Animation, or NULL on error
  *
  * \sa IMG_FreeAnimation
@@ -442,9 +432,9 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation_RW(SDL_RWops *src, int
  * Load an animation from an SDL datasource
  *
  * \param src RWops
- * \param freesrc can be set so that the RWops is freed after this function is called
+ * \param freesrc can be set so that the RWops is freed after this function is
+ *                called
  * \param type may be one of: "BMP", "GIF", "PNG", etc.
- *
  * \returns IMG Animation, or NULL on error
  *
  * \sa IMG_FreeAnimation
@@ -466,7 +456,6 @@ extern DECLSPEC void SDLCALL IMG_FreeAnimation(IMG_Animation *anim);
  * Load a GIF type animation from an SDL datasource
  *
  * \param src RWops
- *
  * \returns IMG Animation, or NULL on error
  *
  * \sa IMG_FreeAnimation
