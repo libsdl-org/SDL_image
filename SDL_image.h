@@ -117,7 +117,7 @@ typedef enum
 extern DECLSPEC int SDLCALL IMG_Init(int flags);
 
 /**
- * Unloads libraries loaded with IMG_Init
+ * Unloads libraries loaded with IMG_Init.
  *
  * \sa IMG_Init
  */
