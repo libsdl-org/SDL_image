@@ -138,7 +138,7 @@ extern DECLSPEC void SDLCALL IMG_Quit(void);
  *
  * \sa IMG_Load
  * \sa IMG_Load_RW
- * \sa [[SDL_FreeSurface]]
+ * \sa SDL_FreeSurface
  */
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, const char *type);
 
@@ -150,7 +150,7 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTyped_RW(SDL_RWops *src, int frees
  *
  * \sa IMG_LoadTyped_RW
  * \sa IMG_Load_RW
- * \sa [[SDL_FreeSurface]]
+ * \sa SDL_FreeSurface
  */
 extern DECLSPEC SDL_Surface * SDLCALL IMG_Load(const char *file);
 
@@ -164,7 +164,7 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_Load(const char *file);
  *
  * \sa IMG_Load
  * \sa IMG_LoadTyped_RW
- * \sa [[SDL_FreeSurface]]
+ * \sa SDL_FreeSurface
  */
 extern DECLSPEC SDL_Surface * SDLCALL IMG_Load_RW(SDL_RWops *src, int freesrc);
 
@@ -179,7 +179,7 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_Load_RW(SDL_RWops *src, int freesrc);
  *
  * \sa IMG_LoadTexture_RW
  * \sa IMG_LoadTextureTyped_RW
- * \sa [[SDL_DestroyTexture]]
+ * \sa SDL_DestroyTexture
  */
 extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *renderer, const char *file);
 
@@ -194,7 +194,7 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *renderer, co
  *
  * \sa IMG_LoadTexture
  * \sa IMG_LoadTextureTyped_RW
- * \sa [[SDL_DestroyTexture]]
+ * \sa SDL_DestroyTexture
  */
 extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_RW(SDL_Renderer *renderer, SDL_RWops *src, int freesrc);
 
@@ -210,7 +210,7 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_RW(SDL_Renderer *renderer,
  *
  * \sa IMG_LoadTexture
  * \sa IMG_LoadTexture_RW
- * \sa [[SDL_DestroyTexture]]
+ * \sa SDL_DestroyTexture
  */
 extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_RW(SDL_Renderer *renderer, SDL_RWops *src, int freesrc, const char *type);
 #endif /* SDL 2.0 */
