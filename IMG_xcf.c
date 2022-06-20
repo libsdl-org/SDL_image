@@ -26,6 +26,10 @@
 
 #ifdef LOAD_XCF
 
+#ifndef SDL_SIZE_MAX
+#define SDL_SIZE_MAX ((size_t)-1)
+#endif
+
 #if DEBUG
 static char prop_names [][30] = {
   "end",
