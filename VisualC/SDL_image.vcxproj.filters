@@ -89,42 +89,4 @@
       <Filter>Sources</Filter>
     </ResourceCompile>
   </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="external\lib\x64\LICENSE.zlib.txt">
-      <Filter>x64</Filter>
-    </CustomBuild>
-    <CustomBuild Include="external\lib\x64\LICENSE.webp.txt">
-      <Filter>x64</Filter>
-    </CustomBuild>
-    <CustomBuild Include="external\lib\x64\LICENSE.tiff.txt">
-      <Filter>x64</Filter>
-    </CustomBuild>
-    <CustomBuild Include="external\lib\x64\libwebp-7.dll">
-      <Filter>x64</Filter>
-    </CustomBuild>
-    <CustomBuild Include="external\lib\x64\libtiff-5.dll">
-      <Filter>x64</Filter>
-    </CustomBuild>
-    <CustomBuild Include="external\lib\x64\zlib1.dll">
-      <Filter>x64</Filter>
-    </CustomBuild>
-    <CustomBuild Include="external\lib\x86\LICENSE.zlib.txt">
-      <Filter>x86</Filter>
-    </CustomBuild>
-    <CustomBuild Include="external\lib\x86\LICENSE.webp.txt">
-      <Filter>x86</Filter>
-    </CustomBuild>
-    <CustomBuild Include="external\lib\x86\LICENSE.tiff.txt">
-      <Filter>x86</Filter>
-    </CustomBuild>
-    <CustomBuild Include="external\lib\x86\libwebp-7.dll">
-      <Filter>x86</Filter>
-    </CustomBuild>
-    <CustomBuild Include="external\lib\x86\libtiff-5.dll">
-      <Filter>x86</Filter>
-    </CustomBuild>
-    <CustomBuild Include="external\lib\x86\zlib1.dll">
-      <Filter>x86</Filter>
-    </CustomBuild>
-  </ItemGroup>
 </Project>

@@ -108,7 +108,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DLL_EXPORT;_DEBUG;WIN32;_WINDOWS;USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_SVG;LOAD_SVG;LOAD_TGA;LOAD_XPM;LOAD_XV;LOAD_QOI;PNG_USE_DLL;ZLIB_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DLL_EXPORT;_DEBUG;WIN32;_WINDOWS;USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JXL;LOAD_JXL_DYNAMIC="libjxl.dll";LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC="libtiff-5.dll";LOAD_WEBP;LOAD_WEBP_DYNAMIC="libwebp-7.dll";LOAD_XCF;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
@@ -136,7 +136,7 @@
     </Midl>
     <ClCompile>
       <AdditionalIncludeDirectories>external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DLL_EXPORT;_DEBUG;WIN32;_WINDOWS;USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_SVG;LOAD_TGA;LOAD_XPM;LOAD_XV;LOAD_QOI;PNG_USE_DLL;ZLIB_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DLL_EXPORT;_DEBUG;WIN32;_WINDOWS;USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JXL;LOAD_JXL_DYNAMIC="libjxl.dll";LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC="libtiff-5.dll";LOAD_WEBP;LOAD_WEBP_DYNAMIC="libwebp-7.dll";LOAD_XCF;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
@@ -165,7 +165,7 @@
     </Midl>
     <ClCompile>
       <AdditionalIncludeDirectories>external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DLL_EXPORT;NDEBUG;WIN32;_WINDOWS;USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_SVG;LOAD_TGA;LOAD_XPM;LOAD_XV;LOAD_QOI;PNG_USE_DLL;ZLIB_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DLL_EXPORT;NDEBUG;WIN32;_WINDOWS;USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JXL;LOAD_JXL_DYNAMIC="libjxl.dll";LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC="libtiff-5.dll";LOAD_WEBP;LOAD_WEBP_DYNAMIC="libwebp-7.dll";LOAD_XCF;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
@@ -191,7 +191,7 @@
     </Midl>
     <ClCompile>
       <AdditionalIncludeDirectories>external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DLL_EXPORT;NDEBUG;WIN32;_WINDOWS;USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_SVG;LOAD_TGA;LOAD_XPM;LOAD_XV;LOAD_QOI;PNG_USE_DLL;ZLIB_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DLL_EXPORT;NDEBUG;WIN32;_WINDOWS;USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_JXL;LOAD_JXL_DYNAMIC="libjxl.dll";LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC="libtiff-5.dll";LOAD_WEBP;LOAD_WEBP_DYNAMIC="libwebp-7.dll";LOAD_XCF;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
