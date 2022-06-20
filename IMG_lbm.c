@@ -224,7 +224,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
         }
     }
 
-    /* compute some usefull values, based on the bitmap header */
+    /* compute some useful values, based on the bitmap header */
 
     width = ( bmhd.w + 15 ) & 0xFFFFFFF0;  /* Width in pixels modulo 16 */
 
@@ -256,7 +256,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
     if ( bmhd.mask & 2 )               /* There is a transparent color */
         SDL_SetColorKey( Image, SDL_TRUE, bmhd.tcolor );
 
-    /* Update palette informations */
+    /* Update palette information */
 
     /* There is no palette in 24 bits ILBM file */
     if ( nbcolors>0 && flagHAM==0 )

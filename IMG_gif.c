@@ -277,7 +277,7 @@ IMG_LoadGIF_RW_Internal(SDL_RWops *src, SDL_bool load_anim)
         }
         if (c == '!') {     /* Extension */
             if (!ReadOK(src, &c, 1)) {
-                RWSetMsg("EOF / read error on extention function code");
+                RWSetMsg("EOF / read error on extension function code");
                 goto done;
             }
             DoExtension(src, c, state);
@@ -559,7 +559,7 @@ LWZReadByte(SDL_RWops *src, int flag, int input_code_size, State_t * state)
 
             if (count != 0) {
             /*
-             * pm_message("missing EOD in data stream (common occurence)");
+             * pm_message("missing EOD in data stream (common occurrence)");
              */
             }
             return -2;
