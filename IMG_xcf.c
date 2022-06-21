@@ -519,7 +519,7 @@ static void free_xcf_tile (unsigned char * t) {
 static unsigned char * load_xcf_tile_none (SDL_RWops * src, Uint64 len, int bpp, int x, int y) {
   unsigned char * load = NULL;
 
-  if (len <= SDL_SIZE_MAX) {
+  if (len <= (Uint64)SDL_SIZE_MAX) {
     load = (unsigned char *) SDL_malloc ((size_t)len); // expect this is okay
   }
   if (load != NULL)
@@ -533,7 +533,7 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint64 len, int bpp, 
   int i, size, count, j, length;
   unsigned char val;
 
-  if (len == 0 || len > SDL_SIZE_MAX) {  /* probably bogus data. */
+  if (len == 0 || len > (Uint64)SDL_SIZE_MAX) {  /* probably bogus data. */
     return NULL;
   }
 
