@@ -140,10 +140,10 @@ typedef enum
  * Since this returns previously-initialized flags as well as new ones, and
  * you can call this with zero, you should not check for a zero return value
  * to determine an error condition. Instead, you should check to make sure all
- * the flags you require are set in the return value. If you have a game
- * with data in a specific format, this might be a fatal error. If you're a
- * generic image displaying app, perhaps you are fine with only having JPG and
- * PNG support and can live without WEBP, even if you request support for
+ * the flags you require are set in the return value. If you have a game with
+ * data in a specific format, this might be a fatal error. If you're a generic
+ * image displaying app, perhaps you are fine with only having JPG and PNG
+ * support and can live without WEBP, even if you request support for
  * everything.
  *
  * Unlike other SDL satellite libraries, calls to IMG_Init do not stack; a
@@ -193,13 +193,13 @@ extern DECLSPEC void SDLCALL IMG_Quit(void);
 /**
  * Load an image from an SDL data source into a software surface.
  *
- * An SDL_Surface is a buffer of pixels in memory accessible by the CPU.
- * Use this if you plan to hand the data to something else or manipulate it
+ * An SDL_Surface is a buffer of pixels in memory accessible by the CPU. Use
+ * this if you plan to hand the data to something else or manipulate it
  * further in code.
  *
- * If you are using SDL's 2D rendering API, there is an equivalent call
- * to load images directly into an SDL_Texture for use by the GPU without
- * using a software surface: call IMG_LoadTextureTyped_RW() instead.
+ * If you are using SDL's 2D rendering API, there is an equivalent call to
+ * load images directly into an SDL_Texture for use by the GPU without using a
+ * software surface: call IMG_LoadTextureTyped_RW() instead.
  *
  * If the image format supports a transparent pixel, SDL will set the colorkey
  * for the surface. You can enable RLE acceleration on the surface afterwards
@@ -215,15 +215,17 @@ extern DECLSPEC void SDLCALL IMG_Quit(void);
  * extension.
  *
  * There is also IMG_Load_RW(), which is equivalent to this function except
- * that it will rely on SDL_image to determine what type of data it is loading.
+ * that it will rely on SDL_image to determine what type of data it is
+ * loading.
  *
- * When done with the returned surface, the app should dispose of it with
- * a call to SDL_FreeSurface().
+ * When done with the returned surface, the app should dispose of it with a
+ * call to SDL_FreeSurface().
  *
  * \param src an SDL_RWops that data will be read from.
  * \param freesrc non-zero to close/free the SDL_RWops before returning, zero
  *                to leave it open.
- * \param type a filename extension that represent this data ("BMP", "GIF", "PNG", etc).
+ * \param type a filename extension that represent this data ("BMP", "GIF",
+ *             "PNG", etc).
  * \returns a new SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_mixer 2.6.0 (and as a macro
