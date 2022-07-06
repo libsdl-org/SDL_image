@@ -199,12 +199,12 @@ extern DECLSPEC void SDLCALL IMG_Quit(void);
  *
  * There are no guarantees about what format the new SDL_Surface data will be;
  * in many cases, SDL_image will attempt to supply a surface that exactly
- * matches the provided image, but in others it might have to convert
- * (either because the image is in a format that SDL doesn't directly support
- * or because it's compressed data that could reasonably uncompress to
- * various formats and SDL_image had to pick one). You can inspect an
- * SDL_Surface for its specifics, and use SDL_ConvertSurface to then
- * migrate to any supported format.
+ * matches the provided image, but in others it might have to convert (either
+ * because the image is in a format that SDL doesn't directly support or
+ * because it's compressed data that could reasonably uncompress to various
+ * formats and SDL_image had to pick one). You can inspect an SDL_Surface for
+ * its specifics, and use SDL_ConvertSurface to then migrate to any supported
+ * format.
  *
  * If the image format supports a transparent pixel, SDL will set the colorkey
  * for the surface. You can enable RLE acceleration on the surface afterwards
@@ -215,10 +215,10 @@ extern DECLSPEC void SDLCALL IMG_Quit(void);
  * from the RWops during this call in any case.
  *
  * Even though this function accepts a file type, SDL_image may still try
- * other decoders that are capable of detecting file type from the contents
- * of the image data, but may rely on the caller-provided type string for
- * formats that it cannot autodetect. If `type` is NULL, SDL_image will
- * rely solely on its ability to guess the format.
+ * other decoders that are capable of detecting file type from the contents of
+ * the image data, but may rely on the caller-provided type string for formats
+ * that it cannot autodetect. If `type` is NULL, SDL_image will rely solely on
+ * its ability to guess the format.
  *
  * There is a separate function to read files from disk without having to deal
  * with SDL_RWops: `IMG_Load("filename.jpg")` will call this function and
@@ -226,12 +226,12 @@ extern DECLSPEC void SDLCALL IMG_Quit(void);
  * extension.
  *
  * There is also IMG_Load_RW(), which is equivalent to this function except
- * that it will rely on SDL_image to determine what type of data it is loading,
- * much like passing a NULL for type.
+ * that it will rely on SDL_image to determine what type of data it is
+ * loading, much like passing a NULL for type.
  *
- * If you are using SDL's 2D rendering API, there is an equivalent call
- * to load images directly into an SDL_Texture for use by the GPU without
- * using a software surface: call IMG_LoadTextureTyped_RW() instead.
+ * If you are using SDL's 2D rendering API, there is an equivalent call to
+ * load images directly into an SDL_Texture for use by the GPU without using a
+ * software surface: call IMG_LoadTextureTyped_RW() instead.
  *
  * When done with the returned surface, the app should dispose of it with a
  * call to SDL_FreeSurface().
@@ -254,18 +254,18 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTyped_RW(SDL_RWops *src, int frees
 /**
  * Load an image from a filesystem path into a software surface.
  *
- * An SDL_Surface is a buffer of pixels in memory accessible by the CPU.
- * Use this if you plan to hand the data to something else or manipulate it
+ * An SDL_Surface is a buffer of pixels in memory accessible by the CPU. Use
+ * this if you plan to hand the data to something else or manipulate it
  * further in code.
  *
  * There are no guarantees about what format the new SDL_Surface data will be;
  * in many cases, SDL_image will attempt to supply a surface that exactly
- * matches the provided image, but in others it might have to convert
- * (either because the image is in a format that SDL doesn't directly support
- * or because it's compressed data that could reasonably uncompress to
- * various formats and SDL_image had to pick one). You can inspect an
- * SDL_Surface for its specifics, and use SDL_ConvertSurface to then
- * migrate to any supported format.
+ * matches the provided image, but in others it might have to convert (either
+ * because the image is in a format that SDL doesn't directly support or
+ * because it's compressed data that could reasonably uncompress to various
+ * formats and SDL_image had to pick one). You can inspect an SDL_Surface for
+ * its specifics, and use SDL_ConvertSurface to then migrate to any supported
+ * format.
  *
  * If the image format supports a transparent pixel, SDL will set the colorkey
  * for the surface. You can enable RLE acceleration on the surface afterwards
@@ -275,12 +275,12 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTyped_RW(SDL_RWops *src, int frees
  * an i/o abstraction to provide data from anywhere instead of a simple
  * filesystem read; that function is IMG_Load_RW().
  *
- * If you are using SDL's 2D rendering API, there is an equivalent call
- * to load images directly into an SDL_Texture for use by the GPU without
- * using a software surface: call IMG_LoadTexture() instead.
+ * If you are using SDL's 2D rendering API, there is an equivalent call to
+ * load images directly into an SDL_Texture for use by the GPU without using a
+ * software surface: call IMG_LoadTexture() instead.
  *
- * When done with the returned surface, the app should dispose of it with
- * a call to SDL_FreeSurface().
+ * When done with the returned surface, the app should dispose of it with a
+ * call to SDL_FreeSurface().
  *
  * \param file a path on the filesystem to load an image from.
  * \returns a new SDL surface, or NULL on error.
@@ -296,18 +296,18 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_Load(const char *file);
 /**
  * Load an image from an SDL data source into a software surface.
  *
- * An SDL_Surface is a buffer of pixels in memory accessible by the CPU.
- * Use this if you plan to hand the data to something else or manipulate it
+ * An SDL_Surface is a buffer of pixels in memory accessible by the CPU. Use
+ * this if you plan to hand the data to something else or manipulate it
  * further in code.
  *
  * There are no guarantees about what format the new SDL_Surface data will be;
  * in many cases, SDL_image will attempt to supply a surface that exactly
- * matches the provided image, but in others it might have to convert
- * (either because the image is in a format that SDL doesn't directly support
- * or because it's compressed data that could reasonably uncompress to
- * various formats and SDL_image had to pick one). You can inspect an
- * SDL_Surface for its specifics, and use SDL_ConvertSurface to then
- * migrate to any supported format.
+ * matches the provided image, but in others it might have to convert (either
+ * because the image is in a format that SDL doesn't directly support or
+ * because it's compressed data that could reasonably uncompress to various
+ * formats and SDL_image had to pick one). You can inspect an SDL_Surface for
+ * its specifics, and use SDL_ConvertSurface to then migrate to any supported
+ * format.
  *
  * If the image format supports a transparent pixel, SDL will set the colorkey
  * for the surface. You can enable RLE acceleration on the surface afterwards
@@ -322,16 +322,16 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_Load(const char *file);
  * manage those details for you, determining the file type from the filename's
  * extension.
  *
- * There is also IMG_LoadTyped_RW(), which is equivalent to this function except
- * a file extension (like "BMP", "JPG", etc) can be specified, in case SDL_image
- * cannot autodetect the file format.
+ * There is also IMG_LoadTyped_RW(), which is equivalent to this function
+ * except a file extension (like "BMP", "JPG", etc) can be specified, in case
+ * SDL_image cannot autodetect the file format.
  *
- * If you are using SDL's 2D rendering API, there is an equivalent call
- * to load images directly into an SDL_Texture for use by the GPU without
- * using a software surface: call IMG_LoadTexture_RW() instead.
+ * If you are using SDL's 2D rendering API, there is an equivalent call to
+ * load images directly into an SDL_Texture for use by the GPU without using a
+ * software surface: call IMG_LoadTexture_RW() instead.
  *
- * When done with the returned surface, the app should dispose of it with
- * a call to SDL_FreeSurface().
+ * When done with the returned surface, the app should dispose of it with a
+ * call to SDL_FreeSurface().
  *
  * \param src an SDL_RWops that data will be read from.
  * \param freesrc non-zero to close/free the SDL_RWops before returning, zero
@@ -351,26 +351,26 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_Load_RW(SDL_RWops *src, int freesrc);
 /**
  * Load an image from a filesystem path into a GPU texture.
  *
- * An SDL_Texture represents an image in GPU memory, usable by SDL's 2D
- * Render API. This can be significantly more efficient than using a CPU-bound
- * SDL_Surface if you don't need to manipulate the image directly after loading
- * it.
+ * An SDL_Texture represents an image in GPU memory, usable by SDL's 2D Render
+ * API. This can be significantly more efficient than using a CPU-bound
+ * SDL_Surface if you don't need to manipulate the image directly after
+ * loading it.
  *
- * If the loaded image has transparency or a colorkey, a texture with an
- * alpha channel will be created. Otherwise, SDL_image will attempt to
- * create an SDL_Texture in the most format that most reasonably
- * represents the image data (but in many cases, this will just end up being
- * 32-bit RGB or 32-bit RGBA).
+ * If the loaded image has transparency or a colorkey, a texture with an alpha
+ * channel will be created. Otherwise, SDL_image will attempt to create an
+ * SDL_Texture in the most format that most reasonably represents the image
+ * data (but in many cases, this will just end up being 32-bit RGB or 32-bit
+ * RGBA).
  *
  * There is a separate function to read files from an SDL_RWops, if you need
  * an i/o abstraction to provide data from anywhere instead of a simple
  * filesystem read; that function is IMG_LoadTexture_RW().
  *
- * If you would rather decode an image to an SDL_Surface (a buffer of pixels in
- * CPU memory), call IMG_Load() instead.
+ * If you would rather decode an image to an SDL_Surface (a buffer of pixels
+ * in CPU memory), call IMG_Load() instead.
  *
- * When done with the returned texture, the app should dispose of it with
- * a call to SDL_DestroyTexture().
+ * When done with the returned texture, the app should dispose of it with a
+ * call to SDL_DestroyTexture().
  *
  * \param renderer the SDL_Renderer to use to create the GPU texture.
  * \param file a path on the filesystem to load an image from.
@@ -387,16 +387,16 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *renderer, co
 /**
  * Load an image from an SDL data source into a GPU texture.
  *
- * An SDL_Texture represents an image in GPU memory, usable by SDL's 2D
- * Render API. This can be significantly more efficient than using a CPU-bound
- * SDL_Surface if you don't need to manipulate the image directly after loading
- * it.
+ * An SDL_Texture represents an image in GPU memory, usable by SDL's 2D Render
+ * API. This can be significantly more efficient than using a CPU-bound
+ * SDL_Surface if you don't need to manipulate the image directly after
+ * loading it.
  *
- * If the loaded image has transparency or a colorkey, a texture with an
- * alpha channel will be created. Otherwise, SDL_image will attempt to
- * create an SDL_Texture in the most format that most reasonably
- * represents the image data (but in many cases, this will just end up being
- * 32-bit RGB or 32-bit RGBA).
+ * If the loaded image has transparency or a colorkey, a texture with an alpha
+ * channel will be created. Otherwise, SDL_image will attempt to create an
+ * SDL_Texture in the most format that most reasonably represents the image
+ * data (but in many cases, this will just end up being 32-bit RGB or 32-bit
+ * RGBA).
  *
  * If `freesrc` is non-zero, the RWops will be closed before returning,
  * whether this function succeeds or not. SDL_image reads everything it needs
@@ -407,15 +407,15 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *renderer, co
  * function and manage those details for you, determining the file type from
  * the filename's extension.
  *
- * There is also IMG_LoadTextureTyped_RW(), which is equivalent to this function
- * except a file extension (like "BMP", "JPG", etc) can be specified, in case
- * SDL_image cannot autodetect the file format.
+ * There is also IMG_LoadTextureTyped_RW(), which is equivalent to this
+ * function except a file extension (like "BMP", "JPG", etc) can be specified,
+ * in case SDL_image cannot autodetect the file format.
  *
- * If you would rather decode an image to an SDL_Surface (a buffer of pixels in
- * CPU memory), call IMG_Load() instead.
+ * If you would rather decode an image to an SDL_Surface (a buffer of pixels
+ * in CPU memory), call IMG_Load() instead.
  *
- * When done with the returned texture, the app should dispose of it with
- * a call to SDL_DestroyTexture().
+ * When done with the returned texture, the app should dispose of it with a
+ * call to SDL_DestroyTexture().
  *
  * \param renderer the SDL_Renderer to use to create the GPU texture.
  * \param src an SDL_RWops that data will be read from.
@@ -434,47 +434,48 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_RW(SDL_Renderer *renderer,
 /**
  * Load an image from an SDL data source into a GPU texture.
  *
- * An SDL_Texture represents an image in GPU memory, usable by SDL's 2D
- * Render API. This can be significantly more efficient than using a CPU-bound
- * SDL_Surface if you don't need to manipulate the image directly after loading
- * it.
+ * An SDL_Texture represents an image in GPU memory, usable by SDL's 2D Render
+ * API. This can be significantly more efficient than using a CPU-bound
+ * SDL_Surface if you don't need to manipulate the image directly after
+ * loading it.
  *
- * If the loaded image has transparency or a colorkey, a texture with an
- * alpha channel will be created. Otherwise, SDL_image will attempt to
- * create an SDL_Texture in the most format that most reasonably
- * represents the image data (but in many cases, this will just end up being
- * 32-bit RGB or 32-bit RGBA).
+ * If the loaded image has transparency or a colorkey, a texture with an alpha
+ * channel will be created. Otherwise, SDL_image will attempt to create an
+ * SDL_Texture in the most format that most reasonably represents the image
+ * data (but in many cases, this will just end up being 32-bit RGB or 32-bit
+ * RGBA).
  *
  * If `freesrc` is non-zero, the RWops will be closed before returning,
  * whether this function succeeds or not. SDL_image reads everything it needs
  * from the RWops during this call in any case.
  *
  * Even though this function accepts a file type, SDL_image may still try
- * other decoders that are capable of detecting file type from the contents
- * of the image data, but may rely on the caller-provided type string for
- * formats that it cannot autodetect. If `type` is NULL, SDL_image will
- * rely solely on its ability to guess the format.
+ * other decoders that are capable of detecting file type from the contents of
+ * the image data, but may rely on the caller-provided type string for formats
+ * that it cannot autodetect. If `type` is NULL, SDL_image will rely solely on
+ * its ability to guess the format.
  *
  * There is a separate function to read files from disk without having to deal
- * with SDL_RWops: `IMG_LoadTexture("filename.jpg")` will call this function and
- * manage those details for you, determining the file type from the filename's
- * extension.
+ * with SDL_RWops: `IMG_LoadTexture("filename.jpg")` will call this function
+ * and manage those details for you, determining the file type from the
+ * filename's extension.
  *
- * There is also IMG_LoadTexture_RW(), which is equivalent to this function except
- * that it will rely on SDL_image to determine what type of data it is loading,
- * much like passing a NULL for type.
+ * There is also IMG_LoadTexture_RW(), which is equivalent to this function
+ * except that it will rely on SDL_image to determine what type of data it is
+ * loading, much like passing a NULL for type.
  *
- * If you would rather decode an image to an SDL_Surface (a buffer of pixels in
- * CPU memory), call IMG_LoadTyped_RW() instead.
+ * If you would rather decode an image to an SDL_Surface (a buffer of pixels
+ * in CPU memory), call IMG_LoadTyped_RW() instead.
  *
- * When done with the returned texture, the app should dispose of it with
- * a call to SDL_DestroyTexture().
+ * When done with the returned texture, the app should dispose of it with a
+ * call to SDL_DestroyTexture().
  *
  * \param renderer the SDL_Renderer to use to create the GPU texture.
  * \param src an SDL_RWops that data will be read from.
  * \param freesrc non-zero to close/free the SDL_RWops before returning, zero
  *                to leave it open.
- * \param type a filename extension that represent this data ("BMP", "GIF", "PNG", etc).
+ * \param type a filename extension that represent this data ("BMP", "GIF",
+ *             "PNG", etc).
  * \returns a new texture, or NULL on error.
  *
  * \since This function is available since SDL_image 2.0.0.
@@ -495,10 +496,11 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_RW(SDL_Renderer *rend
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -536,10 +538,11 @@ extern DECLSPEC int SDLCALL IMG_isAVIF(SDL_RWops *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -576,10 +579,11 @@ extern DECLSPEC int SDLCALL IMG_isICO(SDL_RWops *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -616,10 +620,11 @@ extern DECLSPEC int SDLCALL IMG_isCUR(SDL_RWops *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -656,10 +661,11 @@ extern DECLSPEC int SDLCALL IMG_isBMP(SDL_RWops *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -696,10 +702,11 @@ extern DECLSPEC int SDLCALL IMG_isGIF(SDL_RWops *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -736,10 +743,11 @@ extern DECLSPEC int SDLCALL IMG_isJPG(SDL_RWops *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -776,10 +784,11 @@ extern DECLSPEC int SDLCALL IMG_isJXL(SDL_RWops *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -816,10 +825,11 @@ extern DECLSPEC int SDLCALL IMG_isLBM(SDL_RWops *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -856,10 +866,11 @@ extern DECLSPEC int SDLCALL IMG_isPCX(SDL_RWops *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -896,10 +907,11 @@ extern DECLSPEC int SDLCALL IMG_isPNG(SDL_RWops *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -936,10 +948,11 @@ extern DECLSPEC int SDLCALL IMG_isPNM(SDL_RWops *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -976,10 +989,11 @@ extern DECLSPEC int SDLCALL IMG_isSVG(SDL_RWops *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -1016,10 +1030,11 @@ extern DECLSPEC int SDLCALL IMG_isQOI(SDL_RWops *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -1056,10 +1071,11 @@ extern DECLSPEC int SDLCALL IMG_isTIF(SDL_RWops *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -1096,10 +1112,11 @@ extern DECLSPEC int SDLCALL IMG_isXCF(SDL_RWops *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -1136,10 +1153,11 @@ extern DECLSPEC int SDLCALL IMG_isXPM(SDL_RWops *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -1176,10 +1194,11 @@ extern DECLSPEC int SDLCALL IMG_isXV(SDL_RWops *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek the RWops back to where it started
- * when this function was called, but it will not report any errors in doing so,
- * but assuming seeking works, this means you can immediately use this with
- * a different IMG_isTYPE function, or load the image without further seeking.
+ * This function will always attempt to seek the RWops back to where it
+ * started when this function was called, but it will not report any errors in
+ * doing so, but assuming seeking works, this means you can immediately use
+ * this with a different IMG_isTYPE function, or load the image without
+ * further seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
