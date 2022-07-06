@@ -508,6 +508,8 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_RW(SDL_Renderer *rend
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is FILETYPE data, zero otherwise.
  *
+ * \since This function is available since SDL_image 2.6.0.
+ *
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -550,6 +552,8 @@ extern DECLSPEC int SDLCALL IMG_isAVIF(SDL_RWops *src);
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is ICO data, zero otherwise.
  *
+ * \since This function is available since SDL_image 2.0.0.
+ *
  * \sa IMG_isAVIF
  * \sa IMG_isCUR
  * \sa IMG_isBMP
@@ -590,6 +594,8 @@ extern DECLSPEC int SDLCALL IMG_isICO(SDL_RWops *src);
  *
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is CUR data, zero otherwise.
+ *
+ * \since This function is available since SDL_image 2.0.0.
  *
  * \sa IMG_isAVIF
  * \sa IMG_isICO
@@ -632,6 +638,8 @@ extern DECLSPEC int SDLCALL IMG_isCUR(SDL_RWops *src);
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is BMP data, zero otherwise.
  *
+ * \since This function is available since SDL_image 2.0.0.
+ *
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -672,6 +680,8 @@ extern DECLSPEC int SDLCALL IMG_isBMP(SDL_RWops *src);
  *
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is GIF data, zero otherwise.
+ *
+ * \since This function is available since SDL_image 2.0.0.
  *
  * \sa IMG_isAVIF
  * \sa IMG_isICO
@@ -714,6 +724,8 @@ extern DECLSPEC int SDLCALL IMG_isGIF(SDL_RWops *src);
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is JPG data, zero otherwise.
  *
+ * \since This function is available since SDL_image 2.0.0.
+ *
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -754,6 +766,8 @@ extern DECLSPEC int SDLCALL IMG_isJPG(SDL_RWops *src);
  *
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is JXL data, zero otherwise.
+ *
+ * \since This function is available since SDL_image 2.6.0.
  *
  * \sa IMG_isAVIF
  * \sa IMG_isICO
@@ -796,6 +810,8 @@ extern DECLSPEC int SDLCALL IMG_isJXL(SDL_RWops *src);
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is LBM data, zero otherwise.
  *
+ * \since This function is available since SDL_image 2.0.0.
+ *
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -836,6 +852,8 @@ extern DECLSPEC int SDLCALL IMG_isLBM(SDL_RWops *src);
  *
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is PCX data, zero otherwise.
+ *
+ * \since This function is available since SDL_image 2.0.0.
  *
  * \sa IMG_isAVIF
  * \sa IMG_isICO
@@ -878,6 +896,8 @@ extern DECLSPEC int SDLCALL IMG_isPCX(SDL_RWops *src);
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is PNG data, zero otherwise.
  *
+ * \since This function is available since SDL_image 2.0.0.
+ *
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -918,6 +938,8 @@ extern DECLSPEC int SDLCALL IMG_isPNG(SDL_RWops *src);
  *
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is PNM data, zero otherwise.
+ *
+ * \since This function is available since SDL_image 2.0.0.
  *
  * \sa IMG_isAVIF
  * \sa IMG_isICO
@@ -960,6 +982,8 @@ extern DECLSPEC int SDLCALL IMG_isPNM(SDL_RWops *src);
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is SVG data, zero otherwise.
  *
+ * \since This function is available since SDL_image 2.0.2.
+ *
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -1000,6 +1024,8 @@ extern DECLSPEC int SDLCALL IMG_isSVG(SDL_RWops *src);
  *
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is QOI data, zero otherwise.
+ *
+ * \since This function is available since SDL_image 2.6.0.
  *
  * \sa IMG_isAVIF
  * \sa IMG_isICO
@@ -1042,6 +1068,8 @@ extern DECLSPEC int SDLCALL IMG_isQOI(SDL_RWops *src);
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is TIFF data, zero otherwise.
  *
+ * \since This function is available since SDL_image 2.0.0.
+ *
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -1082,6 +1110,8 @@ extern DECLSPEC int SDLCALL IMG_isTIF(SDL_RWops *src);
  *
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is XCF data, zero otherwise.
+ *
+ * \since This function is available since SDL_image 2.0.0.
  *
  * \sa IMG_isAVIF
  * \sa IMG_isICO
@@ -1124,6 +1154,8 @@ extern DECLSPEC int SDLCALL IMG_isXCF(SDL_RWops *src);
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is XPM data, zero otherwise.
  *
+ * \since This function is available since SDL_image 2.0.0.
+ *
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -1165,6 +1197,8 @@ extern DECLSPEC int SDLCALL IMG_isXPM(SDL_RWops *src);
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is XV data, zero otherwise.
  *
+ * \since This function is available since SDL_image 2.0.0.
+ *
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -1205,6 +1239,8 @@ extern DECLSPEC int SDLCALL IMG_isXV(SDL_RWops *src);
  *
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is WEBP data, zero otherwise.
+ *
+ * \since This function is available since SDL_image 2.0.0.
  *
  * \sa IMG_isAVIF
  * \sa IMG_isICO
@@ -1279,6 +1315,8 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadWEBP_RW(SDL_RWops *src);
  * \param width width
  * \param height height
  * \returns SDL surface, or NULL on error
+ *
+ * \since This function is available since SDL_image 2.6.0.
  */
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadSizedSVG_RW(SDL_RWops *src, int width, int height);
 
@@ -1288,6 +1326,8 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadSizedSVG_RW(SDL_RWops *src, int wi
  *
  * \param xpm null terminated array of strings
  * \returns SDL surface, or NULL on error
+ *
+ * \since This function is available since SDL_image 2.0.0.
  *
  * \sa IMG_ReadXPMFromArrayToRGB888
  */
@@ -1299,6 +1339,8 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArray(char **xpm);
  * \param xpm null terminated array of strings
  * \returns SDL surface, or NULL on error
  *
+ * \since This function is available since SDL_image 2.6.0.
+ *
  * \sa IMG_ReadXPMFromArray
  */
 extern DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArrayToRGB888(char **xpm);
@@ -1309,6 +1351,8 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArrayToRGB888(char **xpm);
  * \param surface SDL surface to save
  * \param file file name
  * \returns 0 if successful, -1 on error
+ *
+ * \since This function is available since SDL_image 2.0.0.
  *
  * \sa IMG_SavePNG_RW
  * \sa IMG_SaveJPG
@@ -1323,6 +1367,8 @@ extern DECLSPEC int SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
  * \param dst RWops
  * \param freedst free dst
  * \returns 0 if successful, -1 on error
+ *
+ * \since This function is available since SDL_image 2.0.0.
  *
  * \sa IMG_SavePNG
  * \sa IMG_SaveJPG
@@ -1339,6 +1385,8 @@ extern DECLSPEC int SDLCALL IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst,
  *                100] is Highest quality
  * \returns 0 if successful, -1 on error
  *
+ * \since This function is available since SDL_image 2.0.2.
+ *
  * \sa IMG_SavePNG
  * \sa IMG_SavePNG_RW
  * \sa IMG_SaveJPG_RW
@@ -1354,6 +1402,8 @@ extern DECLSPEC int SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *file, 
  * \param quality [0; 33] is Lowest quality, [34; 66] is Middle quality, [67;
  *                100] is Highest quality
  * \returns 0 if successful, -1 on error
+ *
+ * \since This function is available since SDL_image 2.0.2.
  *
  * \sa IMG_SavePNG
  * \sa IMG_SavePNG_RW
@@ -1379,6 +1429,8 @@ typedef struct
  * \param file file name
  * \returns IMG Animation, or NULL on error.
  *
+ * \since This function is available since SDL_image 2.6.0.
+ *
  * \sa IMG_FreeAnimation
  */
 extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation(const char *file);
@@ -1390,6 +1442,8 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation(const char *file);
  * \param freesrc can be set so that the RWops is freed after this function is
  *                called
  * \returns IMG Animation, or NULL on error
+ *
+ * \since This function is available since SDL_image 2.6.0.
  *
  * \sa IMG_FreeAnimation
  */
@@ -1404,6 +1458,8 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation_RW(SDL_RWops *src, int
  * \param type may be one of: "BMP", "GIF", "PNG", etc.
  * \returns IMG Animation, or NULL on error
  *
+ * \since This function is available since SDL_image 2.6.0.
+ *
  * \sa IMG_FreeAnimation
  */
 extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimationTyped_RW(SDL_RWops *src, int freesrc, const char *type);
@@ -1412,6 +1468,8 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimationTyped_RW(SDL_RWops *src
  * Free animation
  *
  * \param anim animation
+ *
+ * \since This function is available since SDL_image 2.6.0.
  *
  * \sa IMG_LoadAnimation
  * \sa IMG_LoadAnimation_RW
@@ -1424,6 +1482,8 @@ extern DECLSPEC void SDLCALL IMG_FreeAnimation(IMG_Animation *anim);
  *
  * \param src RWops
  * \returns IMG Animation, or NULL on error
+ *
+ * \since This function is available since SDL_image 2.6.0.
  *
  * \sa IMG_FreeAnimation
  */
