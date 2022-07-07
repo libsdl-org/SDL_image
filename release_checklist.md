@@ -77,6 +77,8 @@
 
 * Run test/versioning.sh to verify that everything is consistent
 
+* Add a new milestone for issues
+
 ## New development prerelease
 
 * Bump version number from 2.Y.Z to 2.Y.(Z+1) (Y is odd)
