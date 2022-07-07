@@ -1,4 +1,5 @@
 2.6.0:
+ * Added support for building with CMake
  * Added stb_image as the default backend for JPG and PNG images loading.
    To use libpng and libjpg instead, configure using --disable-stb-image
  * Added IMG_LoadSizedSVG_RW()
