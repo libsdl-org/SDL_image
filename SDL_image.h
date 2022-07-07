@@ -1273,7 +1273,7 @@ extern DECLSPEC int SDLCALL IMG_isWEBP(SDL_RWops *src);
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
  *
- * \since This function is available since SDL_image 2.0.0.
+ * \since This function is available since SDL_image 2.6.0.
  *
  * \sa IMG_LoadICO_RW
  * \sa IMG_LoadCUR_RW
@@ -1477,7 +1477,7 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadJPG_RW(SDL_RWops *src);
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
  *
- * \since This function is available since SDL_image 2.0.0.
+ * \since This function is available since SDL_image 2.6.0.
  *
  * \sa IMG_LoadAVIF_RW
  * \sa IMG_LoadICO_RW
@@ -1647,7 +1647,7 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadPNM_RW(SDL_RWops *src);
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
  *
- * \since This function is available since SDL_image 2.0.0.
+ * \since This function is available since SDL_image 2.0.2.
  *
  * \sa IMG_LoadAVIF_RW
  * \sa IMG_LoadICO_RW
@@ -1681,7 +1681,7 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadSVG_RW(SDL_RWops *src);
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
  *
- * \since This function is available since SDL_image 2.0.0.
+ * \since This function is available since SDL_image 2.6.0.
  *
  * \sa IMG_LoadAVIF_RW
  * \sa IMG_LoadICO_RW
