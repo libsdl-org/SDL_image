@@ -508,8 +508,6 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_RW(SDL_Renderer *rend
  * \param src a seekable/readable SDL_RWops to provide image data.
  * \returns non-zero if this is AVIF data, zero otherwise.
  *
- * \since This function is available since SDL_image 2.0.0.
- *
  * \since This function is available since SDL_image 2.6.0.
  *
  * \sa IMG_isAVIF
@@ -1267,10 +1265,10 @@ extern DECLSPEC int SDLCALL IMG_isWEBP(SDL_RWops *src);
 /**
  * Load a AVIF image directly.
  *
- * If you know you definitely have a AVIF image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a AVIF image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1301,10 +1299,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadAVIF_RW(SDL_RWops *src);
 /**
  * Load a ICO image directly.
  *
- * If you know you definitely have a ICO image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a ICO image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1335,10 +1333,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadICO_RW(SDL_RWops *src);
 /**
  * Load a CUR image directly.
  *
- * If you know you definitely have a CUR image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a CUR image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1369,10 +1367,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadCUR_RW(SDL_RWops *src);
 /**
  * Load a BMP image directly.
  *
- * If you know you definitely have a BMP image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a BMP image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1403,10 +1401,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadBMP_RW(SDL_RWops *src);
 /**
  * Load a GIF image directly.
  *
- * If you know you definitely have a GIF image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a GIF image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1437,10 +1435,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadGIF_RW(SDL_RWops *src);
 /**
  * Load a JPG image directly.
  *
- * If you know you definitely have a JPG image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a JPG image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1471,10 +1469,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadJPG_RW(SDL_RWops *src);
 /**
  * Load a JXL image directly.
  *
- * If you know you definitely have a JXL image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a JXL image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1505,10 +1503,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadJXL_RW(SDL_RWops *src);
 /**
  * Load a LBM image directly.
  *
- * If you know you definitely have a LBM image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a LBM image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1539,10 +1537,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadLBM_RW(SDL_RWops *src);
 /**
  * Load a PCX image directly.
  *
- * If you know you definitely have a PCX image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a PCX image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1573,10 +1571,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadPCX_RW(SDL_RWops *src);
 /**
  * Load a PNG image directly.
  *
- * If you know you definitely have a PNG image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a PNG image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1607,10 +1605,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadPNG_RW(SDL_RWops *src);
 /**
  * Load a PNM image directly.
  *
- * If you know you definitely have a PNM image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a PNM image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1641,10 +1639,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadPNM_RW(SDL_RWops *src);
 /**
  * Load a SVG image directly.
  *
- * If you know you definitely have a SVG image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a SVG image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1675,10 +1673,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadSVG_RW(SDL_RWops *src);
 /**
  * Load a QOI image directly.
  *
- * If you know you definitely have a QOI image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a QOI image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1709,10 +1707,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadQOI_RW(SDL_RWops *src);
 /**
  * Load a TGA image directly.
  *
- * If you know you definitely have a TGA image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a TGA image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1743,10 +1741,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTGA_RW(SDL_RWops *src);
 /**
  * Load a TIFF image directly.
  *
- * If you know you definitely have a TIFF image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a TIFF image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1777,10 +1775,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTIF_RW(SDL_RWops *src);
 /**
  * Load a XCF image directly.
  *
- * If you know you definitely have a XCF image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a XCF image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1811,10 +1809,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadXCF_RW(SDL_RWops *src);
 /**
  * Load a XPM image directly.
  *
- * If you know you definitely have a XPM image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a XPM image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1845,10 +1843,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadXPM_RW(SDL_RWops *src);
 /**
  * Load a XV image directly.
  *
- * If you know you definitely have a XV image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a XV image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1879,10 +1877,10 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadXV_RW(SDL_RWops *src);
 /**
  * Load a WEBP image directly.
  *
- * If you know you definitely have a WEBP image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a WEBP image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
@@ -1913,9 +1911,8 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadWEBP_RW(SDL_RWops *src);
 /**
  * Load an SVG image, scaled to a specific size.
  *
- * Since SVG files are resolution-independent, you specify the size you
- * would like the output image to be and it will be generated at those
- * dimensions.
+ * Since SVG files are resolution-independent, you specify the size you would
+ * like the output image to be and it will be generated at those dimensions.
  *
  * Either width or height may be 0 and the image will be auto-sized to
  * preserve aspect ratio.
@@ -1923,29 +1920,27 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadWEBP_RW(SDL_RWops *src);
  * When done with the returned surface, the app should dispose of it with a
  * call to SDL_FreeSurface().
  *
- * \since This function is available since SDL_image 2.6.0.
- *
  * \param src an SDL_RWops to load SVG data from.
  * \param width desired width of the generated surface, in pixels.
  * \param height desired height of the generated surface, in pixels.
  * \returns a new SDL surface, or NULL on error.
+ *
+ * \since This function is available since SDL_image 2.6.0.
  */
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadSizedSVG_RW(SDL_RWops *src, int width, int height);
 
 /**
  * Load an XPM image from a memory array.
  *
- * The returned surface will be an 8bpp indexed surface, if
- * possible, otherwise it will be 32bpp. If you always want
- * 32-bit data, use IMG_ReadXPMFromArrayToRGB888() instead.
+ * The returned surface will be an 8bpp indexed surface, if possible,
+ * otherwise it will be 32bpp. If you always want 32-bit data, use
+ * IMG_ReadXPMFromArrayToRGB888() instead.
  *
  * When done with the returned surface, the app should dispose of it with a
  * call to SDL_FreeSurface().
  *
  * \param xpm a null-terminated array of strings that comprise XPM data.
  * \returns a new SDL surface, or NULL on error.
- *
- * \since This function is available since SDL_image 2.0.0.
  *
  * \since This function is available since SDL_image 2.0.0.
  *
@@ -1956,17 +1951,15 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArray(char **xpm);
 /**
  * Load an XPM image from a memory array.
  *
- * The returned surface will always be a 32-bit RGB surface. If you
- * want 8-bit indexed colors (and the XPM data allows it), use
- * IMG_ReadXPMFromArray() instead.
+ * The returned surface will always be a 32-bit RGB surface. If you want 8-bit
+ * indexed colors (and the XPM data allows it), use IMG_ReadXPMFromArray()
+ * instead.
  *
  * When done with the returned surface, the app should dispose of it with a
  * call to SDL_FreeSurface().
  *
  * \param xpm a null-terminated array of strings that comprise XPM data.
  * \returns a new SDL surface, or NULL on error.
- *
- * \since This function is available since SDL_image 2.0.0.
  *
  * \since This function is available since SDL_image 2.6.0.
  *
@@ -1999,8 +1992,6 @@ extern DECLSPEC int SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
  * \param surface the SDL surface to save
  * \param dst the SDL_RWops to save the image data to.
  * \returns 0 if successful, -1 on error.
- *
- * \since This function is available since SDL_image 2.0.0.
  *
  * \since This function is available since SDL_image 2.0.0.
  *
@@ -2067,8 +2058,6 @@ typedef struct
  * \param file path on the filesystem containing an animated image.
  * \returns a new IMG_Animation, or NULL on error.
  *
- * \since This function is available since SDL_image 2.0.0.
- *
  * \since This function is available since SDL_image 2.6.0.
  *
  * \sa IMG_FreeAnimation
@@ -2089,8 +2078,6 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation(const char *file);
  * \param freesrc non-zero to close/free the SDL_RWops before returning, zero
  *                to leave it open.
  * \returns a new IMG_Animation, or NULL on error.
- *
- * \since This function is available since SDL_image 2.0.0.
  *
  * \since This function is available since SDL_image 2.6.0.
  *
@@ -2135,8 +2122,6 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimationTyped_RW(SDL_RWops *src
  *
  * \param anim IMG_Animation to dispose of.
  *
- * \since This function is available since SDL_image 2.0.0.
- *
  * \since This function is available since SDL_image 2.6.0.
  *
  * \sa IMG_LoadAnimation
@@ -2148,10 +2133,10 @@ extern DECLSPEC void SDLCALL IMG_FreeAnimation(IMG_Animation *anim);
 /**
  * Load a GIF animation directly.
  *
- * If you know you definitely have a GIF image, you can call
- * this function, which will skip SDL_image's file format detection
- * routines. Generally it's better to use the abstract interfaces;
- * also, there is only an SDL_RWops interface available here.
+ * If you know you definitely have a GIF image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_RWops
+ * interface available here.
  *
  * \param src an SDL_RWops that data will be read from.
  * \returns a new IMG_Animation, or NULL on error.
