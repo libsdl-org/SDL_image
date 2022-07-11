@@ -138,7 +138,7 @@ find_lib()
     fi
     for path in $env_lib_path $gcc_bin_path $gcc_lib_path $host_lib_path; do
         lib=[`ls -- $path/$1 2>/dev/null | sed -e 's,.*/,,' | $AWK '{print length() " " $0;}' | sort -n -r | tail -1 | sed -e 's/^[0-9]\+ //'`]
-        if test x$lib != x; then
+        if test "x$lib" != x; then
             echo $lib
             return
         fi
