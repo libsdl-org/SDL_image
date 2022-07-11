@@ -137,8 +137,8 @@ find_lib()
         host_lib_path="$ac_default_prefix/$base_libdir $ac_default_prefix/$base_bindir /usr/$base_libdir /usr/local/$base_libdir"
     fi
     for path in $env_lib_path $gcc_bin_path $gcc_lib_path $host_lib_path; do
-        lib=[`ls -- $path/$1 2>/dev/null | sed -e 's,.*/,,' | $AWK '{print length() " " $0;}' | sort -n -r | tail -1 | sed -e 's/^[0-9]\+ //'`]
-        if test "x$lib" != x; then
+        lib=[`ls -- $path/$1 2>/dev/null | sed -e 's,.*/,,' | $AWK '{print length() " " $0;}' | sort -n -r | tail -1 | sed -e 's/^[0-9]+ //'`]
+        if test x$lib != x; then
             echo $lib
             return
         fi
