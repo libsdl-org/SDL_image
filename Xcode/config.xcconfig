@@ -6,6 +6,9 @@
 // Configuration settings file format documentation can be found at:
 // https://help.apple.com/xcode/#/dev745c5c974
 
+// Include any optional config for this build
+#include? "build.xcconfig"
+
 // Uncomment these lines to enable AVIF support
 // If you do this, you should run external/download.sh to download the decode libraries and add avif.framework to your application bundle.
 //CONFIG_PREPROCESSOR_DEFINITIONS = $(inherited) LOAD_AVIF
