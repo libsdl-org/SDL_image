@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		007288A80F0DA79800C302A9 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007288A60F0DA79800C302A9 /* ApplicationServices.framework */; };
+		007288A80F0DA79800C302A9 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007288A60F0DA79800C302A9 /* ApplicationServices.framework */; platformFilters = (macos, ); };
 		6313BF532785566D00F268AD /* IMG_qoi.c in Sources */ = {isa = PBXBuildFile; fileRef = 6313BF522785566D00F268AD /* IMG_qoi.c */; };
 		6313BF542785566D00F268AD /* IMG_qoi.c in Sources */ = {isa = PBXBuildFile; fileRef = 6313BF522785566D00F268AD /* IMG_qoi.c */; };
 		AA23FC7D20A2A1B90017DFB9 /* IMG_svg.c in Sources */ = {isa = PBXBuildFile; fileRef = AA50AA461F9C7C50003B9C0C /* IMG_svg.c */; };
