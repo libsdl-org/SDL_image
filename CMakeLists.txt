@@ -25,6 +25,12 @@ project(SDL2_image
 
 message(STATUS "Configuring ${PROJECT_NAME} ${PROJECT_VERSION}")
 
+if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+    set(SDL2IMAGE_ROOTPROJECT ON)
+else()
+    set(SDL2IMAGE_ROOTPROJECT OFF)
+endif()
+
 # Set defaults preventing destination file conflicts
 set(SDL2IMAGE_DEBUG_POSTFIX "d"
     CACHE STRING "Name suffix for debug builds")
@@ -46,11 +52,11 @@ include(GNUInstallDirs)
 option(CMAKE_POSITION_INDEPENDENT_CODE "Build static libraries with -fPIC" ON)
 option(BUILD_SHARED_LIBS "Build the library as a shared library" ON)
 
-option(SDL2IMAGE_INSTALL "Enable SDL2_image install target" ON)
+option(SDL2IMAGE_INSTALL "Enable SDL2_image install target" ${SDL2IMAGE_ROOTPROJECT})
 option(SDL2IMAGE_DEPS_SHARED "Load dependencies dynamically" ON)
 option(SDL2IMAGE_VENDORED "Use vendored third-party libraries" ${vendored_default})
 
-option(SDL2IMAGE_SAMPLES "Build the SDL2_image sample program(s)" ON)
+option(SDL2IMAGE_SAMPLES "Build the SDL2_image sample program(s)" ${SDL2IMAGE_ROOTPROJECT})
 cmake_dependent_option(SDL2IMAGE_SAMPLES_INSTALL "Install the SDL2_image sample program(s)" OFF "SDL2IMAGE_SAMPLES;SDL2IMAGE_INSTALL" OFF)
 
 option(SDL2IMAGE_TESTS "Build unit tests?" OFF)
