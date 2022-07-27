@@ -1015,6 +1015,9 @@ AC_DEFUN([_AM_SUBST_NOTMAKE])
 # Public sister of _AM_SUBST_NOTMAKE.
 AC_DEFUN([AM_SUBST_NOTMAKE], [_AM_SUBST_NOTMAKE($@)])
 
+m4_include([acinclude/ax_compute_relative_paths.m4])
+m4_include([acinclude/ax_normalize_path.m4])
+m4_include([acinclude/ax_recursive_eval.m4])
 m4_include([acinclude/libtool.m4])
 m4_include([acinclude/ltoptions.m4])
 m4_include([acinclude/ltsugar.m4])
