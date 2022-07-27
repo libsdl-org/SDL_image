@@ -766,9 +766,8 @@ AM_CONDITIONAL([BUILD_TESTS], [test "x$enable_tests" = xyes])
 AM_CONDITIONAL([INSTALL_TESTS], [test "x$enable_installed_tests" = xyes])
 
 dnl Calculate the location of the prefix, relative to the cmake folder
-eval pkg_prefix=$prefix
-eval pkg_cmakedir=$libdir/cmake/SDL2_image
-cmake_prefix_relpath="$(echo -n "$pkg_cmakedir" | sed -E "s#^$pkg_prefix##" | sed -E "s#[A-Za-z0-9_ .-]+#..#g")"
+pkg_cmakedir='$libdir/cmake/SDL2_image'
+AX_COMPUTE_RELATIVE_PATHS([pkg_cmakedir:prefix:cmake_prefix_relpath])
 AC_SUBST([cmake_prefix_relpath])
 
 dnl check for LD --no-undefined option

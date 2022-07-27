@@ -2,6 +2,7 @@ autom4te*
 config.cache
 config.log
 config.status
+configure~
 Makefile
 libtool
 .deps

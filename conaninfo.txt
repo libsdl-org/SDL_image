@@ -1,0 +1,24 @@
+[settings]
+
+
+[requires]
+
+
+[options]
+
+
+[full_settings]
+
+
+[full_requires]
+
+
+[full_options]
+
+
+[recipe_hash]
+
+
+[env]
+    CC=/usr/bin/gcc
+    CXX=/usr/bin/g++
