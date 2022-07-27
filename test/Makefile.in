@@ -94,7 +94,11 @@ host_triplet = @host@
 TESTS = $(am__EXEEXT_1)
 subdir = test
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/acinclude/libtool.m4 \
+am__aclocal_m4_deps =  \
+	$(top_srcdir)/acinclude/ax_compute_relative_paths.m4 \
+	$(top_srcdir)/acinclude/ax_normalize_path.m4 \
+	$(top_srcdir)/acinclude/ax_recursive_eval.m4 \
+	$(top_srcdir)/acinclude/libtool.m4 \
 	$(top_srcdir)/acinclude/ltoptions.m4 \
 	$(top_srcdir)/acinclude/ltsugar.m4 \
 	$(top_srcdir)/acinclude/ltversion.m4 \
