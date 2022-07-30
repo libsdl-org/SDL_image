@@ -92,7 +92,7 @@ SDL_Surface *IMG_LoadQOI_RW(SDL_RWops *src)
                                                  image_info.width,
                                                  image_info.height,
                                                  32,
-					         (image_info.width * 4),
+                                                 (image_info.width * 4),
                                                  SDL_PIXELFORMAT_RGBA32);
     if ( !surface ) {
         SDL_free(pixel_data);
