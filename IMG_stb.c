@@ -113,16 +113,30 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
         return NULL;
     }
 
-    if (format == STBI_rgb || format == STBI_rgb_alpha) {
+    if (format == STBI_grey || format == STBI_rgb || format == STBI_rgb_alpha) {
         surface = SDL_CreateRGBSurfaceWithFormatFrom(
             pixels,
             w,
             h,
             8 * format,
             w * format,
-            (format == STBI_rgb) ? SDL_PIXELFORMAT_RGB24 : SDL_PIXELFORMAT_RGBA32
+            (format == STBI_rgb_alpha) ? SDL_PIXELFORMAT_RGBA32 :
+            (format == STBI_rgb) ? SDL_PIXELFORMAT_RGB24 :
+            SDL_PIXELFORMAT_INDEX8
         );
         if (surface) {
+            /* Set a grayscale palette for gray images */
+            SDL_Palette *palette = surface->format->palette;
+            if (palette) {
+                int i;
+
+                for (i = 0; i < palette->ncolors; i++) {
+                    palette->colors[i].r = (Uint8)i;
+                    palette->colors[i].g = (Uint8)i;
+                    palette->colors[i].b = (Uint8)i;
+                }
+            }
+
             /* FIXME: This sucks. It'd be better to allocate the surface first, then
              * write directly to the pixel buffer:
              * https://github.com/nothings/stb/issues/58
@@ -131,45 +145,35 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
             surface->flags &= ~SDL_PREALLOC;
         }
 
-    } else if (format == STBI_grey || format == STBI_grey_alpha) {
+    } else if (format == STBI_grey_alpha) {
         surface = SDL_CreateRGBSurfaceWithFormat(
             0,
             w,
             h,
-            8 * (2 + format),
-            (format == STBI_grey) ? SDL_PIXELFORMAT_RGB24 : SDL_PIXELFORMAT_RGBA32
+            32,
+            SDL_PIXELFORMAT_RGBA32
         );
         if (surface) {
             Uint8 *src = pixels;
             Uint8 *dst = (Uint8 *)surface->pixels;
-            int skip = surface->pitch - (surface->w * (2 + format));
+            int skip = surface->pitch - (surface->w * 4);
             int row, col;
 
-            if (format == STBI_grey) {
-                for (row = 0; row < h; ++row) {
-                    for (col = 0; col < w; ++col) {
-                        Uint8 c = *src++;
-                        *dst++ = c;
-                        *dst++ = c;
-                        *dst++ = c;
-                    }
-                    dst += skip;
+            for (row = 0; row < h; ++row) {
+                for (col = 0; col < w; ++col) {
+                    Uint8 c = *src++;
+                    Uint8 a = *src++;
+                    *dst++ = c;
+                    *dst++ = c;
+                    *dst++ = c;
+                    *dst++ = a;
                 }
-            } else {
-                for (row = 0; row < h; ++row) {
-                    for (col = 0; col < w; ++col) {
-                        Uint8 c = *src++;
-                        Uint8 a = *src++;
-                        *dst++ = c;
-                        *dst++ = c;
-                        *dst++ = c;
-                        *dst++ = a;
-                    }
-                    dst += skip;
-                }
+                dst += skip;
             }
             stbi_image_free(pixels);
         }
+    } else {
+        IMG_SetError("Unknown image format: %d", format);
     }
 
     if (!surface) {
