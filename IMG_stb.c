@@ -86,10 +86,6 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
 {
     Sint64 start;
     int w, h, format;
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    int shift;
-#endif
-    Uint32 rmask, gmask, bmask, amask;
     stbi_uc *pixels;
     stbi_io_callbacks rw_callbacks;
     SDL_Surface *surface = NULL;
@@ -117,44 +113,69 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
         return NULL;
     }
 
-    /* Determine the surface format */
-    SDL_assert(format == STBI_rgb || format == STBI_rgb_alpha);
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    shift = (format == STBI_rgb) ? 8 : 0;
-    rmask = 0xFF000000 >> shift;
-    gmask = 0x00FF0000 >> shift;
-    bmask = 0x0000FF00 >> shift;
-    amask = 0x000000FF >> shift;
-#else /* little endian, like x86 */
-    rmask = 0x000000FF;
-    gmask = 0x0000FF00;
-    bmask = 0x00FF0000;
-    amask = (format == STBI_rgb) ? 0 : 0xFF000000;
-#endif
+    if (format == STBI_rgb || format == STBI_rgb_alpha) {
+        surface = SDL_CreateRGBSurfaceWithFormatFrom(
+            pixels,
+            w,
+            h,
+            8 * format,
+            w * format,
+            (format == STBI_rgb) ? SDL_PIXELFORMAT_RGB24 : SDL_PIXELFORMAT_RGBA32
+        );
+        if (surface) {
+            /* FIXME: This sucks. It'd be better to allocate the surface first, then
+             * write directly to the pixel buffer:
+             * https://github.com/nothings/stb/issues/58
+             * -flibit
+             */
+            surface->flags &= ~SDL_PREALLOC;
+        }
 
-    /* Allocate the surface */
-    surface = SDL_CreateRGBSurfaceFrom(
-        pixels,
-        w,
-        h,
-        8 * format,
-        w * format,
-        rmask,
-        gmask,
-        bmask,
-        amask
-    );
-    if ( !surface ) {
+    } else if (format == STBI_grey || format == STBI_grey_alpha) {
+        surface = SDL_CreateRGBSurfaceWithFormat(
+            0,
+            w,
+            h,
+            8 * (2 + format),
+            (format == STBI_grey) ? SDL_PIXELFORMAT_RGB24 : SDL_PIXELFORMAT_RGBA32
+        );
+        if (surface) {
+            Uint8 *src = pixels;
+            Uint8 *dst = (Uint8 *)surface->pixels;
+            int skip = surface->pitch - (surface->w * (2 + format));
+            int row, col;
+
+            if (format == STBI_grey) {
+                for (row = 0; row < h; ++row) {
+                    for (col = 0; col < w; ++col) {
+                        Uint8 c = *src++;
+                        *dst++ = c;
+                        *dst++ = c;
+                        *dst++ = c;
+                    }
+                    dst += skip;
+                }
+            } else {
+                for (row = 0; row < h; ++row) {
+                    for (col = 0; col < w; ++col) {
+                        Uint8 c = *src++;
+                        Uint8 a = *src++;
+                        *dst++ = c;
+                        *dst++ = c;
+                        *dst++ = c;
+                        *dst++ = a;
+                    }
+                    dst += skip;
+                }
+            }
+            stbi_image_free(pixels);
+        }
+    }
+
+    if (!surface) {
         /* The error message should already be set */
         stbi_image_free(pixels); /* calls SDL_free() */
         SDL_RWseek(src, start, RW_SEEK_SET);
-    } else {
-        /* FIXME: This sucks. It'd be better to allocate the surface first, then
-         * write directly to the pixel buffer:
-         * https://github.com/nothings/stb/issues/58
-         * -flibit
-         */
-        surface->flags &= ~SDL_PREALLOC;
     }
     return surface;
 }
