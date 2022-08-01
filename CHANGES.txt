@@ -1,3 +1,6 @@
+2.6.1:
+ * Fixed loading grayscale PNGs when using stb_image
+
 2.6.0:
  * Added support for building with CMake
  * Added stb_image as the default backend for JPG and PNG images loading.
