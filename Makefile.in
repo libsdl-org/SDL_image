@@ -284,8 +284,8 @@ DIST_SUBDIRS = . test
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/SDL2_image.pc.in \
 	$(srcdir)/SDL2_image.spec.in \
 	$(srcdir)/sdl2_image-config-version.cmake.in \
-	$(srcdir)/sdl2_image-config.cmake.in ar-lib compile \
-	config.guess config.sub depcomp install-sh ltmain.sh missing
+	$(srcdir)/sdl2_image-config.cmake.in compile config.guess \
+	config.sub depcomp install-sh ltmain.sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
