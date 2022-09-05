@@ -58,10 +58,10 @@ jobs:
             libtool \
             ninja \
             pkg-config \
-            sdl2 \
             webp \
             zlib \
             ${NULL+}
+          brew install sdl2 --HEAD
     - name: Setup Linux dependencies
       if: runner.os == 'Linux'
       run: |
