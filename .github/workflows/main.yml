@@ -23,7 +23,7 @@ jobs:
         - { name: Linux (CMake),                os: ubuntu-20.04,   shell: sh,  cmake: '-DSDL2IMAGE_VENDORED=ON -GNinja', shared: 1, static: 0 }
         - { name: 'Linux (CMake, static)',      os: ubuntu-20.04,   shell: sh,   cmake: '-DSDL2IMAGE_VENDORED=ON -DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1 }
         - { name: Macos (autotools),            os: macos-latest,   shell: sh, shared: 1, static: 1 }
-        - { name: Macos (CMake),                os: macos-latest,   shell: sh,   cmake: '-DSDL2IMAGE_VENDORED=ON -DSDL2IMAGE_TESTS=OFF -GNinja', shared: 1, static: 0 }
+        - { name: Macos (CMake),                os: macos-latest,   shell: sh,   cmake: '-DSDL2IMAGE_VENDORED=ON -GNinja', shared: 1, static: 0 }
 
     steps:
     - name: Set up MSYS2
@@ -58,10 +58,10 @@ jobs:
             libtool \
             ninja \
             pkg-config \
-            sdl2 \
             webp \
             zlib \
             ${NULL+}
+          brew install sdl2 --HEAD
     - name: Setup Linux dependencies
       if: runner.os == 'Linux'
       run: |
