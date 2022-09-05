@@ -39,7 +39,6 @@ macro(sdl_calculate_derived_version_variables)
     # which are normally 0-based.
     math(EXPR DYLIB_CURRENT_VERSION_MAJOR "${LT_MAJOR} + ${LT_AGE} + 1")
     math(EXPR DYLIB_CURRENT_VERSION_MINOR "${LT_REVISION}")
-    math(EXPR DYLIB_COMPAT_VERSION_MAJOR "${LT_MAJOR} + 1")
     set(DYLIB_CURRENT_VERSION "${DYLIB_CURRENT_VERSION_MAJOR}.${DYLIB_CURRENT_VERSION_MINOR}.0")
     set(DYLIB_COMPATIBILITY_VERSION "${DYLIB_CURRENT_VERSION_MAJOR}.0.0")
 endmacro()
