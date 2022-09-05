@@ -11,7 +11,6 @@ ref_major=$(sed -ne 's/^#define SDL_IMAGE_MAJOR_VERSION  *//p' SDL_image.h)
 ref_minor=$(sed -ne 's/^#define SDL_IMAGE_MINOR_VERSION  *//p' SDL_image.h)
 ref_micro=$(sed -ne 's/^#define SDL_IMAGE_PATCHLEVEL  *//p' SDL_image.h)
 ref_version="${ref_major}.${ref_minor}.${ref_micro}"
-ref_sdl_req=$(sed -ne 's/^SDL_VERSION=//p' configure.ac)
 
 tests=0
 failed=0
