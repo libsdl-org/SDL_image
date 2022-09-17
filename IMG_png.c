@@ -656,7 +656,7 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
 
             row_pointers = (png_bytep *) SDL_malloc(sizeof(png_bytep) * source->h);
             if (!row_pointers) {
-                free(color_ptr);
+                SDL_free(color_ptr);
                 lib.png_destroy_write_struct(&png_ptr, &info_ptr);
                 IMG_SetError("Out of memory");
                 return -1;
