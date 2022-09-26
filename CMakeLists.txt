@@ -297,7 +297,7 @@ endif()
 
 if(APPLE)
     if(SDL2IMAGE_BACKEND_IMAGEIO)
-        target_link_options(SDL2_image PRIVATE -Wl,-framework,ApplicationServices)
+        target_link_libraries(SDL2_image PRIVATE -Wl,-framework,ApplicationServices)
         target_link_libraries(SDL2_image PRIVATE objc)
         target_sources(SDL2_image PRIVATE
             IMG_ImageIO.m
