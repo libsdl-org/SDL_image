@@ -27,6 +27,10 @@ if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
 else()
     set(SDL2IMAGE_ROOTPROJECT OFF)
 endif()
+set(SDL2IMAGE_SAMPLES_DEFAULT ${SDL2IMAGE_ROOTPROJECT})
+if(ANDROID)
+    set(SDL2IMAGE_SAMPLES_DEFAULT OFF)
+endif()
 
 # Set defaults preventing destination file conflicts
 set(SDL2IMAGE_DEBUG_POSTFIX "d"
@@ -53,7 +57,7 @@ option(SDL2IMAGE_INSTALL "Enable SDL2_image install target" ${SDL2IMAGE_ROOTPROJ
 option(SDL2IMAGE_DEPS_SHARED "Load dependencies dynamically" ON)
 option(SDL2IMAGE_VENDORED "Use vendored third-party libraries" ${vendored_default})
 
-option(SDL2IMAGE_SAMPLES "Build the SDL2_image sample program(s)" ${SDL2IMAGE_ROOTPROJECT})
+option(SDL2IMAGE_SAMPLES "Build the SDL2_image sample program(s)" ${SDL2IMAGE_SAMPLES_DEFAULT})
 cmake_dependent_option(SDL2IMAGE_SAMPLES_INSTALL "Install the SDL2_image sample program(s)" OFF "SDL2IMAGE_SAMPLES;SDL2IMAGE_INSTALL" OFF)
 
 option(SDL2IMAGE_TESTS "Build unit tests?" OFF)
