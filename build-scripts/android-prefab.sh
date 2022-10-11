@@ -65,6 +65,26 @@ build_cmake_projects() {
         for build_shared_libs in ON OFF; do
             echo "Configuring CMake project for $android_abi (shared=${build_shared_libs})"
             cmake -S "${sdlimage_root}" -B "${build_root}/build_${android_abi}/shared_${build_shared_libs}" \
+                -DSDL2IMAGE_DEPS_SHARED=ON \
+                -DSDL2IMAGE_VENDORED=ON \
+                -DSDL2IMAGE_BACKEND_STB=OFF \
+                -DSDL2IMAGE_AVIF=OFF \
+                -DSDL2IMAGE_BMP=ON \
+                -DSDL2IMAGE_GIF=ON \
+                -DSDL2IMAGE_JPG=ON \
+                -DSDL2IMAGE_JXL=OFF \
+                -DSDL2IMAGE_LBM=ON \
+                -DSDL2IMAGE_PCX=ON \
+                -DSDL2IMAGE_PNG=ON \
+                -DSDL2IMAGE_PNM=ON \
+                -DSDL2IMAGE_QOI=ON \
+                -DSDL2IMAGE_SVG=ON \
+                -DSDL2IMAGE_TGA=ON \
+                -DSDL2IMAGE_TIF=ON \
+                -DSDL2IMAGE_WEBP=ON \
+                -DSDL2IMAGE_XCF=ON \
+                -DSDL2IMAGE_XPM=ON \
+                -DSDL2IMAGE_XV=ON \
                 -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake" \
                 -DSDL${sdlimage_major}_DIR="${sdl_build_root}/build_${android_abi}/prefix/lib/cmake/SDL${sdlimage_major}" \
                 -DANDROID_PLATFORM=${android_platform} \
@@ -75,6 +95,7 @@ build_cmake_projects() {
                 -DCMAKE_INSTALL_LIBDIR=lib \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DSDL${sdlimage_major}IMAGE_SAMPLES=OFF \
+                -DSDL${sdlimage_major}IMAGE_TESTS=OFF \
                 -GNinja
 
             echo "Building CMake project for $android_abi (shared=${build_shared_libs})"
@@ -107,10 +128,29 @@ create_pom_xml() {
       <distribution>repo</distribution>
     </license>
   </licenses>
+  <developers>
+    <developer>
+      <name>Sam Lantinga</name>
+      <email>slouken@libsdl.org</email>
+      <organization>SDL</organization>
+      <organizationUrl>https://www.libsdl.org</organizationUrl>
+    </developer>
+  </developers>
   <scm>
     <connection>scm:git:https://github.com/libsdl-org/SDL_image</connection>
-    <url>https://github.com/libsdl-org/SDL</url>
+    <developerConnection>scm:git:ssh://github.com:libsdl-org/SDL_image.git</developerConnection>
+    <url>https://github.com/libsdl-org/SDL_image</url>
   </scm>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
 </project>
 EOF
 }
@@ -215,6 +255,51 @@ EOF
     done
 }
 
+create_shared_module() {
+    modulename=$1
+    libraryname=$2
+    export_libraries=$3
+    echo "Creating $modulename prefab module"
+
+    export_libraries_json="[]"
+    if test "x$export_libraries" != "x"; then
+        export_libraries_json="["
+        for export_library in $export_libraries; do
+            if test "x$export_libraries_json" != "x["; then
+                export_libraries_json="$export_libraries_json, "
+            fi
+            export_libraries_json="$export_libraries_json\"$export_library\""
+        done
+        export_libraries_json="$export_libraries_json]"
+    fi
+
+    for android_abi in $android_abis; do
+        sdl_moduleworkdir="${modulesworkdir}/$modulename"
+        mkdir -p "${sdl_moduleworkdir}"
+
+        abi_build_prefix="${build_root}/build_${android_abi}/prefix"
+
+        cat >"${sdl_moduleworkdir}/module.json" <<EOF
+{
+  "export_libraries": $export_libraries_json,
+  "library_name": "$libraryname"
+}
+EOF
+
+        abi_sdllibdir="${sdl_moduleworkdir}/libs/android.${android_abi}"
+        mkdir -p "${abi_sdllibdir}"
+        cat >"${abi_sdllibdir}/abi.json" <<EOF
+{
+  "abi": "${android_abi}",
+  "api": ${android_api},
+  "ndk": ${android_ndk},
+  "stl": "${android_stl}"
+}
+EOF
+        cp "${abi_build_prefix}/lib/$libraryname.so" "${abi_sdllibdir}"
+    done
+}
+
 build_cmake_projects
 
 create_pom_xml
@@ -224,6 +309,29 @@ create_aar_androidmanifest
 create_shared_sdl_image_module
 
 create_static_sdl_image_module
+
+create_shared_module external_zlib libz ""
+head -n28 external/zlib/zlib.h | tail -n25 >"${aar_metainfdir_path}/LICENSE.zlib.txt"
+
+create_shared_module external_libpng libpng16 ":external_zlib"
+cp "external/libpng/LICENSE" "${aar_metainfdir_path}/LICENSE.libpng.txt"
+
+create_shared_module external_libjpeg libjpeg ""
+cp "external/jpeg/README" "${aar_metainfdir_path}/LICENSE.libjpeg.txt"
+
+create_shared_module external_libtiff libtiff ""
+cp "external/libtiff/COPYRIGHT" "${aar_metainfdir_path}/LICENSE.libtiff.txt"
+
+create_shared_module external_libwebp libwebp ""
+cp "external/libwebp/COPYING" "${aar_metainfdir_path}/LICENSE.libwebp.txt"
+
+#create_shared_module libbrotlicommon libbrotlicommon ""
+#create_shared_module libbrotlidec libbrotlidec ":libbrotlicommon"
+#create_shared_module libbrotlienc libbrotlienc ":libbrotlicommon"
+#cp "external/libjxl/third_party/brotli/LICENSE" "${aar_metainfdir_path}/LICENSE.brotli.txt"
+
+#create_shared_module external_libjxl libjxl ":brotlienc :brotlidec"
+#cp "external/libjxl/LICENSE" "${aar_metainfdir_path}/LICENSE.libjxl.txt"
 
 pushd "${aar_root}"
     aar_filename="SDL${sdlimage_major}_image-${sdlimage_version}.aar"
