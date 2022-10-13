@@ -73,6 +73,7 @@ build_cmake_projects() {
                 -DSDL2IMAGE_GIF=ON \
                 -DSDL2IMAGE_JPG=ON \
                 -DSDL2IMAGE_JXL=OFF \
+                -DSJPEG_ANDROID_NDK_PATH="${ANDROID_NDK_HOME}" \
                 -DSDL2IMAGE_LBM=ON \
                 -DSDL2IMAGE_PCX=ON \
                 -DSDL2IMAGE_PNG=ON \
@@ -311,27 +312,27 @@ create_shared_sdl_image_module
 create_static_sdl_image_module
 
 create_shared_module external_zlib libz ""
-head -n28 external/zlib/zlib.h | tail -n25 >"${aar_metainfdir_path}/LICENSE.zlib.txt"
+head -n28 "${sdlimage_root}/external/zlib/zlib.h" | tail -n25 >"${aar_metainfdir_path}/LICENSE.zlib.txt"
 
 create_shared_module external_libpng libpng16 ":external_zlib"
-cp "external/libpng/LICENSE" "${aar_metainfdir_path}/LICENSE.libpng.txt"
+cp "${sdlimage_root}/external/libpng/LICENSE" "${aar_metainfdir_path}/LICENSE.libpng.txt"
 
 create_shared_module external_libjpeg libjpeg ""
-cp "external/jpeg/README" "${aar_metainfdir_path}/LICENSE.libjpeg.txt"
+cp "${sdlimage_root}/external/jpeg/README" "${aar_metainfdir_path}/LICENSE.libjpeg.txt"
 
 create_shared_module external_libtiff libtiff ""
-cp "external/libtiff/COPYRIGHT" "${aar_metainfdir_path}/LICENSE.libtiff.txt"
+cp "${sdlimage_root}/external/libtiff/COPYRIGHT" "${aar_metainfdir_path}/LICENSE.libtiff.txt"
 
 create_shared_module external_libwebp libwebp ""
-cp "external/libwebp/COPYING" "${aar_metainfdir_path}/LICENSE.libwebp.txt"
+cp "${sdlimage_root}/external/libwebp/COPYING" "${aar_metainfdir_path}/LICENSE.libwebp.txt"
 
 #create_shared_module libbrotlicommon libbrotlicommon ""
 #create_shared_module libbrotlidec libbrotlidec ":libbrotlicommon"
 #create_shared_module libbrotlienc libbrotlienc ":libbrotlicommon"
-#cp "external/libjxl/third_party/brotli/LICENSE" "${aar_metainfdir_path}/LICENSE.brotli.txt"
+#cp "${sdlimage_root}/external/libjxl/third_party/brotli/LICENSE" "${aar_metainfdir_path}/LICENSE.brotli.txt"
 
 #create_shared_module external_libjxl libjxl ":brotlienc :brotlidec"
-#cp "external/libjxl/LICENSE" "${aar_metainfdir_path}/LICENSE.libjxl.txt"
+#cp "${sdlimage_root}/external/libjxl/LICENSE" "${aar_metainfdir_path}/LICENSE.libjxl.txt"
 
 pushd "${aar_root}"
     aar_filename="SDL${sdlimage_major}_image-${sdlimage_version}.aar"
