@@ -61,7 +61,7 @@ jobs:
             webp \
             zlib \
             ${NULL+}
-          brew install sdl2 --HEAD
+          brew install sdl2
     - name: Setup Linux dependencies
       if: runner.os == 'Linux'
       run: |
