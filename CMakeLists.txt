@@ -686,16 +686,15 @@ if(SDL2IMAGE_INSTALL)
         )
     endif()
 
-    if(APPLE)
-        set(PKG_PREFIX "SDL2_image.framework/Resources")
-    elseif(WIN32 AND NOT MINGW)
-        set(PKG_PREFIX "cmake")
+    if(WIN32 AND NOT MINGW)
+        set(SDLIMAGE_INSTALL_CMAKEDIR_DEFAULT "cmake")
     else()
-        set(PKG_PREFIX "${CMAKE_INSTALL_LIBDIR}/cmake/SDL2_image")
+        set(SDLIMAGE_INSTALL_CMAKEDIR_DEFAULT "${CMAKE_INSTALL_LIBDIR}/cmake/SDL2_image")
     endif()
+    set(SDLIMAGE_INSTALL_CMAKEDIR "${SDLIMAGE_INSTALL_CMAKEDIR_DEFAULT}" CACHE STRING "Location where to install SDL2_imageConfig.cmake")
 
     configure_package_config_file(SDL2_imageConfig.cmake.in SDL2_imageConfig.cmake
-        INSTALL_DESTINATION "${PKG_PREFIX}"
+        INSTALL_DESTINATION "${SDLIMAGE_INSTALL_CMAKEDIR}"
     )
     write_basic_package_version_file("${PROJECT_BINARY_DIR}/SDL2_imageConfigVersion.cmake"
         VERSION ${FULL_VERSION}
@@ -707,13 +706,13 @@ if(SDL2IMAGE_INSTALL)
             "${CMAKE_CURRENT_BINARY_DIR}/SDL2_imageConfigVersion.cmake"
             cmake/Findlibjxl.cmake
             cmake/Findwebp.cmake
-        DESTINATION "${PKG_PREFIX}"
+        DESTINATION "${SDLIMAGE_INSTALL_CMAKEDIR}"
         COMPONENT devel
     )
     install(EXPORT SDL2ImageExports
         FILE SDL2_image-${sdl2_image_install_name_infix}-targets.cmake
         NAMESPACE SDL2_image::
-        DESTINATION "${PKG_PREFIX}"
+        DESTINATION "${SDLIMAGE_INSTALL_CMAKEDIR}"
         COMPONENT devel
     )
 
