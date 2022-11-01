@@ -86,6 +86,7 @@ static struct {
 } supported_anims[] = {
     /* keep magicless formats first */
     { "GIF", IMG_isGIF, IMG_LoadGIFAnimation_RW },
+    { "WEBP", IMG_isWEBP, IMG_LoadWEBPAnimation_RW },
 };
 
 const SDL_version *IMG_Linked_Version(void)

@@ -40,6 +40,7 @@
 #define MACOS
 #endif
 #include <webp/decode.h>
+#include <webp/demux.h>
 
 static struct {
     int loaded;
@@ -53,6 +54,10 @@ static struct {
     uint8_t*    (*WebPDecodeRGBInto) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride);
     uint8_t*    (*WebPDecodeRGBAInto) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride);
 #endif
+    WebPDemuxer* (*WebPDemux)(const WebPData* data);
+    int (*WebPDemuxGetFrame)(const WebPDemuxer* dmux, int frame_number, WebPIterator* iter);
+    uint32_t (*WebPDemuxGetI)(const WebPDemuxer* dmux, WebPFormatFeature feature);
+    void (*WebPDemuxDelete)(WebPDemuxer* dmux);
 } lib;
 
 #ifdef LOAD_WEBP_DYNAMIC
@@ -83,6 +88,10 @@ int IMG_InitWEBP()
         FUNCTION_LOADER(WebPDecodeRGBInto, uint8_t * (*) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride))
         FUNCTION_LOADER(WebPDecodeRGBAInto, uint8_t * (*) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride))
 #endif
+        FUNCTION_LOADER(WebPDemux, WebPDemuxer* (*)(const WebPData* data))
+        FUNCTION_LOADER(WebPDemuxGetFrame, int (*)(const WebPDemuxer* dmux, int frame_number, WebPIterator* iter))
+        FUNCTION_LOADER(WebPDemuxGetI, uint32_t (*)(const WebPDemuxer* dmux, WebPFormatFeature feature));
+        FUNCTION_LOADER(WebPDemuxDelete, void (*)(WebPDemuxer* dmux))
     }
     ++lib.loaded;
 
@@ -265,6 +274,138 @@ error:
     return(NULL);
 }
 
+IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
+{
+    Sint64 start;
+    const char *error = NULL;
+    Uint32 Rmask;
+    Uint32 Gmask;
+    Uint32 Bmask;
+    Uint32 Amask;
+    WebPBitstreamFeatures features;
+    struct WebPDemuxer* dmuxer = NULL;
+    WebPIterator iter;
+    IMG_Animation *anim = NULL;
+    int raw_data_size;
+    uint8_t *raw_data = NULL;
+    int r;
+    uint8_t *ret;
+
+    if ( !src ) {
+        /* The error message has been set in SDL_RWFromFile */
+        return NULL;
+    }
+
+    start = SDL_RWtell(src);
+
+    if ( (IMG_Init(IMG_INIT_WEBP) & IMG_INIT_WEBP) == 0 ) {
+        goto error;
+    }
+
+    raw_data_size = -1;
+    if ( !webp_getinfo( src, &raw_data_size ) ) {
+        error = "Invalid WEBP Animation";
+        goto error;
+    }
+
+    raw_data = (uint8_t*) SDL_malloc( raw_data_size );
+    if ( raw_data == NULL ) {
+        error = "Failed to allocate enough buffer for WEBP Animation";
+        goto error;
+    }
+
+    r = (int)SDL_RWread(src, raw_data, 1, raw_data_size );
+    if ( r != raw_data_size ) {
+        error = "Failed to read WEBP Animation";
+        goto error;
+    }
+
+    if ( lib.WebPGetFeaturesInternal( raw_data, raw_data_size, &features, WEBP_DECODER_ABI_VERSION ) != VP8_STATUS_OK ) {
+        error = "WebPGetFeatures has failed";
+        goto error;
+    }
+
+    /* Check if it's ok !*/
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+    Rmask = 0x000000FF;
+    Gmask = 0x0000FF00;
+    Bmask = 0x00FF0000;
+    Amask = (features.has_alpha) ? 0xFF000000 : 0;
+#else
+    {
+        int s = (features.has_alpha) ? 0 : 8;
+        Rmask = 0xFF000000 >> s;
+        Gmask = 0x00FF0000 >> s;
+        Bmask = 0x0000FF00 >> s;
+        Amask = 0x000000FF >> s;
+    }
+#endif
+
+    WebPData wd = { raw_data , raw_data_size};
+    dmuxer = lib.WebPDemux(&wd);
+    anim = (IMG_Animation *)SDL_malloc(sizeof(IMG_Animation));
+    anim->w = features.width;
+    anim->h = features.height;
+    anim->count = lib.WebPDemuxGetI(dmuxer, WEBP_FF_FRAME_COUNT);
+    anim->frames = (SDL_Surface **)SDL_calloc(anim->count, sizeof(*anim->frames));
+    anim->delays = (int *)SDL_calloc(anim->count, sizeof(*anim->delays));
+    for (int frame_idx = 0; frame_idx < (anim->count); frame_idx++) {
+        if (lib.WebPDemuxGetFrame(dmuxer, frame_idx, &iter) == 0) {
+            break;
+        }
+        SDL_Surface* curr = SDL_CreateRGBSurface(SDL_SWSURFACE,
+            features.width, features.height,
+            features.has_alpha?32:24, Rmask,Gmask,Bmask,Amask);
+        if ( curr == NULL ) {
+            error = "Failed to allocate SDL_Surface";
+            goto error;
+        }
+        anim->frames[frame_idx] = curr;
+        anim->delays[frame_idx] = iter.duration;
+        if ( features.has_alpha ) {
+            ret = lib.WebPDecodeRGBAInto(
+                iter.fragment.bytes,
+                iter.fragment.size,
+                (uint8_t *)curr->pixels,
+                curr->pitch * curr->h,
+                curr->pitch);
+        } else {
+            ret = lib.WebPDecodeRGBInto(
+                iter.fragment.bytes, iter.fragment.size,
+                (uint8_t *)curr->pixels,
+                curr->pitch * curr->h,
+                curr->pitch);
+        }
+        if (ret == NULL) {
+            break;
+        }
+    }
+    if (dmuxer) {
+        lib.WebPDemuxDelete(dmuxer);
+    }
+
+    if ( raw_data ) {
+        SDL_free( raw_data );
+    }
+    return anim;
+error:
+    if (anim) {
+        IMG_FreeAnimation(anim);
+    }
+    if (dmuxer) {
+        lib.WebPDemuxDelete(dmuxer);
+    }
+    if (raw_data) {
+        SDL_free( raw_data );
+    }
+
+    if (error) {
+        IMG_SetError( "%s", error );
+    }
+    SDL_RWseek(src, start, RW_SEEK_SET);
+    return(NULL);
+}
+
 #else
 #if _MSC_VER >= 1300
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
@@ -289,6 +430,10 @@ int IMG_isWEBP(SDL_RWops *src)
 /* Load a WEBP type image from an SDL datasource */
 SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 {
+    return(NULL);
+}
+
+IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src) {
     return(NULL);
 }
 
