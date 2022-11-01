@@ -273,8 +273,6 @@ AC_ARG_ENABLE([xv], [AS_HELP_STRING([--enable-xv], [support loading XV images [d
  [], [enable_xv=yes])
 AC_ARG_ENABLE([webp], [AS_HELP_STRING([--enable-webp], [support loading WEBP images [default=yes]])],
  [], [enable_webp=yes])
-AC_ARG_ENABLE([webpdec], [AS_HELP_STRING([--enable-webpdec], [support loading WEBP images via libwebpdecoder instead of libwebp [default=no]])],
- [], [enable_webpdec=no])
 AC_ARG_ENABLE([webp-shared], [AS_HELP_STRING([--enable-webp-shared], [dynamically load WEBP support [default=yes]])],
  [], [enable_webp_shared=yes])
 AC_ARG_ENABLE([qoi], [AS_HELP_STRING([--enable-qoi], [support loading QOI images [default=yes]])],
@@ -534,25 +532,19 @@ if test x$enable_tif = xyes -a x$enable_imageio != xyes; then
 fi
 AC_SUBST([LOAD_TIF], $load_tif)
 
-load_webp=0
-if test x$enable_webpdec = xyes; then
-  webplib=webpdecoder
-else
-  webplib=webp
-fi
 if test x$enable_webp = xyes; then
-    PKG_CHECK_MODULES([LIBWEBP], [lib$webplib], [dnl
+    PKG_CHECK_MODULES([LIBWEBPDEMUX], [libwebpdemux], [dnl
         have_webp_hdr=yes
         have_webp_lib=yes
         have_webp_pc=yes
       ], [dnl
-        AC_CHECK_HEADER([webp/decode.h], [
+        AC_CHECK_HEADER([webp/demux.h], [
             have_webp_hdr=yes
-            LIBWEBP_CFLAGS=""
+            LIBWEBPDEMUX_CFLAGS=""
         ])
-        AC_CHECK_LIB([$webplib], [WebPGetDecoderVersion], [
+        AC_CHECK_LIB([webpdemux], [WebPDemuxGetFrame], [
             have_webp_lib=yes
-            LIBWEBP_LIBS="-l$webplib"
+            LIBWEBPDEMUX_LIBS="-lwebpdemux"
         ], [], [-lm])
       ])
     if test x$have_webp_hdr = xyes -a x$have_webp_lib = xyes; then
@@ -561,15 +553,15 @@ if test x$enable_webp = xyes; then
 
         case "$host" in
             *-*-darwin*)
-                webp_lib=[`find_lib lib$webplib.dylib`]
+                webp_lib=[`find_lib libwebpdemux.dylib`]
                 ;;
             *-*-cygwin* | *-*-mingw*)
-                webp_lib=[`find_lib "lib$webplib-*.dll"`]
+                webp_lib=[`find_lib "libwebpdemux-*.dll"`]
                 ;;
             *)
-                webp_lib=[`find_lib "lib$webplib[0-9]*.so.*"`]
+                webp_lib=[`find_lib "libwebpdemux[0-9]*.so.*"`]
                 if test x$webp_lib = x; then
-                    webp_lib=[`find_lib "lib$webplib.so.*"`]
+                    webp_lib=[`find_lib "libwebpdemux.so.*"`]
                 fi
                 ;;
         esac
@@ -663,11 +655,11 @@ if test x$enable_webp = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib = xyes
         echo "-- dynamic libwebp -> $webp_lib"
         AC_DEFINE_UNQUOTED(LOAD_WEBP_DYNAMIC, "$webp_lib")
     else
-        IMG_LIBS="$LIBWEBP_LIBS $IMG_LIBS"
+        IMG_LIBS="$LIBWEBPDEMUX_LIBS $IMG_LIBS"
         if test x$have_webp_pc = xyes; then
-            PC_REQUIRES="lib$webplib $PC_REQUIRES"
+            PC_REQUIRES="libwebpdemux $PC_REQUIRES"
         else
-            PC_LIBS="$LIBWEBP_LIBS $PC_LIBS"
+            PC_LIBS="$LIBWEBPDEMUX_LIBS $PC_LIBS"
         fi
     fi
 fi
