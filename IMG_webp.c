@@ -46,15 +46,9 @@ static struct {
     int loaded;
     void *handle_libwebpdemux;
     void *handle_libwebp;
-#if WEBP_DECODER_ABI_VERSION < 0x0100
-    VP8StatusCode (*WebPGetFeaturesInternal) (const uint8_t *data, uint32_t data_size, WebPBitstreamFeatures* const features, int decoder_abi_version);
-    uint8_t*    (*WebPDecodeRGBInto) (const uint8_t* data, uint32_t data_size, uint8_t* output_buffer, int output_buffer_size, int output_stride);
-    uint8_t*    (*WebPDecodeRGBAInto) (const uint8_t* data, uint32_t data_size, uint8_t* output_buffer, int output_buffer_size, int output_stride);
-#else
     VP8StatusCode (*WebPGetFeaturesInternal) (const uint8_t *data, size_t data_size, WebPBitstreamFeatures* features, int decoder_abi_version);
     uint8_t*    (*WebPDecodeRGBInto) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride);
     uint8_t*    (*WebPDecodeRGBAInto) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride);
-#endif
     /* WebPDemux() is an inline in webp/demux.h calling WebPDemuxInternal().  */
     WebPDemuxer* (*WebPDemuxInternal)(const WebPData*, int, WebPDemuxState*, int);
     int (*WebPDemuxGetFrame)(const WebPDemuxer* dmux, int frame_number, WebPIterator* iter);
@@ -91,15 +85,9 @@ int IMG_InitWEBP()
             return -1;
         }
 #endif
-#if WEBP_DECODER_ABI_VERSION < 0x0100
-        FUNCTION_LOADER_LIBWEBP(WebPGetFeaturesInternal, VP8StatusCode (*) (const uint8_t *data, uint32_t data_size, WebPBitstreamFeatures* const features, int decoder_abi_version))
-        FUNCTION_LOADER_LIBWEBP(WebPDecodeRGBInto, uint8_t * (*) (const uint8_t* data, uint32_t data_size, uint8_t* output_buffer, int output_buffer_size, int output_stride))
-        FUNCTION_LOADER_LIBWEBP(WebPDecodeRGBAInto, uint8_t * (*) (const uint8_t* data, uint32_t data_size, uint8_t* output_buffer, int output_buffer_size, int output_stride))
-#else
         FUNCTION_LOADER_LIBWEBP(WebPGetFeaturesInternal, VP8StatusCode (*) (const uint8_t *data, size_t data_size, WebPBitstreamFeatures* features, int decoder_abi_version))
         FUNCTION_LOADER_LIBWEBP(WebPDecodeRGBInto, uint8_t * (*) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride))
         FUNCTION_LOADER_LIBWEBP(WebPDecodeRGBAInto, uint8_t * (*) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride))
-#endif
         FUNCTION_LOADER_LIBWEBPDEMUX(WebPDemuxInternal, WebPDemuxer* (*)(const WebPData*, int, WebPDemuxState*, int))
         FUNCTION_LOADER_LIBWEBPDEMUX(WebPDemuxGetFrame, int (*)(const WebPDemuxer* dmux, int frame_number, WebPIterator* iter))
         FUNCTION_LOADER_LIBWEBPDEMUX(WebPDemuxGetI, uint32_t (*)(const WebPDemuxer* dmux, WebPFormatFeature feature));
@@ -149,13 +137,7 @@ static int webp_getinfo (SDL_RWops *src, int *datasize) {
             magic[12] == 'V' &&
             magic[13] == 'P' &&
             magic[14] == '8' &&
-         /* old versions don't support VP8X and VP8L */
-         #if (WEBP_DECODER_ABI_VERSION < 0x0003)
-             magic[15] == ' '
-         #else
-            (magic[15] == ' ' || magic[15] == 'X' || magic[15] == 'L')
-         #endif
-           ) {
+           (magic[15] == ' ' || magic[15] == 'X' || magic[15] == 'L')) {
             is_WEBP = 1;
             if (datasize) {
                 *datasize = (int)(SDL_RWseek(src, 0, RW_SEEK_END) - start);
