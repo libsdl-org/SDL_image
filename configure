@@ -824,6 +824,8 @@ LOAD_LBM
 LOAD_GIF
 LOAD_BMP
 LOAD_WEBP
+LIBWEBP_LIBS
+LIBWEBP_CFLAGS
 LIBWEBPDEMUX_LIBS
 LIBWEBPDEMUX_CFLAGS
 LOAD_TIF
@@ -1056,7 +1058,9 @@ LIBPNG_LIBS
 LIBTIFF_CFLAGS
 LIBTIFF_LIBS
 LIBWEBPDEMUX_CFLAGS
-LIBWEBPDEMUX_LIBS'
+LIBWEBPDEMUX_LIBS
+LIBWEBP_CFLAGS
+LIBWEBP_LIBS'
 
 
 # Initialize some variables set by options.
@@ -1777,6 +1781,10 @@ Some influential environment variables:
               C compiler flags for LIBWEBPDEMUX, overriding pkg-config
   LIBWEBPDEMUX_LIBS
               linker flags for LIBWEBPDEMUX, overriding pkg-config
+  LIBWEBP_CFLAGS
+              C compiler flags for LIBWEBP, overriding pkg-config
+  LIBWEBP_LIBS
+              linker flags for LIBWEBP, overriding pkg-config
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -4705,13 +4713,13 @@ then :
 else $as_nop
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:4708: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:4716: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4711: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:4719: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4714: output\"" >&5)
+  (eval echo "\"\$as_me:4722: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -5970,7 +5978,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5973 "configure"' > conftest.$ac_ext
+  echo '#line 5981 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7643,11 +7651,11 @@ else $as_nop
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7646: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7654: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7650: \$? = $ac_status" >&5
+   echo "$as_me:7658: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7993,11 +8001,11 @@ else $as_nop
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7996: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8004: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8000: \$? = $ac_status" >&5
+   echo "$as_me:8008: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8100,11 +8108,11 @@ else $as_nop
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8103: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8111: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8107: \$? = $ac_status" >&5
+   echo "$as_me:8115: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -8156,11 +8164,11 @@ else $as_nop
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8159: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8167: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8163: \$? = $ac_status" >&5
+   echo "$as_me:8171: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10599,7 +10607,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10602 "configure"
+#line 10610 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10696,7 +10704,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10699 "configure"
+#line 10707 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -15376,7 +15384,7 @@ fi
 if test "x$ac_cv_header_webp_demux_h" = xyes
 then :
 
-            have_webp_hdr=yes
+            have_webpdemux_hdr=yes
             LIBWEBPDEMUX_CFLAGS=""
 
 fi
@@ -15419,7 +15427,7 @@ printf "%s\n" "$ac_cv_lib_webpdemux_WebPDemuxGetFrame" >&6; }
 if test "x$ac_cv_lib_webpdemux_WebPDemuxGetFrame" = xyes
 then :
 
-            have_webp_lib=yes
+            have_webpdemux_lib=yes
             LIBWEBPDEMUX_LIBS="-lwebpdemux"
 
 fi
@@ -15432,7 +15440,7 @@ printf "%s\n" "no" >&6; }
 if test "x$ac_cv_header_webp_demux_h" = xyes
 then :
 
-            have_webp_hdr=yes
+            have_webpdemux_hdr=yes
             LIBWEBPDEMUX_CFLAGS=""
 
 fi
@@ -15475,7 +15483,7 @@ printf "%s\n" "$ac_cv_lib_webpdemux_WebPDemuxGetFrame" >&6; }
 if test "x$ac_cv_lib_webpdemux_WebPDemuxGetFrame" = xyes
 then :
 
-            have_webp_lib=yes
+            have_webpdemux_lib=yes
             LIBWEBPDEMUX_LIBS="-lwebpdemux"
 
 fi
@@ -15486,27 +15494,209 @@ else
 	LIBWEBPDEMUX_LIBS=$pkg_cv_LIBWEBPDEMUX_LIBS
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
+	        have_webpdemux_hdr=yes
+        have_webpdemux_lib=yes
+        have_webpdemux_pc=yes
+
+fi
+
+pkg_failed=no
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for libwebp" >&5
+printf %s "checking for libwebp... " >&6; }
+
+if test -n "$LIBWEBP_CFLAGS"; then
+    pkg_cv_LIBWEBP_CFLAGS="$LIBWEBP_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libwebp\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libwebp") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBWEBP_CFLAGS=`$PKG_CONFIG --cflags "libwebp" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$LIBWEBP_LIBS"; then
+    pkg_cv_LIBWEBP_LIBS="$LIBWEBP_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libwebp\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libwebp") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_LIBWEBP_LIBS=`$PKG_CONFIG --libs "libwebp" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        LIBWEBP_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libwebp" 2>&1`
+        else
+	        LIBWEBP_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libwebp" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$LIBWEBP_PKG_ERRORS" >&5
+
+	        ac_fn_c_check_header_compile "$LINENO" "webp/decode.h" "ac_cv_header_webp_decode_h" "$ac_includes_default"
+if test "x$ac_cv_header_webp_decode_h" = xyes
+then :
+
+            have_webp_hdr=yes
+            LIBWEBP_CFLAGS=""
+
+fi
+
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for WebPGetDecoderVersion in -lwebp" >&5
+printf %s "checking for WebPGetDecoderVersion in -lwebp... " >&6; }
+if test ${ac_cv_lib_webp_WebPGetDecoderVersion+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lwebp -lm $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+char WebPGetDecoderVersion ();
+int
+main (void)
+{
+return WebPGetDecoderVersion ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_webp_WebPGetDecoderVersion=yes
+else $as_nop
+  ac_cv_lib_webp_WebPGetDecoderVersion=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_webp_WebPGetDecoderVersion" >&5
+printf "%s\n" "$ac_cv_lib_webp_WebPGetDecoderVersion" >&6; }
+if test "x$ac_cv_lib_webp_WebPGetDecoderVersion" = xyes
+then :
+
+            have_webp_lib=yes
+            LIBWEBP_LIBS="-lwebp"
+
+fi
+
+
+elif test $pkg_failed = untried; then
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+	        ac_fn_c_check_header_compile "$LINENO" "webp/decode.h" "ac_cv_header_webp_decode_h" "$ac_includes_default"
+if test "x$ac_cv_header_webp_decode_h" = xyes
+then :
+
+            have_webp_hdr=yes
+            LIBWEBP_CFLAGS=""
+
+fi
+
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for WebPGetDecoderVersion in -lwebp" >&5
+printf %s "checking for WebPGetDecoderVersion in -lwebp... " >&6; }
+if test ${ac_cv_lib_webp_WebPGetDecoderVersion+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lwebp -lm $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+char WebPGetDecoderVersion ();
+int
+main (void)
+{
+return WebPGetDecoderVersion ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_webp_WebPGetDecoderVersion=yes
+else $as_nop
+  ac_cv_lib_webp_WebPGetDecoderVersion=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_webp_WebPGetDecoderVersion" >&5
+printf "%s\n" "$ac_cv_lib_webp_WebPGetDecoderVersion" >&6; }
+if test "x$ac_cv_lib_webp_WebPGetDecoderVersion" = xyes
+then :
+
+            have_webp_lib=yes
+            LIBWEBP_LIBS="-lwebp"
+
+fi
+
+
+else
+	LIBWEBP_CFLAGS=$pkg_cv_LIBWEBP_CFLAGS
+	LIBWEBP_LIBS=$pkg_cv_LIBWEBP_LIBS
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
 	        have_webp_hdr=yes
         have_webp_lib=yes
         have_webp_pc=yes
 
 fi
-    if test x$have_webp_hdr = xyes -a x$have_webp_lib = xyes; then
+    if test x$have_webpdemux_hdr = xyes -a x$have_webpdemux_lib = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib = xyes; then
         printf "%s\n" "#define LOAD_WEBP 1" >>confdefs.h
 
         load_webp=1
 
         case "$host" in
             *-*-darwin*)
-                webp_lib=`find_lib libwebpdemux.dylib`
+                webpdemux_lib=`find_lib libwebpdemux.dylib`
+                webp_lib=`find_lib libwebp.dylib`
                 ;;
             *-*-cygwin* | *-*-mingw*)
-                webp_lib=`find_lib "libwebpdemux-*.dll"`
+                webpdemux_lib=`find_lib "libwebpdemux-*.dll"`
+                webp_lib=`find_lib "libwebp-*.dll"`
                 ;;
             *)
-                webp_lib=`find_lib "libwebpdemux[0-9]*.so.*"`
+                webpdemux_lib=`find_lib "libwebpdemux[0-9]*.so.*"`
+                webp_lib=`find_lib "libwebp[0-9]*.so.*"`
                 if test x$webp_lib = x; then
-                    webp_lib=`find_lib "libwebpdemux.so.*"`
+                    webpdemux_lib=`find_lib "libwebpdemux.so.*"`
+                    webp_lib=`find_lib "libwebp.so.*"`
                 fi
                 ;;
         esac
@@ -15619,18 +15809,21 @@ fi
 LOAD_QOI=$load_qoi
 
 
-if test x$enable_webp = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib = xyes; then
+if test x$enable_webp = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib -a x$have_webpdemux_hdr = xyes -a x$have_webpdemux_lib = xyes; then
     CFLAGS="$LIBWEBP_CFLAGS $CFLAGS"
     if test x$enable_webp_shared = xyes && test x$webp_lib != x; then
         echo "-- dynamic libwebp -> $webp_lib"
         printf "%s\n" "#define LOAD_WEBP_DYNAMIC \"$webp_lib\"" >>confdefs.h
 
+        echo "-- dynamic libwebpdemux -> $webpdemux_lib"
+        printf "%s\n" "#define LOAD_WEBPDEMUX_DYNAMIC \"$webpdemux_lib\"" >>confdefs.h
+
     else
-        IMG_LIBS="$LIBWEBPDEMUX_LIBS $IMG_LIBS"
+        IMG_LIBS="$LIBWEBPDEMUX_LIBS $LIBWEBP_LIBS $IMG_LIBS"
         if test x$have_webp_pc = xyes; then
-            PC_REQUIRES="libwebpdemux $PC_REQUIRES"
+            PC_REQUIRES="libwebpdemux libwebp $PC_REQUIRES"
         else
-            PC_LIBS="$LIBWEBPDEMUX_LIBS $PC_LIBS"
+            PC_LIBS="$LIBWEBPDEMUX_LIBS $LIBWEBP_LIBS $PC_LIBS"
         fi
     fi
 fi

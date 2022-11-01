@@ -622,7 +622,8 @@ if(SDL2IMAGE_WEBP)
         add_subdirectory(external/libwebp EXCLUDE_FROM_ALL)
         target_include_directories(SDL2_image PRIVATE external/libwebp/src)
         add_library(WebP::webp ALIAS webp)
-        list(APPEND INSTALL_EXTRA_TARGETS webp)
+        add_library(WebP::webpdemux ALIAS webpdemux)
+        list(APPEND INSTALL_EXTRA_TARGETS webp webpdemux)
         set_target_properties(webp PROPERTIES EXPORT_NAME "external_libwebp")
         add_library(SDL2_image::external_libwebp ALIAS webp)
     else()
@@ -635,15 +636,21 @@ if(SDL2IMAGE_WEBP)
             $<TARGET_PROPERTY:WebP::webp,INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:WebP::webp,INTERFACE_INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:WebP::webp,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
+            $<TARGET_PROPERTY:WebP::webpdemux,INCLUDE_DIRECTORIES>
+            $<TARGET_PROPERTY:WebP::webpdemux,INTERFACE_INCLUDE_DIRECTORIES>
+            $<TARGET_PROPERTY:WebP::webpdemux,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
         )
-        target_get_dynamic_library(dynamic_webp WebP::webp)
-        message(STATUS "Dynamic libwebp: ${dynamic_webp}")
+        target_get_dynamic_library(dynamic_webpdemux WebP::webpdemux)
+        message(STATUS "Dynamic libwebpdemux: ${dynamic_webpdemux}")
+        target_compile_definitions(SDL2_image PRIVATE "LOAD_WEBPDEMUX_DYNAMIC=\"${dynamic_webpdemux}\"")
+        target_get_dynamic_library(dynamic_webpdemux WebP::webp)
+        message(STATUS "Dynamic libwebpdemux: ${dynamic_webp}")
         target_compile_definitions(SDL2_image PRIVATE "LOAD_WEBP_DYNAMIC=\"${dynamic_webp}\"")
         if(SDL2IMAGE_WEBP_VENDORED)
-            add_dependencies(SDL2_image WebP::webp)
+            add_dependencies(SDL2_image WebP::webp WebP::webpdemux)
         endif()
     else()
-        target_link_libraries(SDL2_image PRIVATE WebP::webp)
+        target_link_libraries(SDL2_image PRIVATE WebP::webp WebP::webpdemux)
     endif()
 endif()
 

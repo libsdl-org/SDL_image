@@ -44,7 +44,8 @@
 
 static struct {
     int loaded;
-    void *handle;
+    void *handle_libwebpdemux;
+    void *handle_libwebp;
 #if WEBP_DECODER_ABI_VERSION < 0x0100
     VP8StatusCode (*WebPGetFeaturesInternal) (const uint8_t *data, uint32_t data_size, WebPBitstreamFeatures* const features, int decoder_abi_version);
     uint8_t*    (*WebPDecodeRGBInto) (const uint8_t* data, uint32_t data_size, uint8_t* output_buffer, int output_buffer_size, int output_stride);
@@ -61,38 +62,48 @@ static struct {
     void (*WebPDemuxDelete)(WebPDemuxer* dmux);
 } lib;
 
-#ifdef LOAD_WEBP_DYNAMIC
-#define FUNCTION_LOADER(FUNC, SIG) \
-    lib.FUNC = (SIG) SDL_LoadFunction(lib.handle, #FUNC); \
-    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle); return -1; }
+#if defined(LOAD_WEBP_DYNAMIC) && defined(LOAD_WEBPDEMUX_DYNAMIC)
+#define FUNCTION_LOADER_LIBWEBP(FUNC, SIG) \
+    lib.FUNC = (SIG) SDL_LoadFunction(lib.handle_libwebp, #FUNC); \
+    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle_libwebp); return -1; }
+#define FUNCTION_LOADER_LIBWEBPDEMUX(FUNC, SIG) \
+    lib.FUNC = (SIG) SDL_LoadFunction(lib.handle_libwebpdemux, #FUNC); \
+    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle_libwebpdemux); return -1; }
 #else
-#define FUNCTION_LOADER(FUNC, SIG) \
+#define FUNCTION_LOADER_LIBWEBP(FUNC, SIG) \
     lib.FUNC = FUNC; \
     if (lib.FUNC == NULL) { IMG_SetError("Missing webp.framework"); return -1; }
+#define FUNCTION_LOADER_LIBWEBPDEMUX(FUNC, SIG) \
+    lib.FUNC = FUNC; \
+    if (lib.FUNC == NULL) { IMG_SetError("Missing webpdemux.framework"); return -1; }
 #endif
 
 int IMG_InitWEBP()
 {
     if (lib.loaded == 0) {
-#ifdef LOAD_WEBP_DYNAMIC
-        lib.handle = SDL_LoadObject(LOAD_WEBP_DYNAMIC);
-        if (lib.handle == NULL) {
+#if defined(LOAD_WEBP_DYNAMIC) && defined(LOAD_WEBPDEMUX_DYNAMIC)
+        lib.handle_libwebpdemux = SDL_LoadObject(LOAD_WEBPDEMUX_DYNAMIC);
+        if (lib.handle_libwebpdemux == NULL) {
+            return -1;
+        }
+        lib.handle_libwebp = SDL_LoadObject(LOAD_WEBP_DYNAMIC);
+        if (lib.handle_libwebp == NULL) {
             return -1;
         }
 #endif
 #if WEBP_DECODER_ABI_VERSION < 0x0100
-        FUNCTION_LOADER(WebPGetFeaturesInternal, VP8StatusCode (*) (const uint8_t *data, uint32_t data_size, WebPBitstreamFeatures* const features, int decoder_abi_version))
-        FUNCTION_LOADER(WebPDecodeRGBInto, uint8_t * (*) (const uint8_t* data, uint32_t data_size, uint8_t* output_buffer, int output_buffer_size, int output_stride))
-        FUNCTION_LOADER(WebPDecodeRGBAInto, uint8_t * (*) (const uint8_t* data, uint32_t data_size, uint8_t* output_buffer, int output_buffer_size, int output_stride))
+        FUNCTION_LOADER_LIBWEBP(WebPGetFeaturesInternal, VP8StatusCode (*) (const uint8_t *data, uint32_t data_size, WebPBitstreamFeatures* const features, int decoder_abi_version))
+        FUNCTION_LOADER_LIBWEBP(WebPDecodeRGBInto, uint8_t * (*) (const uint8_t* data, uint32_t data_size, uint8_t* output_buffer, int output_buffer_size, int output_stride))
+        FUNCTION_LOADER_LIBWEBP(WebPDecodeRGBAInto, uint8_t * (*) (const uint8_t* data, uint32_t data_size, uint8_t* output_buffer, int output_buffer_size, int output_stride))
 #else
-        FUNCTION_LOADER(WebPGetFeaturesInternal, VP8StatusCode (*) (const uint8_t *data, size_t data_size, WebPBitstreamFeatures* features, int decoder_abi_version))
-        FUNCTION_LOADER(WebPDecodeRGBInto, uint8_t * (*) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride))
-        FUNCTION_LOADER(WebPDecodeRGBAInto, uint8_t * (*) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride))
+        FUNCTION_LOADER_LIBWEBP(WebPGetFeaturesInternal, VP8StatusCode (*) (const uint8_t *data, size_t data_size, WebPBitstreamFeatures* features, int decoder_abi_version))
+        FUNCTION_LOADER_LIBWEBP(WebPDecodeRGBInto, uint8_t * (*) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride))
+        FUNCTION_LOADER_LIBWEBP(WebPDecodeRGBAInto, uint8_t * (*) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride))
 #endif
-        FUNCTION_LOADER(WebPDemuxInternal, WebPDemuxer* (*)(const WebPData*, int, WebPDemuxState*, int))
-        FUNCTION_LOADER(WebPDemuxGetFrame, int (*)(const WebPDemuxer* dmux, int frame_number, WebPIterator* iter))
-        FUNCTION_LOADER(WebPDemuxGetI, uint32_t (*)(const WebPDemuxer* dmux, WebPFormatFeature feature));
-        FUNCTION_LOADER(WebPDemuxDelete, void (*)(WebPDemuxer* dmux))
+        FUNCTION_LOADER_LIBWEBPDEMUX(WebPDemuxInternal, WebPDemuxer* (*)(const WebPData*, int, WebPDemuxState*, int))
+        FUNCTION_LOADER_LIBWEBPDEMUX(WebPDemuxGetFrame, int (*)(const WebPDemuxer* dmux, int frame_number, WebPIterator* iter))
+        FUNCTION_LOADER_LIBWEBPDEMUX(WebPDemuxGetI, uint32_t (*)(const WebPDemuxer* dmux, WebPFormatFeature feature));
+        FUNCTION_LOADER_LIBWEBPDEMUX(WebPDemuxDelete, void (*)(WebPDemuxer* dmux))
     }
     ++lib.loaded;
 
@@ -104,8 +115,9 @@ void IMG_QuitWEBP()
         return;
     }
     if (lib.loaded == 1) {
-#ifdef LOAD_WEBP_DYNAMIC
-        SDL_UnloadObject(lib.handle);
+#if defined(LOAD_WEBP_DYNAMIC) && defined(LOAD_WEBPDEMUX_DYNAMIC)
+        SDL_UnloadObject(lib.handle_libwebp);
+        SDL_UnloadObject(lib.handle_libwebpdemux);
 #endif
     }
     --lib.loaded;
