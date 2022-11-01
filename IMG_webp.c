@@ -350,10 +350,11 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
     anim->frames = (SDL_Surface **)SDL_calloc(anim->count, sizeof(*anim->frames));
     anim->delays = (int *)SDL_calloc(anim->count, sizeof(*anim->delays));
     for (frame_idx = 0; frame_idx < (anim->count); frame_idx++) {
+        SDL_Surface* curr;
         if (lib.WebPDemuxGetFrame(dmuxer, frame_idx, &iter) == 0) {
             break;
         }
-        SDL_Surface* curr = SDL_CreateRGBSurface(SDL_SWSURFACE,
+        curr = SDL_CreateRGBSurface(SDL_SWSURFACE,
             features.width, features.height,
             features.has_alpha?32:24, Rmask,Gmask,Bmask,Amask);
         if (curr == NULL) {
