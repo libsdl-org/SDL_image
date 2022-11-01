@@ -54,7 +54,8 @@ static struct {
     uint8_t*    (*WebPDecodeRGBInto) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride);
     uint8_t*    (*WebPDecodeRGBAInto) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride);
 #endif
-    WebPDemuxer* (*WebPDemux)(const WebPData* data);
+    /* WebPDemux() is an inline in webp/demux.h calling WebPDemuxInternal().  */
+    WebPDemuxer* (*WebPDemuxInternal)(const WebPData*, int, WebPDemuxState*, int);
     int (*WebPDemuxGetFrame)(const WebPDemuxer* dmux, int frame_number, WebPIterator* iter);
     uint32_t (*WebPDemuxGetI)(const WebPDemuxer* dmux, WebPFormatFeature feature);
     void (*WebPDemuxDelete)(WebPDemuxer* dmux);
@@ -88,7 +89,7 @@ int IMG_InitWEBP()
         FUNCTION_LOADER(WebPDecodeRGBInto, uint8_t * (*) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride))
         FUNCTION_LOADER(WebPDecodeRGBAInto, uint8_t * (*) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride))
 #endif
-        FUNCTION_LOADER(WebPDemux, WebPDemuxer* (*)(const WebPData* data))
+        FUNCTION_LOADER(WebPDemuxInternal, WebPDemuxer* (*)(const WebPData*, int, WebPDemuxState*, int))
         FUNCTION_LOADER(WebPDemuxGetFrame, int (*)(const WebPDemuxer* dmux, int frame_number, WebPIterator* iter))
         FUNCTION_LOADER(WebPDemuxGetI, uint32_t (*)(const WebPDemuxer* dmux, WebPFormatFeature feature));
         FUNCTION_LOADER(WebPDemuxDelete, void (*)(WebPDemuxer* dmux))
@@ -108,6 +109,10 @@ void IMG_QuitWEBP()
 #endif
     }
     --lib.loaded;
+}
+
+static SDL_INLINE WebPDemuxer* SDL_WebPDemux(const WebPData* data) {
+    return lib.WebPDemuxInternal(data, 0, NULL, WEBP_DEMUX_ABI_VERSION);
 }
 
 static int webp_getinfo (SDL_RWops *src, int *datasize) {
@@ -342,7 +347,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
 
     wd.size = raw_data_size;
     wd.bytes = raw_data;
-    dmuxer = lib.WebPDemux(&wd);
+    dmuxer = SDL_WebPDemux(&wd);
     anim = (IMG_Animation *)SDL_malloc(sizeof(IMG_Animation));
     anim->w = features.width;
     anim->h = features.height;
