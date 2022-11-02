@@ -47,10 +47,9 @@ static struct {
     void *handle_libwebpdemux;
     void *handle_libwebp;
     VP8StatusCode (*WebPGetFeaturesInternal) (const uint8_t *data, size_t data_size, WebPBitstreamFeatures* features, int decoder_abi_version);
-    uint8_t*    (*WebPDecodeRGBInto) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride);
-    uint8_t*    (*WebPDecodeRGBAInto) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride);
-    /* WebPDemux() is an inline in webp/demux.h calling WebPDemuxInternal().  */
-    WebPDemuxer* (*WebPDemuxInternal)(const WebPData*, int, WebPDemuxState*, int);
+    uint8_t* (*WebPDecodeRGBInto) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride);
+    uint8_t* (*WebPDecodeRGBAInto) (const uint8_t* data, size_t data_size, uint8_t* output_buffer, size_t output_buffer_size, int output_stride);
+    WebPDemuxer* (*WebPDemuxInternal)(const WebPData* data, int allow_partial, WebPDemuxState* state, int version);
     int (*WebPDemuxGetFrame)(const WebPDemuxer* dmux, int frame_number, WebPIterator* iter);
     uint32_t (*WebPDemuxGetI)(const WebPDemuxer* dmux, WebPFormatFeature feature);
     void (*WebPDemuxDelete)(WebPDemuxer* dmux);
@@ -109,10 +108,6 @@ void IMG_QuitWEBP()
 #endif
     }
     --lib.loaded;
-}
-
-static SDL_INLINE WebPDemuxer* SDL_WebPDemux(const WebPData* data) {
-    return lib.WebPDemuxInternal(data, 0, NULL, WEBP_DEMUX_ABI_VERSION);
 }
 
 static int webp_getinfo (SDL_RWops *src, int *datasize) {
@@ -341,7 +336,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
 
     wd.size = raw_data_size;
     wd.bytes = raw_data;
-    dmuxer = SDL_WebPDemux(&wd);
+    dmuxer = lib.WebPDemuxInternal(&wd, 0, NULL, WEBP_DEMUX_ABI_VERSION);
     anim = (IMG_Animation *)SDL_malloc(sizeof(IMG_Animation));
     anim->w = features.width;
     anim->h = features.height;
