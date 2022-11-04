@@ -61,7 +61,7 @@ CFLAGS+= -DSDL_BUILD_MICRO_VERSION=$(MICRO_VERSION)
 
 OBJS = $(SRCS:.c=.obj)
 
-all: $(LIBFILE) showimage.exe
+all: $(LIBFILE) showimage.exe showanim.exe
 
 $(LIBFILE): $(DLLFILE)
   @echo * Create library: $@...
@@ -92,8 +92,14 @@ $(LNKFILE):
 showimage.obj: showimage.c
   wcc386 $(CFLAGS_BASE) -fo=$^@ $<
 
+showanim.obj: showanim.c
+  wcc386 $(CFLAGS_BASE) -fo=$^@ $<
+
 showimage.exe: $(LIBFILE) showimage.obj
   wlink SYS os2v2 OP q LIBPATH $(DEPS_LIB) LIBR {$(LIBFILE) SDL2.lib} F {showimage.obj}  N showimage.exe
+
+showanim.exe: $(LIBFILE) showanim.obj
+  wlink SYS os2v2 OP q LIBPATH $(DEPS_LIB) LIBR {$(LIBFILE) SDL2.lib} F {showanim.obj}  N showanim.exe
 
 clean: .SYMBOLIC
   @echo * Clean: $(TITLENAME)
