@@ -144,6 +144,7 @@ endif
 ifeq ($(SUPPORT_WEBP),true)
     LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(WEBP_LIBRARY_PATH)/src
     LOCAL_CFLAGS += -DLOAD_WEBP
+    LOCAL_STATIC_LIBRARIES += webpdemux
     LOCAL_STATIC_LIBRARIES += webp
 endif
 
