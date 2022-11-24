@@ -288,7 +288,14 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_Index(CGImageRef image_ref)
     CGColorSpaceRef base_color_space = CGColorSpaceGetBaseColorSpace(color_space);
     size_t num_components = CGColorSpaceGetNumberOfComponents(base_color_space);
     size_t num_entries = CGColorSpaceGetColorTableCount(color_space);
-    uint8_t *entry, entries[num_components * num_entries];
+    uint8_t *entry, *entries;
+
+    entries = SDL_calloc(num_components * num_entries, sizeof(uint8_t));
+
+    if (entries == NULL) {
+        SDL_OutOfMemory();
+        return NULL;
+    }
 
     /* What do we do if it's not RGB? */
     if (num_components != 3) {
@@ -324,6 +331,9 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_Index(CGImageRef image_ref)
             bytes += bytes_per_row;
         }
     }
+
+    SDL_free(entries);
+
     return surface;
 }
 static SDL_Surface* Create_SDL_Surface_From_CGImage(CGImageRef image_ref)
