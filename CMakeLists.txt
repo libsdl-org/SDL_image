@@ -306,6 +306,13 @@ if(APPLE)
         target_sources(SDL2_image PRIVATE
             IMG_ImageIO.m
         )
+
+        if (SDL2IMAGE_PNG)
+            target_compile_definitions(SDL2_image PRIVATE PNG_USES_IMAGEIO)
+        endif()
+        if (SDL2IMAGE_JPG)
+            target_compile_definitions(SDL2_image PRIVATE JPG_USES_IMAGEIO)
+        endif()
     else()
         target_compile_definitions(SDL2_image PRIVATE SDL_IMAGE_USE_COMMON_BACKEND)
     endif()
