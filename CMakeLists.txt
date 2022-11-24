@@ -307,10 +307,10 @@ if(APPLE)
             IMG_ImageIO.m
         )
 
-        if (SDL2IMAGE_PNG)
+        if (SDL2IMAGE_PNG AND NOT SDL2IMAGE_BACKEND_STB)
             target_compile_definitions(SDL2_image PRIVATE PNG_USES_IMAGEIO)
         endif()
-        if (SDL2IMAGE_JPG)
+        if (SDL2IMAGE_JPG AND NOT SDL2IMAGE_BACKEND_STB)
             target_compile_definitions(SDL2_image PRIVATE JPG_USES_IMAGEIO)
         endif()
     else()
