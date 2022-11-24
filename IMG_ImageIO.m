@@ -290,7 +290,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_Index(CGImageRef image_ref)
     size_t num_entries = CGColorSpaceGetColorTableCount(color_space);
     uint8_t *entry, *entries;
 
-    entries = SDL_calloc(num_components * num_entries, sizeof(uint8_t));
+    entries = SDL_stack_alloc(uint8_t, num_components * num_entries);
 
     if (entries == NULL) {
         SDL_OutOfMemory();
@@ -332,7 +332,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_Index(CGImageRef image_ref)
         }
     }
 
-    SDL_free(entries);
+    SDL_stack_free(entries);
 
     return surface;
 }
