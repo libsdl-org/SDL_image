@@ -97,7 +97,7 @@ rpm: $(PACKAGE)-$(VERSION).tar.gz
 	rpmbuild -ta $(PACKAGE)-$(VERSION).tar.gz
 
 dist-hook:
-	ls $(distdir)/external | fgrep -v download.sh | while read dir; do rm -rf "$(distdir)/external/$$dir"; done
+	ls $(distdir)/external | $(FGREP) -v download.sh | while read dir; do rm -rf "$(distdir)/external/$$dir"; done
 
 install-data-local:
 	$(MKDIR_P) $(DESTDIR)$(libdir)/cmake/SDL2_image
