@@ -252,16 +252,7 @@ static SDL_Surface* WIC_LoadImage(SDL_RWops *src)
     DONE_IF_FAILED(IWICBitmapFrameDecode_GetSize(bitmapFrame, &width, &height));
 #undef DONE_IF_FAILED
 
-    surface = SDL_CreateRGBSurface(
-        0,
-        width,
-        height,
-        32,
-        0x000000FF,
-        0x0000FF00,
-        0x00FF0000,
-        0xFF000000
-    );
+    surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 0, SDL_PIXELFORMAT_ABGR8888);
     IWICFormatConverter_CopyPixels(
         formatConverter,
         NULL,

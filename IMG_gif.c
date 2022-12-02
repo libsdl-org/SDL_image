@@ -48,7 +48,7 @@
 
 #define Image           SDL_Surface
 #define RWSetMsg        IMG_SetError
-#define ImageNewCmap(w, h, s)   SDL_CreateRGBSurface(SDL_SWSURFACE,w,h,8,0,0,0,0)
+#define ImageNewCmap(w, h, s)   SDL_CreateRGBSurfaceWithFormat(0, w, h, 0, SDL_PIXELFORMAT_INDEX8)
 #define ImageSetCmap(s, i, R, G, B) do { \
                 s->format->palette->colors[i].r = R; \
                 s->format->palette->colors[i].g = G; \

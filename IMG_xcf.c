@@ -836,8 +836,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
   }
 
   /* Create the surface of the appropriate type */
-  surface = SDL_CreateRGBSurface(SDL_SWSURFACE, head->width, head->height, 32,
-                 0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
+  surface = SDL_CreateRGBSurfaceWithFormat(0, head->width, head->height, 0, SDL_PIXELFORMAT_ARGB8888);
 
   if ( surface == NULL ) {
     error = "Out of memory";
@@ -853,8 +852,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
   }
   fp = SDL_RWtell (src);
 
-  lays = SDL_CreateRGBSurface(SDL_SWSURFACE, head->width, head->height, 32,
-              0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
+  lays = SDL_CreateRGBSurfaceWithFormat(0, head->width, head->height, 0, SDL_PIXELFORMAT_ARGB8888);
 
   if ( lays == NULL ) {
     error = "Out of memory";
@@ -904,8 +902,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
   if (chnls) {
     SDL_Surface * chs;
 
-    chs = SDL_CreateRGBSurface(SDL_SWSURFACE, head->width, head->height, 32,
-               0x00FF0000,0x0000FF00,0x000000FF,0xFF000000);
+    chs = SDL_CreateRGBSurfaceWithFormat(0, head->width, head->height, 0, SDL_PIXELFORMAT_ARGB8888);
 
     if (chs == NULL) {
       error = "Out of memory";

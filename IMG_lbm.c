@@ -250,8 +250,21 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
         goto done;
     }
 
-    if ( ( Image = SDL_CreateRGBSurface( SDL_SWSURFACE, width, bmhd.h, (nbplanes==24 || flagHAM==1)?24:8, 0, 0, 0, 0 ) ) == NULL )
-       goto done;
+    {
+       Uint32 format = SDL_PIXELFORMAT_INDEX8;
+       if (nbplanes == 24 || flagHAM == 1) {
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+          format = SDL_PIXELFORMAT_RGB24;
+#else
+          format = SDL_PIXELFORMAT_BGR24;
+#endif
+       }
+       if (nbplanes == 24 || flagHAM == 1) {
+          if ((Image = SDL_CreateRGBSurfaceWithFormat(0, width, bmhd.h, 0, format)) == NULL ){
+             goto done;
+          }
+       }
+    }
 
     if ( bmhd.mask & 2 )               /* There is a transparent color */
         SDL_SetColorKey( Image, SDL_TRUE, bmhd.tcolor );
