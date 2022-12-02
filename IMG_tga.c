@@ -159,7 +159,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
         break;
 
     case 32:
-        format = SDL_PIXELFORMAT_BGRA32
+        format = SDL_PIXELFORMAT_BGRA32;
         break;
     case 24:
         format = SDL_PIXELFORMAT_BGR24;
