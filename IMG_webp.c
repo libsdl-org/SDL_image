@@ -154,10 +154,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
     Sint64 start;
     const char *error = NULL;
     SDL_Surface *volatile surface = NULL;
-    Uint32 Rmask;
-    Uint32 Gmask;
-    Uint32 Bmask;
-    Uint32 Amask;
+    Uint32 format;
     WebPBitstreamFeatures features;
     int raw_data_size;
     uint8_t *raw_data = NULL;
@@ -207,26 +204,13 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
         goto error;
     }
 
-    /* Check if it's ok !*/
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-    Rmask = 0x000000FF;
-    Gmask = 0x0000FF00;
-    Bmask = 0x00FF0000;
-    Amask = (features.has_alpha) ? 0xFF000000 : 0;
-#else
-    {
-        int s = (features.has_alpha) ? 0 : 8;
-        Rmask = 0xFF000000 >> s;
-        Gmask = 0x00FF0000 >> s;
-        Bmask = 0x0000FF00 >> s;
-        Amask = 0x000000FF >> s;
+    if (features.has_alpha) {
+       format = SDL_PIXELFORMAT_RGBA32;
+    } else {
+       format = SDL_PIXELFORMAT_RGB24;
     }
-#endif
-
-    surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
-            features.width, features.height,
-            features.has_alpha?32:24, Rmask,Gmask,Bmask,Amask);
-
+    
+    surface = SDL_CreateRGBSurfaceWithFormat(0, features.width, features.height, 0, format);
     if (surface == NULL) {
         error = "Failed to allocate SDL_Surface";
         goto error;
@@ -271,10 +255,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
 {
     Sint64 start;
     const char *error = NULL;
-    Uint32 Rmask;
-    Uint32 Gmask;
-    Uint32 Bmask;
-    Uint32 Amask;
+    Uint32 format;
     WebPBitstreamFeatures features;
     struct WebPDemuxer* dmuxer = NULL;
     WebPIterator iter;
@@ -318,22 +299,12 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
         goto error;
     }
 
-    /* Check if it's ok !*/
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-    Rmask = 0x000000FF;
-    Gmask = 0x0000FF00;
-    Bmask = 0x00FF0000;
-    Amask = (features.has_alpha) ? 0xFF000000 : 0;
-#else
-    {
-        int s = (features.has_alpha) ? 0 : 8;
-        Rmask = 0xFF000000 >> s;
-        Gmask = 0x00FF0000 >> s;
-        Bmask = 0x0000FF00 >> s;
-        Amask = 0x000000FF >> s;
+   if (features.has_alpha) {
+       format = SDL_PIXELFORMAT_RGBA32;
+    } else {
+       format = SDL_PIXELFORMAT_RGB24;
     }
-#endif
-
+    
     wd.size = raw_data_size;
     wd.bytes = raw_data;
     dmuxer = lib.WebPDemuxInternal(&wd, 0, NULL, WEBP_DEMUX_ABI_VERSION);
@@ -348,9 +319,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
         if (lib.WebPDemuxGetFrame(dmuxer, frame_idx, &iter) == 0) {
             break;
         }
-        curr = SDL_CreateRGBSurface(SDL_SWSURFACE,
-            features.width, features.height,
-            features.has_alpha?32:24, Rmask,Gmask,Bmask,Amask);
+        curr = SDL_CreateRGBSurfaceWithFormat(0, features.width, features.height, 0, format);
         if (curr == NULL) {
             error = "Failed to allocate SDL_Surface";
             goto error;

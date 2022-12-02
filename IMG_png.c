@@ -241,10 +241,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
     png_infop info_ptr;
     png_uint_32 width, height;
     int bit_depth, color_type, interlace_type, num_channels;
-    Uint32 Rmask;
-    Uint32 Gmask;
-    Uint32 Bmask;
-    Uint32 Amask;
+    Uint32 format = SDL_PIXELFORMAT_UNKNOWN;
     SDL_Palette *palette;
     png_bytep *volatile row_pointers;
     int row, i;
@@ -363,24 +360,40 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
             &color_type, &interlace_type, NULL, NULL);
 
     /* Allocate the SDL surface to hold the image */
-    Rmask = Gmask = Bmask = Amask = 0 ;
     num_channels = lib.png_get_channels(png_ptr, info_ptr);
-    if ( num_channels >= 3 ) {
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-        Rmask = 0x000000FF;
-        Gmask = 0x0000FF00;
-        Bmask = 0x00FF0000;
-        Amask = (num_channels == 4) ? 0xFF000000 : 0;
-#else
-        int s = (num_channels == 4) ? 0 : 8;
-        Rmask = 0xFF000000 >> s;
-        Gmask = 0x00FF0000 >> s;
-        Bmask = 0x0000FF00 >> s;
-        Amask = 0x000000FF >> s;
-#endif
+   
+    if (num_channels == 3) {
+       format = SDL_PIXELFORMAT_RGB24;
+    } else if (num_channels == 4) {
+       format = SDL_PIXELFORMAT_RGBA32;
+    } else {
+       /* Not sure they are all supported by png */
+       switch (bit_depth * num_channels) {
+          case 1:
+             format = SDL_PIXELFORMAT_INDEX1MSB;
+             break;
+          case 4:
+             format = SDL_PIXELFORMAT_INDEX4MSB;
+             break;
+          case 8:
+             format = SDL_PIXELFORMAT_INDEX8;
+             break;
+          case 12:
+             format = SDL_PIXELFORMAT_RGB444;
+             break;
+          case 15:
+             format = SDL_PIXELFORMAT_RGB555;
+             break;
+          case 16:
+             format = SDL_PIXELFORMAT_RGB565;
+             break;
+
+          default:
+             break;
+       }
     }
-    surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height,
-            bit_depth*num_channels, Rmask,Gmask,Bmask,Amask);
+
+    surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 0, format);
     if ( surface == NULL ) {
         error = SDL_GetError();
         goto done;
@@ -542,11 +555,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 
 #if SDL_IMAGE_SAVE_PNG
 
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-static const Uint32 png_format = SDL_PIXELFORMAT_ABGR8888;
-#else
-static const Uint32 png_format = SDL_PIXELFORMAT_RGBA8888;
-#endif
+static const Uint32 png_format = SDL_PIXELFORMAT_RGBA32;
 
 #ifdef USE_LIBPNG
 

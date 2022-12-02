@@ -199,10 +199,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_RGB(CGImageRef image_ref)
     size_t bits_per_component = 8;
 
     SDL_Surface* surface;
-    Uint32 Amask;
-    Uint32 Rmask;
-    Uint32 Gmask;
-    Uint32 Bmask;
+    Uint32 format;
 
     CGContextRef bitmap_context;
     CGBitmapInfo bitmap_info;
@@ -212,19 +209,15 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_RGB(CGImageRef image_ref)
         alpha == kCGImageAlphaNoneSkipFirst ||
         alpha == kCGImageAlphaNoneSkipLast) {
         bitmap_info = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Host; /* XRGB */
-        Amask = 0x00000000;
+        format = SDL_PIXELFORMAT_RGB888;
     } else {
         /* kCGImageAlphaFirst isn't supported */
         //bitmap_info = kCGImageAlphaFirst | kCGBitmapByteOrder32Host; /* ARGB */
         bitmap_info = kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host; /* ARGB */
-        Amask = 0xFF000000;
+        format = SDL_PIXELFORMAT_ARGB8888;
     }
 
-    Rmask = 0x00FF0000;
-    Gmask = 0x0000FF00;
-    Bmask = 0x000000FF;
-
-    surface = SDL_CreateRGBSurface(SDL_SWSURFACE, (int)w, (int)h, 32, Rmask, Gmask, Bmask, Amask);
+    surface = SDL_CreateRGBSurfaceWithFormat(0, (int)w, (int)h, 0, format);
     if (surface)
     {
         // Sets up a context to be drawn to with surface->pixels as the area to be drawn to
@@ -308,7 +301,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_Index(CGImageRef image_ref)
     }
 
     CGColorSpaceGetColorTable(color_space, entries);
-    surface = SDL_CreateRGBSurface(SDL_SWSURFACE, (int)w, (int)h, (int)bits_per_pixel, 0, 0, 0, 0);
+    surface = SDL_CreateRGBSurfaceWithFormat(0, (int)w, (int)h, 0, SDL_PIXELFORMAT_INDEX8);
     if (surface) {
         uint8_t* pixels = (uint8_t*)surface->pixels;
         CGDataProviderRef provider = CGImageGetDataProvider(image_ref);

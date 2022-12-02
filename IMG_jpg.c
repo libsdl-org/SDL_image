@@ -385,13 +385,7 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
         lib.jpeg_calc_output_dimensions(&cinfo);
 
         /* Allocate an output surface to hold the image */
-        surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
-                cinfo.output_width, cinfo.output_height, 32,
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-                           0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
-#else
-                           0x0000FF00, 0x00FF0000, 0xFF000000, 0x000000FF);
-#endif
+        surface = SDL_CreateRGBSurfaceWithFormat(0, cinfo.output_width, cinfo.output_height, 0, SDL_PIXELFORMAT_BGRA32);
     } else {
         /* Set 24-bit RGB output */
         cinfo.out_color_space = JCS_RGB;
@@ -405,14 +399,7 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
         lib.jpeg_calc_output_dimensions(&cinfo);
 
         /* Allocate an output surface to hold the image */
-        surface = SDL_CreateRGBSurface(SDL_SWSURFACE,
-                cinfo.output_width, cinfo.output_height, 24,
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-                           0x0000FF, 0x00FF00, 0xFF0000,
-#else
-                           0xFF0000, 0x00FF00, 0x0000FF,
-#endif
-                           0);
+        surface = SDL_CreateRGBSurfaceWithFormat(0, cinfo.output_width, cinfo.output_height, 0, SDL_PIXELFORMAT_RGB24);
     }
 
     if ( surface == NULL ) {

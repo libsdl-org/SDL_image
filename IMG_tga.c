@@ -87,13 +87,12 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
     const char *error = NULL;
     struct TGAheader hdr;
     int rle = 0;
-    int alpha = 0;
     int indexed = 0;
     int grey = 0;
     int ckey = -1;
     int ncols, w, h;
     SDL_Surface *img = NULL;
-    Uint32 rmask, gmask, bmask, amask;
+    Uint32 format;
     Uint8 *dst;
     int i;
     int bpp;
@@ -144,41 +143,26 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
     }
 
     bpp = (hdr.pixel_bits + 7) >> 3;
-    rmask = gmask = bmask = amask = 0;
     switch(hdr.pixel_bits) {
     case 8:
         if (!indexed) {
                 goto unsupported;
         }
+        format = SDL_PIXELFORMAT_INDEX8;
         break;
 
     case 15:
     case 16:
         /* 15 and 16bpp both seem to use 5 bits/plane. The extra alpha bit
            is ignored for now. */
-        rmask = 0x7c00;
-        gmask = 0x03e0;
-        bmask = 0x001f;
+        format = SDL_PIXELFORMAT_RGB555;
         break;
 
     case 32:
-        alpha = 1;
-        /* fallthrough */
+        format = SDL_PIXELFORMAT_BGRA32;
+        break;
     case 24:
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-        {
-        int s = alpha ? 0 : 8;
-        amask = 0x000000ff >> s;
-        rmask = 0x0000ff00 >> s;
-        gmask = 0x00ff0000 >> s;
-        bmask = 0xff000000 >> s;
-        }
-#else
-        amask = alpha ? 0xff000000 : 0;
-        rmask = 0x00ff0000;
-        gmask = 0x0000ff00;
-        bmask = 0x000000ff;
-#endif
+        format = SDL_PIXELFORMAT_BGR24;
         break;
 
     default:
@@ -194,9 +178,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 
     w = LE16(hdr.width);
     h = LE16(hdr.height);
-    img = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h,
-                   bpp * 8,
-                   rmask, gmask, bmask, amask);
+    img = SDL_CreateRGBSurfaceWithFormat(0, w, h, 0, format);
     if (img == NULL) {
         error = "Out of memory";
         goto error;

@@ -151,17 +151,10 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 
     if(kind == PPM) {
         /* 24-bit surface in R,G,B byte order */
-        surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 24,
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-                       0x000000ff, 0x0000ff00, 0x00ff0000,
-#else
-                       0x00ff0000, 0x0000ff00, 0x000000ff,
-#endif
-                       0);
+        surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 0, SDL_PIXELFORMAT_RGB24);
     } else {
         /* load PBM/PGM as 8-bit indexed images */
-        surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 8,
-                       0, 0, 0, 0);
+        surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 0, SDL_PIXELFORMAT_INDEX8);
     }
     if ( surface == NULL )
         ERROR("Out of memory");

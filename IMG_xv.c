@@ -118,7 +118,7 @@ SDL_Surface *IMG_LoadXV_RW(SDL_RWops *src)
     }
 
     /* Create the 3-3-2 indexed palette surface */
-    surface = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 8, 0xe0, 0x1c, 0x03, 0);
+    surface = SDL_CreateRGBSurfaceWithFormat(0, w, h, 0, SDL_PIXELFORMAT_RGB332);
     if ( surface == NULL ) {
         error = "Out of memory";
         goto done;

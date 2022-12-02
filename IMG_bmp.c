@@ -289,8 +289,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
     biHeight = biHeight >> 1;
     //printf("%d x %d\n", biWidth, biHeight);
     surface =
-        SDL_CreateRGBSurface(0, biWidth, biHeight, 32, 0x00FF0000,
-                             0x0000FF00, 0x000000FF, 0xFF000000);
+        SDL_CreateRGBSurfaceWithFormat(0, biWidth, biHeight, 0, SDL_PIXELFORMAT_ARGB8888);
     if (surface == NULL) {
         was_error = SDL_TRUE;
         goto done;

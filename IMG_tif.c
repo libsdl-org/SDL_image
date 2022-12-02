@@ -163,7 +163,6 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
     TIFF* tiff = NULL;
     SDL_Surface* surface = NULL;
     Uint32 img_width, img_height;
-    Uint32 Rmask, Gmask, Bmask, Amask;
 
     if ( !src ) {
         /* The error message has been set in SDL_RWFromFile */
@@ -185,12 +184,7 @@ SDL_Surface* IMG_LoadTIF_RW(SDL_RWops* src)
     lib.TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &img_width);
     lib.TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &img_height);
 
-    Rmask = 0x000000FF;
-    Gmask = 0x0000FF00;
-    Bmask = 0x00FF0000;
-    Amask = 0xFF000000;
-    surface = SDL_CreateRGBSurface(SDL_SWSURFACE, img_width, img_height, 32,
-        Rmask, Gmask, Bmask, Amask);
+    surface = SDL_CreateRGBSurfaceWithFormat(0, img_width, img_height, 0, SDL_PIXELFORMAT_ABGR8888);
     if(!surface)
         goto error;
 
