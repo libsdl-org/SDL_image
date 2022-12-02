@@ -93,7 +93,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
     int y, bpl;
     Uint8 *row, *buf = NULL;
     char *error = NULL;
-    int src_bits;
+    int bits, src_bits;
     int count = 0;
     Uint8 ch;
     Uint32 format;
@@ -134,8 +134,10 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
     src_bits = pcxh.BitsPerPixel * pcxh.NPlanes;
     if((pcxh.BitsPerPixel == 1 && pcxh.NPlanes >= 1 && pcxh.NPlanes <= 4)
        || (pcxh.BitsPerPixel == 8 && pcxh.NPlanes == 1)) {
+        bits = 8;
         format = SDL_PIXELFORMAT_INDEX8;
     } else if(pcxh.BitsPerPixel == 8 && pcxh.NPlanes == 3) {
+        bits = 24;
         format = SDL_PIXELFORMAT_RGB24;
     } else {
         error = "unsupported PCX format";
