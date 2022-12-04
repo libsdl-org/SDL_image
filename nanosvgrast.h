@@ -63,8 +63,8 @@ NSVG_EXPORT NSVGrasterizer* nsvgCreateRasterizer(void);
 //   h - height of the image to render
 //   stride - number of bytes per scaleline in the destination buffer
 NSVG_EXPORT void nsvgRasterize(NSVGrasterizer* r,
-				               NSVGimage* image, float tx, float ty, float scale,
-				               unsigned char* dst, int w, int h, int stride);
+		               NSVGimage* image, float tx, float ty, float scale,
+		               unsigned char* dst, int w, int h, int stride);
 
 // Deletes rasterizer context.
 NSVG_EXPORT void nsvgDeleteRasterizer(NSVGrasterizer*);
@@ -116,7 +116,7 @@ typedef struct NSVGmemPage {
 } NSVGmemPage;
 
 typedef struct NSVGcachedPaint {
-	char type;
+	signed char type;
 	char spread;
 	float xform[6];
 	unsigned int colors[256];
@@ -1460,6 +1460,6 @@ NSVG_EXPORT void nsvgRasterize(NSVGrasterizer* r,
 	r->stride = 0;
 }
 
-#endif
+#endif // NANOSVGRAST_IMPLEMENTATION
 
 #endif // NANOSVGRAST_H
