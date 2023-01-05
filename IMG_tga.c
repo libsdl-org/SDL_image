@@ -174,7 +174,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
         goto unsupported;
     }
 
-    SDL_RWseek(src, hdr.infolen, RW_SEEK_CUR); /* skip info field */
+    SDL_RWseek(src, hdr.infolen, SDL_RW_SEEK_CUR); /* skip info field */
 
     w = LE16(hdr.width);
     h = LE16(hdr.height);
@@ -218,10 +218,10 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
             }
             SDL_free(pal);
             if (ckey >= 0)
-                SDL_SetColorKey(img, SDL_TRUE, ckey);
+                SDL_SetSurfaceColorKey(img, SDL_TRUE, ckey);
         } else {
             /* skip unneeded colormap */
-            SDL_RWseek(src, palsiz, RW_SEEK_CUR);
+            SDL_RWseek(src, palsiz, SDL_RW_SEEK_CUR);
         }
     }
 
@@ -311,9 +311,9 @@ unsupported:
     error = "Unsupported TGA format";
 
 error:
-    SDL_RWseek(src, start, RW_SEEK_SET);
+    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
     if ( img ) {
-        SDL_FreeSurface(img);
+        SDL_DestroySurface(img);
     }
     IMG_SetError("%s", error);
     return NULL;
