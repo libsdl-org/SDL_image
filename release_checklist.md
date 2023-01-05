@@ -4,7 +4,7 @@
 
 * Update `CHANGES.txt`
 
-* Bump version number to 2.EVEN.0 in all these locations:
+* Bump version number to 3.EVEN.0 in all these locations:
 
     * `include/SDL3/SDL_image.h`:
         `SDL_IMAGE_MAJOR_VERSION`, `SDL_IMAGE_MINOR_VERSION`, `SDL_IMAGE_PATCHLEVEL`
@@ -38,7 +38,7 @@
 
     * If it was, do a new feature release (see above) instead
 
-* Bump version number from 2.Y.Z to 2.Y.(Z+1) (Y is even)
+* Bump version number from 3.Y.Z to 3.Y.(Z+1) (Y is even)
 
     * Same places as listed above
 
@@ -57,9 +57,9 @@
 
 ## After a feature release
 
-* Create a branch like `release-2.6.x`
+* Create a branch like `release-3.6.x`
 
-* Bump version number to 2.ODD.0 for next development branch
+* Bump version number to 3.ODD.0 for next development branch
 
     * Same places as listed above
 
@@ -74,7 +74,7 @@
 
 ## New development prerelease
 
-* Bump version number from 2.Y.Z to 2.Y.(Z+1) (Y is odd)
+* Bump version number from 3.Y.Z to 3.Y.(Z+1) (Y is odd)
 
     * Same places as listed above
 
