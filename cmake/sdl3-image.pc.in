@@ -1,7 +1,7 @@
-prefix=@prefix@
+prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=@exec_prefix@
-libdir=@libdir@
-includedir=@includedir@
+libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
 
 Name: @PACKAGE@
 Description: image loading library for Simple DirectMedia Layer
@@ -10,5 +10,5 @@ Requires: sdl3 >= @SDL_VERSION@
 Libs: -L${libdir} -lSDL3_image
 Requires.private: @PC_REQUIRES@
 Libs.private: @PC_LIBS@
-Cflags: -I${includedir}/SDL3
+Cflags: -I${includedir} -I${includedir}/SDL3
 

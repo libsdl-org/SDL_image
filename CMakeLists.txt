@@ -8,17 +8,17 @@ set(MINOR_VERSION 0)
 set(MICRO_VERSION 0)
 set(SDL_REQUIRED_VERSION 3.0.0)
 
-include(PrivateSdlFunctions)
-sdl_calculate_derived_version_variables()
-
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
     message(FATAL_ERROR "Prevented in-tree built. Please create a build directory outside of the SDL_image source code and call cmake from there")
 endif()
 
 project(SDL3_image
     LANGUAGES C
-    VERSION "${FULL_VERSION}"
+    VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}"
 )
+
+include(PrivateSdlFunctions)
+sdl_calculate_derived_version_variables(${MAJOR_VERSION} ${MINOR_VERSION} ${MICRO_VERSION})
 
 message(STATUS "Configuring ${PROJECT_NAME} ${PROJECT_VERSION}")
 
@@ -31,11 +31,6 @@ set(SDL3IMAGE_SAMPLES_DEFAULT ${SDL3IMAGE_ROOTPROJECT})
 if(ANDROID)
     set(SDL3IMAGE_SAMPLES_DEFAULT OFF)
 endif()
-
-# Set defaults preventing destination file conflicts
-set(SDL3IMAGE_DEBUG_POSTFIX "d"
-    CACHE STRING "Name suffix for debug builds")
-mark_as_advanced(SDL3IMAGE_DEBUG_POSTFIX)
 
 # Assume MSVC projects don't have a package manager and need vendored dependencies (by default).
 # Most other platforms have some kind of package manager.
@@ -167,7 +162,7 @@ else()
     set(sdl3_target_name SDL3::SDL3-static)
 endif()
 
-sdl_find_sdl3(${sdl3_target_name} ${SDL_REQUIRED_VERSION})
+find_package(SDL3 ${SDL_REQUIRED_VERSION} REQUIRED)
 
 # Set PROJECT_VERSION of subprojects to "" if it's project call does not set VERSION
 cmake_policy(SET CMP0048 NEW)
@@ -230,44 +225,24 @@ set_target_properties(SDL3_image PROPERTIES
     C_VISIBILITY_PRESET "hidden"
 )
 if(NOT ANDROID)
-    set_target_properties(SDL3_image PROPERTIES
-        DEBUG_POSTFIX "${SDL3IMAGE_DEBUG_POSTFIX}"
-    )
     if(APPLE)
         # the SOVERSION property corresponds to the compatibility version and VERSION corresponds to the current version
         # https://cmake.org/cmake/help/latest/prop_tgt/SOVERSION.html#mach-o-versions
         set_target_properties(SDL3_image PROPERTIES
-            SOVERSION "${DYLIB_COMPATIBILITY_VERSION}"
+            SOVERSION "${DYLIB_COMPAT_VERSION}"
             VERSION "${DYLIB_CURRENT_VERSION}"
         )
     else()
         set_target_properties(SDL3_image PROPERTIES
-            SOVERSION "${LT_MAJOR}"
-            VERSION "${LT_VERSION}"
+            SOVERSION "${SO_VERSION_MAJOR}"
+            VERSION "${SO_VERSION}"
         )
     endif()
-endif()
-if(SDL3IMAGE_BUILD_SHARED_LIBS AND (APPLE OR (UNIX AND NOT ANDROID)))
-    add_custom_command(TARGET SDL3_image POST_BUILD
-        COMMAND "${CMAKE_COMMAND}" -E create_symlink "$<TARGET_SONAME_FILE_NAME:SDL3_image>" "libSDL3_image$<$<CONFIG:Debug>:${SDL3IMAGE_DEBUG_POSTFIX}>$<TARGET_FILE_SUFFIX:SDL3_image>"
-        # BYPRODUCTS "libSDL3_image$<$<CONFIG:Debug>:${SDL3IMAGE_DEBUG_POSTFIX}>$<TARGET_FILE_SUFFIX:SDL3_image>" # Needs CMake 3.20
-        WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
-    )
 endif()
 if(SDL3IMAGE_BUILD_SHARED_LIBS)
     if(WIN32 OR OS2)
         set_target_properties(SDL3_image PROPERTIES
             PREFIX ""
-        )
-    endif()
-    if(OS2)
-        # OS/2 doesn't support a DLL name longer than 8 characters.
-        set_target_properties(SDL3_image PROPERTIES
-            OUTPUT_NAME "SDL3img"
-        )
-    elseif(UNIX AND NOT ANDROID)
-        set_target_properties(SDL3_image PROPERTIES
-            OUTPUT_NAME "SDL3_image-${LT_RELEASE}"
         )
     endif()
 else()
@@ -702,15 +677,23 @@ if(SDL3IMAGE_INSTALL)
         )
     endif()
 
-    if(WIN32 AND NOT MINGW)
-        set(SDLIMAGE_INSTALL_CMAKEDIR_DEFAULT "cmake")
+    if(WINDOWS AND NOT MINGW)
+        set(SDL3IMAGE_INSTALL_CMAKEDIR_ROOT_DEFAULT "cmake")
     else()
-        set(SDLIMAGE_INSTALL_CMAKEDIR_DEFAULT "${CMAKE_INSTALL_LIBDIR}/cmake/SDL3_image")
+        set(SDL3IMAGE_INSTALL_CMAKEDIR_ROOT_DEFAULT "${CMAKE_INSTALL_LIBDIR}/cmake")
     endif()
-    set(SDLIMAGE_INSTALL_CMAKEDIR "${SDLIMAGE_INSTALL_CMAKEDIR_DEFAULT}" CACHE STRING "Location where to install SDL3_imageConfig.cmake")
+    set(SDL3IMAGE_INSTALL_CMAKEDIR_ROOT "${SDL3IMAGE_INSTALL_CMAKEDIR_ROOT_DEFAULT}" CACHE STRING "Root folder where to install SDL3Config.cmake related files (SDL3 subfolder for MSVC projects)")
 
-    configure_package_config_file(SDL3_imageConfig.cmake.in SDL3_imageConfig.cmake
-        INSTALL_DESTINATION "${SDLIMAGE_INSTALL_CMAKEDIR}"
+    if(WINDOWS AND NOT MINGW)
+        set(SDL3IMAGE_INSTALL_CMAKEDIR "${SDL3IMAGE_INSTALL_CMAKEDIR_ROOT}")
+        set(LICENSES_PREFIX "licenses/SDL3_image")
+    else()
+        set(SDL3IMAGE_INSTALL_CMAKEDIR "${SDL3IMAGE_INSTALL_CMAKEDIR_ROOT}/SDL3")
+        set(LICENSES_PREFIX "${CMAKE_INSTALL_DATAROOTDIR}/licenses/SDL3_image")
+    endif()
+
+    configure_package_config_file(cmake/SDL3_imageConfig.cmake.in SDL3_imageConfig.cmake
+        INSTALL_DESTINATION "${SDL3IMAGE_INSTALL_CMAKEDIR}"
     )
     write_basic_package_version_file("${PROJECT_BINARY_DIR}/SDL3_imageConfigVersion.cmake"
         VERSION ${FULL_VERSION}
@@ -722,27 +705,23 @@ if(SDL3IMAGE_INSTALL)
             "${CMAKE_CURRENT_BINARY_DIR}/SDL3_imageConfigVersion.cmake"
             cmake/Findlibjxl.cmake
             cmake/Findwebp.cmake
-        DESTINATION "${SDLIMAGE_INSTALL_CMAKEDIR}"
+        DESTINATION "${SDL3IMAGE_INSTALL_CMAKEDIR}"
         COMPONENT devel
     )
     install(EXPORT SDL3ImageExports
         FILE SDL3_image-${sdl3_image_install_name_infix}-targets.cmake
         NAMESPACE SDL3_image::
-        DESTINATION "${SDLIMAGE_INSTALL_CMAKEDIR}"
+        DESTINATION "${SDL3IMAGE_INSTALL_CMAKEDIR}"
         COMPONENT devel
     )
 
-    set(prefix "${CMAKE_INSTALL_PREFIX}")
-    set(exec_prefix "\${prefix}")
-    set(libdir "\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}")
-    set(includedir "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
     set(PACKAGE "${PROJECT_NAME}")
     set(VERSION "${FULL_VERSION}")
     set(SDL_VERSION "${SDL_REQUIRED_VERSION}")
     string(JOIN " " PC_REQUIRES ${PC_REQUIRES})
     string(JOIN " " PC_LIBS ${PC_LIBS})
-    configure_file("${PROJECT_SOURCE_DIR}/SDL3_image.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/SDL3_image.pc.intermediate" @ONLY)
-    file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/SDL3_image-$<CONFIG>.pc" INPUT "${CMAKE_CURRENT_BINARY_DIR}/SDL3_image.pc.intermediate")
+    configure_file(cmake/sdl3-image.pc.in sdl3-image.pc.intermediate @ONLY)
+    file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/sdl3-image-$<CONFIG>.pc" INPUT "${CMAKE_CURRENT_BINARY_DIR}/sdl3-image.pc.intermediate")
 
     set(PC_DESTDIR)
     if(CMAKE_SYSTEM_NAME MATCHES FreeBSD)
@@ -751,24 +730,15 @@ if(SDL3IMAGE_INSTALL)
     else()
         set(PC_DESTDIR "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
     endif()
-    # Always install SDL3_net.pc file: libraries might be different between config modes
+    # Always install sdl3-image.pc file: libraries might be different between config modes
     install(CODE "
             # FIXME: use file(COPY_FILE) if minimum CMake version >= 3.21
             execute_process(COMMAND \"\${CMAKE_COMMAND}\" -E copy_if_different
-                \"${CMAKE_CURRENT_BINARY_DIR}/SDL3_image-$<CONFIG>.pc\"
-                \"${CMAKE_CURRENT_BINARY_DIR}/SDL3_image.pc\")
+                \"${CMAKE_CURRENT_BINARY_DIR}/sdl3-image-$<CONFIG>.pc\"
+                \"${CMAKE_CURRENT_BINARY_DIR}/sdl3-image.pc\")
             file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${PC_DESTDIR}\"
                 TYPE FILE
-                FILES \"${CMAKE_CURRENT_BINARY_DIR}/SDL3_image.pc\")" COMPONENT devel)
-
-    if(SDL3IMAGE_BUILD_SHARED_LIBS AND (APPLE OR (UNIX AND NOT ANDROID)))
-        install(
-            FILES
-                "${PROJECT_BINARY_DIR}/libSDL3_image$<$<CONFIG:Debug>:${SDL3IMAGE_DEBUG_POSTFIX}>$<TARGET_FILE_SUFFIX:SDL3_image>"
-            DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-            COMPONENT devel
-        )
-    endif()
+                FILES \"${CMAKE_CURRENT_BINARY_DIR}/sdl3-image.pc\")" COMPONENT devel)
 
     install(FILES "LICENSE.txt"
         DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/licenses/${PROJECT_NAME}"
