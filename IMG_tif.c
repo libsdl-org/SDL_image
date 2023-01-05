@@ -101,7 +101,7 @@ static toff_t tiff_seek(thandle_t fd, toff_t offset, int origin)
 
 static tsize_t tiff_write(thandle_t fd, tdata_t buf, tsize_t size)
 {
-    return (tsize_t)SDL_RWwrite((SDL_RWops*)fd, buf, 1, size);
+    return (tsize_t)SDL_RWwrite((SDL_RWops*)fd, buf, size);
 }
 
 static int tiff_close(thandle_t fd)
