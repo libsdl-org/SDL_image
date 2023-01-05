@@ -11,10 +11,10 @@
   freely.
 */
 
-#include "SDL_image.h"
+#include <SDL3/SDL_image.h>
 
-#include "SDL.h"
-#include "SDL_test.h"
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_test.h>
 
 #if defined(SDL_FILESYSTEM_OS2) || defined(SDL_FILESYSTEM_WINDOWS)
 static const char pathsep[] = "\\";
@@ -531,7 +531,7 @@ ConvertToRgba32(SDL_Surface **surface_p)
         if (temp == NULL) {
             return SDL_FALSE;
         }
-        SDL_FreeSurface(*surface_p);
+        SDL_DestroySurface(*surface_p);
         *surface_p = temp;
     }
     return SDL_TRUE;
@@ -770,10 +770,10 @@ FormatLoadTest(const Format *format,
 
 out:
     if (surface != NULL) {
-        SDL_FreeSurface(surface);
+        SDL_DestroySurface(surface);
     }
     if (reference != NULL) {
-        SDL_FreeSurface(reference);
+        SDL_DestroySurface(reference);
     }
     if (src != NULL) {
         SDL_RWclose(src);
@@ -885,10 +885,10 @@ FormatSaveTest(const Format *format,
 
 out:
     if (surface != NULL) {
-        SDL_FreeSurface(surface);
+        SDL_DestroySurface(surface);
     }
     if (reference != NULL) {
-        SDL_FreeSurface(reference);
+        SDL_DestroySurface(reference);
     }
     if (refFilename != NULL) {
         SDL_free(refFilename);

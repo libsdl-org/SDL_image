@@ -21,7 +21,7 @@
 
 /* This is a GIF image file loading framework */
 
-#include "SDL_image.h"
+#include <SDL3/SDL_image.h>
 
 #ifdef LOAD_GIF
 
@@ -44,11 +44,11 @@
    Use SDL_Surface rather than xpaint Image structure
    Define SDL versions of RWSetMsg(), ImageNewCmap() and ImageSetCmap()
 */
-#include "SDL.h"
+#include <SDL3/SDL.h>
 
 #define Image           SDL_Surface
 #define RWSetMsg        IMG_SetError
-#define ImageNewCmap(w, h, s)   SDL_CreateRGBSurfaceWithFormat(0, w, h, 0, SDL_PIXELFORMAT_INDEX8)
+#define ImageNewCmap(w, h, s)   SDL_CreateSurface(w, h, SDL_PIXELFORMAT_INDEX8)
 #define ImageSetCmap(s, i, R, G, B) do { \
                 s->format->palette->colors[i].r = R; \
                 s->format->palette->colors[i].g = G; \
@@ -76,7 +76,7 @@
 #define LOCALCOLORMAP   0x80
 #define BitSet(byte, bit)   (((byte) & (bit)) == (bit))
 
-#define ReadOK(file,buffer,len) SDL_RWread(file, buffer, len, 1)
+#define ReadOK(file,buffer,len) (SDL_RWread(file, buffer, len) == len)
 
 #define LM_to_uint(a,b)         (((b)<<8)|(a))
 
@@ -147,10 +147,10 @@ static SDL_bool NormalizeFrames(Frame_t *frames, int count)
     SDL_Rect rect;
 
 
-    if (SDL_HasColorKey(frames[0].image)) {
-        image = SDL_ConvertSurfaceFormat(frames[0].image, SDL_PIXELFORMAT_ARGB8888, 0);
+    if (SDL_SurfaceHasColorKey(frames[0].image)) {
+        image = SDL_ConvertSurfaceFormat(frames[0].image, SDL_PIXELFORMAT_ARGB8888);
     } else {
-        image = SDL_ConvertSurfaceFormat(frames[0].image, SDL_PIXELFORMAT_RGB888, 0);
+        image = SDL_ConvertSurfaceFormat(frames[0].image, SDL_PIXELFORMAT_RGB888);
     }
     if (!image) {
         return SDL_FALSE;
@@ -166,7 +166,7 @@ static SDL_bool NormalizeFrames(Frame_t *frames, int count)
     for (i = 0; i < count; ++i) {
         switch (lastDispose) {
         case GIF_DISPOSE_RESTORE_BACKGROUND:
-            SDL_FillRect(image, &rect, fill);
+            SDL_FillSurfaceRect(image, &rect, fill);
             break;
         case GIF_DISPOSE_RESTORE_PREVIOUS:
             SDL_BlitSurface(frames[iRestore].image, &rect, image, &rect);
@@ -185,7 +185,7 @@ static SDL_bool NormalizeFrames(Frame_t *frames, int count)
         rect.h = frames[i].image->h;
         SDL_BlitSurface(frames[i].image, NULL, image, &rect);
 
-        SDL_FreeSurface(frames[i].image);
+        SDL_DestroySurface(frames[i].image);
         frames[i].image = SDL_DuplicateSurface(image);
         if (!frames[i].image) {
             return SDL_FALSE;
@@ -194,7 +194,7 @@ static SDL_bool NormalizeFrames(Frame_t *frames, int count)
         lastDispose = frames[i].disposal;
     }
 
-    SDL_FreeSurface( image );
+    SDL_DestroySurface( image );
 
     return SDL_TRUE;
 }
@@ -315,7 +315,7 @@ IMG_LoadGIF_RW_Internal(SDL_RWops *src, SDL_bool load_anim)
 
         if (image) {
             if (state->Gif89.transparent >= 0) {
-                SDL_SetColorKey(image, SDL_TRUE, state->Gif89.transparent);
+                SDL_SetSurfaceColorKey(image, SDL_TRUE, state->Gif89.transparent);
             }
 
             frames = (Frame_t *)SDL_realloc(anim->frames, (anim->count + 1) * sizeof(*anim->frames));
@@ -350,7 +350,7 @@ done:
         if (!NormalizeFrames(anim->frames, anim->count)) {
             int i;
             for (i = 0; i < anim->count; ++i) {
-                SDL_FreeSurface(anim->frames[i].image);
+                SDL_DestroySurface(anim->frames[i].image);
             }
             anim->count = 0;
         }
@@ -645,7 +645,7 @@ ReadImage(SDL_RWops * src, int len, int height, int cmapSize,
         return NULL;
     }
     if (!image->pixels) {
-        SDL_FreeSurface(image);
+        SDL_DestroySurface(image);
         return NULL;
     }
 
@@ -762,14 +762,14 @@ int IMG_isGIF(SDL_RWops *src)
         return 0;
     start = SDL_RWtell(src);
     is_GIF = 0;
-    if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
+    if ( SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if ( (SDL_strncmp(magic, "GIF", 3) == 0) &&
              ((SDL_memcmp(magic + 3, "87a", 3) == 0) ||
               (SDL_memcmp(magic + 3, "89a", 3) == 0)) ) {
             is_GIF = 1;
         }
     }
-    SDL_RWseek(src, start, RW_SEEK_SET);
+    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
     return(is_GIF);
 }
 

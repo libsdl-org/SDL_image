@@ -1,21 +1,51 @@
-autom4te*
-config.cache
-config.log
-config.status
-configure~
-Makefile
-libtool
-.deps
-.libs
-*.lo
+build/
+buildbot/
+/VERSION.txt
+
+*.so
+*.so.*
+*.dll
+*.exe
 *.o
+*.obj
+*.res
+*.lib
+*.a
 *.la
-*.lai
+*.dSYM
+*,e1f
+*,ff8
+*.lnk
+*.err
+*.exp
+*.map
+*.orig
+*~
+*.swp
+*.tmp
+*.rej
+
+# for CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+cmake_uninstall.cmake
+SDL3ConfigVersion.cmake
+.ninja_*
+*.ninja
+
+# for CLion
+.idea
+cmake-build-*
+
+# for Xcode
+*.mode1*
+*.perspective*
+*.pbxuser
+(^|/)build($|/)
 .DS_Store
 xcuserdata
 *.xcworkspace
-SDL2_image.pc
-showimage
 
 # for Visual C++
 .vs
@@ -25,4 +55,3 @@ Release
 *.ncb
 *.suo
 *.sdf
-*.opensdf

@@ -21,7 +21,7 @@
 
 /* This is a JPEG image file loading framework */
 
-#include "SDL_image.h"
+#include <SDL3/SDL_image.h>
 
 #include <stdio.h>
 #include <setjmp.h>
@@ -154,18 +154,18 @@ int IMG_isJPG(SDL_RWops *src)
     start = SDL_RWtell(src);
     is_JPG = 0;
     in_scan = 0;
-    if ( SDL_RWread(src, magic, 2, 1) ) {
+    if ( SDL_RWread(src, magic, 2) == 2 ) {
         if ( (magic[0] == 0xFF) && (magic[1] == 0xD8) ) {
             is_JPG = 1;
             while (is_JPG == 1) {
-                if(SDL_RWread(src, magic, 1, 2) != 2) {
+                if(SDL_RWread(src, magic, 2) != 2) {
                     is_JPG = 0;
                 } else if( (magic[0] != 0xFF) && (in_scan == 0) ) {
                     is_JPG = 0;
                 } else if( (magic[0] != 0xFF) || (magic[1] == 0xFF) ) {
                     /* Extra padding in JPEG (legal) */
                     /* or this is data and we are scanning */
-                    SDL_RWseek(src, -1, RW_SEEK_CUR);
+                    SDL_RWseek(src, -1, SDL_RW_SEEK_CUR);
                 } else if(magic[1] == 0xD9) {
                     /* Got to end of good JPEG */
                     break;
@@ -173,7 +173,7 @@ int IMG_isJPG(SDL_RWops *src)
                     /* This is an encoded 0xFF within the data */
                 } else if( (magic[1] >= 0xD0) && (magic[1] < 0xD9) ) {
                     /* These have nothing else */
-                } else if(SDL_RWread(src, magic+2, 1, 2) != 2) {
+                } else if(SDL_RWread(src, magic+2, 2) != 2) {
                     is_JPG = 0;
                 } else {
                     /* Yes, it's big-endian */
@@ -182,7 +182,7 @@ int IMG_isJPG(SDL_RWops *src)
                     Sint64 end;
                     innerStart = SDL_RWtell(src);
                     size = (magic[2] << 8) + magic[3];
-                    end = SDL_RWseek(src, size-2, RW_SEEK_CUR);
+                    end = SDL_RWseek(src, size-2, SDL_RW_SEEK_CUR);
                     if ( end != innerStart + size - 2 ) is_JPG = 0;
                     if ( magic[1] == 0xDA ) {
                         /* Now comes the actual JPEG meat */
@@ -198,7 +198,7 @@ int IMG_isJPG(SDL_RWops *src)
             }
         }
     }
-    SDL_RWseek(src, start, RW_SEEK_SET);
+    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
     return(is_JPG);
 }
 
@@ -229,7 +229,7 @@ static boolean fill_input_buffer (j_decompress_ptr cinfo)
     my_source_mgr * src = (my_source_mgr *) cinfo->src;
     int nbytes;
 
-    nbytes = (int)SDL_RWread(src->ctx, src->buffer, 1, INPUT_BUFFER_SIZE);
+    nbytes = (int)SDL_RWread(src->ctx, src->buffer, INPUT_BUFFER_SIZE);
     if (nbytes <= 0) {
         /* Insert a fake EOI marker */
         src->buffer[0] = (Uint8) 0xFF;
@@ -367,9 +367,9 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
         /* If we get here, libjpeg found an error */
         lib.jpeg_destroy_decompress(&cinfo);
         if ( surface != NULL ) {
-            SDL_FreeSurface(surface);
+            SDL_DestroySurface(surface);
         }
-        SDL_RWseek(src, start, RW_SEEK_SET);
+        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
         IMG_SetError("JPEG loading error");
         return NULL;
     }
@@ -385,7 +385,7 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
         lib.jpeg_calc_output_dimensions(&cinfo);
 
         /* Allocate an output surface to hold the image */
-        surface = SDL_CreateRGBSurfaceWithFormat(0, cinfo.output_width, cinfo.output_height, 0, SDL_PIXELFORMAT_BGRA32);
+        surface = SDL_CreateSurface(cinfo.output_width, cinfo.output_height, SDL_PIXELFORMAT_BGRA32);
     } else {
         /* Set 24-bit RGB output */
         cinfo.out_color_space = JCS_RGB;
@@ -399,12 +399,12 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
         lib.jpeg_calc_output_dimensions(&cinfo);
 
         /* Allocate an output surface to hold the image */
-        surface = SDL_CreateRGBSurfaceWithFormat(0, cinfo.output_width, cinfo.output_height, 0, SDL_PIXELFORMAT_RGB24);
+        surface = SDL_CreateSurface(cinfo.output_width, cinfo.output_height, SDL_PIXELFORMAT_RGB24);
     }
 
     if ( surface == NULL ) {
         lib.jpeg_destroy_decompress(&cinfo);
-        SDL_RWseek(src, start, RW_SEEK_SET);
+        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
         IMG_SetError("Out of memory");
         return NULL;
     }
@@ -442,7 +442,7 @@ static boolean empty_output_buffer(j_compress_ptr cinfo)
     my_destination_mgr * dest = (my_destination_mgr *)cinfo->dest;
 
     /* In typical applications, it should write out the *entire* buffer */
-    SDL_RWwrite(dest->ctx, dest->buffer, 1, OUTPUT_BUFFER_SIZE);
+    SDL_RWwrite(dest->ctx, dest->buffer, OUTPUT_BUFFER_SIZE);
     dest->pub.next_output_byte = dest->buffer;
     dest->pub.free_in_buffer = OUTPUT_BUFFER_SIZE;
 
@@ -454,7 +454,7 @@ static void term_destination(j_compress_ptr cinfo)
     my_destination_mgr * dest = (my_destination_mgr *)cinfo->dest;
 
     /*  In most applications, this must flush any data remaining in the buffer */
-    SDL_RWwrite(dest->ctx, dest->buffer, 1, OUTPUT_BUFFER_SIZE - dest->pub.free_in_buffer);
+    SDL_RWwrite(dest->ctx, dest->buffer, OUTPUT_BUFFER_SIZE - dest->pub.free_in_buffer);
 }
 
 static void jpeg_SDL_RW_dest(j_compress_ptr cinfo, SDL_RWops *ctx)
@@ -499,7 +499,7 @@ static int IMG_SaveJPG_RW_jpeglib(SDL_Surface *surface, SDL_RWops *dst, int free
 
     /* Convert surface to format we can save */
     if (surface->format->format != jpg_format) {
-        jpeg_surface = SDL_ConvertSurfaceFormat(surface, jpg_format, 0);
+        jpeg_surface = SDL_ConvertSurfaceFormat(surface, jpg_format);
         if (!jpeg_surface) {
             goto done;
         }
@@ -532,7 +532,7 @@ static int IMG_SaveJPG_RW_jpeglib(SDL_Surface *surface, SDL_RWops *dst, int free
     lib.jpeg_destroy_compress(&cinfo);
 
     if (jpeg_surface != surface) {
-        SDL_FreeSurface(jpeg_surface);
+        SDL_DestroySurface(jpeg_surface);
     }
 
     result = 0;
@@ -579,18 +579,18 @@ int IMG_isJPG(SDL_RWops *src)
     start = SDL_RWtell(src);
     is_JPG = 0;
     in_scan = 0;
-    if ( SDL_RWread(src, magic, 2, 1) ) {
+    if ( SDL_RWread(src, magic, 2) == 2 ) {
         if ( (magic[0] == 0xFF) && (magic[1] == 0xD8) ) {
             is_JPG = 1;
             while (is_JPG == 1) {
-                if(SDL_RWread(src, magic, 1, 2) != 2) {
+                if(SDL_RWread(src, magic, 2) != 2) {
                     is_JPG = 0;
                 } else if( (magic[0] != 0xFF) && (in_scan == 0) ) {
                     is_JPG = 0;
                 } else if( (magic[0] != 0xFF) || (magic[1] == 0xFF) ) {
                     /* Extra padding in JPEG (legal) */
                     /* or this is data and we are scanning */
-                    SDL_RWseek(src, -1, RW_SEEK_CUR);
+                    SDL_RWseek(src, -1, SDL_RW_SEEK_CUR);
                 } else if(magic[1] == 0xD9) {
                     /* Got to end of good JPEG */
                     break;
@@ -598,7 +598,7 @@ int IMG_isJPG(SDL_RWops *src)
                     /* This is an encoded 0xFF within the data */
                 } else if( (magic[1] >= 0xD0) && (magic[1] < 0xD9) ) {
                     /* These have nothing else */
-                } else if(SDL_RWread(src, magic+2, 1, 2) != 2) {
+                } else if(SDL_RWread(src, magic+2, 2) != 2) {
                     is_JPG = 0;
                 } else {
                     /* Yes, it's big-endian */
@@ -607,7 +607,7 @@ int IMG_isJPG(SDL_RWops *src)
                     Sint64 end;
                     innerStart = SDL_RWtell(src);
                     size = (magic[2] << 8) + magic[3];
-                    end = SDL_RWseek(src, size-2, RW_SEEK_CUR);
+                    end = SDL_RWseek(src, size-2, SDL_RW_SEEK_CUR);
                     if ( end != innerStart + size - 2 ) is_JPG = 0;
                     if ( magic[1] == 0xDA ) {
                         /* Now comes the actual JPEG meat */
@@ -623,7 +623,7 @@ int IMG_isJPG(SDL_RWops *src)
             }
         }
     }
-    SDL_RWseek(src, start, RW_SEEK_SET);
+    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
     return(is_JPG);
 }
 
@@ -683,7 +683,7 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 
 static void IMG_SaveJPG_RW_tinyjpeg_callback(void* context, void* data, int size)
 {
-    SDL_RWwrite((SDL_RWops*) context, data, 1, size);
+    SDL_RWwrite((SDL_RWops*) context, data, size);
 }
 
 static int IMG_SaveJPG_RW_tinyjpeg(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quality)
@@ -701,7 +701,7 @@ static int IMG_SaveJPG_RW_tinyjpeg(SDL_Surface *surface, SDL_RWops *dst, int fre
 
     /* Convert surface to format we can save */
     if (surface->format->format != jpg_format) {
-        jpeg_surface = SDL_ConvertSurfaceFormat(surface, jpg_format, 0);
+        jpeg_surface = SDL_ConvertSurfaceFormat(surface, jpg_format);
         if (!jpeg_surface) {
             goto done;
         }
@@ -728,7 +728,7 @@ static int IMG_SaveJPG_RW_tinyjpeg(SDL_Surface *surface, SDL_RWops *dst, int fre
     ) - 1; /* tinyjpeg returns 0 on error, 1 on success */
 
     if (jpeg_surface != surface) {
-        SDL_FreeSurface(jpeg_surface);
+        SDL_DestroySurface(jpeg_surface);
     }
 
     if (result < 0) {

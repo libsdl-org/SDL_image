@@ -21,8 +21,8 @@
 
 /* This is a XCF image file loading framework */
 
-#include "SDL_endian.h"
-#include "SDL_image.h"
+#include <SDL3/SDL_endian.h>
+#include <SDL3/SDL_image.h>
 
 #ifdef LOAD_XCF
 
@@ -217,12 +217,12 @@ int IMG_isXCF(SDL_RWops *src)
         return 0;
     start = SDL_RWtell(src);
     is_XCF = 0;
-    if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
+    if ( SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if (SDL_strncmp(magic, "gimp xcf ", 9) == 0) {
             is_XCF = 1;
         }
     }
-    SDL_RWseek(src, start, RW_SEEK_SET);
+    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
     return(is_XCF);
 }
 
@@ -236,11 +236,14 @@ static char * read_string (SDL_RWops * src) {
   if (tmp > 0 && (Sint32)tmp <= remaining) {
     data = (char *) SDL_malloc (sizeof (char) * tmp);
     if (data) {
-      SDL_RWread(src, data, tmp, 1);
-      data[tmp - 1] = '\0';
+      if (SDL_RWread(src, data, tmp) == tmp) {
+        data[tmp - 1] = '\0';
+      } else {
+        SDL_free(data);
+        data = NULL;
+      }
     }
-  }
-  else {
+  } else {
     data = NULL;
   }
   return data;
@@ -275,7 +278,9 @@ static int xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
   case PROP_COLORMAP:
     prop->data.colormap.num = SDL_ReadBE32 (src);
     prop->data.colormap.cmap = (char *) SDL_malloc (sizeof (char) * prop->data.colormap.num * 3);
-    SDL_RWread (src, prop->data.colormap.cmap, prop->data.colormap.num*3, 1);
+    if ( SDL_RWread(src, prop->data.colormap.cmap, prop->data.colormap.num*3) != prop->data.colormap.num*3 ) {
+        return 0;
+    }
     break;
 
   case PROP_OFFSETS:
@@ -292,14 +297,16 @@ static int xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
     } else {
         len = prop->length;
     }
-    SDL_RWread(src, &prop->data, len, 1);
+    if ( SDL_RWread(src, &prop->data, len) != len ) {
+        return 0;
+    }
     break;
   case PROP_VISIBLE:
     prop->data.visible = SDL_ReadBE32 (src);
     break;
   default:
-    //    SDL_RWread (src, &prop->data, prop->length, 1);
-    if (SDL_RWseek (src, prop->length, RW_SEEK_CUR) < 0)
+    //    SDL_RWread (src, &prop->data, prop->length);
+    if (SDL_RWseek (src, prop->length, SDL_RW_SEEK_CUR) < 0)
       return 0;  // ERROR
   }
   return 1;  // OK
@@ -321,7 +328,10 @@ static xcf_header * read_xcf_header (SDL_RWops * src) {
   if (!h) {
     return NULL;
   }
-  SDL_RWread (src, h->sign, 14, 1);
+  if ( SDL_RWread(src, h->sign, 14) != 14 ) {
+    SDL_free(h);
+    return NULL;
+  }
   h->width       = SDL_ReadBE32 (src);
   h->height      = SDL_ReadBE32 (src);
   h->image_type  = SDL_ReadBE32 (src);
@@ -522,9 +532,12 @@ static unsigned char * load_xcf_tile_none (SDL_RWops * src, Uint64 len, int bpp,
   if (len <= (Uint64)SDL_SIZE_MAX) {
     load = (unsigned char *) SDL_malloc ((size_t)len); // expect this is okay
   }
-  if (load != NULL)
-    SDL_RWread (src, load, (size_t)len, 1);
-
+  if (load != NULL) {
+    if (SDL_RWread(src, load, len) != len) {
+        SDL_free(load);
+        load = NULL;
+    }
+  }
   return load;
 }
 
@@ -541,7 +554,10 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint64 len, int bpp, 
   if (load == NULL)
     return NULL;
 
-  SDL_RWread (src, t, 1, (size_t)len); /* reallen */
+  if ( SDL_RWread(src, t, len) != len ) {
+    SDL_free(load);
+    return NULL;
+  }
 
   data = (unsigned char *) SDL_calloc (1, x*y*bpp);
   for (i = 0; i < bpp; i++) {
@@ -629,7 +645,7 @@ static void create_channel_surface (SDL_Surface * surf, xcf_image_type itype, Ui
     c = opacity | rgb2grey (color);
     break;
   }
-  SDL_FillRect (surf, NULL, c);
+  SDL_FillSurfaceRect (surf, NULL, c);
 }
 
 static int 
@@ -645,7 +661,7 @@ do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_
     Uint32         *row;
     Uint64         length;
 
-    SDL_RWseek(src, layer->hierarchy_file_offset, RW_SEEK_SET);
+    SDL_RWseek(src, layer->hierarchy_file_offset, SDL_RW_SEEK_SET);
     hierarchy = read_xcf_hierarchy(src, head);
 
     if (hierarchy->bpp > 4) {  /* unsupported. */
@@ -662,7 +678,7 @@ do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_
 
     level = NULL;
     for (i = 0; hierarchy->level_file_offsets[i]; i++) {
-        if (SDL_RWseek(src, hierarchy->level_file_offsets[i], RW_SEEK_SET) < 0)
+        if (SDL_RWseek(src, hierarchy->level_file_offsets[i], SDL_RW_SEEK_SET) < 0)
             break;
         if (i > 0) // skip level except the 1st one, just like GIMP does
             continue;
@@ -670,7 +686,7 @@ do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_
 
         ty = tx = 0;
         for (j = 0; level->tile_file_offsets[j]; j++) {
-            SDL_RWseek(src, level->tile_file_offsets[j], RW_SEEK_SET);
+            SDL_RWseek(src, level->tile_file_offsets[j], SDL_RW_SEEK_SET);
             ox = tx + 64 > level->width ? level->width % 64 : 64;
             oy = ty + 64 > level->height ? level->height % 64 : 64;
             length = ox*oy*6;
@@ -836,7 +852,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
   }
 
   /* Create the surface of the appropriate type */
-  surface = SDL_CreateRGBSurfaceWithFormat(0, head->width, head->height, 0, SDL_PIXELFORMAT_ARGB8888);
+  surface = SDL_CreateSurface(head->width, head->height, SDL_PIXELFORMAT_ARGB8888);
 
   if ( surface == NULL ) {
     error = "Out of memory";
@@ -852,7 +868,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
   }
   fp = SDL_RWtell (src);
 
-  lays = SDL_CreateRGBSurfaceWithFormat(0, head->width, head->height, 0, SDL_PIXELFORMAT_ARGB8888);
+  lays = SDL_CreateSurface(head->width, head->height, SDL_PIXELFORMAT_ARGB8888);
 
   if ( lays == NULL ) {
     error = "Out of memory";
@@ -862,7 +878,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
   // Blit layers backwards, because Gimp saves them highest first
   for (i = offsets; i > 0; i--) {
     SDL_Rect rs, rd;
-    SDL_RWseek (src, head->layer_file_offsets [i-1], RW_SEEK_SET);
+    SDL_RWseek (src, head->layer_file_offsets [i-1], SDL_RW_SEEK_SET);
 
     layer = read_xcf_layer (src, head);
     if (layer != NULL) {
@@ -882,9 +898,9 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
     }
   }
 
-  SDL_FreeSurface (lays);
+  SDL_DestroySurface (lays);
 
-  SDL_RWseek (src, fp, RW_SEEK_SET);
+  SDL_RWseek (src, fp, SDL_RW_SEEK_SET);
 
   // read channels
   channel = NULL;
@@ -892,17 +908,17 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
   while ((offset = read_offset (src, head))) {
     channel = (xcf_channel **) SDL_realloc (channel, sizeof (xcf_channel *) * (chnls+1));
     fp = SDL_RWtell (src);
-    SDL_RWseek (src, offset, RW_SEEK_SET);
+    SDL_RWseek (src, offset, SDL_RW_SEEK_SET);
     channel [chnls] = (read_xcf_channel (src, head));
     if (channel [chnls] != NULL)
       chnls++;
-    SDL_RWseek (src, fp, RW_SEEK_SET);
+    SDL_RWseek (src, fp, SDL_RW_SEEK_SET);
   }
 
   if (chnls) {
     SDL_Surface * chs;
 
-    chs = SDL_CreateRGBSurfaceWithFormat(0, head->width, head->height, 0, SDL_PIXELFORMAT_ARGB8888);
+    chs = SDL_CreateSurface(head->width, head->height, SDL_PIXELFORMAT_ARGB8888);
 
     if (chs == NULL) {
       error = "Out of memory";
@@ -918,15 +934,15 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
     }
     SDL_free(channel);
 
-    SDL_FreeSurface (chs);
+    SDL_DestroySurface (chs);
   }
 
 done:
   free_xcf_header (head);
   if ( error ) {
-    SDL_RWseek(src, start, RW_SEEK_SET);
+    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
     if ( surface ) {
-      SDL_FreeSurface(surface);
+      SDL_DestroySurface(surface);
       surface = NULL;
     }
     IMG_SetError("%s", error);

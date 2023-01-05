@@ -23,7 +23,7 @@
  * https://github.com/phoboslab/qoi
  */
 
-#include "SDL_image.h"
+#include <SDL3/SDL_image.h>
 #include <limits.h> /* for INT_MAX */
 
 #ifdef LOAD_QOI
@@ -52,12 +52,12 @@ int IMG_isQOI(SDL_RWops *src)
         return 0;
     start = SDL_RWtell(src);
     is_QOI = 0;
-    if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
+    if ( SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if ( SDL_strncmp(magic, "qoif", 4) == 0 ) {
             is_QOI = 1;
         }
     }
-    SDL_RWseek(src, start, RW_SEEK_SET);
+    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
     return(is_QOI);
 }
 
@@ -88,12 +88,11 @@ SDL_Surface *IMG_LoadQOI_RW(SDL_RWops *src)
         return NULL;
     }
 
-    surface = SDL_CreateRGBSurfaceWithFormatFrom(pixel_data,
-                                                 image_info.width,
-                                                 image_info.height,
-                                                 32,
-                                                 (image_info.width * 4),
-                                                 SDL_PIXELFORMAT_RGBA32);
+    surface = SDL_CreateSurfaceFrom(pixel_data,
+                                    image_info.width,
+                                    image_info.height,
+                                    (image_info.width * 4),
+                                    SDL_PIXELFORMAT_RGBA32);
     if ( !surface ) {
         SDL_free(pixel_data);
         IMG_SetError("Couldn't create SDL_Surface");

@@ -9,7 +9,7 @@
 
 #if defined(__APPLE__) && !defined(SDL_IMAGE_USE_COMMON_BACKEND)
 
-#include "SDL_image.h"
+#include <SDL3/SDL_image.h>
 
 // Used because CGDataProviderCreate became deprecated in 10.5
 #include <AvailabilityMacros.h>
@@ -33,7 +33,11 @@
 // to a Quartz buffer (supplied by Apple framework).
 static size_t MyProviderGetBytesCallback(void* rwops_userdata, void* quartz_buffer, size_t the_count)
 {
-    return (size_t)SDL_RWread((struct SDL_RWops *)rwops_userdata, quartz_buffer, 1, the_count);
+    Sint64 size = SDL_RWread((struct SDL_RWops *)rwops_userdata, quartz_buffer, the_count);
+    if (size <= 0) {
+        return 0;
+    }
+    return (size_t)size;
 }
 
 // This callback is triggered when the data provider is released
@@ -46,21 +50,21 @@ static void MyProviderReleaseInfoCallback(void* rwops_userdata)
 
 static void MyProviderRewindCallback(void* rwops_userdata)
 {
-    SDL_RWseek((struct SDL_RWops *)rwops_userdata, 0, RW_SEEK_SET);
+    SDL_RWseek((struct SDL_RWops *)rwops_userdata, 0, SDL_RW_SEEK_SET);
 }
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1050 // CGDataProviderCreateSequential was introduced in 10.5; CGDataProviderCreate is deprecated
 off_t MyProviderSkipForwardBytesCallback(void* rwops_userdata, off_t the_count)
 {
     off_t start_position = SDL_RWtell((struct SDL_RWops *)rwops_userdata);
-    SDL_RWseek((struct SDL_RWops *)rwops_userdata, the_count, RW_SEEK_CUR);
+    SDL_RWseek((struct SDL_RWops *)rwops_userdata, the_count, SDL_RW_SEEK_CUR);
     off_t end_position = SDL_RWtell((struct SDL_RWops *)rwops_userdata);
     return (end_position - start_position);
 }
 #else // CGDataProviderCreate was deprecated in 10.5
 static void MyProviderSkipBytesCallback(void* rwops_userdata, size_t the_count)
 {
-    SDL_RWseek((struct SDL_RWops *)rwops_userdata, the_count, RW_SEEK_CUR);
+    SDL_RWseek((struct SDL_RWops *)rwops_userdata, the_count, SDL_RW_SEEK_CUR);
 }
 #endif
 
@@ -217,7 +221,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_RGB(CGImageRef image_ref)
         format = SDL_PIXELFORMAT_ARGB8888;
     }
 
-    surface = SDL_CreateRGBSurfaceWithFormat(0, (int)w, (int)h, 0, format);
+    surface = SDL_CreateSurface((int)w, (int)h, format);
     if (surface)
     {
         // Sets up a context to be drawn to with surface->pixels as the area to be drawn to
@@ -301,7 +305,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_Index(CGImageRef image_ref)
     }
 
     CGColorSpaceGetColorTable(color_space, entries);
-    surface = SDL_CreateRGBSurfaceWithFormat(0, (int)w, (int)h, 0, SDL_PIXELFORMAT_INDEX8);
+    surface = SDL_CreateSurface((int)w, (int)h, SDL_PIXELFORMAT_INDEX8);
     if (surface) {
         uint8_t* pixels = (uint8_t*)surface->pixels;
         CGDataProviderRef provider = CGImageGetDataProvider(image_ref);

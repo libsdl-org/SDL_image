@@ -21,7 +21,7 @@
 
 /* This is a WEBP image file loading framework */
 
-#include "SDL_image.h"
+#include <SDL3/SDL_image.h>
 
 #ifdef LOAD_WEBP
 
@@ -34,7 +34,7 @@
 
 =============================================================================*/
 
-#include "SDL_endian.h"
+#include <SDL3/SDL_endian.h>
 
 #ifdef macintosh
 #define MACOS
@@ -120,7 +120,7 @@ static int webp_getinfo (SDL_RWops *src, int *datasize) {
     }
     start = SDL_RWtell(src);
     is_WEBP = 0;
-    if (SDL_RWread(src, magic, 1, sizeof(magic)) == sizeof(magic)) {
+    if (SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic)) {
         if (magic[ 0] == 'R' &&
             magic[ 1] == 'I' &&
             magic[ 2] == 'F' &&
@@ -135,11 +135,11 @@ static int webp_getinfo (SDL_RWops *src, int *datasize) {
            (magic[15] == ' ' || magic[15] == 'X' || magic[15] == 'L')) {
             is_WEBP = 1;
             if (datasize) {
-                *datasize = (int)(SDL_RWseek(src, 0, RW_SEEK_END) - start);
+                *datasize = (int)(SDL_RWseek(src, 0, SDL_RW_SEEK_END) - start);
             }
         }
     }
-    SDL_RWseek(src, start, RW_SEEK_SET);
+    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
     return(is_WEBP);
 }
 
@@ -158,7 +158,6 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
     WebPBitstreamFeatures features;
     int raw_data_size;
     uint8_t *raw_data = NULL;
-    int r;
     uint8_t *ret;
 
     if (!src) {
@@ -184,8 +183,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
         goto error;
     }
 
-    r = (int)SDL_RWread(src, raw_data, 1, raw_data_size);
-    if (r != raw_data_size) {
+    if (SDL_RWread(src, raw_data, raw_data_size) != (Sint64)raw_data_size) {
         error = "Failed to read WEBP";
         goto error;
     }
@@ -210,7 +208,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
        format = SDL_PIXELFORMAT_RGB24;
     }
     
-    surface = SDL_CreateRGBSurfaceWithFormat(0, features.width, features.height, 0, format);
+    surface = SDL_CreateSurface(features.width, features.height, format);
     if (surface == NULL) {
         error = "Failed to allocate SDL_Surface";
         goto error;
@@ -240,14 +238,14 @@ error:
     }
 
     if (surface) {
-        SDL_FreeSurface(surface);
+        SDL_DestroySurface(surface);
     }
 
     if (error) {
         IMG_SetError("%s", error);
     }
 
-    SDL_RWseek(src, start, RW_SEEK_SET);
+    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
     return NULL;
 }
 
@@ -289,7 +287,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
         goto error;
     }
 
-    if ((int)SDL_RWread(src, raw_data, 1, raw_data_size) != raw_data_size) {
+    if (SDL_RWread(src, raw_data, raw_data_size) != (Sint64)raw_data_size) {
         error = "Failed to read WEBP Animation";
         goto error;
     }
@@ -319,7 +317,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
         if (lib.WebPDemuxGetFrame(dmuxer, frame_idx, &iter) == 0) {
             break;
         }
-        curr = SDL_CreateRGBSurfaceWithFormat(0, features.width, features.height, 0, format);
+        curr = SDL_CreateSurface(features.width, features.height, format);
         if (curr == NULL) {
             error = "Failed to allocate SDL_Surface";
             goto error;
@@ -366,7 +364,7 @@ error:
     if (error) {
         IMG_SetError("%s", error);
     }
-    SDL_RWseek(src, start, RW_SEEK_SET);
+    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
     return NULL;
 }
 

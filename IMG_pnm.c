@@ -27,7 +27,7 @@
  * Does not support: maximum component value > 255
  */
 
-#include "SDL_image.h"
+#include <SDL3/SDL_image.h>
 
 #ifdef LOAD_PNM
 
@@ -42,7 +42,7 @@ int IMG_isPNM(SDL_RWops *src)
         return 0;
     start = SDL_RWtell(src);
     is_PNM = 0;
-    if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
+    if ( SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic) ) {
         /*
          * PNM magic signatures:
          * P1   PBM, ascii format
@@ -57,7 +57,7 @@ int IMG_isPNM(SDL_RWops *src)
             is_PNM = 1;
         }
     }
-    SDL_RWseek(src, start, RW_SEEK_SET);
+    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
     return(is_PNM);
 }
 
@@ -72,13 +72,13 @@ static int ReadNumber(SDL_RWops *src)
 
     /* Skip leading whitespace */
     do {
-        if ( ! SDL_RWread(src, &ch, 1, 1) ) {
+        if ( SDL_RWread(src, &ch, 1) != 1 ) {
             return(-1);
         }
         /* Eat comments as whitespace */
         if ( ch == '#' ) {  /* Comment is '#' to end of line */
             do {
-                if ( ! SDL_RWread(src, &ch, 1, 1) ) {
+                if ( SDL_RWread(src, &ch, 1) != 1 ) {
                     return -1;
                 }
             } while ( (ch != '\r') && (ch != '\n') );
@@ -97,7 +97,7 @@ static int ReadNumber(SDL_RWops *src)
         number *= 10;
         number += ch-'0';
 
-        if ( !SDL_RWread(src, &ch, 1, 1) ) {
+        if ( SDL_RWread(src, &ch, 1) != 1 ) {
             return -1;
         }
     } while ( SDL_isdigit(ch) );
@@ -126,7 +126,9 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
     }
     start = SDL_RWtell(src);
 
-    SDL_RWread(src, magic, 2, 1);
+    if ( SDL_RWread(src, magic, 2) != 2 ) {
+        return NULL;
+    }
     kind = magic[1] - '1';
     ascii = 1;
     if(kind >= 3) {
@@ -151,10 +153,10 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 
     if(kind == PPM) {
         /* 24-bit surface in R,G,B byte order */
-        surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 0, SDL_PIXELFORMAT_RGB24);
+        surface = SDL_CreateSurface(width, height, SDL_PIXELFORMAT_RGB24);
     } else {
         /* load PBM/PGM as 8-bit indexed images */
-        surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 0, SDL_PIXELFORMAT_INDEX8);
+        surface = SDL_CreateSurface(width, height, SDL_PIXELFORMAT_INDEX8);
     }
     if ( surface == NULL )
         ERROR("Out of memory");
@@ -186,8 +188,7 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
                 for(i = 0; i < width; i++) {
                     Uint8 ch;
                     do {
-                        if(!SDL_RWread(src, &ch,
-                                   1, 1))
+                        if(SDL_RWread(src, &ch, 1) != 1)
                                ERROR("file truncated");
                         ch -= '0';
                     } while(ch > 1);
@@ -204,7 +205,7 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
             }
         } else {
             Uint8 *dst = (kind == PBM) ? buf : row;
-            if(!SDL_RWread(src, dst, bpl, 1))
+            if(SDL_RWread(src, dst, bpl) != bpl)
                 ERROR("file truncated");
             if(kind == PBM) {
                 /* expand bitmap to 8bpp */
@@ -226,9 +227,9 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 done:
     SDL_free(buf);
     if(error) {
-        SDL_RWseek(src, start, RW_SEEK_SET);
+        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
         if ( surface ) {
-            SDL_FreeSurface(surface);
+            SDL_DestroySurface(surface);
             surface = NULL;
         }
         IMG_SetError("%s", error);

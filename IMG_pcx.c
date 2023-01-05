@@ -33,9 +33,9 @@
  *  4-plane 32bpp format with a fourth "intensity" plane
  */
 
-#include "SDL_endian.h"
+#include <SDL3/SDL_endian.h>
 
-#include "SDL_image.h"
+#include <SDL3/SDL_image.h>
 
 #ifdef LOAD_PCX
 
@@ -71,7 +71,7 @@ int IMG_isPCX(SDL_RWops *src)
         return 0;
     start = SDL_RWtell(src);
     is_PCX = 0;
-    if ( SDL_RWread(src, &pcxh, sizeof(pcxh), 1) == 1 ) {
+    if ( SDL_RWread(src, &pcxh, sizeof(pcxh)) == sizeof(pcxh) ) {
         if ( (pcxh.Manufacturer == ZSoft_Manufacturer) &&
              (pcxh.Version == PC_Paintbrush_Version) &&
              (pcxh.Encoding == PCX_RunLength_Encoding ||
@@ -79,7 +79,7 @@ int IMG_isPCX(SDL_RWops *src)
             is_PCX = 1;
         }
     }
-    SDL_RWseek(src, start, RW_SEEK_SET);
+    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
     return(is_PCX);
 }
 
@@ -104,7 +104,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
     }
     start = SDL_RWtell(src);
 
-    if ( !SDL_RWread(src, &pcxh, sizeof(pcxh), 1) ) {
+    if ( SDL_RWread(src, &pcxh, sizeof(pcxh)) != sizeof(pcxh) ) {
         error = "file truncated";
         goto done;
     }
@@ -143,7 +143,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
         error = "unsupported PCX format";
         goto done;
     }
-    surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 0, format);
+    surface = SDL_CreateSurface(width, height, format);
     if ( surface == NULL ) {
         goto done;
     }
@@ -159,14 +159,14 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
         /* decode a scan line to a temporary buffer first */
         int i;
         if ( pcxh.Encoding == 0 ) {
-            if ( !SDL_RWread(src, buf, bpl, 1) ) {
+            if ( SDL_RWread(src, buf, bpl) != bpl ) {
                 error = "file truncated";
                 goto done;
             }
         } else {
             for ( i = 0; i < bpl; i++ ) {
                 if ( !count ) {
-                    if ( !SDL_RWread(src, &ch, 1, 1) ) {
+                    if ( SDL_RWread(src, &ch, 1) != 1 ) {
                         error = "file truncated";
                         goto done;
                     }
@@ -174,7 +174,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
                         count = 1;
                     } else {
                         count = ch - 0xc0;
-                        if( !SDL_RWread(src, &ch, 1, 1) ) {
+                        if ( SDL_RWread(src, &ch, 1) != 1 ) {
                             error = "file truncated";
                             goto done;
                         }
@@ -237,23 +237,29 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
         surface->format->palette->ncolors = nc;
         if ( src_bits == 8 ) {
             Uint8 ch;
+            Uint8 colormap[768];
+
             /* look for a 256-colour palette */
             do {
-                if ( !SDL_RWread(src, &ch, 1, 1) ) {
+                if ( SDL_RWread(src, &ch, 1) != 1 ) {
                     /* Couldn't find the palette, try the end of the file */
-                    SDL_RWseek(src, -768, RW_SEEK_END);
+                    SDL_RWseek(src, -768, SDL_RW_SEEK_END);
                     break;
                 }
             } while ( ch != 12 );
 
+            if ( SDL_RWread(src, colormap, sizeof(colormap)) != sizeof(colormap) ) {
+                error = "file truncated";
+                goto done;
+            }
             for ( i = 0; i < 256; i++ ) {
-                SDL_RWread(src, &colors[i].r, 1, 1);
-                SDL_RWread(src, &colors[i].g, 1, 1);
-                SDL_RWread(src, &colors[i].b, 1, 1);
+                colors[i].r = colormap[i * 3 + 0];
+                colors[i].g = colormap[i * 3 + 1];
+                colors[i].b = colormap[i * 3 + 2];
             }
         } else {
             for ( i = 0; i < nc; i++ ) {
-                colors[i].r = pcxh.Colormap[i * 3];
+                colors[i].r = pcxh.Colormap[i * 3 + 0];
                 colors[i].g = pcxh.Colormap[i * 3 + 1];
                 colors[i].b = pcxh.Colormap[i * 3 + 2];
             }
@@ -263,9 +269,9 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 done:
     SDL_free(buf);
     if ( error ) {
-        SDL_RWseek(src, start, RW_SEEK_SET);
+        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
         if ( surface ) {
-            SDL_FreeSurface(surface);
+            SDL_DestroySurface(surface);
             surface = NULL;
         }
         IMG_SetError("%s", error);

@@ -21,7 +21,7 @@
 
 /* A simple library to load images of various formats as SDL surfaces */
 
-#include "SDL_image.h"
+#include <SDL3/SDL_image.h>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten/emscripten.h>
@@ -185,7 +185,7 @@ SDL_Surface *IMG_Load(const char *file)
 
     data = emscripten_get_preloaded_image_data(file, &w, &h);
     if (data != NULL) {
-        surf = SDL_CreateRGBSurfaceWithFormat(0, w, h, 0, SDL_PIXELFORMAT_ABGR8888);
+        surf = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_ABGR8888);
         if (surf != NULL) {
             memcpy(surf->pixels, data, w * h * 4);
         }
@@ -239,7 +239,7 @@ SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, const char *type)
     }
 
     /* See whether or not this data source can handle seeking */
-    if ( SDL_RWseek(src, 0, RW_SEEK_CUR) < 0 ) {
+    if ( SDL_RWseek(src, 0, SDL_RW_SEEK_CUR) < 0 ) {
         IMG_SetError("Can't seek in this data source");
         if (freesrc)
             SDL_RWclose(src);
@@ -258,7 +258,7 @@ SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, const char *type)
 
         if (data)
         {
-            surf = SDL_CreateRGBSurfaceWithFormat(0, w, h, 0, SDL_PIXELFORMAT_ABGR8888);
+            surf = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_ABGR8888);
             if (surf != NULL) {
                 memcpy(surf->pixels, data, w * h * 4);
             }
@@ -267,7 +267,7 @@ SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, const char *type)
             if (freesrc)
                 SDL_RWclose(src);
 
-            /* If SDL_CreateRGBSurfaceWithFormat returns NULL, it has set the error message for us */
+            /* If SDL_CreateSurface returns NULL, it has set the error message for us */
             return surf;
         }
     }
@@ -307,7 +307,7 @@ SDL_Texture *IMG_LoadTexture(SDL_Renderer *renderer, const char *file)
     SDL_Surface *surface = IMG_Load(file);
     if (surface) {
         texture = SDL_CreateTextureFromSurface(renderer, surface);
-        SDL_FreeSurface(surface);
+        SDL_DestroySurface(surface);
     }
     return texture;
 }
@@ -318,7 +318,7 @@ SDL_Texture *IMG_LoadTexture_RW(SDL_Renderer *renderer, SDL_RWops *src, int free
     SDL_Surface *surface = IMG_Load_RW(src, freesrc);
     if (surface) {
         texture = SDL_CreateTextureFromSurface(renderer, surface);
-        SDL_FreeSurface(surface);
+        SDL_DestroySurface(surface);
     }
     return texture;
 }
@@ -329,7 +329,7 @@ SDL_Texture *IMG_LoadTextureTyped_RW(SDL_Renderer *renderer, SDL_RWops *src, int
     SDL_Surface *surface = IMG_LoadTyped_RW(src, freesrc, type);
     if (surface) {
         texture = SDL_CreateTextureFromSurface(renderer, surface);
-        SDL_FreeSurface(surface);
+        SDL_DestroySurface(surface);
     }
     return texture;
 }
@@ -370,7 +370,7 @@ IMG_Animation *IMG_LoadAnimationTyped_RW(SDL_RWops *src, int freesrc, const char
     }
 
     /* See whether or not this data source can handle seeking */
-    if ( SDL_RWseek(src, 0, RW_SEEK_CUR) < 0 ) {
+    if ( SDL_RWseek(src, 0, SDL_RW_SEEK_CUR) < 0 ) {
         IMG_SetError("Can't seek in this data source");
         if (freesrc)
             SDL_RWclose(src);
@@ -415,7 +415,7 @@ IMG_Animation *IMG_LoadAnimationTyped_RW(SDL_RWops *src, int freesrc, const char
             }
             IMG_FreeAnimation(anim);
         }
-        SDL_FreeSurface(image);
+        SDL_DestroySurface(image);
         SDL_OutOfMemory();
     }
     return NULL;
@@ -428,7 +428,7 @@ void IMG_FreeAnimation(IMG_Animation *anim)
             int i;
             for (i = 0; i < anim->count; ++i) {
                 if (anim->frames[i]) {
-                    SDL_FreeSurface(anim->frames[i]);
+                    SDL_DestroySurface(anim->frames[i]);
                 }
             }
             SDL_free(anim->frames);

@@ -30,7 +30,7 @@
  * http://entropymine.com/jason/bmpsuite/bmpsuite/html/bmpsuite.html
  */
 
-#include "SDL_image.h"
+#include <SDL3/SDL_image.h>
 
 #ifdef LOAD_BMP
 
@@ -45,12 +45,12 @@ int IMG_isBMP(SDL_RWops *src)
         return 0;
     start = SDL_RWtell(src);
     is_BMP = 0;
-    if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
-        if ( SDL_strncmp(magic, "BM", 2) == 0 ) {
+    if (SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic)) {
+        if (SDL_strncmp(magic, "BM", 2) == 0) {
             is_BMP = 1;
         }
     }
-    SDL_RWseek(src, start, RW_SEEK_SET);
+    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
     return(is_BMP);
 }
 
@@ -73,7 +73,7 @@ static int IMG_isICOCUR(SDL_RWops *src, int type)
     bfCount = SDL_ReadLE16(src);
     if ((bfReserved == 0) && (bfType == type) && (bfCount != 0))
         is_ICOCUR = 1;
-    SDL_RWseek(src, start, RW_SEEK_SET);
+    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
 
     return (is_ICOCUR);
 }
@@ -88,9 +88,9 @@ int IMG_isCUR(SDL_RWops *src)
     return IMG_isICOCUR(src, 2);
 }
 
-#include "SDL_error.h"
-#include "SDL_video.h"
-#include "SDL_endian.h"
+#include <SDL3/SDL_error.h>
+#include <SDL3/SDL_video.h>
+#include <SDL3/SDL_endian.h>
 
 /* Compression encodings for BMP files */
 #ifndef BI_RGB
@@ -103,15 +103,6 @@ int IMG_isCUR(SDL_RWops *src)
 static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
 {
     return SDL_LoadBMP_RW(src, freesrc);
-}
-
-static Uint8
-SDL_Read8(SDL_RWops * src)
-{
-    Uint8 value;
-
-    SDL_RWread(src, &value, 1, 1);
-    return (value);
 }
 
 static SDL_Surface *
@@ -177,9 +168,9 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
     /* Read the Win32 Icon Directory */
     for (i = 0; i < bfCount; i++) {
         /* Icon Directory Entries */
-        int bWidth = SDL_Read8(src);    /* Uint8, but 0 = 256 ! */
-        int bHeight = SDL_Read8(src);   /* Uint8, but 0 = 256 ! */
-        int bColorCount = SDL_Read8(src);       /* Uint8, but 0 = 256 ! */
+        int bWidth = SDL_ReadU8(src);    /* Uint8, but 0 = 256 ! */
+        int bHeight = SDL_ReadU8(src);   /* Uint8, but 0 = 256 ! */
+        int bColorCount = SDL_ReadU8(src);       /* Uint8, but 0 = 256 ! */
         /*
         Uint8 bReserved;
         Uint16 wPlanes;
@@ -188,7 +179,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
         */
         Uint32 dwImageOffset;
 
-        /* bReserved = */ SDL_Read8(src);
+        /* bReserved = */ SDL_ReadU8(src);
         /* wPlanes = */ SDL_ReadLE16(src);
         /* wBitCount = */ SDL_ReadLE16(src);
         /* dwBytesInRes = */ SDL_ReadLE32(src);
@@ -210,7 +201,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
     }
 
     /* Advance to the DIB Data */
-    if (SDL_RWseek(src, icoOfs, RW_SEEK_SET) < 0) {
+    if (SDL_RWseek(src, icoOfs, SDL_RW_SEEK_SET) < 0) {
         SDL_Error(SDL_EFSEEK);
         was_error = SDL_TRUE;
         goto done;
@@ -288,8 +279,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
     /* Create a RGBA surface */
     biHeight = biHeight >> 1;
     //printf("%d x %d\n", biWidth, biHeight);
-    surface =
-        SDL_CreateRGBSurfaceWithFormat(0, biWidth, biHeight, 0, SDL_PIXELFORMAT_ARGB8888);
+    surface = SDL_CreateSurface(biWidth, biHeight, SDL_PIXELFORMAT_ARGB8888);
     if (surface == NULL) {
         was_error = SDL_TRUE;
         goto done;
@@ -307,7 +297,10 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
             goto done;
         }
         for (i = 0; i < (int) biClrUsed; ++i) {
-            SDL_RWread(src, &palette[i], 4, 1);
+            if (SDL_RWread(src, &palette[i], 4) != 4) {
+                was_error = SDL_TRUE;
+                goto done;
+            }
         }
     }
 
@@ -346,8 +339,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
                 int shift = (8 - ExpandBMP);
                 for (i = 0; i < surface->w; ++i) {
                     if (i % (8 / ExpandBMP) == 0) {
-                        if (!SDL_RWread(src, &pixel, 1, 1)) {
-                            IMG_SetError("Error reading from ICO");
+                        if (SDL_RWread(src, &pixel, 1) != 1) {
                             was_error = SDL_TRUE;
                             goto done;
                         }
@@ -365,8 +357,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
                     pixel = 0;
                     for (j = 0; j < 3; ++j) {
                         /* Load each color channel into pixel */
-                        if (!SDL_RWread(src, &channel, 1, 1)) {
-                            IMG_SetError("Error reading from ICO");
+                        if (SDL_RWread(src, &channel, 1) != 1) {
                             was_error = SDL_TRUE;
                             goto done;
                         }
@@ -378,9 +369,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
             break;
 
         default:
-            if (SDL_RWread(src, bits, 1, surface->pitch)
-                != surface->pitch) {
-                SDL_Error(SDL_EFREAD);
+            if (SDL_RWread(src, bits, surface->pitch) != surface->pitch) {
                 was_error = SDL_TRUE;
                 goto done;
             }
@@ -390,7 +379,10 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
         if (pad) {
             Uint8 padbyte;
             for (i = 0; i < pad; ++i) {
-                SDL_RWread(src, &padbyte, 1, 1);
+                if (SDL_RWread(src, &padbyte, 1) != 1) {
+                    was_error = SDL_TRUE;
+                    goto done;
+                }
             }
         }
     }
@@ -406,8 +398,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
         bits -= surface->pitch;
         for (i = 0; i < surface->w; ++i) {
             if (i % (8 / ExpandBMP) == 0) {
-                if (!SDL_RWread(src, &pixel, 1, 1)) {
-                    IMG_SetError("Error reading from ICO");
+                if (SDL_RWread(src, &pixel, 1) != 1) {
                     was_error = SDL_TRUE;
                     goto done;
                 }
@@ -419,17 +410,20 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
         if (pad) {
             Uint8 padbyte;
             for (i = 0; i < pad; ++i) {
-                SDL_RWread(src, &padbyte, 1, 1);
+                if (SDL_RWread(src, &padbyte, 1) != 1) {
+                    was_error = SDL_TRUE;
+                    goto done;
+                }
             }
         }
     }
   done:
     if (was_error) {
         if (src) {
-            SDL_RWseek(src, fp_offset, RW_SEEK_SET);
+            SDL_RWseek(src, fp_offset, SDL_RW_SEEK_SET);
         }
         if (surface) {
-            SDL_FreeSurface(surface);
+            SDL_DestroySurface(surface);
         }
         surface = NULL;
     }

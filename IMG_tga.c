@@ -106,7 +106,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
     }
     start = SDL_RWtell(src);
 
-    if (!SDL_RWread(src, &hdr, sizeof(hdr), 1)) {
+    if (SDL_RWread(src, &hdr, sizeof(hdr)) != sizeof(hdr)) {
         error = "Error reading TGA data";
         goto error;
     }
@@ -178,7 +178,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 
     w = LE16(hdr.width);
     h = LE16(hdr.height);
-    img = SDL_CreateRGBSurfaceWithFormat(0, w, h, 0, format);
+    img = SDL_CreateSurface(w, h, format);
     if (img == NULL) {
         error = "Out of memory";
         goto error;
@@ -190,7 +190,10 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
             Uint8 *pal = (Uint8 *)SDL_malloc(palsiz), *p = pal;
             SDL_Color *colors = img->format->palette->colors;
             img->format->palette->ncolors = ncols;
-            SDL_RWread(src, pal, palsiz, 1);
+            if (SDL_RWread(src, pal, palsiz) != palsiz) {
+                error = "Error reading TGA data";
+                goto error;
+            }
             for(i = 0; i < ncols; i++) {
                 switch(hdr.cmap_bits) {
                 case 15:
@@ -250,7 +253,10 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
                     int n = count;
                     if (n > w - x)
                         n = w - x;
-                    SDL_RWread(src, dst + x * bpp, n * bpp, 1);
+                    if (SDL_RWread(src, dst + x * bpp, n * bpp) != (n * bpp)) {
+                        error = "Error reading TGA data";
+                        goto error;
+                    }
                     count -= n;
                     x += n;
                     if (x == w)
@@ -268,16 +274,25 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
                         break;
                 }
 
-                SDL_RWread(src, &c, 1, 1);
+                if (SDL_RWread(src, &c, 1) != 1) {
+                    error = "Error reading TGA data";
+                    goto error;
+                }
                 if (c & 0x80) {
-                    SDL_RWread(src, &pixel, bpp, 1);
+                    if (SDL_RWread(src, &pixel, bpp) != bpp) {
+                        error = "Error reading TGA data";
+                        goto error;
+                    }
                     rep = (c & 0x7f) + 1;
                 } else {
                     count = c + 1;
                 }
             }
         } else {
-            SDL_RWread(src, dst, w * bpp, 1);
+            if (SDL_RWread(src, dst, w * bpp) != (w * bpp)) {
+                error = "Error reading TGA data";
+                goto error;
+            }
         }
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
         if (bpp == 2) {

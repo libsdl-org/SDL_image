@@ -19,8 +19,9 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "SDL.h"
-#include "SDL_image.h"
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
+#include <SDL3/SDL_image.h>
 
 
 /* Draw a Gimpish background pattern to show transparency in the image */
@@ -31,18 +32,18 @@ static void draw_background(SDL_Renderer *renderer, int w, int h)
         { 0x99, 0x99, 0x99, 0xff },
     };
     int i, x, y;
-    SDL_Rect rect;
+    SDL_FRect rect;
 
-    rect.w = 8;
-    rect.h = 8;
+    rect.w = 8.0f;
+    rect.h = 8.0f;
     for (y = 0; y < h; y += rect.h) {
         for (x = 0; x < w; x += rect.w) {
             /* use an 8x8 checkerboard pattern */
             i = (((x ^ y) >> 3) & 1);
             SDL_SetRenderDrawColor(renderer, col[i].r, col[i].g, col[i].b, col[i].a);
 
-            rect.x = x;
-            rect.y = y;
+            rect.x = (float)x;
+            rect.y = (float)y;
             SDL_RenderFillRect(renderer, &rect);
         }
     }
@@ -69,7 +70,7 @@ int main(int argc, char *argv[])
     flags = SDL_WINDOW_HIDDEN;
     for ( i=1; argv[i]; ++i ) {
         if ( SDL_strcmp(argv[i], "-fullscreen") == 0 ) {
-            SDL_ShowCursor(0);
+            SDL_HideCursor();
             flags |= SDL_WINDOW_FULLSCREEN;
         }
     }
@@ -163,7 +164,7 @@ int main(int argc, char *argv[])
             draw_background(renderer, w, h);
 
             /* Display the image */
-            SDL_RenderCopy(renderer, textures[current_frame], NULL, NULL);
+            SDL_RenderTexture(renderer, textures[current_frame], NULL, NULL);
             SDL_RenderPresent(renderer);
 
             if (anim->delays[current_frame]) {

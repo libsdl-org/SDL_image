@@ -43,28 +43,9 @@ macro(sdl_calculate_derived_version_variables)
     set(DYLIB_COMPATIBILITY_VERSION "${DYLIB_CURRENT_VERSION_MAJOR}.0.0")
 endmacro()
 
-macro(sdl_find_sdl2 TARGET VERSION)
+macro(sdl_find_sdl3 TARGET VERSION)
     if(NOT TARGET ${TARGET})
-        # FIXME: can't add REQUIRED since not all SDL2 installs ship SDL2ConfigVersion.cmake (or sdl2-config-version.cmake)
-        find_package(SDL2 ${VERSION} QUIET)
-    endif()
-    if(NOT TARGET ${TARGET})
-        # FIXME: can't add REQUIRED since not all SDL2 installs ship SDL2Config.cmake (or sdl2-config.cmake)
-        find_package(SDL2 QUIET)
-        if(SDL2_FOUND)
-            message(WARNING "Could not verify SDL2 version. Assuming SDL2 has version of at least ${VERSION}.")
-        endif()
-    endif()
-
-    # Use Private FindSDL2.cmake module to find SDL2 for installations where no SDL2Config.cmake is available,
-    # or for those installations where no target is generated.
-    if (NOT TARGET ${TARGET})
-        message(STATUS "Using private SDL2 find module")
-        find_package(PrivateSDL2 ${VERSION} REQUIRED)
-        add_library(${TARGET} INTERFACE IMPORTED)
-        set_target_properties(${TARGET} PROPERTIES
-            INTERFACE_LINK_LIBRARIES "PrivateSDL2::PrivateSDL2"
-        )
+        find_package(SDL3 ${VERSION} REQUIRED QUIET)
     endif()
 endmacro()
 

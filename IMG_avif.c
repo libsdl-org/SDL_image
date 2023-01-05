@@ -21,7 +21,7 @@
 
 /* This is a AVIF image file loading framework */
 
-#include "SDL_image.h"
+#include <SDL3/SDL_image.h>
 
 #ifdef LOAD_AVIF
 
@@ -95,7 +95,7 @@ static SDL_bool ReadAVIFHeader(SDL_RWops *src, Uint8 **header_data, size_t *head
     *header_data = NULL;
     *header_size = 0;
 
-    if (!SDL_RWread(src, magic, 8, 1)) {
+    if (SDL_RWread(src, magic, 8) != 8) {
         return SDL_FALSE;
     }
     read += 8;
@@ -110,7 +110,7 @@ static SDL_bool ReadAVIFHeader(SDL_RWops *src, Uint8 **header_data, size_t *head
             ((size_t)magic[3] << 0));
     if (size == 1) {
         /* 64-bit header size */
-        if (!SDL_RWread(src, &magic[8], 8, 1)) {
+        if (SDL_RWread(src, &magic[8], 8) != 8) {
             return SDL_FALSE;
         }
         read += 8;
@@ -139,7 +139,7 @@ static SDL_bool ReadAVIFHeader(SDL_RWops *src, Uint8 **header_data, size_t *head
     }
     SDL_memcpy(data, magic, read);
 
-    if (!SDL_RWread(src, &data[read], (size - read), 1)) {
+    if (SDL_RWread(src, &data[read], (size - read)) != (size - read)) {
         SDL_free(data);
         return SDL_FALSE;
     }
@@ -172,7 +172,7 @@ int IMG_isAVIF(SDL_RWops *src)
         }
         SDL_free(data);
     }
-    SDL_RWseek(src, start, RW_SEEK_SET);
+    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
     return(is_AVIF);
 }
 
@@ -182,7 +182,7 @@ typedef struct
     SDL_RWops *src;
     Uint64 start;
     uint8_t *data;
-    size_t size;
+    Sint64 size;
 } avifIOContext;
 
 static avifResult ReadAVIFIO(struct avifIO * io, uint32_t readFlags, uint64_t offset, size_t size, avifROData * out)
@@ -190,7 +190,7 @@ static avifResult ReadAVIFIO(struct avifIO * io, uint32_t readFlags, uint64_t of
     avifIOContext *context = (avifIOContext *)io->data;
 
     /* The AVIF reader bounces all over, so always seek to the correct offset */
-    if (SDL_RWseek(context->src, context->start + offset, RW_SEEK_SET) < 0) {
+    if (SDL_RWseek(context->src, context->start + offset, SDL_RW_SEEK_SET) < 0) {
         return AVIF_RESULT_IO_ERROR;
     }
 
@@ -204,8 +204,8 @@ static avifResult ReadAVIFIO(struct avifIO * io, uint32_t readFlags, uint64_t of
     }
 
     out->data = context->data;
-    out->size = SDL_RWread(context->src, context->data, 1, size);
-    if (out->size == 0) {
+    out->size = SDL_RWread(context->src, context->data, size);
+    if (out->size <= 0) {
         return AVIF_RESULT_IO_ERROR;
     }
 
@@ -275,7 +275,7 @@ SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
         goto done;
     }
 
-    surface = SDL_CreateRGBSurfaceWithFormat(0, decoder->image->width, decoder->image->height, 0, SDL_PIXELFORMAT_ARGB8888);
+    surface = SDL_CreateSurface(decoder->image->width, decoder->image->height, SDL_PIXELFORMAT_ARGB8888);
     if (!surface) {
         goto done;
     }
@@ -294,7 +294,7 @@ SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
     result = lib.avifImageYUVToRGB(decoder->image, &rgb);
     if (result != AVIF_RESULT_OK) {
         IMG_SetError("Couldn't convert AVIF image to RGB: %d", result);
-        SDL_FreeSurface(surface);
+        SDL_DestroySurface(surface);
         surface = NULL;
         goto done;
     }
@@ -304,7 +304,7 @@ done:
         lib.avifDecoderDestroy(decoder);
     }
     if (!surface) {
-        SDL_RWseek(src, start, RW_SEEK_SET);
+        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
     }
     return surface;
 }

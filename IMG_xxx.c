@@ -21,7 +21,7 @@
 
 /* This is a generic "format not supported" image framework */
 
-#include "SDL_image.h"
+#include <SDL3/SDL_image.h>
 
 #ifdef LOAD_XXX
 
@@ -38,7 +38,7 @@ int IMG_isXXX(SDL_RWops *src)
 
     /* Detect the image here */
 
-    SDL_RWseek(src, start, RW_SEEK_SET);
+    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
     return(is_XXX);
 }
 
@@ -58,9 +58,9 @@ SDL_Surface *IMG_LoadXXX_RW(SDL_RWops *src)
     /* Load the image here */
 
     if ( error ) {
-        SDL_RWseek(src, start, RW_SEEK_SET);
+        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
         if ( surface ) {
-            SDL_FreeSurface(surface);
+            SDL_DestroySurface(surface);
             surface = NULL;
         }
         IMG_SetError("%s", error);

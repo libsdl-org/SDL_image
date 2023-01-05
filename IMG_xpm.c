@@ -45,7 +45,7 @@
  * requires about 13K in binary form.
  */
 
-#include "SDL_image.h"
+#include <SDL3/SDL_image.h>
 
 #ifdef LOAD_XPM
 
@@ -60,12 +60,12 @@ int IMG_isXPM(SDL_RWops *src)
         return 0;
     start = SDL_RWtell(src);
     is_XPM = 0;
-    if ( SDL_RWread(src, magic, sizeof(magic), 1) ) {
+    if ( SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if ( SDL_memcmp(magic, "/* XPM */", sizeof(magic)) == 0 ) {
             is_XPM = 1;
         }
     }
-    SDL_RWseek(src, start, RW_SEEK_SET);
+    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
     return(is_XPM);
 }
 
@@ -932,7 +932,7 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
         char c;
         int n;
         do {
-            if (!SDL_RWread(src, &c, 1, 1)) {
+            if (SDL_RWread(src, &c, 1) != 1) {
                 error = "Premature end of data";
                 return NULL;
             }
@@ -949,7 +949,7 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
                 }
                 linebuf = linebufnew;
             }
-            if (!SDL_RWread(src, linebuf, len - 1, 1)) {
+            if (SDL_RWread(src, linebuf, len - 1) != (len - 1)) {
                 error = "Premature end of data";
                 return NULL;
             }
@@ -969,7 +969,7 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
                     }
                     linebuf = linebufnew;
                 }
-                if (!SDL_RWread(src, linebuf + n, 1, 1)) {
+                if (SDL_RWread(src, linebuf + n, 1) != 1) {
                     error = "Premature end of data";
                     return NULL;
                 }
@@ -1053,12 +1053,12 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src, SDL_bool force_32bit)
     /* Create the new surface */
     if (ncolors <= 256 && !force_32bit) {
         indexed = 1;
-        image = SDL_CreateRGBSurfaceWithFormat(0, w, h, 0, SDL_PIXELFORMAT_INDEX8);
+        image = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_INDEX8);
         im_colors = image->format->palette->colors;
         image->format->palette->ncolors = ncolors;
     } else {
         indexed = 0;
-        image = SDL_CreateRGBSurfaceWithFormat(0, w, h, 0, SDL_PIXELFORMAT_ARGB8888);
+        image = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_ARGB8888);
     }
     if (!image) {
         /* Hmm, some SDL error (out of memory?) */
@@ -1110,7 +1110,7 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src, SDL_bool force_32bit)
                 c->b = (Uint8)(argb);
                 pixel = index;
                 if (argb == 0x00000000) {
-                    SDL_SetColorKey(image, SDL_TRUE, pixel);
+                    SDL_SetSurfaceColorKey(image, SDL_TRUE, pixel);
                 }
             } else {
                 pixel = argb;
@@ -1152,9 +1152,9 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src, SDL_bool force_32bit)
 done:
     if (error) {
         if ( src )
-            SDL_RWseek(src, start, RW_SEEK_SET);
+            SDL_RWseek(src, start, SDL_RW_SEEK_SET);
         if ( image ) {
-            SDL_FreeSurface(image);
+            SDL_DestroySurface(image);
             image = NULL;
         }
         IMG_SetError("%s", error);
