@@ -339,7 +339,9 @@ if(SDL3IMAGE_AVIF)
     else()
         message(STATUS "${PROJECT_NAME}: Using system libavif")
         find_package(libavif ${LIBAVIF_MINIMUM_VERSION} REQUIRED)
-        list(APPEND PC_REQUIRES libavif)
+        if(NOT SDL3IMAGE_AVIF_SHARED)
+            list(APPEND PC_REQUIRES libavif)
+        endif()
     endif()
     if(SDL3IMAGE_AVIF_SHARED)
         target_include_directories(SDL3_image PRIVATE
@@ -386,7 +388,9 @@ if(SDL3IMAGE_JPG)
         else()
             message(STATUS "${PROJECT_NAME}: Using system libjpeg")
             find_package(JPEG REQUIRED)
-            list(APPEND PC_REQUIRES libjpeg)
+            if(NOT SDL3IMAGE_JPG_SHARED)
+                list(APPEND PC_REQUIRES libjpeg)
+            endif()
         endif()
         if(SDL3IMAGE_JPG_SHARED)
             target_include_directories(SDL3_image PRIVATE
@@ -443,8 +447,10 @@ if(SDL3IMAGE_JXL)
         endif()
     else()
         message(STATUS "${PROJECT_NAME}: Using system libjxl")
-        list(APPEND PC_REQUIRES libjxl)
         find_package(libjxl REQUIRED)
+        if(NOT SDL3IMAGE_JXL_SHARED)
+            list(APPEND PC_REQUIRES libjxl)
+        endif()
     endif()
     if(SDL3IMAGE_JXL_SHARED)
         target_include_directories(SDL3_image PRIVATE
@@ -503,7 +509,9 @@ if(SDL3IMAGE_PNG)
         else()
             message(STATUS "${PROJECT_NAME}: Using system libpng")
             find_package(PNG REQUIRED)
-            list(APPEND PC_REQUIRES libpng)
+            if(NOT SDL3IMAGE_PNG_SHARED)
+                list(APPEND PC_REQUIRES libpng)
+            endif()
         endif()
         if(SDL3IMAGE_PNG_SHARED)
             target_include_directories(SDL3_image PRIVATE
@@ -576,7 +584,9 @@ if(SDL3IMAGE_TIF)
     else()
         message(STATUS "${PROJECT_NAME}: Using system libtiff")
         find_package(TIFF REQUIRED)
-        list(APPEND PC_REQUIRES libtiff-4)
+        if(NOT SDL3IMAGE_TIF_SHARED)
+            list(APPEND PC_REQUIRES libtiff-4)
+        endif()
     endif()
     if(SDL3IMAGE_TIF_SHARED)
         target_include_directories(SDL3_image PRIVATE
@@ -612,7 +622,9 @@ if(SDL3IMAGE_WEBP)
     else()
         message(STATUS "${PROJECT_NAME}: Using system libwebp")
         find_package(webp REQUIRED)
-        list(APPEND PC_REQUIRES libwebp)
+        if(NOT SDL3IMAGE_WEBP_SHARED)
+            list(APPEND PC_REQUIRES libwebp)
+        endif()
     endif()
     if(SDL3IMAGE_WEBP_SHARED)
         target_include_directories(SDL3_image PRIVATE
@@ -714,13 +726,9 @@ if(SDL3IMAGE_INSTALL)
         COMPONENT devel
     )
 
-    set(PACKAGE "${PROJECT_NAME}")
-    set(VERSION "${FULL_VERSION}")
-    set(SDL_VERSION "${SDL_REQUIRED_VERSION}")
     string(JOIN " " PC_REQUIRES ${PC_REQUIRES})
     string(JOIN " " PC_LIBS ${PC_LIBS})
-    configure_file(cmake/sdl3-image.pc.in sdl3-image.pc.intermediate @ONLY)
-    file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/sdl3-image-$<CONFIG>.pc" INPUT "${CMAKE_CURRENT_BINARY_DIR}/sdl3-image.pc.intermediate")
+    configure_file(cmake/sdl3-image.pc.in sdl3-image.pc @ONLY)
 
     set(PC_DESTDIR)
     if(CMAKE_SYSTEM_NAME MATCHES FreeBSD)
@@ -730,14 +738,8 @@ if(SDL3IMAGE_INSTALL)
         set(PC_DESTDIR "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
     endif()
     # Always install sdl3-image.pc file: libraries might be different between config modes
-    install(CODE "
-            # FIXME: use file(COPY_FILE) if minimum CMake version >= 3.21
-            execute_process(COMMAND \"\${CMAKE_COMMAND}\" -E copy_if_different
-                \"${CMAKE_CURRENT_BINARY_DIR}/sdl3-image-$<CONFIG>.pc\"
-                \"${CMAKE_CURRENT_BINARY_DIR}/sdl3-image.pc\")
-            file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${PC_DESTDIR}\"
-                TYPE FILE
-                FILES \"${CMAKE_CURRENT_BINARY_DIR}/sdl3-image.pc\")" COMPONENT devel)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/sdl3-image.pc"
+        DESTINATION "${PC_DESTDIR}" COMPONENT devel)
 
     install(FILES "LICENSE.txt"
         DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/licenses/${PROJECT_NAME}"
