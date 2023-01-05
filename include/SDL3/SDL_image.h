@@ -31,7 +31,7 @@
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_version.h>
-#include "begin_code.h"
+#include <SDL3/SDL_begin_code.h>
 
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
@@ -2188,6 +2188,6 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
 #ifdef __cplusplus
 }
 #endif
-#include "close_code.h"
+#include <SDL3/SDL_close_code.h>
 
 #endif /* SDL_IMAGE_H_ */
