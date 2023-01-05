@@ -528,6 +528,9 @@ static void free_xcf_tile (unsigned char * t) {
 
 static unsigned char * load_xcf_tile_none (SDL_RWops * src, Uint64 len, int bpp, int x, int y) {
   unsigned char * load = NULL;
+  (void)bpp;
+  (void)x;
+  (void)y;
 
   if (len <= (Uint64)SDL_SIZE_MAX) {
     load = (unsigned char *) SDL_malloc ((size_t)len); // expect this is okay
@@ -543,7 +546,7 @@ static unsigned char * load_xcf_tile_none (SDL_RWops * src, Uint64 len, int bpp,
 
 static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint64 len, int bpp, int x, int y) {
   unsigned char * load, * t, * data, * d;
-  int i, size, count, j, length;
+  int i, size, j, length;
   unsigned char val;
 
   if (len == 0 || len > (Uint64)SDL_SIZE_MAX) {  /* probably bogus data. */
@@ -563,7 +566,6 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint64 len, int bpp, 
   for (i = 0; i < bpp; i++) {
     d    = data + i;
     size = x*y;
-    count = 0;
 
     while (size > 0) {
       val = *t++;
@@ -582,7 +584,6 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint64 len, int bpp, 
           break;  /* bogus data */
         }
 
-        count += length;
         size -= length;
 
         while (length-- > 0) {
@@ -602,7 +603,6 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint64 len, int bpp, 
           break;  /* bogus data */
         }
 
-        count += length;
         size -= length;
 
         val = *t++;
@@ -648,7 +648,7 @@ static void create_channel_surface (SDL_Surface * surf, xcf_image_type itype, Ui
   SDL_FillSurfaceRect (surf, NULL, c);
 }
 
-static int 
+static int
 do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_layer * layer, load_tile_type load_tile)
 {
     xcf_hierarchy  *hierarchy;

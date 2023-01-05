@@ -200,7 +200,7 @@ static avifResult ReadAVIFIO(struct avifIO * io, uint32_t readFlags, uint64_t of
             return AVIF_RESULT_IO_ERROR;
         }
         context->data = data;
-        context->size = size; 
+        context->size = size;
     }
 
     out->data = context->data;
@@ -327,12 +327,14 @@ void IMG_QuitAVIF()
 /* See if an image is contained in a data source */
 int IMG_isAVIF(SDL_RWops *src)
 {
+    (void)src;
     return(0);
 }
 
 /* Load a AVIF type image from an SDL datasource */
 SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
 {
+    (void)src;
     return(NULL);
 }
 
