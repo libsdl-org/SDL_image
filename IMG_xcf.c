@@ -26,6 +26,11 @@
 
 #ifdef LOAD_XCF
 
+#if DEBUG
+#include <SDL3/SDL_stdinc.h>
+#include <stdio.h>
+#endif
+
 #ifndef SDL_SIZE_MAX
 #define SDL_SIZE_MAX ((size_t)-1)
 #endif
@@ -271,7 +276,7 @@ static int xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
   prop->length = SDL_ReadBE32 (src);
 
 #if DEBUG
-  printf ("%.8X: %s(%u): %u\n", SDL_RWtell (src), prop->id < 25 ? prop_names [prop->id] : "unknown", prop->id, prop->length);
+  printf ("%.8" SDL_PRIs64 ": %s(%u): %u\n", SDL_RWtell (src), prop->id < 25 ? prop_names [prop->id] : "unknown", prop->id, prop->length);
 #endif
 
   switch (prop->id) {
