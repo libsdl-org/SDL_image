@@ -34,9 +34,9 @@
  * Supports: Reading 8, 15, 16, 24 and 32bpp images, with alpha or colourkey,
  *           uncompressed or RLE encoded.
  *
- * 2000-06-10 Mattias Engdegård <f91-men@nada.kth.se>: initial version
- * 2000-06-26 Mattias Engdegård <f91-men@nada.kth.se>: read greyscale TGAs
- * 2000-08-09 Mattias Engdegård <f91-men@nada.kth.se>: alpha inversion removed
+ * 2000-06-10 Mattias EngdegÃ¥rd <f91-men@nada.kth.se>: initial version
+ * 2000-06-26 Mattias EngdegÃ¥rd <f91-men@nada.kth.se>: read greyscale TGAs
+ * 2000-08-09 Mattias EngdegÃ¥rd <f91-men@nada.kth.se>: alpha inversion removed
  */
 
 struct TGAheader {
