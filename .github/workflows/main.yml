@@ -112,6 +112,7 @@ jobs:
           -DSDL3IMAGE_JXL=ON \
           -DSDL3IMAGE_TIF=ON \
           -DSDL3IMAGE_WEBP=ON \
+          -DSDL3IMAGE_WERROR=ON \
           -DCMAKE_INSTALL_PREFIX=prefix_cmake \
           ${NULL+}
 

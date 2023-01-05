@@ -51,6 +51,7 @@ option(BUILD_SHARED_LIBS "Build the library as a shared library" ON)
 option(SDL3IMAGE_INSTALL "Enable SDL3_image install target" ${SDL3IMAGE_ROOTPROJECT})
 option(SDL3IMAGE_DEPS_SHARED "Load dependencies dynamically" ON)
 option(SDL3IMAGE_VENDORED "Use vendored third-party libraries" ${vendored_default})
+option(SDL3IMAGE_WERROR "Treat warnings as errors" OFF)
 
 option(SDL3IMAGE_SAMPLES "Build the SDL3_image sample program(s)" ${SDL3IMAGE_SAMPLES_DEFAULT})
 cmake_dependent_option(SDL3IMAGE_SAMPLES_INSTALL "Install the SDL3_image sample program(s)" OFF "SDL3IMAGE_SAMPLES;SDL3IMAGE_INSTALL" OFF)
@@ -176,6 +177,20 @@ if(NOT DEFINED OpenGL_GL_PREFERENCE)
     set(OpenGL_GL_PREFERENCE GLVND)
 endif()
 
+add_library(sdl3image_build_options INTERFACE)
+if(MSVC)
+    target_compile_options(sdl3image_build_options INTERFACE /W2)
+else()
+    target_compile_options(sdl3image_build_options INTERFACE -Wall -Wextra)
+endif()
+if(SDL3IMAGE_WERROR)
+    if(MSVC)
+        target_compile_options(sdl3image_build_options INTERFACE /WX)
+    else()
+        target_compile_options(sdl3image_build_options INTERFACE -Werror)
+    endif()
+endif()
+
 add_library(SDL3_image
     IMG.c
     IMG_WIC.c
@@ -213,6 +228,7 @@ target_compile_definitions(SDL3_image PRIVATE
     SDL_BUILD_MICRO_VERSION=${MICRO_VERSION}
 )
 target_link_libraries(SDL3_image PRIVATE $<BUILD_INTERFACE:${sdl3_target_name}>)
+target_link_libraries(SDL3_image PRIVATE $<BUILD_INTERFACE:sdl3image_build_options>)
 if(WIN32 AND SDL3IMAGE_BUILD_SHARED_LIBS)
     target_sources(SDL3_image PRIVATE
         version.rc
@@ -223,6 +239,7 @@ set_target_properties(SDL3_image PROPERTIES
     EXPORT_NAME ${sdl3_image_export_name}
     C_VISIBILITY_PRESET "hidden"
 )
+
 if(NOT ANDROID)
     if(APPLE)
         # the SOVERSION property corresponds to the compatibility version and VERSION corresponds to the current version
