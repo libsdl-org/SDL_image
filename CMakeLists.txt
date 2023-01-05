@@ -56,7 +56,6 @@ option(SDL3IMAGE_SAMPLES "Build the SDL3_image sample program(s)" ${SDL3IMAGE_SA
 cmake_dependent_option(SDL3IMAGE_SAMPLES_INSTALL "Install the SDL3_image sample program(s)" OFF "SDL3IMAGE_SAMPLES;SDL3IMAGE_INSTALL" OFF)
 
 option(SDL3IMAGE_TESTS "Build unit tests?" OFF)
-cmake_dependent_option(SDL3IMAGE_TESTS_INSTALL "Install unit tests?" OFF "SDL3IMAGE_TESTS;SDL3IMAGE_INSTALL" OFF)
 
 option(SDL3IMAGE_BACKEND_STB "Use stb_image for loading JPEG and PNG files" ON)
 cmake_dependent_option(SDL3IMAGE_BACKEND_WIC "Add WIC backend (Windows Imaging Component)" OFF WIN32 OFF)

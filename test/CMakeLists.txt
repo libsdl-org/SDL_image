@@ -1,5 +1,33 @@
-find_package(SDL2main)
-find_package(SDL2test REQUIRED)
+cmake_minimum_required(VERSION 3.0)
+project(SDL3_image_tests)
+
+enable_testing()
+
+option(SDL3IMAGE_TESTS_LINK_SHARED "link tests to shared SDL library" ON)
+option(SDL3IMAGE_TESTS_INSTALL "Install unit tests?" OFF)
+
+if(SDL3IMAGE_TESTS_LINK_SHARED)
+    set(sdl_name_component SDL3)
+    set(sdl_target_name SDL3::SDL3)
+    set(sdlimage_target_name SDL3_image::SDL3_image)
+else()
+    set(sdl_name_component SDL3-static)
+    set(sdl_target_name SDL3::SDL3-static)
+    set(sdlimage_target_name SDL3_image::SDL3_image-static)
+endif()
+
+if(NOT TARGET ${sdl_target_name})
+    find_package(SDL3 3.0.0 REQUIRED)
+    if(NOT TARGET ${sdl_target_name})
+        message(FATAL_ERROR "find_package(SDL3) did not create ${sdl_target_name}.")
+    endif()
+endif()
+if(NOT TARGET ${sdlimage_target_name})
+    find_package(SDL3_image 3.0.0 REQUIRED)
+    if(NOT TARGET ${sdlimage_target_name})
+        message(FATAL_ERROR "find_package(SDL3_image) did not create ${sdlimage_target_name}.")
+    endif()
+endif()
 
 add_executable(testimage main.c)
 
@@ -38,12 +66,9 @@ set(TESTS_ENVIRONMENT
 )
 
 foreach(prog ${ALL_TESTS})
-    target_compile_definitions(${prog} PRIVATE $<TARGET_PROPERTY:SDL2_image,COMPILE_DEFINITIONS>)
-    target_link_libraries(${prog} PRIVATE SDL2_image::${sdl2_image_export_name})
-    if(TARGET SDL2::SDL2main)
-        target_link_libraries(${prog} PRIVATE SDL2::SDL2main)
-    endif()
-    target_link_libraries(${prog} PRIVATE SDL2::SDL2test ${sdl2_target_name})
+    target_compile_definitions(${prog} PRIVATE $<TARGET_PROPERTY:SDL3_image,COMPILE_DEFINITIONS>)
+    target_link_libraries(${prog} PRIVATE ${sdlimage_target_name})
+    target_link_libraries(${prog} PRIVATE SDL3::SDL3_test ${sdl_target_name})
 
     add_test(
         NAME ${prog}
