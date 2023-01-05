@@ -229,7 +229,7 @@ static int IMG_string_equals(const char *str1, const char *str2)
 /* Load an image from an SDL datasource, optionally specifying the type */
 SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, const char *type)
 {
-    int i;
+    size_t i;
     SDL_Surface *image;
 
     /* Make sure there is something to do.. */
@@ -359,7 +359,7 @@ IMG_Animation *IMG_LoadAnimation_RW(SDL_RWops *src, int freesrc)
 /* Load an animation from an SDL datasource, optionally specifying the type */
 IMG_Animation *IMG_LoadAnimationTyped_RW(SDL_RWops *src, int freesrc, const char *type)
 {
-    int i;
+    size_t i;
     IMG_Animation *anim;
     SDL_Surface *image;
 
