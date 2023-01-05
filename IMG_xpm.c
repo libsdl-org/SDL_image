@@ -116,7 +116,7 @@ static struct color_hash *create_colorhash(int maxnum)
 
     bytes = hash->size * sizeof(struct hash_entry **);
     /* Check for overflow */
-    if ((bytes / sizeof(struct hash_entry **)) != hash->size) {
+    if ((bytes / sizeof(struct hash_entry **)) != (Uint32)hash->size) {
         IMG_SetError("memory allocation overflow");
         SDL_free(hash);
         return NULL;
@@ -129,7 +129,7 @@ static struct color_hash *create_colorhash(int maxnum)
 
     bytes = maxnum * sizeof(struct hash_entry);
     /* Check for overflow */
-    if ((bytes / sizeof(struct hash_entry)) != maxnum) {
+    if ((bytes / sizeof(struct hash_entry)) != (Uint32)maxnum) {
         IMG_SetError("memory allocation overflow");
         SDL_free(hash->table);
         SDL_free(hash);
@@ -902,7 +902,7 @@ static int color_to_argb(char *spec, int speclen, Uint32 *argb)
         *argb = 0xff000000 | (Uint32)SDL_strtol(buf, NULL, 16);
         return 1;
     } else {
-        int i;
+        size_t i;
         for (i = 0; i < SDL_arraysize(known); i++) {
             if (SDL_strncasecmp(known[i].name, spec, speclen) == 0) {
                 *argb = known[i].argb;
@@ -1039,7 +1039,7 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src, SDL_bool force_32bit)
     }
 
     /* Check for allocation overflow */
-    if ((size_t)(ncolors * cpp)/cpp != ncolors) {
+    if ((size_t)((Uint32)ncolors * cpp)/cpp != (Uint32)ncolors) {
         error = "Invalid color specification";
         goto done;
     }
