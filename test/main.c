@@ -16,6 +16,8 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_test.h>
 
+#include <stdlib.h>
+
 #if defined(SDL_FILESYSTEM_OS2) || defined(SDL_FILESYSTEM_WINDOWS)
 static const char pathsep[] = "\\";
 #elif defined(SDL_FILESYSTEM_RISCOS)
@@ -524,7 +526,7 @@ ConvertToRgba32(SDL_Surface **surface_p)
     if ((*surface_p)->format->format != SDL_PIXELFORMAT_RGBA32) {
         SDL_Surface *temp;
 
-        temp = SDL_ConvertSurfaceFormat(*surface_p, SDL_PIXELFORMAT_RGBA32, 0);
+        temp = SDL_ConvertSurfaceFormat(*surface_p, SDL_PIXELFORMAT_RGBA32);
         SDLTest_AssertCheck(temp != NULL,
                             "Converting to RGBA should succeed (%s)",
                             SDL_GetError());
