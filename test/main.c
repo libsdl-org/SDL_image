@@ -961,6 +961,7 @@ static int
 TestFormats(void *arg)
 {
     size_t i;
+    (void)arg;
 
     for (i = 0; i < SDL_arraysize(formats); i++) {
         FormatTest(&formats[i]);
