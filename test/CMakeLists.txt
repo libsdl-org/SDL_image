@@ -69,6 +69,9 @@ foreach(prog ${ALL_TESTS})
     target_compile_definitions(${prog} PRIVATE $<TARGET_PROPERTY:SDL3_image,COMPILE_DEFINITIONS>)
     target_link_libraries(${prog} PRIVATE ${sdlimage_target_name})
     target_link_libraries(${prog} PRIVATE SDL3::SDL3_test ${sdl_target_name})
+    if(TARGET sdl3image_build_options)
+        target_link_libraries(${prog} PRIVATE $<BUILD_INTERFACE:sdl3image_build_options>)
+    endif()
 
     add_test(
         NAME ${prog}
