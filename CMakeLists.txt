@@ -767,16 +767,6 @@ if(SDL3IMAGE_SAMPLES)
     endforeach()
 endif()
 
-add_library(SDL3::image INTERFACE IMPORTED GLOBAL)
-set_target_properties(SDL3::image PROPERTIES
-    INTERFACE_LINK_LIBRARIES "SDL3_image"
-)
-if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.17")
-    set_target_properties(SDL3::image PROPERTIES
-        DEPRECATION "Use SDL3_image::SDL3_image or SDL3_image::SDL3_image-static instead"
-    )
-endif()
-
 if(SDL3IMAGE_TESTS)
     enable_testing()
     add_subdirectory(test)
