@@ -5,18 +5,18 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>SDL2_image</string>
+	<string>SDL3_image</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.libsdl.SDL2-image</string>
+	<string>org.libsdl.SDL3-image</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>SDL2_image</string>
+	<string>SDL3_image</string>
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.7.0</string>
+	<string>3.0.0</string>
 	<key>CFBundleVersion</key>
-	<string>2.7.0</string>
+	<string>3.0.0</string>
 </dict>
 </plist>

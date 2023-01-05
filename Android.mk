@@ -68,7 +68,7 @@ LOCAL_PATH := $(SDL_IMAGE_LOCAL_PATH)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := SDL2_image
+LOCAL_MODULE := SDL3_image
 
 LOCAL_SRC_FILES :=  \
     IMG.c           \
@@ -98,7 +98,7 @@ LOCAL_CFLAGS := -DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM \
                 -DLOAD_QOI
 LOCAL_LDLIBS :=
 LOCAL_STATIC_LIBRARIES :=
-LOCAL_SHARED_LIBRARIES := SDL2
+LOCAL_SHARED_LIBRARIES := SDL3
 
 ifeq ($(USE_STBIMAGE),true)
     LOCAL_CFLAGS += -DLOAD_JPG -DLOAD_PNG -DUSE_STBIMAGE
@@ -154,13 +154,13 @@ include $(BUILD_SHARED_LIBRARY)
 
 ###########################
 #
-# SDL2_image static library
+# SDL3_image static library
 #
 ###########################
 
-LOCAL_MODULE := SDL2_image_static
+LOCAL_MODULE := SDL3_image_static
 
-LOCAL_MODULE_FILENAME := libSDL2_image
+LOCAL_MODULE_FILENAME := libSDL3_image
 
 LOCAL_LDLIBS :=
 LOCAL_EXPORT_LDLIBS :=
