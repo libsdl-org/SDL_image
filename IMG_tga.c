@@ -23,9 +23,9 @@
 
 /* This is a Targa image file loading framework */
 
-#include "SDL_endian.h"
+#include <SDL3/SDL_endian.h>
 
-#include "SDL_image.h"
+#include <SDL3/SDL_image.h>
 
 #ifdef LOAD_TGA
 
