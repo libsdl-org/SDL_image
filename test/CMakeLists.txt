@@ -81,7 +81,7 @@ foreach(prog ${ALL_TESTS})
         ENVIRONMENT "${TESTS_ENVIRONMENT}"
         TIMEOUT 30
     )
-    if(SDL2IMAGE_TESTS_INSTALL)
+    if(SDL3IMAGE_TESTS_INSTALL)
         set(exe ${prog})
         set(installedtestsdir "${CMAKE_INSTALL_FULL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}")
         configure_file(template.test.in "${exe}.test" @ONLY)
@@ -92,7 +92,7 @@ foreach(prog ${ALL_TESTS})
     endif()
 endforeach()
 
-if(SDL2IMAGE_TESTS_INSTALL)
+if(SDL3IMAGE_TESTS_INSTALL)
     install(
         TARGETS ${ALL_TESTS}
         DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}"
