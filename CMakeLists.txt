@@ -162,7 +162,9 @@ else()
     set(sdl3_target_name SDL3::SDL3-static)
 endif()
 
-find_package(SDL3 ${SDL_REQUIRED_VERSION} REQUIRED)
+if(NOT TARGET ${sdl3_target_name})
+    find_package(SDL3 ${SDL_REQUIRED_VERSION} REQUIRED)
+endif()
 
 # Set PROJECT_VERSION of subprojects to "" if it's project call does not set VERSION
 cmake_policy(SET CMP0048 NEW)
