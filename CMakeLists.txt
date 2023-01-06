@@ -27,6 +27,7 @@ if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
 else()
     set(SDL3IMAGE_ROOTPROJECT OFF)
 endif()
+
 set(SDL3IMAGE_SAMPLES_DEFAULT ${SDL3IMAGE_ROOTPROJECT})
 if(ANDROID)
     set(SDL3IMAGE_SAMPLES_DEFAULT OFF)
@@ -193,6 +194,7 @@ if(SDL3IMAGE_WERROR)
     endif()
 endif()
 
+set(BUILD_SHARED_LIBS ${SDL3IMAGE_BUILD_SHARED_LIBS})
 add_library(SDL3_image
     IMG.c
     IMG_WIC.c
@@ -258,13 +260,13 @@ if(NOT ANDROID)
     endif()
 endif()
 if(SDL3IMAGE_BUILD_SHARED_LIBS)
-    if(WIN32 OR OS2)
+    if(WIN32)
         set_target_properties(SDL3_image PROPERTIES
             PREFIX ""
         )
     endif()
 else()
-    if(MSVC OR (WATCOM AND (WIN32 OR OS2)))
+    if(MSVC)
         set_target_properties(SDL3_image PROPERTIES
             OUTPUT_NAME "SDL3_image-static"
         )
@@ -707,18 +709,18 @@ if(SDL3IMAGE_INSTALL)
         )
     endif()
 
-    if(WINDOWS AND NOT MINGW)
+    if(WIN32 AND NOT MINGW)
         set(SDL3IMAGE_INSTALL_CMAKEDIR_ROOT_DEFAULT "cmake")
     else()
         set(SDL3IMAGE_INSTALL_CMAKEDIR_ROOT_DEFAULT "${CMAKE_INSTALL_LIBDIR}/cmake")
     endif()
     set(SDL3IMAGE_INSTALL_CMAKEDIR_ROOT "${SDL3IMAGE_INSTALL_CMAKEDIR_ROOT_DEFAULT}" CACHE STRING "Root folder where to install SDL3Config.cmake related files (SDL3 subfolder for MSVC projects)")
 
-    if(WINDOWS AND NOT MINGW)
+    if(WIN32 AND NOT MINGW)
         set(SDL3IMAGE_INSTALL_CMAKEDIR "${SDL3IMAGE_INSTALL_CMAKEDIR_ROOT}")
         set(LICENSES_PREFIX "licenses/SDL3_image")
     else()
-        set(SDL3IMAGE_INSTALL_CMAKEDIR "${SDL3IMAGE_INSTALL_CMAKEDIR_ROOT}/SDL3")
+        set(SDL3IMAGE_INSTALL_CMAKEDIR "${SDL3IMAGE_INSTALL_CMAKEDIR_ROOT}/SDL3_image")
         set(LICENSES_PREFIX "${CMAKE_INSTALL_DATAROOTDIR}/licenses/SDL3_image")
     endif()
 
@@ -726,7 +728,6 @@ if(SDL3IMAGE_INSTALL)
         INSTALL_DESTINATION "${SDL3IMAGE_INSTALL_CMAKEDIR}"
     )
     write_basic_package_version_file("${PROJECT_BINARY_DIR}/SDL3_imageConfigVersion.cmake"
-        VERSION ${FULL_VERSION}
         COMPATIBILITY AnyNewerVersion
     )
     install(
@@ -749,7 +750,6 @@ if(SDL3IMAGE_INSTALL)
     string(JOIN " " PC_LIBS ${PC_LIBS})
     configure_file(cmake/sdl3-image.pc.in sdl3-image.pc @ONLY)
 
-    set(PC_DESTDIR)
     if(CMAKE_SYSTEM_NAME MATCHES FreeBSD)
         # FreeBSD uses ${PREFIX}/libdata/pkgconfig
         set(PC_DESTDIR "libdata/pkgconfig")
@@ -771,10 +771,6 @@ if(SDL3IMAGE_SAMPLES)
     add_executable(showimage showimage.c)
 
     foreach(prog showanim showimage)
-        if(MINGW)
-            target_link_libraries(${prog} PRIVATE mingw32)
-            target_link_options(${prog} PRIVATE -mwindows)
-        endif()
         target_link_libraries(${prog} PRIVATE SDL3_image::${sdl3_image_export_name})
         target_link_libraries(${prog} PRIVATE ${sdl3_target_name})
 
