@@ -40,9 +40,9 @@ android_api=19
 android_ndk=21
 android_stl="c++_shared"
 
-sdlimage_major=$(sed -ne 's/^#define SDL_IMAGE_MAJOR_VERSION  *//p' "${sdlimage_root}/SDL_image.h")
-sdlimage_minor=$(sed -ne 's/^#define SDL_IMAGE_MINOR_VERSION  *//p' "${sdlimage_root}/SDL_image.h")
-sdlimage_patch=$(sed -ne 's/^#define SDL_IMAGE_PATCHLEVEL  *//p' "${sdlimage_root}/SDL_image.h")
+sdlimage_major=$(sed -ne 's/^#define SDL_IMAGE_MAJOR_VERSION  *//p' "${sdlimage_root}/include/SDL3/SDL_image.h")
+sdlimage_minor=$(sed -ne 's/^#define SDL_IMAGE_MINOR_VERSION  *//p' "${sdlimage_root}/include/SDL3/SDL_image.h")
+sdlimage_patch=$(sed -ne 's/^#define SDL_IMAGE_PATCHLEVEL  *//p' "${sdlimage_root}/include/SDL3/SDL_image.h")
 sdlimage_version="${sdlimage_major}.${sdlimage_minor}.${sdlimage_patch}"
 echo "Building Android prefab package for SDL_image version $sdlimage_version"
 
@@ -65,27 +65,27 @@ build_cmake_projects() {
         for build_shared_libs in ON OFF; do
             echo "Configuring CMake project for $android_abi (shared=${build_shared_libs})"
             cmake -S "${sdlimage_root}" -B "${build_root}/build_${android_abi}/shared_${build_shared_libs}" \
-                -DSDL2IMAGE_DEPS_SHARED=ON \
-                -DSDL2IMAGE_VENDORED=ON \
-                -DSDL2IMAGE_BACKEND_STB=OFF \
-                -DSDL2IMAGE_AVIF=OFF \
-                -DSDL2IMAGE_BMP=ON \
-                -DSDL2IMAGE_GIF=ON \
-                -DSDL2IMAGE_JPG=ON \
-                -DSDL2IMAGE_JXL=OFF \
+                -DSDL3IMAGE_DEPS_SHARED=ON \
+                -DSDL3IMAGE_VENDORED=ON \
+                -DSDL3IMAGE_BACKEND_STB=OFF \
+                -DSDL3IMAGE_AVIF=OFF \
+                -DSDL3IMAGE_BMP=ON \
+                -DSDL3IMAGE_GIF=ON \
+                -DSDL3IMAGE_JPG=ON \
+                -DSDL3IMAGE_JXL=OFF \
                 -DSJPEG_ANDROID_NDK_PATH="${ANDROID_NDK_HOME}" \
-                -DSDL2IMAGE_LBM=ON \
-                -DSDL2IMAGE_PCX=ON \
-                -DSDL2IMAGE_PNG=ON \
-                -DSDL2IMAGE_PNM=ON \
-                -DSDL2IMAGE_QOI=ON \
-                -DSDL2IMAGE_SVG=ON \
-                -DSDL2IMAGE_TGA=ON \
-                -DSDL2IMAGE_TIF=ON \
-                -DSDL2IMAGE_WEBP=ON \
-                -DSDL2IMAGE_XCF=ON \
-                -DSDL2IMAGE_XPM=ON \
-                -DSDL2IMAGE_XV=ON \
+                -DSDL3IMAGE_LBM=ON \
+                -DSDL3IMAGE_PCX=ON \
+                -DSDL3IMAGE_PNG=ON \
+                -DSDL3IMAGE_PNM=ON \
+                -DSDL3IMAGE_QOI=ON \
+                -DSDL3IMAGE_SVG=ON \
+                -DSDL3IMAGE_TGA=ON \
+                -DSDL3IMAGE_TIF=ON \
+                -DSDL3IMAGE_WEBP=ON \
+                -DSDL3IMAGE_XCF=ON \
+                -DSDL3IMAGE_XPM=ON \
+                -DSDL3IMAGE_XV=ON \
                 -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake" \
                 -DSDL${sdlimage_major}_DIR="${sdl_build_root}/build_${android_abi}/prefix/lib/cmake/SDL${sdlimage_major}" \
                 -DANDROID_PLATFORM=${android_platform} \
@@ -206,8 +206,8 @@ create_shared_sdl_image_module() {
   "library_name": "libSDL${sdlimage_major}_image"
 }
 EOF
-        mkdir -p "${sdl_moduleworkdir}/include"
-        cp -r "${abi_build_prefix}/include/SDL${sdlimage_major}/"* "${sdl_moduleworkdir}/include/"
+        mkdir -p "${sdl_moduleworkdir}/include/SDL${sdlimage_major}"
+        cp -r "${abi_build_prefix}/include/SDL${sdlimage_major}/"* "${sdl_moduleworkdir}/include/SDL${sdlimage_major}"
 
         abi_sdllibdir="${sdl_moduleworkdir}/libs/android.${android_abi}"
         mkdir -p "${abi_sdllibdir}"
@@ -238,8 +238,8 @@ create_static_sdl_image_module() {
   "library_name": "libSDL${sdlimage_major}_image"
 }
 EOF
-        mkdir -p "${sdl_moduleworkdir}/include"
-        cp -r "${abi_build_prefix}/include/SDL${sdlimage_major}/"* "${sdl_moduleworkdir}/include"
+        mkdir -p "${sdl_moduleworkdir}/include/SDL${sdlimage_major}"
+        cp -r "${abi_build_prefix}/include/SDL${sdlimage_major}/"* "${sdl_moduleworkdir}/include/SDL${sdlimage_major}"
 
         abi_sdllibdir="${sdl_moduleworkdir}/libs/android.${android_abi}"
         mkdir -p "${abi_sdllibdir}"
