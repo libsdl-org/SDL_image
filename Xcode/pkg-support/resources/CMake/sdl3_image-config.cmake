@@ -49,9 +49,9 @@ if(NOT TARGET SDL3_image::SDL3_image)
     add_library(SDL3_image::SDL3_image INTERFACE IMPORTED)
     set_target_properties(SDL3_image::SDL3_image
         PROPERTIES
-            INTERFACE_COMPILE_OPTIONS "SHELL:-F;${_sdl3image_framework_parent_path}"
+            INTERFACE_COMPILE_OPTIONS "SHELL:-F ${_sdl3image_framework_parent_path}"
             INTERFACE_INCLUDE_DIRECTORIES "${_sdl3image_framework_path}/Headers"
-            INTERFACE_LINK_OPTIONS "SHELL:-F;${_sdl3image_framework_parent_path};SHELL:-framework;SDL3_image"
+            INTERFACE_LINK_OPTIONS "SHELL:-F ${_sdl3image_framework_parent_path};SHELL:-framework SDL3_image"
             COMPATIBLE_INTERFACE_BOOL "SDL3_SHARED"
             INTERFACE_SDL3_SHARED "ON"
     )
