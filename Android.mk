@@ -93,6 +93,8 @@ LOCAL_SRC_FILES :=  \
     IMG_xv.c        \
     IMG_xxx.c
 
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/include
+
 LOCAL_CFLAGS := -DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM \
                 -DLOAD_SVG -DLOAD_TGA -DLOAD_XCF -DLOAD_XPM -DLOAD_XV  \
                 -DLOAD_QOI
@@ -148,7 +150,7 @@ ifeq ($(SUPPORT_WEBP),true)
     LOCAL_STATIC_LIBRARIES += webp
 endif
 
-LOCAL_EXPORT_C_INCLUDES += $(LOCAL_PATH)
+LOCAL_EXPORT_C_INCLUDES += $(LOCAL_PATH)/include $(LOCAL_PATH)/include/SDL3
 
 include $(BUILD_SHARED_LIBRARY)
 
