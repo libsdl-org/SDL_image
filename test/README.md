@@ -1,10 +1,10 @@
-`SDL2_image` automated test
+`SDL3_image` automated test
 ===========================
 
 Build-time tests
 ----------------
 
-Configure with `--enable-tests` (Autotools) or `-DSDL2IMAGE_TESTS` (CMake).
+Configure with `--enable-tests` (Autotools) or `-DSDL3IMAGE_TESTS` (CMake).
 
 Run build-time tests in the usual way, for example `make check`
 (Autotools), or `ctest` or `make test` (CMake).
@@ -17,19 +17,19 @@ run on a target platform as a somewhat realistic equivalent of how a
 game would behave.
 
 Configure with `--enable-tests --enable-installed-tests` (Autotools) or
-`-DSDL2IMAGE_TESTS -DSDL2IMAGE_TESTS_INSTALL` (CMake).
+`-DSDL3IMAGE_TESTS -DSDL3IMAGE_TESTS_INSTALL` (CMake).
 
 The tests and their required resource files are installed into
-`${libexecdir}/installed-tests/SDL2_image`. When run, they will write
+`${libexecdir}/installed-tests/SDL3_image`. When run, they will write
 to the current working directory: create a temporary directory and run
 them from there if necessary.
 
 On platforms where `SDL_GetBasePath()` returns the directory containing
-the executable, the whole `installed-tests/SDL2_image` directory can be
+the executable, the whole `installed-tests/SDL3_image` directory can be
 copied to any location and `testimage` can be run from there.
 
 Metadata describing the tests is installed in
-`${datadir}/installed-tests/SDL2_image`. This can be used to run the
+`${datadir}/installed-tests/SDL3_image`. This can be used to run the
 tests with `ginsttest-runner` from
 [gnome-desktop-testing](https://gitlab.gnome.org/GNOME/gnome-desktop-testing),
 or any implementation of the same
@@ -53,12 +53,12 @@ can set some environment variables before running the tests:
 
 * For each *format* where loading can be supported, if
     `SDL_IMAGE_TEST_REQUIRE_LOAD_` + *format* is set to 1,
-    the test will fail unless `SDL2_image` can load *format*.
+    the test will fail unless `SDL3_image` can load *format*.
     (For example, `export SDL_IMAGE_TEST_REQUIRE_LOAD_WEBP=1`.)
 
 * For each *format* where saving can be supported (`JPG` or `PNG`), if
     `SDL_IMAGE_TEST_REQUIRE_SAVE_` + *format* is set to 1,
-    the test will fail unless `SDL2_image` can load *format*.
+    the test will fail unless `SDL3_image` can load *format*.
     (For example, `export SDL_IMAGE_TEST_REQUIRE_SAVE_JPG=1`.)
 
 Setting these variables to 0 causes them to be ignored, returning to the

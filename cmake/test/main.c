@@ -1,17 +1,15 @@
-#define SDL_MAIN_HANDLED
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
 #include <SDL3/SDL_image.h>
-#include <stdio.h>
 
-int main(int argc, char *argv[]) {
-    SDL_SetMainReady();
+int main(int argc, char *argv[])
+{
     if (SDL_Init(0) < 0) {
-        fprintf(stderr, "could not initialize sdl2: %s\n", SDL_GetError());
+        SDL_Log("Could not initialize SDL: %s\n", SDL_GetError());
         return 1;
     }
-    SDL_SetMainReady();
     if (IMG_Init(0) == 0) {
-        fprintf(stderr, "no image formats supported\n");
+        SDL_Log("No image formats supported\n");
     }
     IMG_Quit();
     SDL_Quit();
