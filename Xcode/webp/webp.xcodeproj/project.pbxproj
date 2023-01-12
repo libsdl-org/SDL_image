@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		F3B38D2F296F7549005DA6D3 /* xcFramework */ = {
+		F3B38D2F296F7549005DA6D3 /* webp.xcframework */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = F3B38D32296F7549005DA6D3 /* Build configuration list for PBXAggregateTarget "xcFramework" */;
+			buildConfigurationList = F3B38D32296F7549005DA6D3 /* Build configuration list for PBXAggregateTarget "webp.xcframework" */;
 			buildPhases = (
 				F3B38D33296F7552005DA6D3 /* ShellScript */,
 			);
 			dependencies = (
 			);
-			name = xcFramework;
+			name = webp.xcframework;
 			productName = xcFramework;
 		};
 /* End PBXAggregateTarget section */
@@ -489,7 +489,7 @@
 			projectRoot = "";
 			targets = (
 				F3D87C31281EA1A1005DA540 /* webp */,
-				F3B38D2F296F7549005DA6D3 /* xcFramework */,
+				F3B38D2F296F7549005DA6D3 /* webp.xcframework */,
 			);
 		};
 /* End PBXProject section */
@@ -844,7 +844,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F3B38D32296F7549005DA6D3 /* Build configuration list for PBXAggregateTarget "xcFramework" */ = {
+		F3B38D32296F7549005DA6D3 /* Build configuration list for PBXAggregateTarget "webp.xcframework" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F3B38D30296F7549005DA6D3 /* Debug */,

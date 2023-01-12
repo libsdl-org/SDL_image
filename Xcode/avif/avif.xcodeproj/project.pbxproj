@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		F3B38D25296F74CC005DA6D3 /* xcFramework */ = {
+		F3B38D25296F74CC005DA6D3 /* avif.xcframework */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = F3B38D28296F74CC005DA6D3 /* Build configuration list for PBXAggregateTarget "xcFramework" */;
+			buildConfigurationList = F3B38D28296F74CC005DA6D3 /* Build configuration list for PBXAggregateTarget "avif.xcframework" */;
 			buildPhases = (
 				F3B38D29296F74D4005DA6D3 /* ShellScript */,
 			);
 			dependencies = (
 			);
-			name = xcFramework;
+			name = avif.xcframework;
 			productName = xcFramework;
 		};
 /* End PBXAggregateTarget section */
@@ -460,7 +460,7 @@
 				F354757C2829B82B007E9EDA /* dav1d */,
 				F35475892829B839007E9EDA /* dav1d-8bit */,
 				F35475962829B847007E9EDA /* dav1d-16bit */,
-				F3B38D25296F74CC005DA6D3 /* xcFramework */,
+				F3B38D25296F74CC005DA6D3 /* avif.xcframework */,
 			);
 		};
 /* End PBXProject section */
@@ -921,7 +921,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F3B38D28296F74CC005DA6D3 /* Build configuration list for PBXAggregateTarget "xcFramework" */ = {
+		F3B38D28296F74CC005DA6D3 /* Build configuration list for PBXAggregateTarget "avif.xcframework" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F3B38D26296F74CC005DA6D3 /* Debug */,

@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		F3B38D2A296F7515005DA6D3 /* xcFramework */ = {
+		F3B38D2A296F7515005DA6D3 /* jxl.xcframework */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = F3B38D2D296F7515005DA6D3 /* Build configuration list for PBXAggregateTarget "xcFramework" */;
+			buildConfigurationList = F3B38D2D296F7515005DA6D3 /* Build configuration list for PBXAggregateTarget "jxl.xcframework" */;
 			buildPhases = (
 				F3B38D2E296F751A005DA6D3 /* ShellScript */,
 			);
 			dependencies = (
 			);
-			name = xcFramework;
+			name = jxl.xcframework;
 			productName = xcFramework;
 		};
 /* End PBXAggregateTarget section */
@@ -470,7 +470,7 @@
 			projectRoot = "";
 			targets = (
 				F307EEDB28288CCF003915D7 /* jxl */,
-				F3B38D2A296F7515005DA6D3 /* xcFramework */,
+				F3B38D2A296F7515005DA6D3 /* jxl.xcframework */,
 			);
 		};
 /* End PBXProject section */
@@ -832,7 +832,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F3B38D2D296F7515005DA6D3 /* Build configuration list for PBXAggregateTarget "xcFramework" */ = {
+		F3B38D2D296F7515005DA6D3 /* Build configuration list for PBXAggregateTarget "jxl.xcframework" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F3B38D2B296F7515005DA6D3 /* Debug */,

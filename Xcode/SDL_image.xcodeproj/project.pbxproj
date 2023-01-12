@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		F3B38D1E296F730C005DA6D3 /* xcFramework */ = {
+		F3B38D1E296F730C005DA6D3 /* SDL_image.xcframework */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = F3B38D1F296F730C005DA6D3 /* Build configuration list for PBXAggregateTarget "xcFramework" */;
+			buildConfigurationList = F3B38D1F296F730C005DA6D3 /* Build configuration list for PBXAggregateTarget "SDL_image.xcframework" */;
 			buildPhases = (
 				F3B38D22296F7329005DA6D3 /* ShellScript */,
 			);
 			dependencies = (
 			);
-			name = xcFramework;
+			name = SDL_image.xcframework;
 			productName = xcFramework;
 		};
 /* End PBXAggregateTarget section */
@@ -499,7 +499,7 @@
 				BE1FA71807AF4C44004B6283 /* Framework */,
 				BE1FA72F07AF4C45004B6283 /* Static Library */,
 				BE1FA74207AF4C45004B6283 /* Create DMG */,
-				F3B38D1E296F730C005DA6D3 /* xcFramework */,
+				F3B38D1E296F730C005DA6D3 /* SDL_image.xcframework */,
 			);
 		};
 /* End PBXProject section */
@@ -670,7 +670,7 @@
 /* Begin PBXTargetDependency section */
 		F3B38D24296F73B8005DA6D3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = F3B38D1E296F730C005DA6D3 /* xcFramework */;
+			target = F3B38D1E296F730C005DA6D3 /* SDL_image.xcframework */;
 			targetProxy = F3B38D23296F73B8005DA6D3 /* PBXContainerItemProxy */;
 		};
 		F3B38D35296F7581005DA6D3 /* PBXTargetDependency */ = {
@@ -911,7 +911,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F3B38D1F296F730C005DA6D3 /* Build configuration list for PBXAggregateTarget "xcFramework" */ = {
+		F3B38D1F296F730C005DA6D3 /* Build configuration list for PBXAggregateTarget "SDL_image.xcframework" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F3B38D20296F730C005DA6D3 /* Release */,
