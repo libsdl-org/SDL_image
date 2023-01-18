@@ -113,12 +113,12 @@ typedef enum
  *
  * Currently, these flags are:
  *
- * - `_INIT_JPG`
- * - `_INIT_PNG`
- * - `_INIT_TIF`
- * - `_INIT_WEBP`
- * - `_INIT_JXL`
- * - `_INIT_AVIF`
+ * - `IMG_INIT_JPG`
+ * - `IMG_INIT_PNG`
+ * - `IMG_INIT_TIF`
+ * - `IMG_INIT_WEBP`
+ * - `IMG_INIT_JXL`
+ * - `IMG_INIT_AVIF`
  *
  * More flags may be added in a future SDL_image release.
  *
