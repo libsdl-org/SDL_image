@@ -23,8 +23,6 @@
 
 #ifdef USE_STBIMAGE
 
-#include <limits.h> /* for INT_MAX */
-
 #define malloc SDL_malloc
 #define realloc SDL_realloc
 #define free SDL_free
@@ -59,19 +57,19 @@
 
 static int IMG_LoadSTB_RW_read(void *user, char *data, int size)
 {
-    return (int) SDL_RWread((SDL_RWops*) user, data, 1, size);
+    return (int) SDL_RWread((SDL_RWops*)user, data, 1, size);
 }
 
 static void IMG_LoadSTB_RW_skip(void *user, int n)
 {
-    SDL_RWseek((SDL_RWops*) user, n, RW_SEEK_CUR);
+    SDL_RWseek((SDL_RWops*)user, n, RW_SEEK_CUR);
 }
 
 static int IMG_LoadSTB_RW_eof(void *user)
 {
     /* FIXME: Do we not have a way to detect EOF? -flibit */
     size_t bytes, filler;
-    SDL_RWops *src = (SDL_RWops*) user;
+    SDL_RWops *src = (SDL_RWops*)user;
     bytes = SDL_RWread(src, &filler, 1, 1);
     if (bytes != 1) { /* FIXME: Could also be an error... */
         return 1;
@@ -88,7 +86,7 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
     stbi_io_callbacks rw_callbacks;
     SDL_Surface *surface = NULL;
 
-    if ( !src ) {
+    if (!src) {
         /* The error message has been set in SDL_RWFromFile */
         return NULL;
     }
@@ -106,7 +104,7 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
         &format,
         STBI_default
     );
-    if ( !pixels ) {
+    if (!pixels) {
         SDL_RWseek(src, start, RW_SEEK_SET);
         return NULL;
     }
