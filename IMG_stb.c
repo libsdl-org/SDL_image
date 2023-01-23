@@ -23,9 +23,7 @@
 
 #ifdef USE_STBIMAGE
 
-#ifndef INT_MAX
-#define INT_MAX 0x7FFFFFFF
-#endif
+#include <limits.h> /* for INT_MAX */
 
 #define malloc SDL_malloc
 #define realloc SDL_realloc
