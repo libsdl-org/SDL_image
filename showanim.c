@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
         while ( ! done ) {
             while ( SDL_PollEvent(&event) ) {
                 switch (event.type) {
-                    case SDL_KEYUP:
+                    case SDL_EVENT_KEY_UP:
                         switch (event.key.keysym.sym) {
                             case SDLK_LEFT:
                                 if ( i > 1 ) {
@@ -149,10 +149,10 @@ int main(int argc, char *argv[])
                             break;
                         }
                         break;
-                    case SDL_MOUSEBUTTONDOWN:
+                    case SDL_EVENT_MOUSE_BUTTONDOWN:
                         done = 1;
                         break;
-                    case SDL_QUIT:
+                    case SDL_EVENT_QUIT:
                         argv[i+1] = NULL;
                         done = 1;
                         break;
