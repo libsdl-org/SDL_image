@@ -240,7 +240,6 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
         case 1:
         case 4:
             ExpandBMP = biBitCount;
-            biBitCount = 8;
             break;
         case 8:
             ExpandBMP = 8;
