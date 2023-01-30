@@ -1,4 +1,4 @@
-/* stb_image - v2.27 - public domain image loader - http://nothings.org/stb
+/* stb_image - v2.28 - public domain image loader - http://nothings.org/stb
                                   no warranty implied; use at your own risk
 
    Do this:
@@ -48,6 +48,7 @@ LICENSE
 
 RECENT REVISION HISTORY:
 
+      2.28  (2023-01-29) many error fixes, security errors, just tons of stuff
       2.27  (2021-07-11) document stbi_info better, 16-bit PNM support, bug fixes
       2.26  (2020-07-13) many minor fixes
       2.25  (2020-02-02) fix warnings
@@ -3497,15 +3498,19 @@ static int stbi__decode_jpeg_image(stbi__jpeg *j)
          j->marker = stbi__skip_jpeg_junk_at_end(j);
             // if we reach eof without hitting a marker, stbi__get_marker() below will fail and we'll eventually return 0
          }
+         m = stbi__get_marker(j);
+         if (STBI__RESTART(m))
+            m = stbi__get_marker(j);
       } else if (stbi__DNL(m)) {
          int Ld = stbi__get16be(j->s);
          stbi__uint32 NL = stbi__get16be(j->s);
          if (Ld != 4) return stbi__err("bad DNL len", "Corrupt JPEG");
          if (NL != j->s->img_y) return stbi__err("bad DNL height", "Corrupt JPEG");
+         m = stbi__get_marker(j);
       } else {
-         if (!stbi__process_marker(j, m)) return 0;
+         if (!stbi__process_marker(j, m)) return 1;
+         m = stbi__get_marker(j);
       }
-      m = stbi__get_marker(j);
    }
    if (j->progressive)
       stbi__jpeg_finish(j);
