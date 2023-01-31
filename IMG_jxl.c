@@ -214,7 +214,7 @@ SDL_Surface *IMG_LoadJXL_RW(SDL_RWops *src)
             break;
         case JXL_DEC_SUCCESS:
             /* All done! */
-            surface = SDL_CreateSurface(info.xsize, info.ysize, pitch, SDL_PIXELFORMAT_RGBA32);
+            surface = SDL_CreateSurfaceFrom(pixels, info.xsize, info.ysize, pitch, SDL_PIXELFORMAT_RGBA32);
             if (surface) {
                 /* Let SDL manage the memory now */
                 pixels = NULL;
