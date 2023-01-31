@@ -15,12 +15,12 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows (MSVC),    os: windows-latest, shell: sh,  cmake: '-DSDL3IMAGE_VENDORED=ON -GNinja', msvc: 1, shared: 1, static: 0 }
-        - { name: Windows (mingw64), os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0,
-            cmake: '-DSDL3IMAGE_BACKEND_STB=OFF -DSDL3IMAGE_BACKEND_WIC=OFF -DSDL3IMAGE_VENDORED=OFF -DSDL3IMAGE_AVIF=ON -G "Ninja Multi-Config"' }
-        - { name: Linux,             os: ubuntu-20.04,   shell: sh,  cmake: '-DSDL3IMAGE_VENDORED=ON -GNinja', shared: 1, static: 0 }
-        - { name: 'Linux (static)',  os: ubuntu-20.04,   shell: sh,  cmake: '-DSDL3IMAGE_VENDORED=ON -DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1 }
-        - { name: Macos,             os: macos-latest,   shell: sh,  cmake: '-DSDL3IMAGE_VENDORED=ON -GNinja', shared: 1, static: 0 }
+        - { name: Windows (MSVC),    os: windows-latest, shell: sh,  cmake: '-GNinja', msvc: 1, shared: 1, static: 0, vendored: true, sdl_artifact_name: 'SDL-VC-x64' }
+        - { name: Windows (mingw64), os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0, vendored: false,
+            cmake: '-DSDL3IMAGE_BACKEND_STB=OFF -DSDL3IMAGE_BACKEND_WIC=OFF -DSDL3IMAGE_AVIF=ON -G "Ninja Multi-Config"', sdl_artifact_name: 'SDL-mingw64' }
+        - { name: Linux,             os: ubuntu-20.04,   shell: sh,  cmake: '-GNinja', shared: 1, static: 0, vendored: true, sdl_artifact_name: 'SDL-ubuntu20.04' }
+        - { name: 'Linux (static)',  os: ubuntu-20.04,   shell: sh,  cmake: '-DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1, vendored: true, sdl_artifact_name: 'SDL-ubuntu20.04' }
+        - { name: Macos,             os: macos-latest,   shell: sh,  cmake: '-GNinja', shared: 1, static: 0, vendored: true, sdl_artifact_name: 'SDL-macos-gnu' }
 
     steps:
     - name: Set up MSYS2
@@ -29,7 +29,6 @@ jobs:
       with:
         msystem: ${{ matrix.platform.msystem }}
         install: >-
-          ${{ matrix.platform.msys-env }}-SDL3
           ${{ matrix.platform.msys-env }}-cmake
           ${{ matrix.platform.msys-env }}-gcc
           ${{ matrix.platform.msys-env }}-libavif
@@ -55,7 +54,6 @@ jobs:
             webp \
             zlib \
             ${NULL+}
-          brew install sdl3
     - name: Setup Linux dependencies
       if: runner.os == 'Linux'
       run: |
@@ -64,7 +62,6 @@ jobs:
           cmake \
           libjpeg-dev \
           libpng-dev \
-          libSDL3-dev \
           libtiff-dev \
           libwebp-dev \
           ninja-build \
@@ -72,16 +69,14 @@ jobs:
           zlib1g-dev \
           ${NULL+}
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
+    - id: fetch-sdl-from-artifact
+      uses: ./.github/workflows/fetch-sdl-artifact
+      with:
+        artifact_name: ${{ matrix.platform.sdl_artifact_name }}
 
-    - name: Setup MSVC dependencies
-      if: "matrix.platform.msvc"
-      shell: pwsh
-      run: |
-        .github/fetch_sdl_vc.ps1
-        echo "SDL3_DIR=$Env:GITHUB_WORKSPACE/SDL3-devel-VC" >> $Env:GITHUB_ENV
     - name: Setup Ninja for MSVC
       if: "matrix.platform.msvc"
       uses: ashutoshvarma/setup-ninja@master
@@ -97,16 +92,17 @@ jobs:
       if: "runner.os == 'Linux'"
       run: ./test-versioning.sh
 
-    - name: Setup
+    - name: Setup CMake 3.16
       if: ${{ !matrix.platform.msystem && !matrix.platform.msvc }}
       uses: jwlawson/actions-setup-cmake@v1.12
       with:
         cmake-version: '3.16'
-    - name: Configure
+    - name: Configure (CMake)
       run: |
         set -- \
           -DBUILD_SHARED_LIBS=ON \
           -DCMAKE_BUILD_TYPE=Release \
+          -DSDL3IMAGE_VENDORED=${{ matrix.platform.vendored }} \
           -DSDL3IMAGE_SAMPLES=ON \
           -DSDL3IMAGE_TESTS_INSTALL=ON \
           -DSDL3IMAGE_JXL=ON \
@@ -114,6 +110,7 @@ jobs:
           -DSDL3IMAGE_WEBP=ON \
           -DSDL3IMAGE_WERROR=ON \
           -DCMAKE_INSTALL_PREFIX=prefix_cmake \
+          -DCMAKE_PREFIX_PATH=${{ steps.fetch-sdl-from-artifact.outputs.sdl_root }} \
           ${NULL+}
 
         if [ "${{ matrix.platform.msystem }}" = "" ]; then
@@ -182,7 +179,7 @@ jobs:
       run: |
           cmake -S cmake/test -B cmake_config_build \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH="${{ env.SDL3_image_DIR }};${{ env.SDL3_DIR }}" \
+            -DCMAKE_PREFIX_PATH="${{ env.SDL3_image_DIR }};${{ env.SDL3_DIR }};${{ steps.fetch-sdl-from-artifact.outputs.sdl_root }}" \
             -DTEST_SHARED=${{ matrix.platform.shared }} \
             -DTEST_STATIC=${{ matrix.platform.static }}
           cmake --build cmake_config_build --verbose

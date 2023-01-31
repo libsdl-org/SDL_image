@@ -3,7 +3,7 @@ project(SDL3_image_tests)
 
 enable_testing()
 
-option(SDL3IMAGE_TESTS_LINK_SHARED "link tests to shared SDL library" ON)
+option(SDL3IMAGE_TESTS_LINK_SHARED "link tests to shared SDL library" "${BUILD_SHARED_LIBS}")
 option(SDL3IMAGE_TESTS_INSTALL "Install unit tests?" OFF)
 
 if(SDL3IMAGE_TESTS_LINK_SHARED)

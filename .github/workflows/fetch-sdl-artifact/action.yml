@@ -1,0 +1,33 @@
+name: 'SDL from artifacts'
+description: 'Fetch SDL from CI artifacts'
+inputs:
+  owner:
+    description: 'SDL repo owner'
+    default: 'libsdl-org'
+    required: true
+  repo:
+    description: 'SDL repo name'
+    default: 'SDL'
+    required: true
+  artifact_name:
+    description: 'SDL artifact name'
+    required: true
+outputs:
+  sdl_root:
+    description: "The SDL root"
+    value: ${{ steps.dl-and-extract.outputs.sdl_root }}
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        npm install @actions/core @octokit/rest @shockpkg/archive-files
+      shell: bash
+    - id: dl-and-extract
+      run: |
+        node ./.github/workflows/fetch-sdl-artifact/dl_sdl_artifact.js
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        INPUT_REPO: ${{ inputs.repo }}
+        INPUT_OWNER: ${{ inputs.owner }}
+        INPUT_ARTIFACT_NAME: ${{ inputs.artifact_name }}
