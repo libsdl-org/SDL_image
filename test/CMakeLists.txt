@@ -63,6 +63,7 @@ set(TESTS_ENVIRONMENT
     "SDL_TEST_SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}"
     "SDL_TEST_BUILDDIR=${CMAKE_CURRENT_BINARY_DIR}"
     "SDL_VIDEO_DRIVER=dummy"
+    "PATH=$<TARGET_FILE_DIR:${sdlimage_target_name}>;$<TARGET_FILE_DIR:${sdl_target_name}>"
 )
 
 foreach(prog ${ALL_TESTS})
