@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     for ( i=1; argv[i]; ++i ) {
         if ( SDL_strcmp(argv[i], "-fullscreen") == 0 ) {
             SDL_HideCursor();
-            flags |= SDL_WINDOW_FULLSCREEN_EXCLUSIVE;
+            flags |= SDL_WINDOW_FULLSCREEN;
         }
     }
 
