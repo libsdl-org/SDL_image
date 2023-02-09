@@ -42,6 +42,12 @@ else()
     set(vendored_default OFF)
 endif()
 
+set(sdl3image_install_enableable ON)
+if ((TARGET SDL3 OR TARGET SDL3-static) AND SDL3_DISABLE_INSTALL)
+    # Cannot install SDL3_image when SDL3 is built in same built, and is not installed.
+    set(sdl3image_install_enableable OFF)
+endif()
+
 include(CMakeDependentOption)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
@@ -49,7 +55,7 @@ include(GNUInstallDirs)
 option(CMAKE_POSITION_INDEPENDENT_CODE "Build static libraries with -fPIC" ON)
 option(BUILD_SHARED_LIBS "Build the library as a shared library" ON)
 
-option(SDL3IMAGE_INSTALL "Enable SDL3_image install target" ${SDL3IMAGE_ROOTPROJECT})
+cmake_dependent_option(SDL3IMAGE_INSTALL "Enable SDL3_image install target" ${SDL3IMAGE_ROOTPROJECT} "${sdl3image_install_enableable}" OFF)
 option(SDL3IMAGE_DEPS_SHARED "Load dependencies dynamically" ON)
 option(SDL3IMAGE_VENDORED "Use vendored third-party libraries" ${vendored_default})
 option(SDL3IMAGE_WERROR "Treat warnings as errors" OFF)
