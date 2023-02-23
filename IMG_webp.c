@@ -207,7 +207,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
     } else {
        format = SDL_PIXELFORMAT_RGB24;
     }
-    
+
     surface = SDL_CreateSurface(features.width, features.height, format);
     if (surface == NULL) {
         error = "Failed to allocate SDL_Surface";
@@ -302,7 +302,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
     } else {
        format = SDL_PIXELFORMAT_RGB24;
     }
-    
+
     wd.size = raw_data_size;
     wd.bytes = raw_data;
     dmuxer = lib.WebPDemuxInternal(&wd, 0, NULL, WEBP_DEMUX_ABI_VERSION);
@@ -386,16 +386,23 @@ void IMG_QuitWEBP()
 /* See if an image is contained in a data source */
 int IMG_isWEBP(SDL_RWops *src)
 {
+    (void)src;
+
     return 0;
 }
 
 /* Load a WEBP type image from an SDL datasource */
 SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 {
+    (void)src;
+
     return NULL;
 }
 
-IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src) {
+IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
+{
+    (void)src;
+
     return NULL;
 }
 
