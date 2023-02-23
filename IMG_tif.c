@@ -235,12 +235,16 @@ void IMG_QuitTIF()
 /* See if an image is contained in a data source */
 int IMG_isTIF(SDL_RWops *src)
 {
+    (void)src;
+
     return(0);
 }
 
 /* Load a TIFF type image from an SDL datasource */
 SDL_Surface *IMG_LoadTIF_RW(SDL_RWops *src)
 {
+    (void)src;
+
     return(NULL);
 }
 
