@@ -22,7 +22,7 @@
 /**
  *  \file SDL_loadso.h
  *
- *  System dependent library loading routines
+ *  \brief System dependent library loading routines
  *
  *  Some things to keep in mind:
  *  \li These functions only work on C function names.  Other languages may
@@ -89,8 +89,7 @@ extern DECLSPEC void *SDLCALL SDL_LoadObject(const char *sofile);
  * \sa SDL_LoadObject
  * \sa SDL_UnloadObject
  */
-extern DECLSPEC SDL_FunctionPointer SDL_LoadFunction(void *handle,
-                                                     const char *name);
+extern DECLSPEC SDL_FunctionPointer SDLCALL SDL_LoadFunction(void *handle, const char *name);
 
 /**
  * Unload a shared object from memory.

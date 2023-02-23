@@ -22,7 +22,7 @@
 /**
  *  \file SDL_guid.h
  *
- *  Include file for handling ::SDL_GUID values.
+ *  \brief Include file for handling ::SDL_GUID values.
  */
 
 #ifndef SDL_guid_h_
@@ -66,12 +66,14 @@ typedef struct {
  * \param guid the ::SDL_GUID you wish to convert to string
  * \param pszGUID buffer in which to write the ASCII string
  * \param cbGUID the size of pszGUID
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
  * \sa SDL_GUIDFromString
  */
-extern DECLSPEC void SDLCALL SDL_GUIDToString(SDL_GUID guid, char *pszGUID, int cbGUID);
+extern DECLSPEC int SDLCALL SDL_GUIDToString(SDL_GUID guid, char *pszGUID, int cbGUID);
 
 /**
  * Convert a GUID string into a ::SDL_GUID structure.

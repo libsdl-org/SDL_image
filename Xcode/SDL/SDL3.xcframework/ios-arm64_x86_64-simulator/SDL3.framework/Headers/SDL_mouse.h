@@ -22,7 +22,7 @@
 /**
  *  \file SDL_mouse.h
  *
- *  Include file for SDL mouse event handling.
+ *  \brief Include file for SDL mouse event handling.
  */
 
 #ifndef SDL_mouse_h_
@@ -214,8 +214,6 @@ extern DECLSPEC int SDLCALL SDL_WarpMouseGlobal(float x, float y);
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
  *
- *          If relative mode is not supported, this returns -1.
- *
  * \since This function is available since SDL 3.0.0.
  *
  * \sa SDL_GetRelativeMouseMode
@@ -259,8 +257,8 @@ extern DECLSPEC int SDLCALL SDL_SetRelativeMouseMode(SDL_bool enabled);
  * `SDL_HINT_MOUSE_AUTO_CAPTURE` hint to zero.
  *
  * \param enabled SDL_TRUE to enable capturing, SDL_FALSE to disable.
- * \returns 0 on success or -1 if not supported; call SDL_GetError() for more
- *          information.
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
@@ -364,13 +362,15 @@ extern DECLSPEC SDL_Cursor *SDLCALL SDL_CreateSystemCursor(SDL_SystemCursor id);
  * this is desired for any reason.
  *
  * \param cursor a cursor to make active
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
  * \sa SDL_CreateCursor
  * \sa SDL_GetCursor
  */
-extern DECLSPEC void SDLCALL SDL_SetCursor(SDL_Cursor * cursor);
+extern DECLSPEC int SDLCALL SDL_SetCursor(SDL_Cursor * cursor);
 
 /**
  * Get the active cursor.
@@ -389,8 +389,8 @@ extern DECLSPEC SDL_Cursor *SDLCALL SDL_GetCursor(void);
 /**
  * Get the default cursor.
  *
- * You do not have to call SDL_DestroyCursor() on the return value,
- * but it is safe to do so.
+ * You do not have to call SDL_DestroyCursor() on the return value, but it is
+ * safe to do so.
  *
  * \returns the default cursor on success or NULL on failure.
  *

@@ -22,7 +22,7 @@
 /**
  *  \file SDL_stdinc.h
  *
- *  This is a general header that includes C language support.
+ *  \brief This is a general header that includes C language support.
  */
 
 #ifndef SDL_stdinc_h_
@@ -394,6 +394,11 @@ typedef void (SDLCALL *SDL_free_func)(void *mem);
 /**
  * Get the original set of SDL memory functions
  *
+ * \param malloc_func filled with malloc function
+ * \param calloc_func filled with calloc function
+ * \param realloc_func filled with realloc function
+ * \param free_func filled with free function
+ *
  * \since This function is available since SDL 3.0.0.
  */
 extern DECLSPEC void SDLCALL SDL_GetOriginalMemoryFunctions(SDL_malloc_func *malloc_func,
@@ -403,6 +408,11 @@ extern DECLSPEC void SDLCALL SDL_GetOriginalMemoryFunctions(SDL_malloc_func *mal
 
 /**
  * Get the current set of SDL memory functions
+ *
+ * \param malloc_func filled with malloc function
+ * \param calloc_func filled with calloc function
+ * \param realloc_func filled with realloc function
+ * \param free_func filled with free function
  *
  * \since This function is available since SDL 3.0.0.
  */
@@ -414,6 +424,13 @@ extern DECLSPEC void SDLCALL SDL_GetMemoryFunctions(SDL_malloc_func *malloc_func
 /**
  * Replace SDL's memory allocation functions with a custom set
  *
+ * \param malloc_func custom malloc function
+ * \param calloc_func custom calloc function
+ * \param realloc_func custom realloc function
+ * \param free_func custom free function
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
+ *
  * \since This function is available since SDL 3.0.0.
  */
 extern DECLSPEC int SDLCALL SDL_SetMemoryFunctions(SDL_malloc_func malloc_func,
@@ -424,9 +441,11 @@ extern DECLSPEC int SDLCALL SDL_SetMemoryFunctions(SDL_malloc_func malloc_func,
 /**
  * Allocate memory aligned to a specific value
  *
- * If `alignment` is less than the size of `void *`, then it will be increased to match that.
+ * If `alignment` is less than the size of `void *`, then it will be increased
+ * to match that.
  *
- * The returned memory address will be a multiple of the alignment value, and the amount of memory allocated will be a multiple of the alignment value.
+ * The returned memory address will be a multiple of the alignment value, and
+ * the amount of memory allocated will be a multiple of the alignment value.
  *
  * The memory returned by this function must be freed with SDL_aligned_free()
  *
@@ -451,6 +470,8 @@ extern DECLSPEC void SDLCALL SDL_aligned_free(void *mem);
 
 /**
  * Get the number of outstanding (unfreed) allocations
+ *
+ * \returns the number of allocations
  *
  * \since This function is available since SDL 3.0.0.
  */
@@ -711,7 +732,7 @@ SDL_FORCE_INLINE void *SDL_memcpy4(SDL_OUT_BYTECAP(dwords*4) void *dst, SDL_IN_B
  * If a * b would overflow, return -1. Otherwise store a * b via ret
  * and return 0.
  *
- * \since This function is available since SDL 2.24.0.
+ * \since This function is available since SDL 3.0.0.
  */
 SDL_FORCE_INLINE int SDL_size_mul_overflow (size_t a,
                                             size_t b,
@@ -741,7 +762,7 @@ SDL_FORCE_INLINE int SDL_size_mul_overflow_builtin (size_t a,
  * If a + b would overflow, return -1. Otherwise store a + b via ret
  * and return 0.
  *
- * \since This function is available since SDL 2.24.0.
+ * \since This function is available since SDL 3.0.0.
  */
 SDL_FORCE_INLINE int SDL_size_add_overflow (size_t a,
                                             size_t b,

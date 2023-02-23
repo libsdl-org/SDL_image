@@ -22,7 +22,7 @@
 /**
  * \file SDL_atomic.h
  *
- * Atomic operations.
+ * \brief Atomic operations.
  *
  * IMPORTANT:
  * If you are not an expert in concurrent lockless programming, you should
@@ -41,7 +41,7 @@
  *
  * You can find out a little more about lockless programming and the
  * subtle issues that can arise here:
- * http://msdn.microsoft.com/en-us/library/ee418650%28v=vs.85%29.aspx
+ * https://learn.microsoft.com/en-us/windows/win32/dxtecharts/lockless-programming
  *
  * There's also lots of good information here:
  * http://www.1024cores.net/home/lock-free-algorithms
@@ -186,6 +186,10 @@ extern __inline void SDL_CompilerBarrier(void);
  * \since This function is available since SDL 3.0.0.
  */
 extern DECLSPEC void SDLCALL SDL_MemoryBarrierReleaseFunction(void);
+
+/*
+ * \since This function is available since SDL 3.0.0.
+ */
 extern DECLSPEC void SDLCALL SDL_MemoryBarrierAcquireFunction(void);
 
 #if defined(__GNUC__) && (defined(__powerpc__) || defined(__ppc__))
@@ -244,14 +248,15 @@ typedef void (*SDL_KernelMemoryBarrierFunc)();
     #define SDL_CPUPauseInstruction() __asm__ __volatile__("yield" ::: "memory")
 #elif (defined(__powerpc__) || defined(__powerpc64__))
     #define SDL_CPUPauseInstruction() __asm__ __volatile__("or 27,27,27");
+#elif (defined(__riscv) && __riscv_xlen == 64)
+    #define SDL_CPUPauseInstruction() __asm__ __volatile__(".insn i 0x0F, 0, x0, x0, 0x010");
 #elif defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_X64))
     #define SDL_CPUPauseInstruction() _mm_pause()  /* this is actually "rep nop" and not a SIMD instruction. No inline asm in MSVC x86-64! */
 #elif defined(_MSC_VER) && (defined(_M_ARM) || defined(_M_ARM64))
     #define SDL_CPUPauseInstruction() __yield()
 #elif defined(__WATCOMC__) && defined(__386__)
-    /* watcom assembler rejects PAUSE if CPU < i686, and it refuses REP NOP as an invalid combination. Hardcode the bytes.  */
     extern __inline void SDL_CPUPauseInstruction(void);
-    #pragma aux SDL_CPUPauseInstruction = "db 0f3h,90h"
+    #pragma aux SDL_CPUPauseInstruction = ".686p" ".xmm2" "pause"
 #else
     #define SDL_CPUPauseInstruction()
 #endif

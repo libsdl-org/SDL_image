@@ -22,7 +22,7 @@
 /**
  *  \file SDL_metal.h
  *
- *  Header file for functions to creating Metal layers and views on SDL windows.
+ *  \brief Header file for functions to creating Metal layers and views on SDL windows.
  */
 
 #ifndef SDL_metal_h_
@@ -58,6 +58,9 @@ typedef void *SDL_MetalView;
  * The returned handle can be casted directly to a NSView or UIView. To access
  * the backing CAMetalLayer, call SDL_Metal_GetLayer().
  *
+ * \param window the window
+ * \returns handle NSView or UIView
+ *
  * \since This function is available since SDL 3.0.0.
  *
  * \sa SDL_Metal_DestroyView
@@ -71,6 +74,8 @@ extern DECLSPEC SDL_MetalView SDLCALL SDL_Metal_CreateView(SDL_Window * window);
  * This should be called before SDL_DestroyWindow, if SDL_Metal_CreateView was
  * called after SDL_CreateWindow.
  *
+ * \param view the SDL_MetalView object
+ *
  * \since This function is available since SDL 3.0.0.
  *
  * \sa SDL_Metal_CreateView
@@ -80,27 +85,14 @@ extern DECLSPEC void SDLCALL SDL_Metal_DestroyView(SDL_MetalView view);
 /**
  * Get a pointer to the backing CAMetalLayer for the given view.
  *
+ * \param view the SDL_MetalView object
+ * \returns a pointer
+ *
  * \since This function is available since SDL 3.0.0.
  *
  * \sa SDL_Metal_CreateView
  */
 extern DECLSPEC void *SDLCALL SDL_Metal_GetLayer(SDL_MetalView view);
-
-/**
- * Get the size of a window's underlying drawable in pixels (for use with
- * setting viewport, scissor & etc).
- *
- * \param window SDL_Window from which the drawable size should be queried
- * \param w Pointer to variable for storing the width in pixels, may be NULL
- * \param h Pointer to variable for storing the height in pixels, may be NULL
- *
- * \since This function is available since SDL 3.0.0.
- *
- * \sa SDL_GetWindowSize
- * \sa SDL_CreateWindow
- */
-extern DECLSPEC void SDLCALL SDL_Metal_GetDrawableSize(SDL_Window* window, int *w,
-                                                       int *h);
 
 /* @} *//* Metal support functions */
 

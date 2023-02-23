@@ -31,34 +31,72 @@ endmacro()
 
 set(SDL3_FOUND TRUE)
 
-string(REGEX REPLACE "SDL3\\.framework.*" "SDL3.framework" SDL3_FRAMEWORK_PATH "${CMAKE_CURRENT_LIST_DIR}")
-string(REGEX REPLACE "SDL3\\.framework.*" "" SDL3_FRAMEWORK_PARENT_PATH "${CMAKE_CURRENT_LIST_DIR}")
+# Compute the installation prefix relative to this file.
+get_filename_component(_sdl3_framework_path "${CMAKE_CURRENT_LIST_FILE}" PATH)      # /SDL3.framework/Resources/CMake/
+get_filename_component(_sdl3_framework_path "${_IMPORT_PREFIX}" PATH)               # /SDL3.framework/Resources/
+get_filename_component(_sdl3_framework_path "${_IMPORT_PREFIX}" PATH)               # /SDL3.framework/
+get_filename_component(_sdl3_framework_parent_path "${_sdl3_framework_path}" PATH)  # /
 
-# For compatibility with autotools sdl3-config.cmake, provide SDL3_* variables.
-
-set_and_check(SDL3_PREFIX       "${SDL3_FRAMEWORK_PATH}")
-set_and_check(SDL3_EXEC_PREFIX  "${SDL3_FRAMEWORK_PATH}")
-set_and_check(SDL3_INCLUDE_DIR  "${SDL3_FRAMEWORK_PATH}/Headers")
-set(SDL3_INCLUDE_DIRS           "${SDL3_INCLUDE_DIR}")
-set_and_check(SDL3_BINDIR       "${SDL3_FRAMEWORK_PATH}")
-set_and_check(SDL3_LIBDIR       "${SDL3_FRAMEWORK_PATH}")
+set_and_check(_sdl3_include_dirs "${_sdl3_framework_path}/Headers")
 
 set(SDL3_LIBRARIES "SDL3::SDL3")
 
 # All targets are created, even when some might not be requested though COMPONENTS.
 # This is done for compatibility with CMake generated SDL3-target.cmake files.
 
-if(NOT TARGET SDL3::SDL3)
-    add_library(SDL3::SDL3 INTERFACE IMPORTED)
-    set_target_properties(SDL3::SDL3
+if(NOT TARGET SDL3::Headers)
+    add_library(SDL3::Headers INTERFACE IMPORTED)
+    set_target_properties(SDL3::Headers
         PROPERTIES
-            INTERFACE_COMPILE_OPTIONS "SHELL:-F \"${SDL3_FRAMEWORK_PARENT_PATH}\""
-            INTERFACE_INCLUDE_DIRECTORIES "${SDL3_INCLUDE_DIRS}"
-            INTERFACE_LINK_OPTIONS "SHELL:-F \"${SDL3_FRAMEWORK_PARENT_PATH}\";SHELL:-framework SDL3"
+            INTERFACE_COMPILE_OPTIONS "SHELL:-F \"${_sdl3_framework_parent_path}\""
+            INTERFACE_INCLUDE_DIRECTORIES "${_sdl3_include_dirs}"
+    )
+endif()
+set(SDL3_Headers_FOUND TRUE)
+unset(_sdl3_include_dirs)
+
+if(NOT TARGET SDL3::SDL3-shared)
+    add_library(SDL3::SDL3-shared SHARED IMPORTED)
+    set_target_properties(SDL3::SDL3-shared
+        PROPERTIES
+            FRAMEWORK "TRUE"
+            INTERFACE_LINK_LIBRARIES "SDL3::Headers"
+            IMPORTED_LOCATION "${_sdl3_framework_path}/SDL3"
+            IMPORTED_SONAME "${_sdl3_framework_path}/SDL3"
             COMPATIBLE_INTERFACE_BOOL "SDL3_SHARED"
             INTERFACE_SDL3_SHARED "ON"
     )
 endif()
-set(SDL3_SDL3_FOUND TRUE)
+set(SDL3_SDL3-shared_FOUND TRUE)
+
+set(SDL3_SDL3-static FALSE)
+
+set(SDL3_SDL3_test FALSE)
+
+unset(_sdl3_framework_parent_path)
+unset(_sdl3_framework_path)
+
+if(SDL3_SDL3-shared_FOUND OR SDL3_SDL3-static_FOUND)
+    set(SDL3_SDL3_FOUND TRUE)
+endif()
+
+function(_sdl_create_target_alias_compat NEW_TARGET TARGET)
+    if(CMAKE_VERSION VERSION_LESS "3.18")
+        # Aliasing local targets is not supported on CMake < 3.18, so make it global.
+        add_library(${NEW_TARGET} INTERFACE IMPORTED)
+        set_target_properties(${NEW_TARGET} PROPERTIES INTERFACE_LINK_LIBRARIES "${TARGET}")
+    else()
+        add_library(${NEW_TARGET} ALIAS ${TARGET})
+    endif()
+endfunction()
+
+# Make sure SDL3::SDL3 always exists
+if(NOT TARGET SDL3::SDL3)
+    if(TARGET SDL3::SDL3-shared)
+        _sdl_create_target_alias_compat(SDL3::SDL3 SDL3::SDL3-shared)
+    else()
+        _sdl_create_target_alias_compat(SDL3::SDL3 SDL3::SDL3-static)
+    endif()
+endif()
 
 check_required_components(SDL3)

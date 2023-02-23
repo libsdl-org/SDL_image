@@ -22,7 +22,7 @@
 /**
  *  \file SDL_rect.h
  *
- *  Header file for SDL_rect definition and management functions.
+ *  \brief Header file for SDL_rect definition and management functions.
  */
 
 #ifndef SDL_rect_h_
@@ -172,10 +172,12 @@ extern DECLSPEC SDL_bool SDLCALL SDL_GetRectIntersection(const SDL_Rect * A,
  * \param B an SDL_Rect structure representing the second rectangle
  * \param result an SDL_Rect structure filled in with the union of rectangles
  *               `A` and `B`
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  */
-extern DECLSPEC void SDLCALL SDL_GetRectUnion(const SDL_Rect * A,
+extern DECLSPEC int SDLCALL SDL_GetRectUnion(const SDL_Rect * A,
                                            const SDL_Rect * B,
                                            SDL_Rect * result);
 
@@ -238,6 +240,8 @@ SDL_FORCE_INLINE SDL_bool SDL_PointInRectFloat(const SDL_FPoint *p, const SDL_FR
 
 /**
  * Returns true if the rectangle has no area.
+ *
+ * \since This function is available since SDL 3.0.0.
  */
 SDL_FORCE_INLINE SDL_bool SDL_RectEmptyFloat(const SDL_FRect *r)
 {
@@ -247,7 +251,7 @@ SDL_FORCE_INLINE SDL_bool SDL_RectEmptyFloat(const SDL_FRect *r)
 /**
  * Returns true if the two rectangles are equal, within some given epsilon.
  *
- * \since This function is available since SDL 2.0.22.
+ * \since This function is available since SDL 3.0.0.
  */
 SDL_FORCE_INLINE SDL_bool SDL_RectsEqualEpsilon(const SDL_FRect *a, const SDL_FRect *b, const float epsilon)
 {
@@ -262,7 +266,7 @@ SDL_FORCE_INLINE SDL_bool SDL_RectsEqualEpsilon(const SDL_FRect *a, const SDL_FR
 /**
  * Returns true if the two rectangles are equal, using a default epsilon.
  *
- * \since This function is available since SDL 2.0.22.
+ * \since This function is available since SDL 3.0.0.
  */
 SDL_FORCE_INLINE SDL_bool SDL_RectsEqualFloat(const SDL_FRect *a, const SDL_FRect *b)
 {
@@ -311,10 +315,12 @@ extern DECLSPEC SDL_bool SDLCALL SDL_GetRectIntersectionFloat(const SDL_FRect * 
  * \param B an SDL_FRect structure representing the second rectangle
  * \param result an SDL_FRect structure filled in with the union of rectangles
  *               `A` and `B`
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  */
-extern DECLSPEC void SDLCALL SDL_GetRectUnionFloat(const SDL_FRect * A,
+extern DECLSPEC int SDLCALL SDL_GetRectUnionFloat(const SDL_FRect * A,
                                             const SDL_FRect * B,
                                             SDL_FRect * result);
 

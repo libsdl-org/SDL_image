@@ -22,7 +22,7 @@
 /**
  *  \file SDL_keyboard.h
  *
- *  Include file for SDL keyboard event handling
+ *  \brief Include file for SDL keyboard event handling
  */
 
 #ifndef SDL_keyboard_h_
@@ -42,7 +42,7 @@ extern "C" {
 /**
  *  \brief The SDL keysym structure, used in key events.
  *
- *  \note  If you are looking for translated character input, see the ::SDL_TEXTINPUT event.
+ *  \note  If you are looking for translated character input, see the ::SDL_EVENT_TEXT_INPUT event.
  */
 typedef struct SDL_Keysym
 {
@@ -247,9 +247,9 @@ extern DECLSPEC SDL_Keycode SDLCALL SDL_GetKeyFromName(const char *name);
  * Start accepting Unicode text input events.
  *
  * This function will start accepting Unicode text input events in the focused
- * SDL window, and start emitting SDL_TextInputEvent (SDL_TEXTINPUT) and
- * SDL_TextEditingEvent (SDL_TEXTEDITING) events. Please use this function in
- * pair with SDL_StopTextInput().
+ * SDL window, and start emitting SDL_TextInputEvent (SDL_EVENT_TEXT_INPUT)
+ * and SDL_TextEditingEvent (SDL_EVENT_TEXT_EDITING) events. Please use this
+ * function in pair with SDL_StopTextInput().
  *
  * On some platforms using this function activates the screen keyboard.
  *
@@ -293,6 +293,8 @@ extern DECLSPEC void SDLCALL SDL_ClearComposition(void);
 /**
  * Returns if an IME Composite or Candidate window is currently shown.
  *
+ * \returns SDL_TRUE if shown, else SDL_FALSE
+ *
  * \since This function is available since SDL 3.0.0.
  */
 extern DECLSPEC SDL_bool SDLCALL SDL_TextInputShown(void);
@@ -310,12 +312,14 @@ extern DECLSPEC SDL_bool SDLCALL SDL_TextInputShown(void);
  *
  * \param rect the SDL_Rect structure representing the rectangle to receive
  *             text (ignored if NULL)
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
  * \sa SDL_StartTextInput
  */
-extern DECLSPEC void SDLCALL SDL_SetTextInputRect(const SDL_Rect *rect);
+extern DECLSPEC int SDLCALL SDL_SetTextInputRect(const SDL_Rect *rect);
 
 /**
  * Check whether the platform has screen keyboard support.

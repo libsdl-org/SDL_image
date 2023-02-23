@@ -22,7 +22,7 @@
 /**
  *  \file SDL_render.h
  *
- *  Header file for SDL 2D rendering functions.
+ *  \brief Header file for SDL 2D rendering functions.
  *
  *  This API supports the following features:
  *      * single pixel points
@@ -49,6 +49,7 @@
 #define SDL_render_h_
 
 #include <SDL3/SDL_stdinc.h>
+#include <SDL3/SDL_events.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_video.h>
 
@@ -68,8 +69,6 @@ typedef enum
                                                      acceleration */
     SDL_RENDERER_PRESENTVSYNC = 0x00000004,     /**< Present is synchronized
                                                      with the refresh rate */
-    SDL_RENDERER_TARGETTEXTURE = 0x00000008     /**< The renderer supports
-                                                     rendering to texture */
 } SDL_RendererFlags;
 
 /**
@@ -100,9 +99,9 @@ typedef struct SDL_Vertex
  */
 typedef enum
 {
-    SDL_ScaleModeNearest, /**< nearest pixel sampling */
-    SDL_ScaleModeLinear,  /**< linear filtering */
-    SDL_ScaleModeBest     /**< anisotropic filtering */
+    SDL_SCALEMODE_NEAREST, /**< nearest pixel sampling */
+    SDL_SCALEMODE_LINEAR,  /**< linear filtering */
+    SDL_SCALEMODE_BEST     /**< anisotropic filtering */
 } SDL_ScaleMode;
 
 /**
@@ -134,6 +133,19 @@ typedef enum
     SDL_FLIP_HORIZONTAL = 0x00000001,    /**< flip horizontally */
     SDL_FLIP_VERTICAL = 0x00000002     /**< flip vertically */
 } SDL_RendererFlip;
+
+/**
+ * How the logical size is mapped to the output
+ */
+typedef enum
+{
+    SDL_LOGICAL_PRESENTATION_DISABLED,  /**< There is no logical size in effect */
+    SDL_LOGICAL_PRESENTATION_MATCH,     /**< The rendered content matches the window size in screen coordinates */
+    SDL_LOGICAL_PRESENTATION_STRETCH,   /**< The rendered content is stretched to the output resolution */
+    SDL_LOGICAL_PRESENTATION_LETTERBOX, /**< The rendered content is fit to the largest dimension and the other dimension is letterboxed with black bars */
+    SDL_LOGICAL_PRESENTATION_OVERSCAN,  /**< The rendered content is fit to the smallest dimension and the other dimension extends beyond the output bounds */
+    SDL_LOGICAL_PRESENTATION_INTEGER_SCALE,  /**< The rendered content is scaled up by integer multiples to fit the output resolution */
+} SDL_RendererLogicalPresentation;
 
 /**
  * A structure representing rendering state
@@ -203,8 +215,8 @@ extern DECLSPEC const char *SDLCALL SDL_GetRenderDriver(int index);
  *                     SDL_CreateWindow())
  * \param window a pointer filled with the window, or NULL on error
  * \param renderer a pointer filled with the renderer, or NULL on error
- * \returns 0 on success, or -1 on error; call SDL_GetError() for more
- *          information.
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
@@ -217,12 +229,15 @@ extern DECLSPEC int SDLCALL SDL_CreateWindowAndRenderer(int width, int height, U
 /**
  * Create a 2D rendering context for a window.
  *
- * If you want a specific renderer, you can specify its name here. A list
- * of available renderers can be obtained by calling SDL_GetRenderDriver
- * multiple times, with indices from 0 to SDL_GetNumRenderDrivers()-1. If
- * you don't need a specific renderer, specify NULL and SDL will attempt
- * to chooes the best option for you, based on what is available on the
- * user's system.
+ * If you want a specific renderer, you can specify its name here. A list of
+ * available renderers can be obtained by calling SDL_GetRenderDriver multiple
+ * times, with indices from 0 to SDL_GetNumRenderDrivers()-1. If you don't
+ * need a specific renderer, specify NULL and SDL will attempt to chooes the
+ * best option for you, based on what is available on the user's system.
+ *
+ * By default the rendering size matches the window size in screen coordinates,
+ * but you can call SDL_SetRenderLogicalPresentation() to enable high DPI
+ * rendering or change the content size and scaling options.
  *
  * \param window the window where rendering is displayed
  * \param name the name of the rendering driver to initialize, or NULL to
@@ -302,15 +317,14 @@ extern DECLSPEC SDL_Window *SDLCALL SDL_GetRenderWindow(SDL_Renderer *renderer);
 extern DECLSPEC int SDLCALL SDL_GetRendererInfo(SDL_Renderer *renderer, SDL_RendererInfo *info);
 
 /**
- * Get the output size in pixels of a rendering context.
+ * Get the output size in screen coordinates of a rendering context.
  *
- * Due to high-dpi displays, you might end up with a rendering context that
- * has more pixels than the window that contains it, so use this instead of
- * SDL_GetWindowSize() to decide how much drawing area you have.
+ * This returns the true output size in screen coordinates, ignoring any
+ * render targets or logical size and presentation.
  *
  * \param renderer the rendering context
- * \param w an int filled with the width
- * \param h an int filled with the height
+ * \param w a pointer filled in with the width in screen coordinates
+ * \param h a pointer filled in with the height in screen coordinates
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
  *
@@ -318,7 +332,46 @@ extern DECLSPEC int SDLCALL SDL_GetRendererInfo(SDL_Renderer *renderer, SDL_Rend
  *
  * \sa SDL_GetRenderer
  */
-extern DECLSPEC int SDLCALL SDL_GetRendererOutputSize(SDL_Renderer *renderer, int *w, int *h);
+extern DECLSPEC int SDLCALL SDL_GetRenderWindowSize(SDL_Renderer *renderer, int *w, int *h);
+
+/**
+ * Get the output size in pixels of a rendering context.
+ *
+ * This returns the true output size in pixels, ignoring any render targets
+ * or logical size and presentation.
+ *
+ * \param renderer the rendering context
+ * \param w a pointer filled in with the width in pixels
+ * \param h a pointer filled in with the height in pixels
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
+ *
+ * \since This function is available since SDL 3.0.0.
+ *
+ * \sa SDL_GetRenderer
+ */
+extern DECLSPEC int SDLCALL SDL_GetRenderOutputSize(SDL_Renderer *renderer, int *w, int *h);
+
+/**
+ * Get the current output size in pixels of a rendering context.
+ *
+ * If a rendering target is active, this will return the size of the
+ * rendering target in pixels, otherwise if a logical size is set, it will
+ * return the logical size, otherwise it will return the value of
+ * SDL_GetRenderOutputSize().
+ *
+ * \param renderer the rendering context
+ * \param w a pointer filled in with the current width
+ * \param h a pointer filled in with the current height
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
+ *
+ * \since This function is available since SDL 3.0.0.
+ *
+ * \sa SDL_GetRenderOutputSize
+ * \sa SDL_GetRenderer
+ */
+extern DECLSPEC int SDLCALL SDL_GetCurrentRenderOutputSize(SDL_Renderer *renderer, int *w, int *h);
 
 /**
  * Create a texture for a rendering context.
@@ -515,7 +568,8 @@ extern DECLSPEC int SDLCALL SDL_GetTextureBlendMode(SDL_Texture *texture, SDL_Bl
  *
  * \param texture The texture to update.
  * \param scaleMode the SDL_ScaleMode to use for texture scaling.
- * \returns 0 on success, or -1 if the texture is not valid.
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
@@ -528,7 +582,8 @@ extern DECLSPEC int SDLCALL SDL_SetTextureScaleMode(SDL_Texture *texture, SDL_Sc
  *
  * \param texture the texture to query.
  * \param scaleMode a pointer filled in with the current scale mode.
- * \return 0 on success, or -1 if the texture is not valid.
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
@@ -541,7 +596,8 @@ extern DECLSPEC int SDLCALL SDL_GetTextureScaleMode(SDL_Texture *texture, SDL_Sc
  *
  * \param texture the texture to update.
  * \param userdata the pointer to associate with the texture.
- * \returns 0 on success, or -1 if the texture is not valid.
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
@@ -553,7 +609,7 @@ extern DECLSPEC int SDLCALL SDL_SetTextureUserData(SDL_Texture *texture, void *u
  * Get the user-specified pointer associated with a texture
  *
  * \param texture the texture to query.
- * \return the pointer associated with the texture, or NULL if the texture is
+ * \returns the pointer associated with the texture, or NULL if the texture is
  *         not valid.
  *
  * \since This function is available since SDL 3.0.0.
@@ -613,7 +669,7 @@ extern DECLSPEC int SDLCALL SDL_UpdateTexture(SDL_Texture *texture, const SDL_Re
  * \param Vplane the raw pixel data for the V plane
  * \param Vpitch the number of bytes between rows of pixel data for the V
  *               plane
- * \returns 0 on success or -1 if the texture is not valid; call
+ * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
@@ -642,7 +698,8 @@ extern DECLSPEC int SDLCALL SDL_UpdateYUVTexture(SDL_Texture *texture,
  * \param UVplane the raw pixel data for the UV plane.
  * \param UVpitch the number of bytes between rows of pixel data for the UV
  *                plane.
- * \return 0 on success, or -1 if the texture is not valid.
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  */
@@ -700,14 +757,14 @@ extern DECLSPEC int SDLCALL SDL_LockTexture(SDL_Texture *texture,
  * The returned surface is freed internally after calling SDL_UnlockTexture()
  * or SDL_DestroyTexture(). The caller should not free it.
  *
- * \param texture the texture to lock for access, which was created with
+ * \param texture the texture to lock for access, which must be created with
  *                `SDL_TEXTUREACCESS_STREAMING`
  * \param rect a pointer to the rectangle to lock for access. If the rect is
  *             NULL, the entire texture will be locked
  * \param surface this is filled in with an SDL surface representing the
  *                locked area
- * \returns 0 on success, or -1 if the texture is not valid or was not created
- *          with `SDL_TEXTUREACCESS_STREAMING`
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
@@ -736,18 +793,6 @@ extern DECLSPEC int SDLCALL SDL_LockTextureToSurface(SDL_Texture *texture,
  * \sa SDL_LockTexture
  */
 extern DECLSPEC void SDLCALL SDL_UnlockTexture(SDL_Texture *texture);
-
-/**
- * Determine whether a renderer supports the use of render targets.
- *
- * \param renderer the renderer that will be checked
- * \returns SDL_TRUE if supported or SDL_FALSE if not.
- *
- * \since This function is available since SDL 3.0.0.
- *
- * \sa SDL_SetRenderTarget
- */
-extern DECLSPEC SDL_bool SDLCALL SDL_RenderTargetSupported(SDL_Renderer *renderer);
 
 /**
  * Set a texture as the current rendering target.
@@ -789,91 +834,115 @@ extern DECLSPEC int SDLCALL SDL_SetRenderTarget(SDL_Renderer *renderer, SDL_Text
 extern DECLSPEC SDL_Texture *SDLCALL SDL_GetRenderTarget(SDL_Renderer *renderer);
 
 /**
- * Set a device independent resolution for rendering.
+ * Set a device independent resolution and presentation mode for rendering.
  *
- * This function uses the viewport and scaling functionality to allow a fixed
- * logical resolution for rendering, regardless of the actual output
- * resolution. If the actual output resolution doesn't have the same aspect
- * ratio the output rendering will be centered within the output display.
+ * This function sets the width and height of the logical rendering output.
+ * A render target is created at the specified size and used for rendering
+ * and then copied to the output during presentation.
  *
- * If the output display is a window, mouse and touch events in the window
- * will be filtered and scaled so they seem to arrive within the logical
- * resolution. The SDL_HINT_MOUSE_RELATIVE_SCALING hint controls whether
- * relative motion events are also scaled.
+ * When a renderer is created, the logical size is set to match the window
+ * size in screen coordinates. The actual output size may be higher pixel
+ * density, and can be queried with SDL_GetRenderOutputSize().
  *
- * If this function results in scaling or subpixel drawing by the rendering
- * backend, it will be handled using the appropriate quality hints.
+ * You can disable logical coordinates by setting the mode to
+ * SDL_LOGICAL_PRESENTATION_DISABLED, and in that case you get the full
+ * resolution of the output window.
  *
- * \param renderer the renderer for which resolution should be set
+ * You can convert coordinates in an event into rendering coordinates using
+ * SDL_ConvertEventToRenderCoordinates().
+ *
+ * \param renderer the rendering context
  * \param w the width of the logical resolution
  * \param h the height of the logical resolution
+ * \param mode the presentation mode used
+ * \param scale_mode the scale mode used
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
- * \sa SDL_GetRenderLogicalSize
+ * \sa SDL_ConvertEventToRenderCoordinates
+ * \sa SDL_GetRenderLogicalPresentation
  */
-extern DECLSPEC int SDLCALL SDL_SetRenderLogicalSize(SDL_Renderer *renderer, int w, int h);
+extern DECLSPEC int SDLCALL SDL_SetRenderLogicalPresentation(SDL_Renderer *renderer, int w, int h, SDL_RendererLogicalPresentation mode, SDL_ScaleMode scale_mode);
 
 /**
- * Get device independent resolution for rendering.
+ * Get device independent resolution and presentation mode for rendering.
  *
- * When using the main rendering target (eg no target texture is set): this
- * may return 0 for `w` and `h` if the SDL_Renderer has never had its logical
- * size set by SDL_SetRenderLogicalSize(). Otherwise it returns the logical
- * width and height.
+ * This function gets the width and height of the logical rendering output,
+ * or the output size in pixels if a logical resolution is not enabled.
  *
- * When using a target texture: Never return 0 for `w` and `h` at first. Then
- * it returns the logical width and height that are set.
- *
- * \param renderer a rendering context
+ * \param renderer the rendering context
  * \param w an int to be filled with the width
  * \param h an int to be filled with the height
- *
- * \since This function is available since SDL 3.0.0.
- *
- * \sa SDL_SetRenderLogicalSize
- */
-extern DECLSPEC void SDLCALL SDL_GetRenderLogicalSize(SDL_Renderer *renderer, int *w, int *h);
-
-/**
- * Set whether to force integer scales for resolution-independent rendering.
- *
- * This function restricts the logical viewport to integer values - that is,
- * when a resolution is between two multiples of a logical size, the viewport
- * size is rounded down to the lower multiple.
- *
- * \param renderer the renderer for which integer scaling should be set
- * \param enable enable or disable the integer scaling for rendering
+ * \param mode a pointer filled in with the presentation mode
+ * \param scale_mode a pointer filled in with the scale mode
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
- * \sa SDL_GetRenderIntegerScale
- * \sa SDL_SetRenderLogicalSize
+ * \sa SDL_SetRenderLogicalPresentation
  */
-extern DECLSPEC int SDLCALL SDL_SetRenderIntegerScale(SDL_Renderer *renderer, SDL_bool enable);
+extern DECLSPEC int SDLCALL SDL_GetRenderLogicalPresentation(SDL_Renderer *renderer, int *w, int *h, SDL_RendererLogicalPresentation *mode, SDL_ScaleMode *scale_mode);
 
 /**
- * Get whether integer scales are forced for resolution-independent rendering.
+ * Get a point in render coordinates when given a point in window coordinates.
  *
- * \param renderer the renderer from which integer scaling should be queried
- * \returns SDL_TRUE if integer scales are forced or SDL_FALSE if not and on
- *          failure; call SDL_GetError() for more information.
+ * \param renderer the rendering context
+ * \param window_x the x coordinate in window coordinates
+ * \param window_y the y coordinate in window coordinates
+ * \param x a pointer filled with the x coordinate in render coordinates
+ * \param y a pointer filled with the y coordinate in render coordinates
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
- * \sa SDL_SetRenderIntegerScale
+ * \sa SDL_SetRenderLogicalPresentation
+ * \sa SDL_SetRenderScale
  */
-extern DECLSPEC SDL_bool SDLCALL SDL_GetRenderIntegerScale(SDL_Renderer *renderer);
+extern DECLSPEC int SDLCALL SDL_RenderCoordinatesFromWindow(SDL_Renderer *renderer, float window_x, float window_y, float *x, float *y);
+
+/**
+ * Get a point in window coordinates when given a point in render coordinates.
+ *
+ * \param renderer the rendering context
+ * \param x the x coordinate in render coordinates
+ * \param y the y coordinate in render coordinates
+ * \param window_x a pointer filled with the x coordinate in window coordinates
+ * \param window_y a pointer filled with the y coordinate in window coordinates
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
+ *
+ * \since This function is available since SDL 3.0.0.
+ *
+ * \sa SDL_SetRenderLogicalPresentation
+ * \sa SDL_SetRenderScale
+ */
+extern DECLSPEC int SDLCALL SDL_RenderCoordinatesToWindow(SDL_Renderer *renderer, float x, float y, float *window_x, float *window_y);
+
+/**
+ * Convert the coordinates in an event to render coordinates.
+ *
+ * Touch coordinates are converted from normalized coordinates in the window
+ * to non-normalized rendering coordinates.
+ *
+ * Once converted, the coordinates may be outside the rendering area.
+ *
+ * \param renderer the rendering context
+ * \param event the event to modify
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
+ *
+ * \since This function is available since SDL 3.0.0.
+ *
+ * \sa SDL_GetRenderCoordinatesFromWindowCoordinates
+ */
+extern DECLSPEC int SDLCALL SDL_ConvertEventToRenderCoordinates(SDL_Renderer *renderer, SDL_Event *event);
 
 /**
  * Set the drawing area for rendering on the current target.
- *
- * When the window is resized, the viewport is reset to fill the entire new
- * window size.
  *
  * \param renderer the rendering context
  * \param rect the SDL_Rect structure representing the drawing area, or NULL
@@ -892,18 +961,19 @@ extern DECLSPEC int SDLCALL SDL_SetRenderViewport(SDL_Renderer *renderer, const 
  *
  * \param renderer the rendering context
  * \param rect an SDL_Rect structure filled in with the current drawing area
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
  * \sa SDL_SetRenderViewport
  */
-extern DECLSPEC void SDLCALL SDL_GetRenderViewport(SDL_Renderer *renderer, SDL_Rect *rect);
+extern DECLSPEC int SDLCALL SDL_GetRenderViewport(SDL_Renderer *renderer, SDL_Rect *rect);
 
 /**
  * Set the clip rectangle for rendering on the specified target.
  *
- * \param renderer the rendering context for which clip rectangle should be
- *                 set
+ * \param renderer the rendering context
  * \param rect an SDL_Rect structure representing the clip area, relative to
  *             the viewport, or NULL to disable clipping
  * \returns 0 on success or a negative error code on failure; call
@@ -919,22 +989,23 @@ extern DECLSPEC int SDLCALL SDL_SetRenderClipRect(SDL_Renderer *renderer, const 
 /**
  * Get the clip rectangle for the current target.
  *
- * \param renderer the rendering context from which clip rectangle should be
- *                 queried
+ * \param renderer the rendering context
  * \param rect an SDL_Rect structure filled in with the current clipping area
  *             or an empty rectangle if clipping is disabled
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
  * \sa SDL_RenderClipEnabled
  * \sa SDL_SetRenderClipRect
  */
-extern DECLSPEC void SDLCALL SDL_GetRenderClipRect(SDL_Renderer *renderer, SDL_Rect *rect);
+extern DECLSPEC int SDLCALL SDL_GetRenderClipRect(SDL_Renderer *renderer, SDL_Rect *rect);
 
 /**
  * Get whether clipping is enabled on the given renderer.
  *
- * \param renderer the renderer from which clip state should be queried
+ * \param renderer the rendering context
  * \returns SDL_TRUE if clipping is enabled or SDL_FALSE if not; call
  *          SDL_GetError() for more information.
  *
@@ -944,7 +1015,6 @@ extern DECLSPEC void SDLCALL SDL_GetRenderClipRect(SDL_Renderer *renderer, SDL_R
  * \sa SDL_SetRenderClipRect
  */
 extern DECLSPEC SDL_bool SDLCALL SDL_RenderClipEnabled(SDL_Renderer *renderer);
-
 
 /**
  * Set the drawing scale for rendering on the current target.
@@ -957,7 +1027,7 @@ extern DECLSPEC SDL_bool SDLCALL SDL_RenderClipEnabled(SDL_Renderer *renderer);
  * will be handled using the appropriate quality hints. For best results use
  * integer scaling factors.
  *
- * \param renderer a rendering context
+ * \param renderer the rendering context
  * \param scaleX the horizontal scaling factor
  * \param scaleY the vertical scaling factor
  * \returns 0 on success or a negative error code on failure; call
@@ -966,73 +1036,23 @@ extern DECLSPEC SDL_bool SDLCALL SDL_RenderClipEnabled(SDL_Renderer *renderer);
  * \since This function is available since SDL 3.0.0.
  *
  * \sa SDL_GetRenderScale
- * \sa SDL_SetRenderLogicalSize
  */
 extern DECLSPEC int SDLCALL SDL_SetRenderScale(SDL_Renderer *renderer, float scaleX, float scaleY);
 
 /**
  * Get the drawing scale for the current target.
  *
- * \param renderer the renderer from which drawing scale should be queried
+ * \param renderer the rendering context
  * \param scaleX a pointer filled in with the horizontal scaling factor
  * \param scaleY a pointer filled in with the vertical scaling factor
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
  * \sa SDL_SetRenderScale
  */
-extern DECLSPEC void SDLCALL SDL_GetRenderScale(SDL_Renderer *renderer, float *scaleX, float *scaleY);
-
-/**
- * Get logical coordinates of point in renderer when given real coordinates of
- * point in window.
- *
- * Logical coordinates will differ from real coordinates when render is scaled
- * and logical renderer size set
- *
- * \param renderer the renderer from which the logical coordinates should be
- *                 calculated
- * \param windowX the real X coordinate in the window
- * \param windowY the real Y coordinate in the window
- * \param logicalX the pointer filled with the logical x coordinate
- * \param logicalY the pointer filled with the logical y coordinate
- *
- * \since This function is available since SDL 3.0.0.
- *
- * \sa SDL_GetRenderScale
- * \sa SDL_SetRenderScale
- * \sa SDL_GetRenderLogicalSize
- * \sa SDL_SetRenderLogicalSize
- */
-extern DECLSPEC void SDLCALL SDL_RenderWindowToLogical(SDL_Renderer *renderer,
-                                                       float windowX, float windowY,
-                                                       float *logicalX, float *logicalY);
-
-
-/**
- * Get real coordinates of point in window when given logical coordinates of
- * point in renderer.
- *
- * Logical coordinates will differ from real coordinates when render is scaled
- * and logical renderer size set
- *
- * \param renderer the renderer from which the window coordinates should be
- *                 calculated
- * \param logicalX the logical x coordinate
- * \param logicalY the logical y coordinate
- * \param windowX the pointer filled with the real X coordinate in the window
- * \param windowY the pointer filled with the real Y coordinate in the window
- *
- * \since This function is available since SDL 3.0.0.
- *
- * \sa SDL_GetRenderScale
- * \sa SDL_SetRenderScale
- * \sa SDL_GetRenderLogicalSize
- * \sa SDL_SetRenderLogicalSize
- */
-extern DECLSPEC void SDLCALL SDL_RenderLogicalToWindow(SDL_Renderer *renderer,
-                                                       float logicalX, float logicalY,
-                                                       float *windowX, float *windowY);
+extern DECLSPEC int SDLCALL SDL_GetRenderScale(SDL_Renderer *renderer, float *scaleX, float *scaleY);
 
 /**
  * Set the color used for drawing operations (Rect, Line and Clear).
@@ -1146,7 +1166,7 @@ extern DECLSPEC int SDLCALL SDL_RenderClear(SDL_Renderer *renderer);
  * \param renderer The renderer which should draw a point.
  * \param x The x coordinate of the point.
  * \param y The y coordinate of the point.
- * \return 0 on success, or -1 on error
+ * \returns 0 on success, or -1 on error
  *
  * \since This function is available since SDL 3.0.0.
  */
@@ -1158,7 +1178,8 @@ extern DECLSPEC int SDLCALL SDL_RenderPoint(SDL_Renderer *renderer, float x, flo
  * \param renderer The renderer which should draw multiple points.
  * \param points The points to draw
  * \param count The number of points to draw
- * \return 0 on success, or -1 on error
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  */
@@ -1172,7 +1193,7 @@ extern DECLSPEC int SDLCALL SDL_RenderPoints(SDL_Renderer *renderer, const SDL_F
  * \param y1 The y coordinate of the start point.
  * \param x2 The x coordinate of the end point.
  * \param y2 The y coordinate of the end point.
- * \return 0 on success, or -1 on error
+ * \returns 0 on success, or -1 on error
  *
  * \since This function is available since SDL 3.0.0.
  */
@@ -1185,7 +1206,8 @@ extern DECLSPEC int SDLCALL SDL_RenderLine(SDL_Renderer *renderer, float x1, flo
  * \param renderer The renderer which should draw multiple lines.
  * \param points The points along the lines
  * \param count The number of points, drawing count-1 lines
- * \return 0 on success, or -1 on error
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  */
@@ -1197,7 +1219,7 @@ extern DECLSPEC int SDLCALL SDL_RenderLines(SDL_Renderer *renderer, const SDL_FP
  * \param renderer The renderer which should draw a rectangle.
  * \param rect A pointer to the destination rectangle, or NULL to outline the
  *             entire rendering target.
- * \return 0 on success, or -1 on error
+ * \returns 0 on success, or -1 on error
  *
  * \since This function is available since SDL 3.0.0.
  */
@@ -1210,7 +1232,8 @@ extern DECLSPEC int SDLCALL SDL_RenderRect(SDL_Renderer *renderer, const SDL_FRe
  * \param renderer The renderer which should draw multiple rectangles.
  * \param rects A pointer to an array of destination rectangles.
  * \param count The number of rectangles.
- * \return 0 on success, or -1 on error
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  */
@@ -1223,7 +1246,7 @@ extern DECLSPEC int SDLCALL SDL_RenderRects(SDL_Renderer *renderer, const SDL_FR
  * \param renderer The renderer which should fill a rectangle.
  * \param rect A pointer to the destination rectangle, or NULL for the entire
  *             rendering target.
- * \return 0 on success, or -1 on error
+ * \returns 0 on success, or -1 on error
  *
  * \since This function is available since SDL 3.0.0.
  */
@@ -1236,7 +1259,8 @@ extern DECLSPEC int SDLCALL SDL_RenderFillRect(SDL_Renderer *renderer, const SDL
  * \param renderer The renderer which should fill multiple rectangles.
  * \param rects A pointer to an array of destination rectangles.
  * \param count The number of rectangles.
- * \return 0 on success, or -1 on error
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  */
@@ -1252,7 +1276,7 @@ extern DECLSPEC int SDLCALL SDL_RenderFillRects(SDL_Renderer *renderer, const SD
  *                texture.
  * \param dstrect A pointer to the destination rectangle, or NULL for the
  *                entire rendering target.
- * \return 0 on success, or -1 on error
+ * \returns 0 on success, or -1 on error
  *
  * \since This function is available since SDL 3.0.0.
  */
@@ -1275,7 +1299,8 @@ extern DECLSPEC int SDLCALL SDL_RenderTexture(SDL_Renderer *renderer, SDL_Textur
  *               around dstrect.w/2, dstrect.h/2).
  * \param flip An SDL_RendererFlip value stating which flipping actions should
  *             be performed on the texture
- * \return 0 on success, or -1 on error
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  */
@@ -1297,7 +1322,7 @@ extern DECLSPEC int SDLCALL SDL_RenderTextureRotated(SDL_Renderer *renderer, SDL
  *                array, if NULL all vertices will be rendered in sequential
  *                order.
  * \param num_indices Number of indices.
- * \return 0 on success, or -1 if the operation is not supported
+ * \returns 0 on success, or -1 if the operation is not supported
  *
  * \since This function is available since SDL 3.0.0.
  *
@@ -1327,7 +1352,8 @@ extern DECLSPEC int SDLCALL SDL_RenderGeometry(SDL_Renderer *renderer,
  *                if NULL all vertices will be rendered in sequential order.
  * \param num_indices Number of indices.
  * \param size_indices Index size: 1 (byte), 2 (short), 4 (int)
- * \return 0 on success, or -1 if the operation is not supported
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
@@ -1357,8 +1383,8 @@ extern DECLSPEC int SDLCALL SDL_RenderGeometryRaw(SDL_Renderer *renderer,
  * Bitmap data pads all rows to multiples of 4 bytes).
  *
  * \param renderer the rendering context
- * \param rect an SDL_Rect structure representing the area to read, or NULL
- *             for the entire render target
+ * \param rect an SDL_Rect structure representing the area in pixels relative
+ *             to the to current viewport, or NULL for the entire viewport
  * \param format an SDL_PixelFormatEnum value of the desired format of the
  *               pixel data, or 0 to use the format of the rendering target
  * \param pixels a pointer to the pixel data to copy into
@@ -1377,9 +1403,9 @@ extern DECLSPEC int SDLCALL SDL_RenderReadPixels(SDL_Renderer *renderer,
  * Update the screen with any rendering performed since the previous call.
  *
  * SDL's rendering functions operate on a backbuffer; that is, calling a
- * rendering function such as SDL_RenderLine() does not directly put a
- * line on the screen, but rather updates the backbuffer. As such, you compose
- * your entire scene and *present* the composed backbuffer to the screen as a
+ * rendering function such as SDL_RenderLine() does not directly put a line on
+ * the screen, but rather updates the backbuffer. As such, you compose your
+ * entire scene and *present* the composed backbuffer to the screen as a
  * complete picture.
  *
  * Therefore, when using SDL's rendering API, one does all drawing intended
@@ -1393,6 +1419,10 @@ extern DECLSPEC int SDLCALL SDL_RenderReadPixels(SDL_Renderer *renderer,
  * pixel.
  *
  * \param renderer the rendering context
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
+ *
+ * \threadsafety You may only call this function on the main thread.
  *
  * \since This function is available since SDL 3.0.0.
  *
@@ -1408,7 +1438,7 @@ extern DECLSPEC int SDLCALL SDL_RenderReadPixels(SDL_Renderer *renderer,
  * \sa SDL_SetRenderDrawBlendMode
  * \sa SDL_SetRenderDrawColor
  */
-extern DECLSPEC void SDLCALL SDL_RenderPresent(SDL_Renderer *renderer);
+extern DECLSPEC int SDLCALL SDL_RenderPresent(SDL_Renderer *renderer);
 
 /**
  * Destroy the specified texture.
@@ -1498,7 +1528,7 @@ extern DECLSPEC int SDLCALL SDL_RenderFlush(SDL_Renderer *renderer);
  *             texture width or NULL if you don't need that value
  * \param texh a pointer to a float value which will be filled with the
  *             texture height or NULL if you don't need that value
- * \returns 0 on success, or -1 if the operation is not supported; call
+ * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
@@ -1514,7 +1544,8 @@ extern DECLSPEC int SDLCALL SDL_GL_BindTexture(SDL_Texture *texture, float *texw
  * See SDL_GL_BindTexture() for examples on how to use these functions
  *
  * \param texture the texture to unbind from the current OpenGL/ES/ES2 context
- * \returns 0 on success, or -1 if the operation is not supported
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
@@ -1565,7 +1596,8 @@ extern DECLSPEC void *SDLCALL SDL_GetRenderMetalCommandEncoder(SDL_Renderer *ren
  *
  * \param renderer The renderer to toggle
  * \param vsync 1 for on, 0 for off. All other values are reserved
- * \returns a 0 int on success, or non-zero on failure
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  */
@@ -1575,8 +1607,10 @@ extern DECLSPEC int SDLCALL SDL_SetRenderVSync(SDL_Renderer *renderer, int vsync
  * Get VSync of the given renderer.
  *
  * \param renderer The renderer to toggle
- * \param vsync an int filled with 1 for on, 0 for off. All other values are reserved
- * \returns a 0 int on success, or non-zero on failure
+ * \param vsync an int filled with 1 for on, 0 for off. All other values are
+ *              reserved
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  */
