@@ -667,10 +667,17 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 /* Use tinyjpeg as a fallback if we don't have a hard dependency on libjpeg */
 #if SDL_IMAGE_SAVE_JPG && (defined(LOAD_JPG_DYNAMIC) || !defined(WANT_JPEGLIB))
 
-#define assert SDL_assert
+#ifdef assert
+#undef assert
+#endif
+#ifdef memcpy
 #undef memcpy
-#define memcpy SDL_memcpy
+#endif
+#ifdef memset
 #undef memset
+#endif
+#define assert SDL_assert
+#define memcpy SDL_memcpy
 #define memset SDL_memset
 
 #define ceilf SDL_ceilf
