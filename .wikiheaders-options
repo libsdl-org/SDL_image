@@ -1,6 +1,6 @@
 projectfullname = SDL_image
 projectshortname = SDL_image
-incsubdir =
+incsubdir = include/SDL3
 wikisubdir = SDL_image
 apiprefixregex = IMG_
 mainincludefname = SDL_image.h
