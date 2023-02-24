@@ -380,7 +380,7 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_Load_RW(SDL_RWops *src, int freesrc);
  *
  * \sa IMG_LoadTextureTyped_RW
  * \sa IMG_LoadTexture_RW
- * \sa [SDL_DestroyTexture](https://wiki.libsdl.org/SDL_DestroyTexture)
+ * \sa SDL_DestroyTexture
  */
 extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *renderer, const char *file);
 
