@@ -208,7 +208,8 @@ extern DECLSPEC void SDLCALL IMG_Quit(void);
  *
  * If the image format supports a transparent pixel, SDL will set the colorkey
  * for the surface. You can enable RLE acceleration on the surface afterwards
- * by calling: SDL_SetSurfaceColorKey(image, SDL_RLEACCEL, image->format->colorkey);
+ * by calling: SDL_SetSurfaceColorKey(image, SDL_RLEACCEL,
+ * image->format->colorkey);
  *
  * If `freesrc` is non-zero, the RWops will be closed before returning,
  * whether this function succeeds or not. SDL_image reads everything it needs
@@ -269,7 +270,8 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTyped_RW(SDL_RWops *src, int frees
  *
  * If the image format supports a transparent pixel, SDL will set the colorkey
  * for the surface. You can enable RLE acceleration on the surface afterwards
- * by calling: SDL_SetSurfaceColorKey(image, SDL_RLEACCEL, image->format->colorkey);
+ * by calling: SDL_SetSurfaceColorKey(image, SDL_RLEACCEL,
+ * image->format->colorkey);
  *
  * There is a separate function to read files from an SDL_RWops, if you need
  * an i/o abstraction to provide data from anywhere instead of a simple
@@ -311,7 +313,8 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_Load(const char *file);
  *
  * If the image format supports a transparent pixel, SDL will set the colorkey
  * for the surface. You can enable RLE acceleration on the surface afterwards
- * by calling: SDL_SetSurfaceColorKey(image, SDL_RLEACCEL, image->format->colorkey);
+ * by calling: SDL_SetSurfaceColorKey(image, SDL_RLEACCEL,
+ * image->format->colorkey);
  *
  * If `freesrc` is non-zero, the RWops will be closed before returning,
  * whether this function succeeds or not. SDL_image reads everything it needs
