@@ -343,7 +343,7 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
     Sint64 start;
     struct jpeg_decompress_struct cinfo;
     JSAMPROW rowptr[1];
-    SDL_Surface *volatile surface = NULL;
+    SDL_Surface *surface = NULL;
     struct my_error_mgr jerr;
 
     if ( !src ) {
