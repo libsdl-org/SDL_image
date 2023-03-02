@@ -236,14 +236,14 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 {
     Sint64 start;
     const char *error;
-    SDL_Surface *volatile surface;
+    SDL_Surface *surface;
     png_structp png_ptr;
     png_infop info_ptr;
     png_uint_32 width, height;
     int bit_depth, color_type, interlace_type, num_channels;
     Uint32 format = SDL_PIXELFORMAT_UNKNOWN;
     SDL_Palette *palette;
-    png_bytep *volatile row_pointers;
+    png_bytep *row_pointers;
     int row, i;
     int ckey = -1;
     png_color_16 *transv;
