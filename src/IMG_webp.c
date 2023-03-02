@@ -157,7 +157,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 {
     Sint64 start;
     const char *error = NULL;
-    SDL_Surface *volatile surface = NULL;
+    SDL_Surface *surface = NULL;
     Uint32 format;
     WebPBitstreamFeatures features;
     int raw_data_size;
