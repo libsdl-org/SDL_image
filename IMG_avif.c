@@ -133,7 +133,7 @@ static SDL_bool ReadAVIFHeader(SDL_RWops *src, Uint8 **header_data, size_t *head
     }
 
     /* Read in the header */
-    data = (Uint8 *)SDL_malloc(size);
+    data = (Uint8 *)SDL_malloc((size_t)size);
     if (!data) {
         return SDL_FALSE;
     }
@@ -188,6 +188,8 @@ typedef struct
 static avifResult ReadAVIFIO(struct avifIO * io, uint32_t readFlags, uint64_t offset, size_t size, avifROData * out)
 {
     avifIOContext *context = (avifIOContext *)io->data;
+
+    (void) readFlags;   /* not used */
 
     /* The AVIF reader bounces all over, so always seek to the correct offset */
     if (SDL_RWseek(context->src, context->start + offset, RW_SEEK_SET) < 0) {
