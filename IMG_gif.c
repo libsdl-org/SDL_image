@@ -372,7 +372,7 @@ ReadColorMap(SDL_RWops *src, int number,
     unsigned char rgb[3];
     int flag;
 
-    flag = TRUE;
+    flag = 1;
 
     for (i = 0; i < number; ++i) {
         if (!ReadOK(src, rgb, sizeof(rgb))) {
@@ -391,6 +391,7 @@ ReadColorMap(SDL_RWops *src, int number,
     else
         *gray = PPM_TYPE;
 #else
+    (void) flag;
     *gray = 0;
 #endif
 
