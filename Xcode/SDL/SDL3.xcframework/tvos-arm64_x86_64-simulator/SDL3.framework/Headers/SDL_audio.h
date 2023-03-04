@@ -90,11 +90,8 @@ typedef Uint16 SDL_AudioFormat;
 /* @{ */
 #define AUDIO_U8        0x0008  /**< Unsigned 8-bit samples */
 #define AUDIO_S8        0x8008  /**< Signed 8-bit samples */
-#define AUDIO_U16LSB    0x0010  /**< Unsigned 16-bit samples */
 #define AUDIO_S16LSB    0x8010  /**< Signed 16-bit samples */
-#define AUDIO_U16MSB    0x1010  /**< As above, but big-endian byte order */
 #define AUDIO_S16MSB    0x9010  /**< As above, but big-endian byte order */
-#define AUDIO_U16       AUDIO_U16LSB
 #define AUDIO_S16       AUDIO_S16LSB
 /* @} */
 
@@ -121,12 +118,10 @@ typedef Uint16 SDL_AudioFormat;
  */
 /* @{ */
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
-#define AUDIO_U16SYS    AUDIO_U16LSB
 #define AUDIO_S16SYS    AUDIO_S16LSB
 #define AUDIO_S32SYS    AUDIO_S32LSB
 #define AUDIO_F32SYS    AUDIO_F32LSB
 #else
-#define AUDIO_U16SYS    AUDIO_U16MSB
 #define AUDIO_S16SYS    AUDIO_S16MSB
 #define AUDIO_S32SYS    AUDIO_S32MSB
 #define AUDIO_F32SYS    AUDIO_F32MSB
@@ -811,7 +806,7 @@ extern DECLSPEC int SDLCALL SDL_FlushAudioStream(SDL_AudioStream *stream);
 /**
  * Clear any pending data in the stream without converting it
  *
- * \param   stream The audio stream to clear
+ * \param stream The audio stream to clear
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
  *
@@ -830,6 +825,7 @@ extern DECLSPEC int SDLCALL SDL_ClearAudioStream(SDL_AudioStream *stream);
  * Free an audio stream
  *
  * \param stream The audio stream to free
+ *
  * \since This function is available since SDL 3.0.0.
  *
  * \sa SDL_CreateAudioStream
@@ -1149,7 +1145,8 @@ extern DECLSPEC void SDLCALL SDL_CloseAudioDevice(SDL_AudioDeviceID dev);
  * \param dst_channels The number of channels of the desired audio output
  * \param dst_rate The sampling rate of the desired audio output
  * \param dst_data Will be filled with a pointer to converted audio data,
- *                 which should be freed with SDL_free(). On error, it will be NULL.
+ *                 which should be freed with SDL_free(). On error, it will be
+ *                 NULL.
  * \param dst_len Will be filled with the len of dst_data
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
