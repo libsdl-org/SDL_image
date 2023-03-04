@@ -39,6 +39,7 @@ static struct {
     avifResult (*avifDecoderParse)(avifDecoder * decoder);
     avifResult (*avifDecoderNextImage)(avifDecoder * decoder);
     avifResult (*avifImageYUVToRGB)(const avifImage * image, avifRGBImage * rgb);
+    const char * (*avifResultToString)(avifResult res);
 } lib;
 
 #ifdef LOAD_AVIF_DYNAMIC
@@ -67,6 +68,7 @@ int IMG_InitAVIF()
         FUNCTION_LOADER(avifDecoderParse, avifResult (*)(avifDecoder * decoder))
         FUNCTION_LOADER(avifDecoderNextImage, avifResult (*)(avifDecoder * decoder))
         FUNCTION_LOADER(avifImageYUVToRGB, avifResult (*)(const avifImage * image, avifRGBImage * rgb))
+        FUNCTION_LOADER(avifResultToString, const char *(*)(avifResult res))
     }
     ++lib.loaded;
 
@@ -267,13 +269,13 @@ SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
 
     result = lib.avifDecoderParse(decoder);
     if (result != AVIF_RESULT_OK) {
-        IMG_SetError("Couldn't parse AVIF image: %d", result);
+        IMG_SetError("Couldn't parse AVIF image: %s", lib.avifResultToString(result));
         goto done;
     }
 
     result = lib.avifDecoderNextImage(decoder);
     if (result != AVIF_RESULT_OK) {
-        IMG_SetError("Couldn't get AVIF image: %d", result);
+        IMG_SetError("Couldn't get AVIF image: %s", lib.avifResultToString(result));
         goto done;
     }
 
@@ -295,7 +297,7 @@ SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
     rgb.rowBytes = (uint32_t)surface->pitch;
     result = lib.avifImageYUVToRGB(decoder->image, &rgb);
     if (result != AVIF_RESULT_OK) {
-        IMG_SetError("Couldn't convert AVIF image to RGB: %d", result);
+        IMG_SetError("Couldn't convert AVIF image to RGB: %s", lib.avifResultToString(result));
         SDL_DestroySurface(surface);
         surface = NULL;
         goto done;
