@@ -96,6 +96,7 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
     rw_callbacks.read = IMG_LoadSTB_RW_read;
     rw_callbacks.skip = IMG_LoadSTB_RW_skip;
     rw_callbacks.eof = IMG_LoadSTB_RW_eof;
+    w = h = format = 0; /* silence warning */
     pixels = stbi_load_from_callbacks(
         &rw_callbacks,
         src,
