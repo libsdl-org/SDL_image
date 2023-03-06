@@ -209,7 +209,6 @@ add_library(SDL2_image
     IMG_xcf.c
     IMG_xpm.c
     IMG_xv.c
-    IMG_xxx.c
 )
 add_library(SDL2_image::${sdl2_image_export_name} ALIAS SDL2_image)
 target_include_directories(SDL2_image PUBLIC

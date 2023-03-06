@@ -31,58 +31,63 @@ int IMG_isXXX(SDL_RWops *src)
     int start;
     int is_XXX;
 
-    if ( !src )
+    if (!src) {
         return 0;
+    }
+
     start = SDL_RWtell(src);
     is_XXX = 0;
 
     /* Detect the image here */
 
     SDL_RWseek(src, start, RW_SEEK_SET);
-    return(is_XXX);
+    return is_XXX;
 }
 
-/* Load a XXX type image from an SDL datasource */
+/* Load an XXX type image from an SDL datasource */
 SDL_Surface *IMG_LoadXXX_RW(SDL_RWops *src)
 {
     int start;
     const char *error = NULL;
     SDL_Surface *surface = NULL;
 
-    if ( !src ) {
+    if (!src) {
         /* The error message has been set in SDL_RWFromFile */
         return NULL;
     }
+
     start = SDL_RWtell(src);
 
     /* Load the image here */
 
-    if ( error ) {
+    if (error) {
         SDL_RWseek(src, start, RW_SEEK_SET);
-        if ( surface ) {
+        if (surface) {
             SDL_FreeSurface(surface);
             surface = NULL;
         }
         IMG_SetError("%s", error);
     }
+
     return surface;
 }
 
 #else
+
 #if _MSC_VER >= 1300
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
 #endif
 
-/* See if an image is contained in a data source */
 int IMG_isXXX(SDL_RWops *src)
 {
-    return(0);
+    (void) src;
+    return 0;
 }
 
-/* Load a XXX type image from an SDL datasource */
 SDL_Surface *IMG_LoadXXX_RW(SDL_RWops *src)
 {
-    return(NULL);
+    (void) src;
+    return NULL;
 }
 
 #endif /* LOAD_XXX */

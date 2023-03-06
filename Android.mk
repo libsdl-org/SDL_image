@@ -90,8 +90,7 @@ LOCAL_SRC_FILES :=  \
     IMG_WIC.c       \
     IMG_xcf.c       \
     IMG_xpm.c.arm   \
-    IMG_xv.c        \
-    IMG_xxx.c
+    IMG_xv.c
 
 LOCAL_CFLAGS := -DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM \
                 -DLOAD_SVG -DLOAD_TGA -DLOAD_XCF -DLOAD_XPM -DLOAD_XV  \
@@ -166,4 +165,3 @@ LOCAL_LDLIBS :=
 LOCAL_EXPORT_LDLIBS :=
 
 include $(BUILD_STATIC_LIBRARY)
-
