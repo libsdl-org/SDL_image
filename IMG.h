@@ -19,6 +19,9 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+#ifndef SDLIMAGE_IMG_H
+#define SDLIMAGE_IMG_H
+
 extern int IMG_InitAVIF(void);
 extern void IMG_QuitAVIF(void);
 extern int IMG_InitJPG(void);
@@ -32,3 +35,4 @@ extern void IMG_QuitTIF(void);
 extern int IMG_InitWEBP(void);
 extern void IMG_QuitWEBP(void);
 
+#endif
