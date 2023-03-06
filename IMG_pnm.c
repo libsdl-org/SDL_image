@@ -28,6 +28,7 @@
  */
 
 #include <SDL3/SDL_image.h>
+#include "IMG.h"
 
 #ifdef LOAD_PNM
 

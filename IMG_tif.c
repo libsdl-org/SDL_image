@@ -24,6 +24,7 @@
 /* This is a TIFF image file loading framework */
 
 #include <SDL3/SDL_image.h>
+#include "IMG.h"
 
 #ifdef LOAD_TIF
 
@@ -48,7 +49,7 @@ static struct {
     lib.FUNC = FUNC;
 #endif
 
-int IMG_InitTIF()
+int IMG_InitTIF(void)
 {
     if ( lib.loaded == 0 ) {
 #ifdef LOAD_TIF_DYNAMIC
@@ -67,7 +68,7 @@ int IMG_InitTIF()
 
     return 0;
 }
-void IMG_QuitTIF()
+void IMG_QuitTIF(void)
 {
     if ( lib.loaded == 0 ) {
         return;
@@ -222,13 +223,13 @@ error:
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
 #endif
 
-int IMG_InitTIF()
+int IMG_InitTIF(void)
 {
     IMG_SetError("TIFF images are not supported");
     return(-1);
 }
 
-void IMG_QuitTIF()
+void IMG_QuitTIF(void)
 {
 }
 

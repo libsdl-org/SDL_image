@@ -22,6 +22,7 @@
 /* This is a JPEG image file loading framework */
 
 #include <SDL3/SDL_image.h>
+#include "IMG.h"
 
 #include <stdio.h>
 #include <setjmp.h>
@@ -94,7 +95,7 @@ static struct {
     lib.FUNC = FUNC;
 #endif
 
-int IMG_InitJPG()
+int IMG_InitJPG(void)
 {
     if ( lib.loaded == 0 ) {
 #ifdef LOAD_JPG_DYNAMIC
@@ -124,7 +125,7 @@ int IMG_InitJPG()
 
     return 0;
 }
-void IMG_QuitJPG()
+void IMG_QuitJPG(void)
 {
     if ( lib.loaded == 0 ) {
         return;
@@ -548,13 +549,13 @@ done:
 
 extern SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src);
 
-int IMG_InitJPG()
+int IMG_InitJPG(void)
 {
     /* Nothing to load */
     return 0;
 }
 
-void IMG_QuitJPG()
+void IMG_QuitJPG(void)
 {
     /* Nothing to unload */
 }
@@ -640,13 +641,13 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
 #endif
 
-int IMG_InitJPG()
+int IMG_InitJPG(void)
 {
     IMG_SetError("JPEG images are not supported");
     return(-1);
 }
 
-void IMG_QuitJPG()
+void IMG_QuitJPG(void)
 {
 }
 

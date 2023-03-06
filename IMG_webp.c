@@ -22,6 +22,7 @@
 /* This is a WEBP image file loading framework */
 
 #include <SDL3/SDL_image.h>
+#include "IMG.h"
 
 #ifdef LOAD_WEBP
 
@@ -71,7 +72,7 @@ static struct {
     if (lib.FUNC == NULL) { IMG_SetError("Missing webpdemux.framework"); return -1; }
 #endif
 
-int IMG_InitWEBP()
+int IMG_InitWEBP(void)
 {
     if (lib.loaded == 0) {
 #if defined(LOAD_WEBP_DYNAMIC) && defined(LOAD_WEBPDEMUX_DYNAMIC)
@@ -96,7 +97,7 @@ int IMG_InitWEBP()
 
     return 0;
 }
-void IMG_QuitWEBP()
+void IMG_QuitWEBP(void)
 {
     if (lib.loaded == 0) {
         return;
@@ -373,13 +374,13 @@ error:
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
 #endif
 
-int IMG_InitWEBP()
+int IMG_InitWEBP(void)
 {
     IMG_SetError("WEBP images are not supported");
     return -1;
 }
 
-void IMG_QuitWEBP()
+void IMG_QuitWEBP(void)
 {
 }
 

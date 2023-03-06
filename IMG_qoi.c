@@ -24,6 +24,7 @@
  */
 
 #include <SDL3/SDL_image.h>
+#include "IMG.h"
 #include <limits.h> /* for INT_MAX */
 
 #ifdef LOAD_QOI

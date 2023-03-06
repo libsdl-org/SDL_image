@@ -22,6 +22,7 @@
 /* A simple library to load images of various formats as SDL surfaces */
 
 #include <SDL3/SDL_image.h>
+#include "IMG.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten/emscripten.h>
@@ -96,20 +97,6 @@ const SDL_version *IMG_Linked_Version(void)
     return(&linked_version);
 }
 
-extern int IMG_InitAVIF(void);
-extern void IMG_QuitAVIF(void);
-extern int IMG_InitJPG(void);
-extern void IMG_QuitJPG(void);
-extern int IMG_InitJXL(void);
-extern void IMG_QuitJXL(void);
-extern int IMG_InitPNG(void);
-extern void IMG_QuitPNG(void);
-extern int IMG_InitTIF(void);
-extern void IMG_QuitTIF(void);
-
-extern int IMG_InitWEBP(void);
-extern void IMG_QuitWEBP(void);
-
 static int initialized = 0;
 
 int IMG_Init(int flags)
@@ -151,7 +138,7 @@ int IMG_Init(int flags)
     return initialized;
 }
 
-void IMG_Quit()
+void IMG_Quit(void)
 {
     if (initialized & IMG_INIT_AVIF) {
         IMG_QuitAVIF();

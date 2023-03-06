@@ -10,6 +10,7 @@
 #if defined(__APPLE__) && !defined(SDL_IMAGE_USE_COMMON_BACKEND)
 
 #include <SDL3/SDL_image.h>
+#include "IMG.h"
 
 // Used because CGDataProviderCreate became deprecated in 10.5
 #include <AvailabilityMacros.h>
@@ -188,7 +189,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_RGB(CGImageRef image_ref)
 {
     /* This code is adapted from Apple's Documentation found here:
      * http://developer.apple.com/documentation/GraphicsImaging/Conceptual/OpenGL-MacProgGuide/index.html
-     * Listing 9-4††Using a Quartz image as a texture source.
+     * Listing 9-4â â Using a Quartz image as a texture source.
      * Unfortunately, this guide doesn't show what to do about
      * non-RGBA image formats so I'm making the rest up.
      * All this code should be scrutinized.
@@ -346,12 +347,12 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage(CGImageRef image_ref)
 
 #ifdef JPG_USES_IMAGEIO
 
-int IMG_InitJPG()
+int IMG_InitJPG(void)
 {
     return 0;
 }
 
-void IMG_QuitJPG()
+void IMG_QuitJPG(void)
 {
 }
 
@@ -359,23 +360,23 @@ void IMG_QuitJPG()
 
 #ifdef PNG_USES_IMAGEIO
 
-int IMG_InitPNG()
+int IMG_InitPNG(void)
 {
     return 0;
 }
 
-void IMG_QuitPNG()
+void IMG_QuitPNG(void)
 {
 }
 
 #endif /* PNG_USES_IMAGEIO */
 
-int IMG_InitTIF()
+int IMG_InitTIF(void)
 {
     return 0;
 }
 
-void IMG_QuitTIF()
+void IMG_QuitTIF(void)
 {
 }
 

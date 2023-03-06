@@ -22,6 +22,7 @@
 /* This is a PNG image file loading framework */
 
 #include <SDL3/SDL_image.h>
+#include "IMG.h"
 
 /* We'll have PNG save support by default */
 #if !defined(SDL_IMAGE_SAVE_PNG)
@@ -137,7 +138,7 @@ static struct {
     lib.FUNC = FUNC;
 #endif
 
-int IMG_InitPNG()
+int IMG_InitPNG(void)
 {
     if ( lib.loaded == 0 ) {
 #ifdef LOAD_PNG_DYNAMIC
@@ -186,7 +187,7 @@ int IMG_InitPNG()
 
     return 0;
 }
-void IMG_QuitPNG()
+void IMG_QuitPNG(void)
 {
     if ( lib.loaded == 0 ) {
         return;
@@ -479,13 +480,13 @@ done:   /* Clean up and return */
 
 extern SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src);
 
-int IMG_InitPNG()
+int IMG_InitPNG(void)
 {
     /* Nothing to load */
     return 0;
 }
 
-void IMG_QuitPNG()
+void IMG_QuitPNG(void)
 {
     /* Nothing to unload */
 }
@@ -529,13 +530,13 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
 #endif
 
-int IMG_InitPNG()
+int IMG_InitPNG(void)
 {
     IMG_SetError("PNG images are not supported");
     return(-1);
 }
 
-void IMG_QuitPNG()
+void IMG_QuitPNG(void)
 {
 }
 
@@ -708,7 +709,6 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst, int freed
 #define memcpy  SDL_memcpy
 #undef memset
 #define memset  SDL_memset
-#define strlen  SDL_strlen
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
 #define MINIZ_LITTLE_ENDIAN 1
 #else

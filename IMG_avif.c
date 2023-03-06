@@ -22,6 +22,7 @@
 /* This is a AVIF image file loading framework */
 
 #include <SDL3/SDL_image.h>
+#include "IMG.h"
 
 #ifdef LOAD_AVIF
 
@@ -52,7 +53,7 @@ static struct {
     if (lib.FUNC == NULL) { IMG_SetError("Missing avif.framework"); return -1; }
 #endif
 
-int IMG_InitAVIF()
+int IMG_InitAVIF(void)
 {
     if ( lib.loaded == 0 ) {
 #ifdef LOAD_AVIF_DYNAMIC
@@ -74,7 +75,7 @@ int IMG_InitAVIF()
 
     return 0;
 }
-void IMG_QuitAVIF()
+void IMG_QuitAVIF(void)
 {
     if ( lib.loaded == 0 ) {
         return;
@@ -318,13 +319,13 @@ done:
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
 #endif
 
-int IMG_InitAVIF()
+int IMG_InitAVIF(void)
 {
     IMG_SetError("AVIF images are not supported");
     return(-1);
 }
 
-void IMG_QuitAVIF()
+void IMG_QuitAVIF(void)
 {
 }
 

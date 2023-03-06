@@ -22,6 +22,7 @@
 /* This is a JXL image file loading framework */
 
 #include <SDL3/SDL_image.h>
+#include "IMG.h"
 
 #ifdef LOAD_JXL
 
@@ -51,7 +52,7 @@ static struct {
     if (lib.FUNC == NULL) { IMG_SetError("Missing jxl.framework"); return -1; }
 #endif
 
-int IMG_InitJXL()
+int IMG_InitJXL(void)
 {
     if ( lib.loaded == 0 ) {
 #ifdef LOAD_JXL_DYNAMIC
@@ -73,7 +74,7 @@ int IMG_InitJXL()
 
     return 0;
 }
-void IMG_QuitJXL()
+void IMG_QuitJXL(void)
 {
     if ( lib.loaded == 0 ) {
         return;
@@ -248,13 +249,13 @@ done:
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
 #endif
 
-int IMG_InitJXL()
+int IMG_InitJXL(void)
 {
     IMG_SetError("JXL images are not supported");
     return(-1);
 }
 
-void IMG_QuitJXL()
+void IMG_QuitJXL(void)
 {
 }
 
