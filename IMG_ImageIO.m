@@ -189,7 +189,10 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_RGB(CGImageRef image_ref)
 {
     /* This code is adapted from Apple's Documentation found here:
      * http://developer.apple.com/documentation/GraphicsImaging/Conceptual/OpenGL-MacProgGuide/index.html
-     * Listing 9-4â â Using a Quartz image as a texture source.
+     * http://developer.apple.com/documentation/GraphicsImaging/Conceptual/OpenGL-MacProgGuide/opengl_texturedata/chapter_10_section_5.html
+     * Creating a Texture from a Quartz Image Source
+     * Listing 9-4  Using a Quartz image as a texture source.
+     *
      * Unfortunately, this guide doesn't show what to do about
      * non-RGBA image formats so I'm making the rest up.
      * All this code should be scrutinized.
