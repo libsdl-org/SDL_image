@@ -24,72 +24,73 @@
 #include <SDL3/SDL_image.h>
 #include "IMG.h"
 
-/* Declare 'extern' and move those function to IMG.h */
-static int IMG_isXXX(SDL_RWops *src);
-static SDL_Surface *IMG_LoadXXX_RW(SDL_RWops *src);
-
 #ifdef LOAD_XXX
 
 /* See if an image is contained in a data source */
+/* Remember to declare this procedure in IMG.h . */
 int IMG_isXXX(SDL_RWops *src)
 {
     int start;
     int is_XXX;
 
-    if ( !src )
+    if (!src) {
         return 0;
+    }
+
     start = SDL_RWtell(src);
     is_XXX = 0;
 
     /* Detect the image here */
 
     SDL_RWseek(src, start, SDL_RW_SEEK_SET);
-    return(is_XXX);
+    return is_XXX;
 }
 
-/* Load a XXX type image from an SDL datasource */
+/* Load an XXX type image from an SDL datasource */
+/* Remember to declare this procedure in IMG.h . */
 SDL_Surface *IMG_LoadXXX_RW(SDL_RWops *src)
 {
     int start;
     const char *error = NULL;
     SDL_Surface *surface = NULL;
 
-    if ( !src ) {
+    if (!src) {
         /* The error message has been set in SDL_RWFromFile */
         return NULL;
     }
+
     start = SDL_RWtell(src);
 
     /* Load the image here */
 
-    if ( error ) {
+    if (error) {
         SDL_RWseek(src, start, SDL_RW_SEEK_SET);
-        if ( surface ) {
+        if (surface) {
             SDL_DestroySurface(surface);
             surface = NULL;
         }
         IMG_SetError("%s", error);
     }
+
     return surface;
 }
 
 #else
+
 #if _MSC_VER >= 1300
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
 #endif
 
-/* See if an image is contained in a data source */
 int IMG_isXXX(SDL_RWops *src)
 {
-    (void)src;
-    return(0);
+    (void) src;
+    return 0;
 }
 
-/* Load a XXX type image from an SDL datasource */
 SDL_Surface *IMG_LoadXXX_RW(SDL_RWops *src)
 {
-    (void)src;
-    return(NULL);
+    (void) src;
+    return NULL;
 }
 
 #endif /* LOAD_XXX */

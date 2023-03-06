@@ -226,7 +226,6 @@
     <ClCompile Include="..\IMG_xcf.c" />
     <ClCompile Include="..\IMG_xpm.c" />
     <ClCompile Include="..\IMG_xv.c" />
-    <ClCompile Include="..\IMG_xxx.c" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Version.rc" />

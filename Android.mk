@@ -90,8 +90,7 @@ LOCAL_SRC_FILES :=  \
     IMG_WIC.c       \
     IMG_xcf.c       \
     IMG_xpm.c.arm   \
-    IMG_xv.c        \
-    IMG_xxx.c
+    IMG_xv.c
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/include
 
@@ -168,4 +167,3 @@ LOCAL_LDLIBS :=
 LOCAL_EXPORT_LDLIBS :=
 
 include $(BUILD_STATIC_LIBRARY)
-
