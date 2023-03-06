@@ -22,13 +22,14 @@
 #if defined(SDL_IMAGE_USE_WIC_BACKEND)
 
 #include <SDL3/SDL_image.h>
+#include "IMG.h"
 #define COBJMACROS
 #include <initguid.h>
 #include <wincodec.h>
 
 static IWICImagingFactory* wicFactory = NULL;
 
-static int WIC_Init()
+static int WIC_Init(void)
 {
     if (wicFactory == NULL) {
         HRESULT hr = CoCreateInstance(
@@ -46,39 +47,39 @@ static int WIC_Init()
     return 0;
 }
 
-static void WIC_Quit()
+static void WIC_Quit(void)
 {
     if (wicFactory) {
         IWICImagingFactory_Release(wicFactory);
     }
 }
 
-int IMG_InitPNG()
+int IMG_InitPNG(void)
 {
     return WIC_Init();
 }
 
-void IMG_QuitPNG()
+void IMG_QuitPNG(void)
 {
     WIC_Quit();
 }
 
-int IMG_InitJPG()
+int IMG_InitJPG(void)
 {
     return WIC_Init();
 }
 
-void IMG_QuitJPG()
+void IMG_QuitJPG(void)
 {
     WIC_Quit();
 }
 
-int IMG_InitTIF()
+int IMG_InitTIF(void)
 {
     return WIC_Init();
 }
 
-void IMG_QuitTIF()
+void IMG_QuitTIF(void)
 {
     WIC_Quit();
 }

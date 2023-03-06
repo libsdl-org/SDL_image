@@ -22,6 +22,11 @@
 /* This is a generic "format not supported" image framework */
 
 #include <SDL3/SDL_image.h>
+#include "IMG.h"
+
+/* Declare 'extern' and move those function to IMG.h */
+static int IMG_isXXX(SDL_RWops *src);
+static SDL_Surface *IMG_LoadXXX_RW(SDL_RWops *src);
 
 #ifdef LOAD_XXX
 
