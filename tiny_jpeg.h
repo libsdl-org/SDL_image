@@ -173,10 +173,12 @@ int tje_encode_with_func(tje_write_func* func,
 
 
 #if defined(_MSC_VER)
-#define TJEI_FORCE_INLINE __forceinline
+#define TJEI_FORCE_INLINE static __forceinline
 // #define TJEI_FORCE_INLINE __declspec(noinline)  // For profiling
+#elif ((defined(__GNUC__) && (__GNUC__ >= 4)) || defined(__clang__))
+#define TJEI_FORCE_INLINE  __attribute__((always_inline)) static __inline
 #else
-#define TJEI_FORCE_INLINE static // TODO: equivalent for gcc & clang
+#define TJEI_FORCE_INLINE static __inline
 #endif
 
 // Only use zero for debugging and/or inspection.
