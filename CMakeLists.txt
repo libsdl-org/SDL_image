@@ -333,7 +333,7 @@ if(SDL3IMAGE_ZLIB)
         # PNG_BUILD_ZLIB variable is used by vendored libpng
         set(PNG_BUILD_ZLIB ON CACHE BOOL "libpng option to tell it should use 'our' vendored ZLIB library" FORCE)
         # ZLIB_INCLUDE_DIR variable is used by vendored libpng
-        set(ZLIB_INCLUDE_DIR "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/external/zlib;${CMAKE_CURRENT_BINARY_DIR}/external/zlib>" CACHE STRING "path of zlib, passed to libpng" FORCE)
+        set(ZLIB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/zlib;${CMAKE_CURRENT_BINARY_DIR}/external/zlib" CACHE STRING "path of zlib, passed to libpng" FORCE)
         # ZLIB_LIBRARY variable is used by vendored libpng
         if(SDL3IMAGE_ZLIB_SHARED)
             set(ZLIB_LIBRARY zlib)
