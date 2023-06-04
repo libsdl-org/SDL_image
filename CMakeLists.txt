@@ -250,6 +250,8 @@ set_target_properties(SDL3_image PROPERTIES
     C_VISIBILITY_PRESET "hidden"
 )
 
+sdl_target_link_option_version_file(SDL3_image "${CMAKE_CURRENT_SOURCE_DIR}/SDL_image.sym")
+
 if(NOT ANDROID)
     if(APPLE)
         # the SOVERSION property corresponds to the compatibility version and VERSION corresponds to the current version
