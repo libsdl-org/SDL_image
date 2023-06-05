@@ -61,6 +61,8 @@ int main(int argc, char *argv[])
     SDL_Event event;
     const char *saveFile = NULL;
 
+    (void)argc;
+
     /* Check command line usage */
     if ( ! argv[1] ) {
         SDL_Log("Usage: %s [-fullscreen] [-save file.png] <image_file> ...\n", argv[0]);
@@ -155,7 +157,7 @@ int main(int argc, char *argv[])
                         case SDLK_ESCAPE:
                         case SDLK_q:
                             argv[i+1] = NULL;
-                        /* Drop through to done */
+                            SDL_FALLTHROUGH;
                         case SDLK_SPACE:
                         case SDLK_TAB:
                             done = 1;
