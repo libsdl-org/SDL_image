@@ -67,6 +67,7 @@ set(TESTS_ENVIRONMENT
 
 foreach(prog IN LISTS ALL_TESTS)
     target_compile_definitions(${prog} PRIVATE $<TARGET_PROPERTY:${sdlimage_target_name},COMPILE_DEFINITIONS>)
+    sdl_add_warning_options(${prog} WARNING_AS_ERROR ${SDL3IMAGE_WERROR})
     target_link_libraries(${prog} PRIVATE ${sdlimage_target_name})
     target_link_libraries(${prog} PRIVATE SDL3::SDL3_test ${sdl_target_name})
     if(TARGET sdl3image_build_options)

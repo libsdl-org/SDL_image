@@ -183,20 +183,6 @@ if(NOT DEFINED OpenGL_GL_PREFERENCE)
     set(OpenGL_GL_PREFERENCE GLVND)
 endif()
 
-add_library(sdl3image_build_options INTERFACE)
-if(MSVC)
-    target_compile_options(sdl3image_build_options INTERFACE /W2)
-else()
-    target_compile_options(sdl3image_build_options INTERFACE -Wall -Wextra)
-endif()
-if(SDL3IMAGE_WERROR)
-    if(MSVC)
-        target_compile_options(sdl3image_build_options INTERFACE /WX)
-    else()
-        target_compile_options(sdl3image_build_options INTERFACE -Werror)
-    endif()
-endif()
-
 set(BUILD_SHARED_LIBS ${SDL3IMAGE_BUILD_SHARED_LIBS})
 add_library(${sdl3_image_target_name}
     IMG.c
@@ -238,7 +224,7 @@ target_compile_definitions(${sdl3_image_target_name} PRIVATE
     SDL_BUILD_MICRO_VERSION=${MICRO_VERSION}
 )
 target_link_libraries(${sdl3_image_target_name} PRIVATE $<BUILD_INTERFACE:${sdl3_target_name}>)
-target_link_libraries(${sdl3_image_target_name} PRIVATE $<BUILD_INTERFACE:sdl3image_build_options>)
+sdl_add_warning_options(${sdl3_image_target_name} WARNING_AS_ERROR ${SDL3IMAGE_WERROR})
 if(WIN32 AND SDL3IMAGE_BUILD_SHARED_LIBS)
     target_sources(${sdl3_image_target_name} PRIVATE
         version.rc
@@ -780,6 +766,7 @@ if(SDL3IMAGE_SAMPLES)
     add_executable(showimage showimage.c)
 
     foreach(prog showanim showimage)
+        sdl_add_warning_options(${prog} WARNING_AS_ERROR ${SDL3IMAGE_WERROR})
         target_link_libraries(${prog} PRIVATE SDL3_image::${sdl3_image_target_name})
         target_link_libraries(${prog} PRIVATE ${sdl3_target_name})
 
