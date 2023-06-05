@@ -35,7 +35,6 @@ endif()
 
 # Assume MSVC projects don't have a package manager and need vendored dependencies (by default).
 # Most other platforms have some kind of package manager.
-# FIXME: consider a package manager such as conan/vcpkg instead of vendoring
 if(MSVC)
     set(vendored_default ON)
 else()
@@ -160,12 +159,10 @@ endif()
 set(SDL3IMAGE_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 
 if(SDL3IMAGE_BUILD_SHARED_LIBS)
-    set(sdl3_image_export_name SDL3_image)
-    set(sdl3_image_install_name_infix shared)
-    set(sdl3_target_name SDL3::SDL3)
+    set(sdl3_image_target_name SDL3_image-shared)
+    set(sdl3_target_name SDL3::SDL3-shared)
 else()
-    set(sdl3_image_export_name SDL3_image-static)
-    set(sdl3_image_install_name_infix static)
+    set(sdl3_image_target_name SDL3_image-static)
     set(sdl3_target_name SDL3::SDL3-static)
 endif()
 
@@ -201,7 +198,7 @@ if(SDL3IMAGE_WERROR)
 endif()
 
 set(BUILD_SHARED_LIBS ${SDL3IMAGE_BUILD_SHARED_LIBS})
-add_library(SDL3_image
+add_library(${sdl3_image_target_name}
     IMG.c
     IMG_WIC.c
     IMG_avif.c
@@ -224,44 +221,48 @@ add_library(SDL3_image
     IMG_xv.c
     IMG_xxx.c
 )
-add_library(SDL3_image::${sdl3_image_export_name} ALIAS SDL3_image)
-target_include_directories(SDL3_image PUBLIC
+add_library(SDL3_image::${sdl3_image_target_name} ALIAS ${sdl3_image_target_name})
+if(NOT TARGET SDL3_image::SDL3_image)
+    add_library(SDL3_image::SDL3_image ALIAS ${sdl3_image_target_name})
+endif()
+target_include_directories(${sdl3_image_target_name} PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/SDL3>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL3>"
 )
-target_compile_definitions(SDL3_image PRIVATE
+target_compile_definitions(${sdl3_image_target_name} PRIVATE
     BUILD_SDL
     SDL_BUILD_MAJOR_VERSION=${MAJOR_VERSION}
     SDL_BUILD_MINOR_VERSION=${MINOR_VERSION}
     SDL_BUILD_MICRO_VERSION=${MICRO_VERSION}
 )
-target_link_libraries(SDL3_image PRIVATE $<BUILD_INTERFACE:${sdl3_target_name}>)
-target_link_libraries(SDL3_image PRIVATE $<BUILD_INTERFACE:sdl3image_build_options>)
+target_link_libraries(${sdl3_image_target_name} PRIVATE $<BUILD_INTERFACE:${sdl3_target_name}>)
+target_link_libraries(${sdl3_image_target_name} PRIVATE $<BUILD_INTERFACE:sdl3image_build_options>)
 if(WIN32 AND SDL3IMAGE_BUILD_SHARED_LIBS)
-    target_sources(SDL3_image PRIVATE
+    target_sources(${sdl3_image_target_name} PRIVATE
         version.rc
     )
 endif()
-set_target_properties(SDL3_image PROPERTIES
+set_target_properties(${sdl3_image_target_name} PROPERTIES
+    OUTPUT_NAME "SDL3_image"
     DEFINE_SYMBOL DLL_EXPORT
-    EXPORT_NAME ${sdl3_image_export_name}
+    EXPORT_NAME ${sdl3_image_target_name}
     C_VISIBILITY_PRESET "hidden"
 )
 
-sdl_target_link_option_version_file(SDL3_image "${CMAKE_CURRENT_SOURCE_DIR}/SDL_image.sym")
+sdl_target_link_option_version_file(${sdl3_image_target_name} "${CMAKE_CURRENT_SOURCE_DIR}/SDL_image.sym")
 
 if(NOT ANDROID)
     if(APPLE)
         # the SOVERSION property corresponds to the compatibility version and VERSION corresponds to the current version
         # https://cmake.org/cmake/help/latest/prop_tgt/SOVERSION.html#mach-o-versions
-        set_target_properties(SDL3_image PROPERTIES
+        set_target_properties(${sdl3_image_target_name} PROPERTIES
             SOVERSION "${DYLIB_COMPAT_VERSION}"
             VERSION "${DYLIB_CURRENT_VERSION}"
         )
     else()
-        set_target_properties(SDL3_image PROPERTIES
+        set_target_properties(${sdl3_image_target_name} PROPERTIES
             SOVERSION "${SO_VERSION_MAJOR}"
             VERSION "${SO_VERSION}"
         )
@@ -269,13 +270,13 @@ if(NOT ANDROID)
 endif()
 if(SDL3IMAGE_BUILD_SHARED_LIBS)
     if(WIN32)
-        set_target_properties(SDL3_image PROPERTIES
+        set_target_properties(${sdl3_image_target_name} PROPERTIES
             PREFIX ""
         )
     endif()
 else()
     if(MSVC)
-        set_target_properties(SDL3_image PROPERTIES
+        set_target_properties(${sdl3_image_target_name} PROPERTIES
             OUTPUT_NAME "SDL3_image-static"
         )
     endif()
@@ -283,12 +284,12 @@ endif()
 
 # Use `Compatible Interface Properties` to ensure a shared SDL3_image is built with a shared SDL3
 if(SDL3IMAGE_BUILD_SHARED_LIBS)
-    set_property(TARGET SDL3_image PROPERTY INTERFACE_SDL3_SHARED ${SDL3IMAGE_BUILD_SHARED_LIBS})
-    set_property(TARGET SDL3_image APPEND PROPERTY COMPATIBLE_INTERFACE_BOOL SDL3_SHARED)
+    set_property(TARGET ${sdl3_image_target_name} PROPERTY INTERFACE_SDL3_SHARED ${SDL3IMAGE_BUILD_SHARED_LIBS})
+    set_property(TARGET ${sdl3_image_target_name} APPEND PROPERTY COMPATIBLE_INTERFACE_BOOL SDL3_SHARED)
 endif()
 
 if(SDL3IMAGE_BUILD_SHARED_LIBS)
-    sdl_target_link_options_no_undefined(SDL3_image)
+    sdl_target_link_options_no_undefined(${sdl3_image_target_name})
 endif()
 
 if(SDL3IMAGE_BUILD_SHARED_LIBS)
@@ -301,30 +302,30 @@ set(PC_LIBS)
 set(PC_REQUIRES)
 
 if(SDL3IMAGE_BACKEND_STB)
-    target_compile_definitions(SDL3_image PRIVATE USE_STBIMAGE)
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE USE_STBIMAGE)
 endif()
 
 if(APPLE)
     if(SDL3IMAGE_BACKEND_IMAGEIO)
-        target_link_libraries(SDL3_image PRIVATE -Wl,-framework,ApplicationServices)
-        target_link_libraries(SDL3_image PRIVATE objc)
-        target_sources(SDL3_image PRIVATE
+        target_link_libraries(${sdl3_image_target_name} PRIVATE -Wl,-framework,ApplicationServices)
+        target_link_libraries(${sdl3_image_target_name} PRIVATE objc)
+        target_sources(${sdl3_image_target_name} PRIVATE
             IMG_ImageIO.m
         )
 
         if (SDL3IMAGE_PNG AND NOT SDL3IMAGE_BACKEND_STB)
-            target_compile_definitions(SDL3_image PRIVATE PNG_USES_IMAGEIO)
+            target_compile_definitions(${sdl3_image_target_name} PRIVATE PNG_USES_IMAGEIO)
         endif()
         if (SDL3IMAGE_JPG AND NOT SDL3IMAGE_BACKEND_STB)
-            target_compile_definitions(SDL3_image PRIVATE JPG_USES_IMAGEIO)
+            target_compile_definitions(${sdl3_image_target_name} PRIVATE JPG_USES_IMAGEIO)
         endif()
     else()
-        target_compile_definitions(SDL3_image PRIVATE SDL_IMAGE_USE_COMMON_BACKEND)
+        target_compile_definitions(${sdl3_image_target_name} PRIVATE SDL_IMAGE_USE_COMMON_BACKEND)
     endif()
 endif()
 
 if(SDL3IMAGE_BACKEND_WIC)
-    target_compile_definitions(SDL3_image PRIVATE SDL_IMAGE_USE_WIC_BACKEND)
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE SDL_IMAGE_USE_WIC_BACKEND)
 endif()
 
 if(SDL3IMAGE_ZLIB)
@@ -352,7 +353,7 @@ if(SDL3IMAGE_ZLIB)
 endif()
 
 if(SDL3IMAGE_AVIF)
-    target_compile_definitions(SDL3_image PRIVATE LOAD_AVIF)
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_AVIF)
     if(SDL3IMAGE_AVIF_VENDORED)
         message(STATUS "${PROJECT_NAME}: Using vendored libavif")
         message(FATAL_ERROR "libavif is not vendored (yet)")
@@ -373,32 +374,32 @@ if(SDL3IMAGE_AVIF)
         endif()
     endif()
     if(SDL3IMAGE_AVIF_SHARED)
-        target_include_directories(SDL3_image PRIVATE
+        target_include_directories(${sdl3_image_target_name} PRIVATE
             $<TARGET_PROPERTY:avif,INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:avif,INTERFACE_INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:avif,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
         )
         target_get_dynamic_library(dynamic_avif avif)
         message(STATUS "Dynamic libavif: ${dynamic_avif}")
-        target_compile_definitions(SDL3_image PRIVATE "LOAD_AVIF_DYNAMIC=\"${dynamic_avif}\"")
+        target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_AVIF_DYNAMIC=\"${dynamic_avif}\"")
         if(SDL3IMAGE_AVIF_VENDORED)
-            add_dependencies(SDL3_image avif)
+            add_dependencies(${sdl3_image_target_name} avif)
         endif()
     else()
-        target_link_libraries(SDL3_image PRIVATE avif)
+        target_link_libraries(${sdl3_image_target_name} PRIVATE avif)
     endif()
 endif()
 
 if(SDL3IMAGE_BMP)
-    target_compile_definitions(SDL3_image PRIVATE LOAD_BMP)
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_BMP)
 endif()
 
 if(SDL3IMAGE_GIF)
-    target_compile_definitions(SDL3_image PRIVATE LOAD_GIF)
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_GIF)
 endif()
 
 if(SDL3IMAGE_JPG)
-    target_compile_definitions(SDL3_image PRIVATE
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE
         LOAD_JPG
         SDL_IMAGE_SAVE_JPG=$<BOOL:${SDL3IMAGE_JPG_SAVE}>
     )
@@ -422,25 +423,25 @@ if(SDL3IMAGE_JPG)
             endif()
         endif()
         if(SDL3IMAGE_JPG_SHARED)
-            target_include_directories(SDL3_image PRIVATE
+            target_include_directories(${sdl3_image_target_name} PRIVATE
                 $<TARGET_PROPERTY:JPEG::JPEG,INCLUDE_DIRECTORIES>
                 $<TARGET_PROPERTY:JPEG::JPEG,INTERFACE_INCLUDE_DIRECTORIES>
                 $<TARGET_PROPERTY:JPEG::JPEG,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
             )
             target_get_dynamic_library(dynamic_jpeg JPEG::JPEG)
             message(STATUS "Dynamic libjpeg: ${dynamic_jpeg}")
-            target_compile_definitions(SDL3_image PRIVATE "LOAD_JPG_DYNAMIC=\"${dynamic_jpeg}\"")
+            target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_JPG_DYNAMIC=\"${dynamic_jpeg}\"")
             if(SDL3IMAGE_JPG_VENDORED)
-                add_dependencies(SDL3_image JPEG::JPEG)
+                add_dependencies(${sdl3_image_target_name} JPEG::JPEG)
             endif()
         else()
-            target_link_libraries(SDL3_image PRIVATE JPEG::JPEG)
+            target_link_libraries(${sdl3_image_target_name} PRIVATE JPEG::JPEG)
         endif()
     endif()
 endif()
 
 if(SDL3IMAGE_JXL)
-    target_compile_definitions(SDL3_image PRIVATE LOAD_JXL)
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_JXL)
     if(SDL3IMAGE_JXL_VENDORED)
         enable_language(CXX)
         message(STATUS "${PROJECT_NAME}: Using vendored libjxl")
@@ -482,32 +483,32 @@ if(SDL3IMAGE_JXL)
         endif()
     endif()
     if(SDL3IMAGE_JXL_SHARED)
-        target_include_directories(SDL3_image PRIVATE
+        target_include_directories(${sdl3_image_target_name} PRIVATE
             $<TARGET_PROPERTY:libjxl::libjxl,INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:libjxl::libjxl,INTERFACE_INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:libjxl::libjxl,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
         )
         target_get_dynamic_library(dynamic_jxl libjxl::libjxl)
         message(STATUS "Dynamic libjxl: ${dynamic_jxl}")
-        target_compile_definitions(SDL3_image PRIVATE "LOAD_JXL_DYNAMIC=\"${dynamic_jxl}\"")
+        target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_JXL_DYNAMIC=\"${dynamic_jxl}\"")
         if(SDL3IMAGE_JXL_VENDORED)
-            add_dependencies(SDL3_image libjxl::libjxl)
+            add_dependencies(${sdl3_image_target_name} libjxl::libjxl)
         endif()
     else()
-        target_link_libraries(SDL3_image PRIVATE libjxl::libjxl)
+        target_link_libraries(${sdl3_image_target_name} PRIVATE libjxl::libjxl)
     endif()
 endif()
 
 if(SDL3IMAGE_LBM)
-    target_compile_definitions(SDL3_image PRIVATE LOAD_LBM)
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_LBM)
 endif()
 
 if(SDL3IMAGE_PCX)
-    target_compile_definitions(SDL3_image PRIVATE LOAD_PCX)
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_PCX)
 endif()
 
 if(SDL3IMAGE_PNG)
-    target_compile_definitions(SDL3_image PRIVATE
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE
         LOAD_PNG
         SDL_IMAGE_SAVE_PNG=$<BOOL:${SDL3IMAGE_PNG_SAVE}>
     )
@@ -523,7 +524,7 @@ if(SDL3IMAGE_PNG)
                 set(PNG_LIBRARY png_static)
             endif()
             add_library(PNG::PNG ALIAS ${PNG_LIBRARY})
-            target_include_directories(SDL3_image PRIVATE external/libpng)
+            target_include_directories(${sdl3_image_target_name} PRIVATE external/libpng)
             list(APPEND INSTALL_EXTRA_TARGETS ${PNG_LIBRARY})
             set_target_properties(${PNG_LIBRARY} PROPERTIES EXPORT_NAME external_libpng)
             add_library(SDL3_image::external_libpng ALIAS ${PNG_LIBRARY})
@@ -543,41 +544,41 @@ if(SDL3IMAGE_PNG)
             endif()
         endif()
         if(SDL3IMAGE_PNG_SHARED)
-            target_include_directories(SDL3_image PRIVATE
+            target_include_directories(${sdl3_image_target_name} PRIVATE
                 $<TARGET_PROPERTY:PNG::PNG,INCLUDE_DIRECTORIES>
                 $<TARGET_PROPERTY:PNG::PNG,INTERFACE_INCLUDE_DIRECTORIES>
                 $<TARGET_PROPERTY:PNG::PNG,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
             )
             target_get_dynamic_library(dynamic_png PNG::PNG)
             message(STATUS "Dynamic libpng: ${dynamic_png}")
-            target_compile_definitions(SDL3_image PRIVATE "LOAD_PNG_DYNAMIC=\"${dynamic_png}\"")
+            target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_PNG_DYNAMIC=\"${dynamic_png}\"")
             if(SDL3IMAGE_PNG_VENDORED)
-                add_dependencies(SDL3_image PNG::PNG)
+                add_dependencies(${sdl3_image_target_name} PNG::PNG)
             endif()
         else()
-            target_link_libraries(SDL3_image PRIVATE PNG::PNG)
+            target_link_libraries(${sdl3_image_target_name} PRIVATE PNG::PNG)
         endif()
     endif()
 endif()
 
 if(SDL3IMAGE_PNM)
-    target_compile_definitions(SDL3_image PRIVATE LOAD_PNM)
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_PNM)
 endif()
 
 if(SDL3IMAGE_QOI)
-    target_compile_definitions(SDL3_image PRIVATE LOAD_QOI)
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_QOI)
 endif()
 
 if(SDL3IMAGE_SVG)
-    target_compile_definitions(SDL3_image PRIVATE LOAD_SVG)
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_SVG)
 endif()
 
 if(SDL3IMAGE_TGA)
-    target_compile_definitions(SDL3_image PRIVATE LOAD_TGA)
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_TGA)
 endif()
 
 if(SDL3IMAGE_TIF)
-    target_compile_definitions(SDL3_image PRIVATE LOAD_TIF)
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_TIF)
     if(SDL3IMAGE_TIF_VENDORED)
         message(STATUS "${PROJECT_NAME}: Using vendored libtiff")
         # jpeg variable is used by vendored libtiff
@@ -618,31 +619,31 @@ if(SDL3IMAGE_TIF)
         endif()
     endif()
     if(SDL3IMAGE_TIF_SHARED)
-        target_include_directories(SDL3_image PRIVATE
+        target_include_directories(${sdl3_image_target_name} PRIVATE
             $<TARGET_PROPERTY:TIFF::TIFF,INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:TIFF::TIFF,INTERFACE_INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:TIFF::TIFF,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
         )
         target_get_dynamic_library(dynamic_tif TIFF::TIFF)
         message(STATUS "Dynamic libtiff: ${dynamic_tif}")
-        target_compile_definitions(SDL3_image PRIVATE "LOAD_TIF_DYNAMIC=\"${dynamic_tif}\"")
+        target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_TIF_DYNAMIC=\"${dynamic_tif}\"")
         if(SDL3IMAGE_TIF_VENDORED)
-            add_dependencies(SDL3_image TIFF::TIFF)
+            add_dependencies(${sdl3_image_target_name} TIFF::TIFF)
         endif()
     else()
-        target_link_libraries(SDL3_image PRIVATE TIFF::TIFF)
+        target_link_libraries(${sdl3_image_target_name} PRIVATE TIFF::TIFF)
     endif()
 endif()
 
 if(SDL3IMAGE_WEBP)
-    target_compile_definitions(SDL3_image PRIVATE LOAD_WEBP)
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_WEBP)
     # missing cpufeatures
     if(SDL3IMAGE_WEBP_VENDORED)
         message(STATUS "${PROJECT_NAME}: Using vendored libwebp")
         sdl_check_project_in_subfolder(external/libwebp libwebp SDL3IMAGE_VENDORED)
         set(BUILD_SHARED_LIBS ${SDL3IMAGE_WEBP_SHARED})
         add_subdirectory(external/libwebp EXCLUDE_FROM_ALL)
-        target_include_directories(SDL3_image PRIVATE external/libwebp/src)
+        target_include_directories(${sdl3_image_target_name} PRIVATE external/libwebp/src)
         add_library(WebP::webp ALIAS webp)
         add_library(WebP::webpdemux ALIAS webpdemux)
         list(APPEND INSTALL_EXTRA_TARGETS webp webpdemux)
@@ -656,7 +657,7 @@ if(SDL3IMAGE_WEBP)
         endif()
     endif()
     if(SDL3IMAGE_WEBP_SHARED)
-        target_include_directories(SDL3_image PRIVATE
+        target_include_directories(${sdl3_image_target_name} PRIVATE
             $<TARGET_PROPERTY:WebP::webp,INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:WebP::webp,INTERFACE_INCLUDE_DIRECTORIES>
             $<TARGET_PROPERTY:WebP::webp,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
@@ -666,28 +667,28 @@ if(SDL3IMAGE_WEBP)
         )
         target_get_dynamic_library(dynamic_webpdemux WebP::webpdemux)
         message(STATUS "Dynamic libwebpdemux: ${dynamic_webpdemux}")
-        target_compile_definitions(SDL3_image PRIVATE "LOAD_WEBPDEMUX_DYNAMIC=\"${dynamic_webpdemux}\"")
+        target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_WEBPDEMUX_DYNAMIC=\"${dynamic_webpdemux}\"")
         target_get_dynamic_library(dynamic_webp WebP::webp)
         message(STATUS "Dynamic libwebp: ${dynamic_webp}")
-        target_compile_definitions(SDL3_image PRIVATE "LOAD_WEBP_DYNAMIC=\"${dynamic_webp}\"")
+        target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_WEBP_DYNAMIC=\"${dynamic_webp}\"")
         if(SDL3IMAGE_WEBP_VENDORED)
-            add_dependencies(SDL3_image WebP::webp WebP::webpdemux)
+            add_dependencies(${sdl3_image_target_name} WebP::webp WebP::webpdemux)
         endif()
     else()
-        target_link_libraries(SDL3_image PRIVATE WebP::webp WebP::webpdemux)
+        target_link_libraries(${sdl3_image_target_name} PRIVATE WebP::webp WebP::webpdemux)
     endif()
 endif()
 
 if(SDL3IMAGE_XCF)
-    target_compile_definitions(SDL3_image PRIVATE LOAD_XCF)
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_XCF)
 endif()
 
 if(SDL3IMAGE_XPM)
-    target_compile_definitions(SDL3_image PRIVATE LOAD_XPM)
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_XPM)
 endif()
 
 if(SDL3IMAGE_XV)
-    target_compile_definitions(SDL3_image PRIVATE LOAD_XV)
+    target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_XV)
 endif()
 
 # Restore BUILD_SHARED_LIBS
@@ -695,7 +696,7 @@ set(BUILD_SHARED_LIBS ${SDL3IMAGE_BUILD_SHARED_LIBS})
 
 if(SDL3IMAGE_INSTALL)
     install(
-        TARGETS SDL3_image
+        TARGETS ${sdl3_image_target_name}
         EXPORT SDL3ImageExports
         ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT devel
         LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT library
@@ -748,7 +749,7 @@ if(SDL3IMAGE_INSTALL)
         COMPONENT devel
     )
     install(EXPORT SDL3ImageExports
-        FILE SDL3_image-${sdl3_image_install_name_infix}-targets.cmake
+        FILE ${sdl3_image_target_name}-targets.cmake
         NAMESPACE SDL3_image::
         DESTINATION "${SDL3IMAGE_INSTALL_CMAKEDIR}"
         COMPONENT devel
@@ -779,7 +780,7 @@ if(SDL3IMAGE_SAMPLES)
     add_executable(showimage showimage.c)
 
     foreach(prog showanim showimage)
-        target_link_libraries(${prog} PRIVATE SDL3_image::${sdl3_image_export_name})
+        target_link_libraries(${prog} PRIVATE SDL3_image::${sdl3_image_target_name})
         target_link_libraries(${prog} PRIVATE ${sdl3_target_name})
 
         if(SDL3IMAGE_SAMPLES_INSTALL)

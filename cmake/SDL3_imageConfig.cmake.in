@@ -88,3 +88,22 @@ if(NOT SDL3IMAGE_VENDORED)
     set(CMAKE_MODULE_PATH "${_sdl_cmake_module_path}")
     unset(_sdl_cmake_module_path)
 endif()
+
+function(_sdl_create_target_alias_compat NEW_TARGET TARGET)
+    if(CMAKE_VERSION VERSION_LESS "3.18")
+        # Aliasing local targets is not supported on CMake < 3.18, so make it global.
+        add_library(${NEW_TARGET} INTERFACE IMPORTED)
+        set_target_properties(${NEW_TARGET} PROPERTIES INTERFACE_LINK_LIBRARIES "${TARGET}")
+    else()
+        add_library(${NEW_TARGET} ALIAS ${TARGET})
+    endif()
+endfunction()
+
+# Make sure SDL3_image::SDL3_image always exists
+if(NOT TARGET SDL3_image::SDL3_image)
+    if(TARGET SDL3_image::SDL3_image-shared)
+        _sdl_create_target_alias_compat(SDL3_image::SDL3_image SDL3_image::SDL3_image-shared)
+    else()
+        _sdl_create_target_alias_compat(SDL3_image::SDL3_image SDL3_image::SDL3_image-static)
+    endif()
+endif()

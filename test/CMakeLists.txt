@@ -8,8 +8,8 @@ option(SDL3IMAGE_TESTS_INSTALL "Install unit tests?" OFF)
 
 if(SDL3IMAGE_TESTS_LINK_SHARED)
     set(sdl_name_component SDL3)
-    set(sdl_target_name SDL3::SDL3)
-    set(sdlimage_target_name SDL3_image::SDL3_image)
+    set(sdl_target_name SDL3::SDL3-shared)
+    set(sdlimage_target_name SDL3_image::SDL3_image-shared)
 else()
     set(sdl_name_component SDL3-static)
     set(sdl_target_name SDL3::SDL3-static)
@@ -65,8 +65,8 @@ set(TESTS_ENVIRONMENT
     "SDL_VIDEO_DRIVER=dummy"
 )
 
-foreach(prog ${ALL_TESTS})
-    target_compile_definitions(${prog} PRIVATE $<TARGET_PROPERTY:SDL3_image,COMPILE_DEFINITIONS>)
+foreach(prog IN LISTS ALL_TESTS)
+    target_compile_definitions(${prog} PRIVATE $<TARGET_PROPERTY:${sdlimage_target_name},COMPILE_DEFINITIONS>)
     target_link_libraries(${prog} PRIVATE ${sdlimage_target_name})
     target_link_libraries(${prog} PRIVATE SDL3::SDL3_test ${sdl_target_name})
     if(TARGET sdl3image_build_options)
