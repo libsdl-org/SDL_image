@@ -61,6 +61,8 @@ int main(int argc, char *argv[])
     int current_frame, delay;
     SDL_Event event;
 
+    (void)argc;
+
     /* Check command line usage */
     if ( ! argv[1] ) {
         SDL_Log("Usage: %s [-fullscreen] <image_file> ...\n", argv[0]);
@@ -140,7 +142,7 @@ int main(int argc, char *argv[])
                             case SDLK_ESCAPE:
                             case SDLK_q:
                                 argv[i+1] = NULL;
-                            /* Drop through to done */
+                                SDL_FALLTHROUGH;
                             case SDLK_SPACE:
                             case SDLK_TAB:
                             done = 1;
