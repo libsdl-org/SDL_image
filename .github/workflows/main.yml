@@ -23,13 +23,17 @@ jobs:
         - { name: Macos,             os: macos-latest,   shell: sh,  cmake: '-DSDL3IMAGE_VENDORED=ON -GNinja', shared: 1, static: 0 }
 
     steps:
+
+    - uses: ilammy/msvc-dev-cmd@v1
+      if: ${{ matrix.platform.msvc }}
+      with:
+        arch: x64
     - name: Set up MSYS2
       if: ${{ contains(matrix.platform.shell, 'msys2') }}
       uses: msys2/setup-msys2@v2
       with:
         msystem: ${{ matrix.platform.msystem }}
         install: >-
-          ${{ matrix.platform.msys-env }}-SDL3
           ${{ matrix.platform.msys-env }}-cmake
           ${{ matrix.platform.msys-env }}-gcc
           ${{ matrix.platform.msys-env }}-libavif
@@ -41,30 +45,41 @@ jobs:
           ${{ matrix.platform.msys-env }}-ninja
           ${{ matrix.platform.msys-env }}-pkg-config
           ${{ matrix.platform.msys-env }}-zlib
+    - name: Setup Ninja
+      if: ${{ !contains(matrix.platform.shell, 'msys2') }}
+      uses: ashutoshvarma/setup-ninja@master
+      with:
+        version: 1.11.1
+    - name: Set up SDL
+      id: sdl
+      uses: libsdl-org/setup-sdl@main
+      with:
+        cmake-generator: Ninja
+        version: 3-head
+        sdl-test: true
+        shell: ${{ matrix.platform.shell }}
     - name: Setup Macos dependencies
-      if: runner.os == 'macOS'
+      if: ${{ runner.os == 'macOS' }}
       run: |
-          brew install \
-            jpeg \
-            libavif \
-            libpng \
-            libtiff \
-            libtool \
-            ninja \
-            pkg-config \
-            webp \
-            zlib \
-            ${NULL+}
-          brew install sdl3
+        brew install \
+          jpeg \
+          libavif \
+          libpng \
+          libtiff \
+          libtool \
+          ninja \
+          pkg-config \
+          webp \
+          zlib \
+          ${NULL+}
     - name: Setup Linux dependencies
-      if: runner.os == 'Linux'
+      if: ${{ runner.os == 'Linux' }}
       run: |
         sudo apt-get update
         sudo apt-get -y install \
           cmake \
           libjpeg-dev \
           libpng-dev \
-          libSDL3-dev \
           libtiff-dev \
           libwebp-dev \
           ninja-build \
@@ -72,37 +87,21 @@ jobs:
           zlib1g-dev \
           ${NULL+}
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
 
-    - name: Setup MSVC dependencies
-      if: "matrix.platform.msvc"
-      shell: pwsh
-      run: |
-        .github/fetch_sdl_vc.ps1
-        echo "SDL3_DIR=$Env:GITHUB_WORKSPACE/SDL3-devel-VC" >> $Env:GITHUB_ENV
-    - name: Setup Ninja for MSVC
-      if: "matrix.platform.msvc"
-      uses: ashutoshvarma/setup-ninja@master
-      with:
-        version: 1.10.2
-    - uses: ilammy/msvc-dev-cmd@v1
-      if: "matrix.platform.msvc"
-      with:
-        arch: x64
-
     - name: Check that versioning is consistent
       # We only need to run this once: arbitrarily use the Linux build
-      if: "runner.os == 'Linux'"
+      if: ${{ runner.os == 'Linux' }}
       run: ./build-scripts/test-versioning.sh
 
     - name: Setup
       if: ${{ !matrix.platform.msystem && !matrix.platform.msvc }}
-      uses: jwlawson/actions-setup-cmake@v1.12
+      uses: jwlawson/actions-setup-cmake@v1.14
       with:
         cmake-version: '3.16'
-    - name: Configure
+    - name: Configure (CMake)
       run: |
         set -- \
           -DBUILD_SHARED_LIBS=ON \
@@ -117,13 +116,13 @@ jobs:
           ${NULL+}
 
         if [ "${{ matrix.platform.msystem }}" = "" ]; then
-            # mingw-w64-*-SDL3 doesn't have SDL_test, and the macOS CMake
-            # build can't find it (see #260), so we only enable build-time
-            # tests for Linux at the moment.
-            set -- "$@" -DSDL3IMAGE_TESTS=ON
-            # If we dlopen() vendored soft dependencies, the test won't
-            # find them: https://github.com/libsdl-org/SDL_image/issues/259
-            set -- "$@" -DSDL3IMAGE_DEPS_SHARED=OFF
+          # mingw-w64-*-SDL3 doesn't have SDL_test, and the macOS CMake
+          # build can't find it (see #260), so we only enable build-time
+          # tests for Linux at the moment.
+          set -- "$@" -DSDL3IMAGE_TESTS=ON
+          # If we dlopen() vendored soft dependencies, the test won't
+          # find them: https://github.com/libsdl-org/SDL_image/issues/259
+          set -- "$@" -DSDL3IMAGE_DEPS_SHARED=OFF
         fi
 
         cmake -B build \
@@ -132,6 +131,7 @@ jobs:
     - name: Build (CMake)
       run: cmake --build build/ --config Release --parallel --verbose
     - name: Run build-time tests
+      if: ${{ runner.os != 'Windows' }}
       run: |
         set -eu
 
@@ -160,15 +160,15 @@ jobs:
 
         ctest -VV --test-dir build/test
     - name: Install (CMake)
-      if: "matrix.platform.shell == 'sh' || contains(matrix.platform.shell, 'msys2')"
+      if: ${{ matrix.platform.shell == 'sh' || contains(matrix.platform.shell, 'msys2') }}
       run: |
         set -eu
         rm -fr DESTDIR-cmake
         cmake --install build/ --config Release
-        echo "SDL3_image_DIR=$(pwd)/prefix_cmake" >> $GITHUB_ENV
+        echo "SDL3_image_ROOT=$(pwd)/prefix_cmake" >> $GITHUB_ENV
         ( cd prefix_cmake; find . ) | LC_ALL=C sort -u
     - name: Upload artifacts
-      if: "failure() && runner.os == 'Linux'"
+      if: ${{ failure() && runner.os == 'Linux' }}
       uses: actions/upload-artifact@v3
       with:
         name: "${{ matrix.platform.name }} artifacts"
@@ -180,9 +180,8 @@ jobs:
 
     - name: Verify CMake configuration files
       run: |
-          cmake -S cmake/test -B cmake_config_build \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH="${{ env.SDL3_image_DIR }};${{ env.SDL3_DIR }}" \
-            -DTEST_SHARED=${{ matrix.platform.shared }} \
-            -DTEST_STATIC=${{ matrix.platform.static }}
-          cmake --build cmake_config_build --verbose
+        cmake -S cmake/test -B cmake_config_build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DTEST_SHARED=${{ matrix.platform.shared }} \
+          -DTEST_STATIC=${{ matrix.platform.static }}
+        cmake --build cmake_config_build --verbose
