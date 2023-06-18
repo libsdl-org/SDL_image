@@ -198,13 +198,13 @@ static avifResult ReadAVIFIO(struct avifIO * io, uint32_t readFlags, uint64_t of
         return AVIF_RESULT_IO_ERROR;
     }
 
-    if (size > context->size) {
+    if (size > (Uint64)context->size) {
         uint8_t *data = (uint8_t *)SDL_realloc(context->data, size);
         if (!data) {
             return AVIF_RESULT_IO_ERROR;
         }
         context->data = data;
-        context->size = size; 
+        context->size = (Sint64)size;
     }
 
     out->data = context->data;
