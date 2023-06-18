@@ -33,11 +33,12 @@ static void draw_background(SDL_Renderer *renderer, int w, int h)
     };
     int i, x, y;
     SDL_FRect rect;
+    const int dx = 8, dy = 8;
 
-    rect.w = 8.0f;
-    rect.h = 8.0f;
-    for (y = 0; y < h; y += rect.h) {
-        for (x = 0; x < w; x += rect.w) {
+    rect.w = (float)dx;
+    rect.h = (float)dy;
+    for (y = 0; y < h; y += dy) {
+        for (x = 0; x < w; x += dx) {
             /* use an 8x8 checkerboard pattern */
             i = (((x ^ y) >> 3) & 1);
             SDL_SetRenderDrawColor(renderer, col[i].r, col[i].g, col[i].b, col[i].a);
