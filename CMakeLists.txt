@@ -249,6 +249,7 @@ if(NOT ANDROID)
             SOVERSION "${DYLIB_COMPAT_VERSION}"
             VERSION "${DYLIB_CURRENT_VERSION}"
         )
+        sdl_no_deprecated_errors(${sdl3_image_target_name})
     else()
         set_target_properties(${sdl3_image_target_name} PROPERTIES
             SOVERSION "${SO_VERSION_MAJOR}"

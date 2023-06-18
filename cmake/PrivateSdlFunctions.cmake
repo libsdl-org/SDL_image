@@ -1,5 +1,7 @@
 # This file is shared amongst SDL_image/SDL_mixer/SDL_ttf
 
+include(CheckCCompilerFlag)
+
 macro(sdl_calculate_derived_version_variables MAJOR MINOR MICRO)
     set(SO_VERSION_MAJOR "0")
     set(SO_VERSION_MINOR "${MINOR_VERSION}")
@@ -252,4 +254,11 @@ function(sdl_add_warning_options TARGET)
             target_compile_options(${TARGET} PRIVATE -Werror)
         endif()
     endif()
+endfunction()
+
+function(sdl_no_deprecated_errors TARGET)
+    check_c_compiler_flag(-Wno-error=deprecated-declarations HAVE_WNO_ERROR_DEPRECATED_DECLARATIONS)
+        if(HAVE_WNO_ERROR_DEPRECATED_DECLARATIONS)
+    target_compile_options(${TARGET} PRIVATE "-Wno-error=deprecated-declarations")
+endif()
 endfunction()
