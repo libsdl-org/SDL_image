@@ -159,16 +159,20 @@ endif()
 # Save BUILD_SHARED_LIBS variable
 set(SDL3IMAGE_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 
+set(sdl_required_components Headers)
+
 if(SDL3IMAGE_BUILD_SHARED_LIBS)
     set(sdl3_image_target_name SDL3_image-shared)
     set(sdl3_target_name SDL3::SDL3-shared)
+
+    list(APPEND sdl_required_components SDL3-shared)
 else()
     set(sdl3_image_target_name SDL3_image-static)
-    set(sdl3_target_name SDL3::SDL3-static)
+    set(sdl3_target_name SDL3::SDL3)
 endif()
 
-if(NOT TARGET ${sdl3_target_name})
-    find_package(SDL3 ${SDL_REQUIRED_VERSION} REQUIRED)
+if(NOT TARGET SDL3::Headers)
+    find_package(SDL3 ${SDL_REQUIRED_VERSION} REQUIRED COMPONENTS ${sdl_required_components})
 endif()
 
 # Set PROJECT_VERSION of subprojects to "" if it's project call does not set VERSION
@@ -225,7 +229,10 @@ target_compile_definitions(${sdl3_image_target_name} PRIVATE
     SDL_BUILD_MINOR_VERSION=${MINOR_VERSION}
     SDL_BUILD_MICRO_VERSION=${MICRO_VERSION}
 )
-target_link_libraries(${sdl3_image_target_name} PRIVATE $<BUILD_INTERFACE:${sdl3_target_name}>)
+target_link_libraries(${sdl3_image_target_name} PUBLIC SDL3::Headers)
+if(SDL3IMAGE_BUILD_SHARED_LIBS)
+    target_link_libraries(${sdl3_image_target_name} PUBLIC SDL3::SDL3-shared)
+endif()
 sdl_add_warning_options(${sdl3_image_target_name} WARNING_AS_ERROR ${SDL3IMAGE_WERROR})
 if(WIN32 AND SDL3IMAGE_BUILD_SHARED_LIBS)
     target_sources(${sdl3_image_target_name} PRIVATE

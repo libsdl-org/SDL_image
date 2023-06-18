@@ -18,14 +18,6 @@
 
 #include <stdlib.h>
 
-/* We'll have JPG save support by default: see IMG_jpg.c */
-#ifndef SDL_IMAGE_SAVE_JPG
-#define SDL_IMAGE_SAVE_JPG    1
-#endif
-
-
-
-
 #if defined(SDL_FILESYSTEM_OS2) || defined(SDL_FILESYSTEM_WINDOWS)
 static const char pathsep[] = "\\";
 #elif defined(SDL_FILESYSTEM_RISCOS)
