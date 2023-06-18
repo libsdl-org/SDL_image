@@ -40,6 +40,7 @@ static size_t MyProviderGetBytesCallback(void* rwops_userdata, void* quartz_buff
 // so you can clean up any resources.
 static void MyProviderReleaseInfoCallback(void* rwops_userdata)
 {
+    (void)rwops_userdata;
     // What should I put here?
     // I think the user and SDL_RWops controls closing, so I don't do anything.
 }
