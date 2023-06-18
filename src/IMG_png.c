@@ -241,11 +241,11 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
     png_infop info_ptr;
     png_uint_32 width, height;
     int bit_depth, color_type, interlace_type, num_channels;
-    Uint32 format = SDL_PIXELFORMAT_UNKNOWN;
+    Uint32 format;
     SDL_Palette *palette;
     png_bytep *volatile row_pointers;
     int row, i;
-    int ckey = -1;
+    int ckey;
     png_color_16 *transv;
 
     if ( !src ) {
@@ -322,6 +322,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
     /* For images with a single "transparent colour", set colour key;
        if more than one index has transparency, or if partially transparent
        entries exist, use full alpha channel */
+    ckey = -1;
     if (lib.png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) {
         int num_trans;
         Uint8 *trans;
@@ -361,7 +362,8 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 
     /* Allocate the SDL surface to hold the image */
     num_channels = lib.png_get_channels(png_ptr, info_ptr);
-   
+
+    format = SDL_PIXELFORMAT_UNKNOWN;
     if (num_channels == 3) {
        format = SDL_PIXELFORMAT_RGB24;
     } else if (num_channels == 4) {
