@@ -14,7 +14,7 @@
         `MAJOR_VERSION`, `MINOR_VERSION`, `MICRO_VERSION`
     * `Makefile.os2`:
         `MAJOR_VERSION`, `MINOR_VERSION`, `MICRO_VERSION`
-    * `version.rc`:
+    * `src/version.rc`:
         `FILEVERSION`, `PRODUCTVERSION`, `FileVersion`, `ProductVersion`
     * `VisualC/Version.rc`:
         `FILEVERSION`, `PRODUCTVERSION`, `FileVersion`, `ProductVersion`
@@ -32,7 +32,7 @@
 
 * Regenerate `configure`
 
-* Run `./test-versioning.sh` to verify that everything is consistent
+* Run `./build-scripts/test-versioning.sh` to verify that everything is consistent
 
 * Do the release
 
@@ -55,7 +55,7 @@
 
 * Regenerate `configure`
 
-* Run test/versioning.sh to verify that everything is consistent
+* Run `./build-scripts/test-versioning.sh` to verify that everything is consistent
 
 * Do the release
 
@@ -72,7 +72,7 @@
     * Same places as listed above
     * Assume that the next feature release will contain new API/ABI
 
-* Run test/versioning.sh to verify that everything is consistent
+* Run `./build-scripts/test-versioning.sh` to verify that everything is consistent
 
 * Add a new milestone for issues
 
@@ -93,6 +93,6 @@
 
 * Regenerate `configure`
 
-* Run test/versioning.sh to verify that everything is consistent
+* Run `./build-scripts/test-versioning.sh` to verify that everything is consistent
 
 * Do the release

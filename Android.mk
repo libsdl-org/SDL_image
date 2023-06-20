@@ -71,27 +71,28 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := SDL2_image
 
 LOCAL_SRC_FILES :=  \
-    IMG.c           \
-    IMG_avif.c      \
-    IMG_bmp.c       \
-    IMG_gif.c       \
-    IMG_jpg.c       \
-    IMG_jxl.c       \
-    IMG_lbm.c       \
-    IMG_pcx.c       \
-    IMG_png.c       \
-    IMG_pnm.c       \
-    IMG_qoi.c       \
-    IMG_stb.c       \
-    IMG_svg.c       \
-    IMG_tga.c       \
-    IMG_tif.c       \
-    IMG_webp.c      \
-    IMG_WIC.c       \
-    IMG_xcf.c       \
-    IMG_xpm.c.arm   \
-    IMG_xv.c
+    src/IMG.c           \
+    src/IMG_avif.c      \
+    src/IMG_bmp.c       \
+    src/IMG_gif.c       \
+    src/IMG_jpg.c       \
+    src/IMG_jxl.c       \
+    src/IMG_lbm.c       \
+    src/IMG_pcx.c       \
+    src/IMG_png.c       \
+    src/IMG_pnm.c       \
+    src/IMG_qoi.c       \
+    src/IMG_stb.c       \
+    src/IMG_svg.c       \
+    src/IMG_tga.c       \
+    src/IMG_tif.c       \
+    src/IMG_webp.c      \
+    src/IMG_WIC.c       \
+    src/IMG_xcf.c       \
+    src/IMG_xpm.c.arm   \
+    src/IMG_xv.c
 
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/include $(LOCAL_PATH)/src
 LOCAL_CFLAGS := -DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM \
                 -DLOAD_SVG -DLOAD_TGA -DLOAD_XCF -DLOAD_XPM -DLOAD_XV  \
                 -DLOAD_QOI
@@ -147,7 +148,7 @@ ifeq ($(SUPPORT_WEBP),true)
     LOCAL_STATIC_LIBRARIES += webp
 endif
 
-LOCAL_EXPORT_C_INCLUDES += $(LOCAL_PATH)
+LOCAL_EXPORT_C_INCLUDES += $(LOCAL_PATH)/include
 
 include $(BUILD_SHARED_LIBRARY)
 

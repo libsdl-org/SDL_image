@@ -5,51 +5,51 @@ lib_LTLIBRARIES = libSDL2_image.la
 
 libSDL2_imageincludedir = $(includedir)/SDL2
 libSDL2_imageinclude_HEADERS =	\
-	SDL_image.h
+	include/SDL_image.h
 
 if USE_IMAGEIO
-IMAGEIO_SOURCE = IMG_ImageIO.m
+IMAGEIO_SOURCE = src/IMG_ImageIO.m
 endif
 
 libSDL2_image_la_SOURCES =	\
-	IMG.c			\
-	IMG_avif.c		\
-	IMG_bmp.c		\
-	IMG_gif.c		\
-	IMG_jpg.c		\
-	IMG_jxl.c		\
-	IMG_lbm.c		\
-	IMG_pcx.c		\
-	IMG_png.c		\
-	IMG_pnm.c		\
-	IMG_qoi.c		\
-	IMG_svg.c		\
-	IMG_stb.c		\
-	IMG_tga.c		\
-	IMG_tif.c		\
-	IMG_xcf.c		\
-	IMG_xpm.c		\
-	IMG_xv.c		\
-	IMG_webp.c		\
-	IMG_WIC.c		\
+	src/IMG.c			\
+	src/IMG_avif.c		\
+	src/IMG_bmp.c		\
+	src/IMG_gif.c		\
+	src/IMG_jpg.c		\
+	src/IMG_jxl.c		\
+	src/IMG_lbm.c		\
+	src/IMG_pcx.c		\
+	src/IMG_png.c		\
+	src/IMG_pnm.c		\
+	src/IMG_qoi.c		\
+	src/IMG_svg.c		\
+	src/IMG_stb.c		\
+	src/IMG_tga.c		\
+	src/IMG_tif.c		\
+	src/IMG_xcf.c		\
+	src/IMG_xpm.c		\
+	src/IMG_xv.c		\
+	src/IMG_webp.c		\
+	src/IMG_WIC.c		\
 	$(IMAGEIO_SOURCE)	\
-	miniz.h			\
-	nanosvg.h		\
-	nanosvgrast.h		\
-	qoi.h			\
-	stb_image.h		\
-	tiny_jpeg.h
+	src/miniz.h			\
+	src/nanosvg.h		\
+	src/nanosvgrast.h		\
+	src/qoi.h			\
+	src/stb_image.h		\
+	src/tiny_jpeg.h
 
 EXTRA_DIST = \
 	.gitmodules		\
 	Android.mk		\
 	CHANGES.txt 		\
 	CMakeLists.txt		\
-	IMG_ImageIO.m		\
-	IMG_xxx.c		\
+	src/IMG_ImageIO.m		\
+	src/IMG_xxx.c		\
 	LICENSE.txt 		\
 	Makefile.os2		\
-	README-emscripten.txt 	\
+	docs/README-emscripten.txt 	\
 	README.txt 		\
 	SDL2_image.spec		\
 	SDL2_imageConfig.cmake.in \
@@ -60,16 +60,17 @@ EXTRA_DIST = \
 	cmake			\
 	external		\
 	mingw			\
-	version.rc
+	src/version.rc
 
 
+libSDL2_image_la_CPPFLAGS = -I$(srcdir)/include
 libSDL2_image_la_LDFLAGS = 	\
 	-no-undefined		\
 	-release $(LT_RELEASE)	\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) $(LT_EXTRA)
 libSDL2_image_la_LIBADD = $(IMG_LIBS)
 if USE_VERSION_RC
-libSDL2_image_la_DEPENDENCIES = version.o
+libSDL2_image_la_DEPENDENCIES = src/version.o
 endif
 
 pkgconfigdir = $(libdir)/pkgconfig
@@ -80,7 +81,12 @@ pkgconfig_DATA = SDL2_image.pc
 
 noinst_PROGRAMS = showimage showanim
 
+showimage_SOURCES = examples/showimage.c
+showimage_CPPFLAGS = -I$(srcdir)/include
 showimage_LDADD = libSDL2_image.la
+
+showanim_SOURCES = examples/showanim.c
+showanim_CPPFLAGS = -I$(srcdir)/include
 showanim_LDADD = libSDL2_image.la
 
 SUBDIRS = .

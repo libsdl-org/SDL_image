@@ -126,34 +126,34 @@
 
 /* Begin PBXFileReference section */
 		007288A60F0DA79800C302A9 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
-		1014BAEA010A4B677F000001 /* SDL_image.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SDL_image.h; path = ../SDL_image.h; sourceTree = SOURCE_ROOT; };
+		1014BAEA010A4B677F000001 /* SDL_image.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = include/SDL_image.h; path = ../include/SDL_image.h; sourceTree = SOURCE_ROOT; };
 		61F85449145A19BC002CA294 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		6313BF522785566D00F268AD /* IMG_qoi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_qoi.c; path = ../IMG_qoi.c; sourceTree = "<group>"; };
-		AA50AA461F9C7C50003B9C0C /* IMG_svg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_svg.c; path = ../IMG_svg.c; sourceTree = "<group>"; };
-		AA579DE2161C07E6005F809B /* IMG_bmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_bmp.c; path = ../IMG_bmp.c; sourceTree = "<group>"; };
-		AA579DE3161C07E6005F809B /* IMG_gif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_gif.c; path = ../IMG_gif.c; sourceTree = "<group>"; };
-		AA579DE4161C07E6005F809B /* IMG_ImageIO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IMG_ImageIO.m; path = ../IMG_ImageIO.m; sourceTree = "<group>"; };
-		AA579DE5161C07E6005F809B /* IMG_jpg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_jpg.c; path = ../IMG_jpg.c; sourceTree = "<group>"; };
-		AA579DE6161C07E6005F809B /* IMG_lbm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_lbm.c; path = ../IMG_lbm.c; sourceTree = "<group>"; };
-		AA579DE7161C07E6005F809B /* IMG_pcx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_pcx.c; path = ../IMG_pcx.c; sourceTree = "<group>"; };
-		AA579DE8161C07E6005F809B /* IMG_png.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_png.c; path = ../IMG_png.c; sourceTree = "<group>"; };
-		AA579DE9161C07E6005F809B /* IMG_pnm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_pnm.c; path = ../IMG_pnm.c; sourceTree = "<group>"; };
-		AA579DEA161C07E6005F809B /* IMG_tga.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_tga.c; path = ../IMG_tga.c; sourceTree = "<group>"; };
-		AA579DEB161C07E6005F809B /* IMG_tif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_tif.c; path = ../IMG_tif.c; sourceTree = "<group>"; };
-		AA579DEC161C07E6005F809B /* IMG_webp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_webp.c; path = ../IMG_webp.c; sourceTree = "<group>"; };
-		AA579DED161C07E6005F809B /* IMG_xcf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_xcf.c; path = ../IMG_xcf.c; sourceTree = "<group>"; };
-		AA579DEE161C07E6005F809B /* IMG_xpm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_xpm.c; path = ../IMG_xpm.c; sourceTree = "<group>"; };
-		AA579DEF161C07E6005F809B /* IMG_xv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_xv.c; path = ../IMG_xv.c; sourceTree = "<group>"; };
-		AA579DF1161C07E6005F809B /* IMG.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG.c; path = ../IMG.c; sourceTree = "<group>"; };
+		6313BF522785566D00F268AD /* IMG_qoi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_qoi.c; path = ../src/IMG_qoi.c; sourceTree = "<group>"; };
+		AA50AA461F9C7C50003B9C0C /* IMG_svg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_svg.c; path = ../src/IMG_svg.c; sourceTree = "<group>"; };
+		AA579DE2161C07E6005F809B /* IMG_bmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_bmp.c; path = ../src/IMG_bmp.c; sourceTree = "<group>"; };
+		AA579DE3161C07E6005F809B /* IMG_gif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_gif.c; path = ../src/IMG_gif.c; sourceTree = "<group>"; };
+		AA579DE4161C07E6005F809B /* IMG_ImageIO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IMG_ImageIO.m; path = ../src/IMG_ImageIO.m; sourceTree = "<group>"; };
+		AA579DE5161C07E6005F809B /* IMG_jpg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_jpg.c; path = ../src/IMG_jpg.c; sourceTree = "<group>"; };
+		AA579DE6161C07E6005F809B /* IMG_lbm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_lbm.c; path = ../src/IMG_lbm.c; sourceTree = "<group>"; };
+		AA579DE7161C07E6005F809B /* IMG_pcx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_pcx.c; path = ../src/IMG_pcx.c; sourceTree = "<group>"; };
+		AA579DE8161C07E6005F809B /* IMG_png.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_png.c; path = ../src/IMG_png.c; sourceTree = "<group>"; };
+		AA579DE9161C07E6005F809B /* IMG_pnm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_pnm.c; path = ../src/IMG_pnm.c; sourceTree = "<group>"; };
+		AA579DEA161C07E6005F809B /* IMG_tga.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_tga.c; path = ../src/IMG_tga.c; sourceTree = "<group>"; };
+		AA579DEB161C07E6005F809B /* IMG_tif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_tif.c; path = ../src/IMG_tif.c; sourceTree = "<group>"; };
+		AA579DEC161C07E6005F809B /* IMG_webp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_webp.c; path = ../src/IMG_webp.c; sourceTree = "<group>"; };
+		AA579DED161C07E6005F809B /* IMG_xcf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_xcf.c; path = ../src/IMG_xcf.c; sourceTree = "<group>"; };
+		AA579DEE161C07E6005F809B /* IMG_xpm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_xpm.c; path = ../src/IMG_xpm.c; sourceTree = "<group>"; };
+		AA579DEF161C07E6005F809B /* IMG_xv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_xv.c; path = ../src/IMG_xv.c; sourceTree = "<group>"; };
+		AA579DF1161C07E6005F809B /* IMG.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG.c; path = ../src/IMG.c; sourceTree = "<group>"; };
 		BE1FA72D07AF4C44004B6283 /* Info-Framework.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Framework.plist"; sourceTree = "<group>"; };
 		BE1FA72E07AF4C45004B6283 /* SDL2_image.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDL2_image.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1FA74107AF4C45004B6283 /* libSDL2_image.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSDL2_image.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE1FA74507AF4C45004B6283 /* Create DMG */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Create DMG"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F307EFA82828C8FA003915D7 /* jxl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jxl.xcodeproj; path = jxl/jxl.xcodeproj; sourceTree = "<group>"; };
-		F31094C2282AE42D008EF641 /* IMG_stb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_stb.c; path = ../IMG_stb.c; sourceTree = "<group>"; };
-		F354743B2828CA66007E9EDA /* IMG_jxl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_jxl.c; path = ../IMG_jxl.c; sourceTree = "<group>"; };
+		F31094C2282AE42D008EF641 /* IMG_stb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_stb.c; path = ../src/IMG_stb.c; sourceTree = "<group>"; };
+		F354743B2828CA66007E9EDA /* IMG_jxl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_jxl.c; path = ../src/IMG_jxl.c; sourceTree = "<group>"; };
 		F35475D42829BA80007E9EDA /* avif.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = avif.xcodeproj; path = avif/avif.xcodeproj; sourceTree = "<group>"; };
-		F35475FC2829BAF9007E9EDA /* IMG_avif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_avif.c; path = ../IMG_avif.c; sourceTree = "<group>"; };
+		F35475FC2829BAF9007E9EDA /* IMG_avif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_avif.c; path = ../src/IMG_avif.c; sourceTree = "<group>"; };
 		F3547625282AE1C6007E9EDA /* config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = config.xcconfig; sourceTree = "<group>"; };
 		F3820707284EF58C004DD584 /* CMake */ = {isa = PBXFileReference; lastKnownFileType = folder; path = CMake; sourceTree = "<group>"; };
 		F3D87C03281DF8FC005DA540 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = macOS/SDL2.framework; sourceTree = "<group>"; };
@@ -652,6 +652,8 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/include\"",
+					"\"$(SRCROOT)/src\"",
 					"\"$(SRCROOT)/$(PLATFORM)/SDL2.framework/Headers\"",
 					"\"$(SRCROOT)/../external/jpeg\"",
 				);
@@ -741,6 +743,8 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/include\"",
+					"\"$(SRCROOT)/src\"",
 					"\"$(SRCROOT)/$(PLATFORM)/SDL2.framework/Headers\"",
 					"\"$(SRCROOT)/../external/jpeg\"",
 				);

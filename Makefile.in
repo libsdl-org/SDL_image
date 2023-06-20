@@ -151,18 +151,35 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(pkgconfigdir)" \
 	"$(DESTDIR)$(libSDL2_imageincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-am__libSDL2_image_la_SOURCES_DIST = IMG.c IMG_avif.c IMG_bmp.c \
-	IMG_gif.c IMG_jpg.c IMG_jxl.c IMG_lbm.c IMG_pcx.c IMG_png.c \
-	IMG_pnm.c IMG_qoi.c IMG_svg.c IMG_stb.c IMG_tga.c IMG_tif.c \
-	IMG_xcf.c IMG_xpm.c IMG_xv.c IMG_webp.c IMG_WIC.c \
-	IMG_ImageIO.m miniz.h nanosvg.h nanosvgrast.h qoi.h \
-	stb_image.h tiny_jpeg.h
-@USE_IMAGEIO_TRUE@am__objects_1 = IMG_ImageIO.lo
-am_libSDL2_image_la_OBJECTS = IMG.lo IMG_avif.lo IMG_bmp.lo IMG_gif.lo \
-	IMG_jpg.lo IMG_jxl.lo IMG_lbm.lo IMG_pcx.lo IMG_png.lo \
-	IMG_pnm.lo IMG_qoi.lo IMG_svg.lo IMG_stb.lo IMG_tga.lo \
-	IMG_tif.lo IMG_xcf.lo IMG_xpm.lo IMG_xv.lo IMG_webp.lo \
-	IMG_WIC.lo $(am__objects_1)
+am__libSDL2_image_la_SOURCES_DIST = src/IMG.c src/IMG_avif.c \
+	src/IMG_bmp.c src/IMG_gif.c src/IMG_jpg.c src/IMG_jxl.c \
+	src/IMG_lbm.c src/IMG_pcx.c src/IMG_png.c src/IMG_pnm.c \
+	src/IMG_qoi.c src/IMG_svg.c src/IMG_stb.c src/IMG_tga.c \
+	src/IMG_tif.c src/IMG_xcf.c src/IMG_xpm.c src/IMG_xv.c \
+	src/IMG_webp.c src/IMG_WIC.c src/IMG_ImageIO.m src/miniz.h \
+	src/nanosvg.h src/nanosvgrast.h src/qoi.h src/stb_image.h \
+	src/tiny_jpeg.h
+am__dirstamp = $(am__leading_dot)dirstamp
+@USE_IMAGEIO_TRUE@am__objects_1 = src/libSDL2_image_la-IMG_ImageIO.lo
+am_libSDL2_image_la_OBJECTS = src/libSDL2_image_la-IMG.lo \
+	src/libSDL2_image_la-IMG_avif.lo \
+	src/libSDL2_image_la-IMG_bmp.lo \
+	src/libSDL2_image_la-IMG_gif.lo \
+	src/libSDL2_image_la-IMG_jpg.lo \
+	src/libSDL2_image_la-IMG_jxl.lo \
+	src/libSDL2_image_la-IMG_lbm.lo \
+	src/libSDL2_image_la-IMG_pcx.lo \
+	src/libSDL2_image_la-IMG_png.lo \
+	src/libSDL2_image_la-IMG_pnm.lo \
+	src/libSDL2_image_la-IMG_qoi.lo \
+	src/libSDL2_image_la-IMG_svg.lo \
+	src/libSDL2_image_la-IMG_stb.lo \
+	src/libSDL2_image_la-IMG_tga.lo \
+	src/libSDL2_image_la-IMG_tif.lo \
+	src/libSDL2_image_la-IMG_xcf.lo \
+	src/libSDL2_image_la-IMG_xpm.lo src/libSDL2_image_la-IMG_xv.lo \
+	src/libSDL2_image_la-IMG_webp.lo \
+	src/libSDL2_image_la-IMG_WIC.lo $(am__objects_1)
 libSDL2_image_la_OBJECTS = $(am_libSDL2_image_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -171,11 +188,11 @@ am__v_lt_1 =
 libSDL2_image_la_LINK = $(LIBTOOL) $(AM_V_lt) $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(OBJCLD) $(AM_OBJCFLAGS) \
 	$(OBJCFLAGS) $(libSDL2_image_la_LDFLAGS) $(LDFLAGS) -o $@
-showanim_SOURCES = showanim.c
-showanim_OBJECTS = showanim.$(OBJEXT)
+am_showanim_OBJECTS = examples/showanim-showanim.$(OBJEXT)
+showanim_OBJECTS = $(am_showanim_OBJECTS)
 showanim_DEPENDENCIES = libSDL2_image.la
-showimage_SOURCES = showimage.c
-showimage_OBJECTS = showimage.$(OBJEXT)
+am_showimage_OBJECTS = examples/showimage-showimage.$(OBJEXT)
+showimage_OBJECTS = $(am_showimage_OBJECTS)
 showimage_DEPENDENCIES = libSDL2_image.la
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -192,18 +209,29 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/IMG.Plo ./$(DEPDIR)/IMG_ImageIO.Plo \
-	./$(DEPDIR)/IMG_WIC.Plo ./$(DEPDIR)/IMG_avif.Plo \
-	./$(DEPDIR)/IMG_bmp.Plo ./$(DEPDIR)/IMG_gif.Plo \
-	./$(DEPDIR)/IMG_jpg.Plo ./$(DEPDIR)/IMG_jxl.Plo \
-	./$(DEPDIR)/IMG_lbm.Plo ./$(DEPDIR)/IMG_pcx.Plo \
-	./$(DEPDIR)/IMG_png.Plo ./$(DEPDIR)/IMG_pnm.Plo \
-	./$(DEPDIR)/IMG_qoi.Plo ./$(DEPDIR)/IMG_stb.Plo \
-	./$(DEPDIR)/IMG_svg.Plo ./$(DEPDIR)/IMG_tga.Plo \
-	./$(DEPDIR)/IMG_tif.Plo ./$(DEPDIR)/IMG_webp.Plo \
-	./$(DEPDIR)/IMG_xcf.Plo ./$(DEPDIR)/IMG_xpm.Plo \
-	./$(DEPDIR)/IMG_xv.Plo ./$(DEPDIR)/showanim.Po \
-	./$(DEPDIR)/showimage.Po
+am__depfiles_remade = examples/$(DEPDIR)/showanim-showanim.Po \
+	examples/$(DEPDIR)/showimage-showimage.Po \
+	src/$(DEPDIR)/libSDL2_image_la-IMG.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_ImageIO.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_WIC.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_avif.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_bmp.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_gif.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_jpg.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_jxl.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_lbm.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_pcx.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_png.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_pnm.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_qoi.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_stb.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_svg.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_tga.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_tif.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_webp.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_xcf.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_xpm.Plo \
+	src/$(DEPDIR)/libSDL2_image_la-IMG_xv.Plo
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -241,9 +269,10 @@ AM_V_OBJCLD = $(am__v_OBJCLD_@AM_V@)
 am__v_OBJCLD_ = $(am__v_OBJCLD_@AM_DEFAULT_V@)
 am__v_OBJCLD_0 = @echo "  OBJCLD  " $@;
 am__v_OBJCLD_1 = 
-SOURCES = $(libSDL2_image_la_SOURCES) showanim.c showimage.c
-DIST_SOURCES = $(am__libSDL2_image_la_SOURCES_DIST) showanim.c \
-	showimage.c
+SOURCES = $(libSDL2_image_la_SOURCES) $(showanim_SOURCES) \
+	$(showimage_SOURCES)
+DIST_SOURCES = $(am__libSDL2_image_la_SOURCES_DIST) \
+	$(showanim_SOURCES) $(showimage_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -518,48 +547,48 @@ ACLOCAL_AMFLAGS = -I acinclude
 lib_LTLIBRARIES = libSDL2_image.la
 libSDL2_imageincludedir = $(includedir)/SDL2
 libSDL2_imageinclude_HEADERS = \
-	SDL_image.h
+	include/SDL_image.h
 
-@USE_IMAGEIO_TRUE@IMAGEIO_SOURCE = IMG_ImageIO.m
+@USE_IMAGEIO_TRUE@IMAGEIO_SOURCE = src/IMG_ImageIO.m
 libSDL2_image_la_SOURCES = \
-	IMG.c			\
-	IMG_avif.c		\
-	IMG_bmp.c		\
-	IMG_gif.c		\
-	IMG_jpg.c		\
-	IMG_jxl.c		\
-	IMG_lbm.c		\
-	IMG_pcx.c		\
-	IMG_png.c		\
-	IMG_pnm.c		\
-	IMG_qoi.c		\
-	IMG_svg.c		\
-	IMG_stb.c		\
-	IMG_tga.c		\
-	IMG_tif.c		\
-	IMG_xcf.c		\
-	IMG_xpm.c		\
-	IMG_xv.c		\
-	IMG_webp.c		\
-	IMG_WIC.c		\
+	src/IMG.c			\
+	src/IMG_avif.c		\
+	src/IMG_bmp.c		\
+	src/IMG_gif.c		\
+	src/IMG_jpg.c		\
+	src/IMG_jxl.c		\
+	src/IMG_lbm.c		\
+	src/IMG_pcx.c		\
+	src/IMG_png.c		\
+	src/IMG_pnm.c		\
+	src/IMG_qoi.c		\
+	src/IMG_svg.c		\
+	src/IMG_stb.c		\
+	src/IMG_tga.c		\
+	src/IMG_tif.c		\
+	src/IMG_xcf.c		\
+	src/IMG_xpm.c		\
+	src/IMG_xv.c		\
+	src/IMG_webp.c		\
+	src/IMG_WIC.c		\
 	$(IMAGEIO_SOURCE)	\
-	miniz.h			\
-	nanosvg.h		\
-	nanosvgrast.h		\
-	qoi.h			\
-	stb_image.h		\
-	tiny_jpeg.h
+	src/miniz.h			\
+	src/nanosvg.h		\
+	src/nanosvgrast.h		\
+	src/qoi.h			\
+	src/stb_image.h		\
+	src/tiny_jpeg.h
 
 EXTRA_DIST = \
 	.gitmodules		\
 	Android.mk		\
 	CHANGES.txt 		\
 	CMakeLists.txt		\
-	IMG_ImageIO.m		\
-	IMG_xxx.c		\
+	src/IMG_ImageIO.m		\
+	src/IMG_xxx.c		\
 	LICENSE.txt 		\
 	Makefile.os2		\
-	README-emscripten.txt 	\
+	docs/README-emscripten.txt 	\
 	README.txt 		\
 	SDL2_image.spec		\
 	SDL2_imageConfig.cmake.in \
@@ -570,18 +599,23 @@ EXTRA_DIST = \
 	cmake			\
 	external		\
 	mingw			\
-	version.rc
+	src/version.rc
 
+libSDL2_image_la_CPPFLAGS = -I$(srcdir)/include
 libSDL2_image_la_LDFLAGS = \
 	-no-undefined		\
 	-release $(LT_RELEASE)	\
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) $(LT_EXTRA)
 
 libSDL2_image_la_LIBADD = $(IMG_LIBS)
-@USE_VERSION_RC_TRUE@libSDL2_image_la_DEPENDENCIES = version.o
+@USE_VERSION_RC_TRUE@libSDL2_image_la_DEPENDENCIES = src/version.o
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = SDL2_image.pc
+showimage_SOURCES = examples/showimage.c
+showimage_CPPFLAGS = -I$(srcdir)/include
 showimage_LDADD = libSDL2_image.la
+showanim_SOURCES = examples/showanim.c
+showanim_CPPFLAGS = -I$(srcdir)/include
 showanim_LDADD = libSDL2_image.la
 SUBDIRS = . $(am__append_1)
 all: all-recursive
@@ -673,13 +707,71 @@ clean-libLTLIBRARIES:
 	  echo rm -f $${locs}; \
 	  rm -f $${locs}; \
 	}
+src/$(am__dirstamp):
+	@$(MKDIR_P) src
+	@: > src/$(am__dirstamp)
+src/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) src/$(DEPDIR)
+	@: > src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_avif.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_bmp.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_gif.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_jpg.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_jxl.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_lbm.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_pcx.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_png.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_pnm.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_qoi.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_svg.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_stb.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_tga.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_tif.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_xcf.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_xpm.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_xv.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_webp.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_WIC.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
+src/libSDL2_image_la-IMG_ImageIO.lo: src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 
 libSDL2_image.la: $(libSDL2_image_la_OBJECTS) $(libSDL2_image_la_DEPENDENCIES) $(EXTRA_libSDL2_image_la_DEPENDENCIES) 
 	$(AM_V_OBJCLD)$(libSDL2_image_la_LINK) -rpath $(libdir) $(libSDL2_image_la_OBJECTS) $(libSDL2_image_la_LIBADD) $(LIBS)
+examples/$(am__dirstamp):
+	@$(MKDIR_P) examples
+	@: > examples/$(am__dirstamp)
+examples/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) examples/$(DEPDIR)
+	@: > examples/$(DEPDIR)/$(am__dirstamp)
+examples/showanim-showanim.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
 
 showanim$(EXEEXT): $(showanim_OBJECTS) $(showanim_DEPENDENCIES) $(EXTRA_showanim_DEPENDENCIES) 
 	@rm -f showanim$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(showanim_OBJECTS) $(showanim_LDADD) $(LIBS)
+examples/showimage-showimage.$(OBJEXT): examples/$(am__dirstamp) \
+	examples/$(DEPDIR)/$(am__dirstamp)
 
 showimage$(EXEEXT): $(showimage_OBJECTS) $(showimage_DEPENDENCIES) $(EXTRA_showimage_DEPENDENCIES) 
 	@rm -f showimage$(EXEEXT)
@@ -687,33 +779,36 @@ showimage$(EXEEXT): $(showimage_OBJECTS) $(showimage_DEPENDENCIES) $(EXTRA_showi
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f examples/*.$(OBJEXT)
+	-rm -f src/*.$(OBJEXT)
+	-rm -f src/*.lo
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_ImageIO.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_WIC.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_avif.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_bmp.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_gif.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_jpg.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_jxl.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_lbm.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_pcx.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_png.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_pnm.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_qoi.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_stb.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_svg.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_tga.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_tif.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_webp.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_xcf.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_xpm.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMG_xv.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/showanim.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/showimage.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/showanim-showanim.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@examples/$(DEPDIR)/showimage-showimage.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_ImageIO.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_WIC.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_avif.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_bmp.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_gif.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_jpg.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_jxl.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_lbm.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_pcx.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_png.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_pnm.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_qoi.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_stb.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_svg.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_tga.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_tif.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_webp.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_xcf.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_xpm.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/libSDL2_image_la-IMG_xv.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -722,52 +817,234 @@ $(am__depfiles_remade):
 am--depfiles: $(am__depfiles_remade)
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .c.lo:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LTCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepCC_TRUE@	$(LTCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LTCOMPILE) -c -o $@ $<
 
+src/libSDL2_image_la-IMG.lo: src/IMG.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG.Tpo -c -o src/libSDL2_image_la-IMG.lo `test -f 'src/IMG.c' || echo '$(srcdir)/'`src/IMG.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG.c' object='src/libSDL2_image_la-IMG.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG.lo `test -f 'src/IMG.c' || echo '$(srcdir)/'`src/IMG.c
+
+src/libSDL2_image_la-IMG_avif.lo: src/IMG_avif.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_avif.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_avif.Tpo -c -o src/libSDL2_image_la-IMG_avif.lo `test -f 'src/IMG_avif.c' || echo '$(srcdir)/'`src/IMG_avif.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_avif.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_avif.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_avif.c' object='src/libSDL2_image_la-IMG_avif.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_avif.lo `test -f 'src/IMG_avif.c' || echo '$(srcdir)/'`src/IMG_avif.c
+
+src/libSDL2_image_la-IMG_bmp.lo: src/IMG_bmp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_bmp.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_bmp.Tpo -c -o src/libSDL2_image_la-IMG_bmp.lo `test -f 'src/IMG_bmp.c' || echo '$(srcdir)/'`src/IMG_bmp.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_bmp.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_bmp.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_bmp.c' object='src/libSDL2_image_la-IMG_bmp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_bmp.lo `test -f 'src/IMG_bmp.c' || echo '$(srcdir)/'`src/IMG_bmp.c
+
+src/libSDL2_image_la-IMG_gif.lo: src/IMG_gif.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_gif.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_gif.Tpo -c -o src/libSDL2_image_la-IMG_gif.lo `test -f 'src/IMG_gif.c' || echo '$(srcdir)/'`src/IMG_gif.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_gif.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_gif.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_gif.c' object='src/libSDL2_image_la-IMG_gif.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_gif.lo `test -f 'src/IMG_gif.c' || echo '$(srcdir)/'`src/IMG_gif.c
+
+src/libSDL2_image_la-IMG_jpg.lo: src/IMG_jpg.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_jpg.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_jpg.Tpo -c -o src/libSDL2_image_la-IMG_jpg.lo `test -f 'src/IMG_jpg.c' || echo '$(srcdir)/'`src/IMG_jpg.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_jpg.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_jpg.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_jpg.c' object='src/libSDL2_image_la-IMG_jpg.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_jpg.lo `test -f 'src/IMG_jpg.c' || echo '$(srcdir)/'`src/IMG_jpg.c
+
+src/libSDL2_image_la-IMG_jxl.lo: src/IMG_jxl.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_jxl.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_jxl.Tpo -c -o src/libSDL2_image_la-IMG_jxl.lo `test -f 'src/IMG_jxl.c' || echo '$(srcdir)/'`src/IMG_jxl.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_jxl.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_jxl.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_jxl.c' object='src/libSDL2_image_la-IMG_jxl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_jxl.lo `test -f 'src/IMG_jxl.c' || echo '$(srcdir)/'`src/IMG_jxl.c
+
+src/libSDL2_image_la-IMG_lbm.lo: src/IMG_lbm.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_lbm.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_lbm.Tpo -c -o src/libSDL2_image_la-IMG_lbm.lo `test -f 'src/IMG_lbm.c' || echo '$(srcdir)/'`src/IMG_lbm.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_lbm.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_lbm.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_lbm.c' object='src/libSDL2_image_la-IMG_lbm.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_lbm.lo `test -f 'src/IMG_lbm.c' || echo '$(srcdir)/'`src/IMG_lbm.c
+
+src/libSDL2_image_la-IMG_pcx.lo: src/IMG_pcx.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_pcx.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_pcx.Tpo -c -o src/libSDL2_image_la-IMG_pcx.lo `test -f 'src/IMG_pcx.c' || echo '$(srcdir)/'`src/IMG_pcx.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_pcx.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_pcx.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_pcx.c' object='src/libSDL2_image_la-IMG_pcx.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_pcx.lo `test -f 'src/IMG_pcx.c' || echo '$(srcdir)/'`src/IMG_pcx.c
+
+src/libSDL2_image_la-IMG_png.lo: src/IMG_png.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_png.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_png.Tpo -c -o src/libSDL2_image_la-IMG_png.lo `test -f 'src/IMG_png.c' || echo '$(srcdir)/'`src/IMG_png.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_png.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_png.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_png.c' object='src/libSDL2_image_la-IMG_png.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_png.lo `test -f 'src/IMG_png.c' || echo '$(srcdir)/'`src/IMG_png.c
+
+src/libSDL2_image_la-IMG_pnm.lo: src/IMG_pnm.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_pnm.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_pnm.Tpo -c -o src/libSDL2_image_la-IMG_pnm.lo `test -f 'src/IMG_pnm.c' || echo '$(srcdir)/'`src/IMG_pnm.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_pnm.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_pnm.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_pnm.c' object='src/libSDL2_image_la-IMG_pnm.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_pnm.lo `test -f 'src/IMG_pnm.c' || echo '$(srcdir)/'`src/IMG_pnm.c
+
+src/libSDL2_image_la-IMG_qoi.lo: src/IMG_qoi.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_qoi.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_qoi.Tpo -c -o src/libSDL2_image_la-IMG_qoi.lo `test -f 'src/IMG_qoi.c' || echo '$(srcdir)/'`src/IMG_qoi.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_qoi.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_qoi.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_qoi.c' object='src/libSDL2_image_la-IMG_qoi.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_qoi.lo `test -f 'src/IMG_qoi.c' || echo '$(srcdir)/'`src/IMG_qoi.c
+
+src/libSDL2_image_la-IMG_svg.lo: src/IMG_svg.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_svg.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_svg.Tpo -c -o src/libSDL2_image_la-IMG_svg.lo `test -f 'src/IMG_svg.c' || echo '$(srcdir)/'`src/IMG_svg.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_svg.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_svg.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_svg.c' object='src/libSDL2_image_la-IMG_svg.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_svg.lo `test -f 'src/IMG_svg.c' || echo '$(srcdir)/'`src/IMG_svg.c
+
+src/libSDL2_image_la-IMG_stb.lo: src/IMG_stb.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_stb.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_stb.Tpo -c -o src/libSDL2_image_la-IMG_stb.lo `test -f 'src/IMG_stb.c' || echo '$(srcdir)/'`src/IMG_stb.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_stb.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_stb.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_stb.c' object='src/libSDL2_image_la-IMG_stb.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_stb.lo `test -f 'src/IMG_stb.c' || echo '$(srcdir)/'`src/IMG_stb.c
+
+src/libSDL2_image_la-IMG_tga.lo: src/IMG_tga.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_tga.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_tga.Tpo -c -o src/libSDL2_image_la-IMG_tga.lo `test -f 'src/IMG_tga.c' || echo '$(srcdir)/'`src/IMG_tga.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_tga.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_tga.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_tga.c' object='src/libSDL2_image_la-IMG_tga.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_tga.lo `test -f 'src/IMG_tga.c' || echo '$(srcdir)/'`src/IMG_tga.c
+
+src/libSDL2_image_la-IMG_tif.lo: src/IMG_tif.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_tif.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_tif.Tpo -c -o src/libSDL2_image_la-IMG_tif.lo `test -f 'src/IMG_tif.c' || echo '$(srcdir)/'`src/IMG_tif.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_tif.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_tif.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_tif.c' object='src/libSDL2_image_la-IMG_tif.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_tif.lo `test -f 'src/IMG_tif.c' || echo '$(srcdir)/'`src/IMG_tif.c
+
+src/libSDL2_image_la-IMG_xcf.lo: src/IMG_xcf.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_xcf.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_xcf.Tpo -c -o src/libSDL2_image_la-IMG_xcf.lo `test -f 'src/IMG_xcf.c' || echo '$(srcdir)/'`src/IMG_xcf.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_xcf.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_xcf.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_xcf.c' object='src/libSDL2_image_la-IMG_xcf.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_xcf.lo `test -f 'src/IMG_xcf.c' || echo '$(srcdir)/'`src/IMG_xcf.c
+
+src/libSDL2_image_la-IMG_xpm.lo: src/IMG_xpm.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_xpm.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_xpm.Tpo -c -o src/libSDL2_image_la-IMG_xpm.lo `test -f 'src/IMG_xpm.c' || echo '$(srcdir)/'`src/IMG_xpm.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_xpm.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_xpm.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_xpm.c' object='src/libSDL2_image_la-IMG_xpm.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_xpm.lo `test -f 'src/IMG_xpm.c' || echo '$(srcdir)/'`src/IMG_xpm.c
+
+src/libSDL2_image_la-IMG_xv.lo: src/IMG_xv.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_xv.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_xv.Tpo -c -o src/libSDL2_image_la-IMG_xv.lo `test -f 'src/IMG_xv.c' || echo '$(srcdir)/'`src/IMG_xv.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_xv.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_xv.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_xv.c' object='src/libSDL2_image_la-IMG_xv.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_xv.lo `test -f 'src/IMG_xv.c' || echo '$(srcdir)/'`src/IMG_xv.c
+
+src/libSDL2_image_la-IMG_webp.lo: src/IMG_webp.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_webp.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_webp.Tpo -c -o src/libSDL2_image_la-IMG_webp.lo `test -f 'src/IMG_webp.c' || echo '$(srcdir)/'`src/IMG_webp.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_webp.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_webp.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_webp.c' object='src/libSDL2_image_la-IMG_webp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_webp.lo `test -f 'src/IMG_webp.c' || echo '$(srcdir)/'`src/IMG_webp.c
+
+src/libSDL2_image_la-IMG_WIC.lo: src/IMG_WIC.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/libSDL2_image_la-IMG_WIC.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_WIC.Tpo -c -o src/libSDL2_image_la-IMG_WIC.lo `test -f 'src/IMG_WIC.c' || echo '$(srcdir)/'`src/IMG_WIC.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_WIC.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_WIC.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/IMG_WIC.c' object='src/libSDL2_image_la-IMG_WIC.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/libSDL2_image_la-IMG_WIC.lo `test -f 'src/IMG_WIC.c' || echo '$(srcdir)/'`src/IMG_WIC.c
+
+examples/showanim-showanim.o: examples/showanim.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(showanim_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT examples/showanim-showanim.o -MD -MP -MF examples/$(DEPDIR)/showanim-showanim.Tpo -c -o examples/showanim-showanim.o `test -f 'examples/showanim.c' || echo '$(srcdir)/'`examples/showanim.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) examples/$(DEPDIR)/showanim-showanim.Tpo examples/$(DEPDIR)/showanim-showanim.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='examples/showanim.c' object='examples/showanim-showanim.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(showanim_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o examples/showanim-showanim.o `test -f 'examples/showanim.c' || echo '$(srcdir)/'`examples/showanim.c
+
+examples/showanim-showanim.obj: examples/showanim.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(showanim_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT examples/showanim-showanim.obj -MD -MP -MF examples/$(DEPDIR)/showanim-showanim.Tpo -c -o examples/showanim-showanim.obj `if test -f 'examples/showanim.c'; then $(CYGPATH_W) 'examples/showanim.c'; else $(CYGPATH_W) '$(srcdir)/examples/showanim.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) examples/$(DEPDIR)/showanim-showanim.Tpo examples/$(DEPDIR)/showanim-showanim.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='examples/showanim.c' object='examples/showanim-showanim.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(showanim_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o examples/showanim-showanim.obj `if test -f 'examples/showanim.c'; then $(CYGPATH_W) 'examples/showanim.c'; else $(CYGPATH_W) '$(srcdir)/examples/showanim.c'; fi`
+
+examples/showimage-showimage.o: examples/showimage.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(showimage_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT examples/showimage-showimage.o -MD -MP -MF examples/$(DEPDIR)/showimage-showimage.Tpo -c -o examples/showimage-showimage.o `test -f 'examples/showimage.c' || echo '$(srcdir)/'`examples/showimage.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) examples/$(DEPDIR)/showimage-showimage.Tpo examples/$(DEPDIR)/showimage-showimage.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='examples/showimage.c' object='examples/showimage-showimage.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(showimage_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o examples/showimage-showimage.o `test -f 'examples/showimage.c' || echo '$(srcdir)/'`examples/showimage.c
+
+examples/showimage-showimage.obj: examples/showimage.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(showimage_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT examples/showimage-showimage.obj -MD -MP -MF examples/$(DEPDIR)/showimage-showimage.Tpo -c -o examples/showimage-showimage.obj `if test -f 'examples/showimage.c'; then $(CYGPATH_W) 'examples/showimage.c'; else $(CYGPATH_W) '$(srcdir)/examples/showimage.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) examples/$(DEPDIR)/showimage-showimage.Tpo examples/$(DEPDIR)/showimage-showimage.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='examples/showimage.c' object='examples/showimage-showimage.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(showimage_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o examples/showimage-showimage.obj `if test -f 'examples/showimage.c'; then $(CYGPATH_W) 'examples/showimage.c'; else $(CYGPATH_W) '$(srcdir)/examples/showimage.c'; fi`
+
 .m.o:
-@am__fastdepOBJC_TRUE@	$(AM_V_OBJC)$(OBJCCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepOBJC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepOBJC_TRUE@	$(AM_V_OBJC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepOBJC_TRUE@	$(OBJCCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepOBJC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepOBJC_FALSE@	$(AM_V_OBJC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepOBJC_FALSE@	DEPDIR=$(DEPDIR) $(OBJCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepOBJC_FALSE@	$(AM_V_OBJC@am__nodep@)$(OBJCCOMPILE) -c -o $@ $<
 
 .m.obj:
-@am__fastdepOBJC_TRUE@	$(AM_V_OBJC)$(OBJCCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepOBJC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepOBJC_TRUE@	$(AM_V_OBJC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepOBJC_TRUE@	$(OBJCCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepOBJC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepOBJC_FALSE@	$(AM_V_OBJC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepOBJC_FALSE@	DEPDIR=$(DEPDIR) $(OBJCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepOBJC_FALSE@	$(AM_V_OBJC@am__nodep@)$(OBJCCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .m.lo:
-@am__fastdepOBJC_TRUE@	$(AM_V_OBJC)$(LTOBJCCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepOBJC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Plo
+@am__fastdepOBJC_TRUE@	$(AM_V_OBJC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.lo$$||'`;\
+@am__fastdepOBJC_TRUE@	$(LTOBJCCOMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepOBJC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Plo
 @AMDEP_TRUE@@am__fastdepOBJC_FALSE@	$(AM_V_OBJC)source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepOBJC_FALSE@	DEPDIR=$(DEPDIR) $(OBJCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepOBJC_FALSE@	$(AM_V_OBJC@am__nodep@)$(LTOBJCCOMPILE) -c -o $@ $<
+
+src/libSDL2_image_la-IMG_ImageIO.lo: src/IMG_ImageIO.m
+@am__fastdepOBJC_TRUE@	$(AM_V_OBJC)$(LIBTOOL) $(AM_V_lt) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(OBJC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_OBJCFLAGS) $(OBJCFLAGS) -MT src/libSDL2_image_la-IMG_ImageIO.lo -MD -MP -MF src/$(DEPDIR)/libSDL2_image_la-IMG_ImageIO.Tpo -c -o src/libSDL2_image_la-IMG_ImageIO.lo `test -f 'src/IMG_ImageIO.m' || echo '$(srcdir)/'`src/IMG_ImageIO.m
+@am__fastdepOBJC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/libSDL2_image_la-IMG_ImageIO.Tpo src/$(DEPDIR)/libSDL2_image_la-IMG_ImageIO.Plo
+@AMDEP_TRUE@@am__fastdepOBJC_FALSE@	$(AM_V_OBJC)source='src/IMG_ImageIO.m' object='src/libSDL2_image_la-IMG_ImageIO.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepOBJC_FALSE@	DEPDIR=$(DEPDIR) $(OBJCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepOBJC_FALSE@	$(AM_V_OBJC@am__nodep@)$(LIBTOOL) $(AM_V_lt) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(OBJC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libSDL2_image_la_CPPFLAGS) $(CPPFLAGS) $(AM_OBJCFLAGS) $(OBJCFLAGS) -c -o src/libSDL2_image_la-IMG_ImageIO.lo `test -f 'src/IMG_ImageIO.m' || echo '$(srcdir)/'`src/IMG_ImageIO.m
 
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
+	-rm -rf src/.libs src/_libs
 
 distclean-libtool:
 	-rm -f libtool config.lt
@@ -1153,6 +1430,10 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f examples/$(DEPDIR)/$(am__dirstamp)
+	-rm -f examples/$(am__dirstamp)
+	-rm -f src/$(DEPDIR)/$(am__dirstamp)
+	-rm -f src/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -1164,29 +1445,29 @@ clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-		-rm -f ./$(DEPDIR)/IMG.Plo
-	-rm -f ./$(DEPDIR)/IMG_ImageIO.Plo
-	-rm -f ./$(DEPDIR)/IMG_WIC.Plo
-	-rm -f ./$(DEPDIR)/IMG_avif.Plo
-	-rm -f ./$(DEPDIR)/IMG_bmp.Plo
-	-rm -f ./$(DEPDIR)/IMG_gif.Plo
-	-rm -f ./$(DEPDIR)/IMG_jpg.Plo
-	-rm -f ./$(DEPDIR)/IMG_jxl.Plo
-	-rm -f ./$(DEPDIR)/IMG_lbm.Plo
-	-rm -f ./$(DEPDIR)/IMG_pcx.Plo
-	-rm -f ./$(DEPDIR)/IMG_png.Plo
-	-rm -f ./$(DEPDIR)/IMG_pnm.Plo
-	-rm -f ./$(DEPDIR)/IMG_qoi.Plo
-	-rm -f ./$(DEPDIR)/IMG_stb.Plo
-	-rm -f ./$(DEPDIR)/IMG_svg.Plo
-	-rm -f ./$(DEPDIR)/IMG_tga.Plo
-	-rm -f ./$(DEPDIR)/IMG_tif.Plo
-	-rm -f ./$(DEPDIR)/IMG_webp.Plo
-	-rm -f ./$(DEPDIR)/IMG_xcf.Plo
-	-rm -f ./$(DEPDIR)/IMG_xpm.Plo
-	-rm -f ./$(DEPDIR)/IMG_xv.Plo
-	-rm -f ./$(DEPDIR)/showanim.Po
-	-rm -f ./$(DEPDIR)/showimage.Po
+		-rm -f examples/$(DEPDIR)/showanim-showanim.Po
+	-rm -f examples/$(DEPDIR)/showimage-showimage.Po
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_ImageIO.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_WIC.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_avif.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_bmp.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_gif.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_jpg.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_jxl.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_lbm.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_pcx.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_png.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_pnm.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_qoi.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_stb.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_svg.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_tga.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_tif.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_webp.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_xcf.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_xpm.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_xv.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
@@ -1235,29 +1516,29 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-		-rm -f ./$(DEPDIR)/IMG.Plo
-	-rm -f ./$(DEPDIR)/IMG_ImageIO.Plo
-	-rm -f ./$(DEPDIR)/IMG_WIC.Plo
-	-rm -f ./$(DEPDIR)/IMG_avif.Plo
-	-rm -f ./$(DEPDIR)/IMG_bmp.Plo
-	-rm -f ./$(DEPDIR)/IMG_gif.Plo
-	-rm -f ./$(DEPDIR)/IMG_jpg.Plo
-	-rm -f ./$(DEPDIR)/IMG_jxl.Plo
-	-rm -f ./$(DEPDIR)/IMG_lbm.Plo
-	-rm -f ./$(DEPDIR)/IMG_pcx.Plo
-	-rm -f ./$(DEPDIR)/IMG_png.Plo
-	-rm -f ./$(DEPDIR)/IMG_pnm.Plo
-	-rm -f ./$(DEPDIR)/IMG_qoi.Plo
-	-rm -f ./$(DEPDIR)/IMG_stb.Plo
-	-rm -f ./$(DEPDIR)/IMG_svg.Plo
-	-rm -f ./$(DEPDIR)/IMG_tga.Plo
-	-rm -f ./$(DEPDIR)/IMG_tif.Plo
-	-rm -f ./$(DEPDIR)/IMG_webp.Plo
-	-rm -f ./$(DEPDIR)/IMG_xcf.Plo
-	-rm -f ./$(DEPDIR)/IMG_xpm.Plo
-	-rm -f ./$(DEPDIR)/IMG_xv.Plo
-	-rm -f ./$(DEPDIR)/showanim.Po
-	-rm -f ./$(DEPDIR)/showimage.Po
+		-rm -f examples/$(DEPDIR)/showanim-showanim.Po
+	-rm -f examples/$(DEPDIR)/showimage-showimage.Po
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_ImageIO.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_WIC.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_avif.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_bmp.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_gif.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_jpg.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_jxl.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_lbm.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_pcx.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_png.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_pnm.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_qoi.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_stb.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_svg.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_tga.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_tif.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_webp.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_xcf.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_xpm.Plo
+	-rm -f src/$(DEPDIR)/libSDL2_image_la-IMG_xv.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
