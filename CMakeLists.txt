@@ -185,37 +185,40 @@ endif()
 
 set(BUILD_SHARED_LIBS ${SDL3IMAGE_BUILD_SHARED_LIBS})
 add_library(${sdl3_image_target_name}
-    IMG.c
-    IMG_WIC.c
-    IMG_avif.c
-    IMG_bmp.c
-    IMG_gif.c
-    IMG_jpg.c
-    IMG_jxl.c
-    IMG_lbm.c
-    IMG_pcx.c
-    IMG_png.c
-    IMG_pnm.c
-    IMG_qoi.c
-    IMG_stb.c
-    IMG_svg.c
-    IMG_tga.c
-    IMG_tif.c
-    IMG_webp.c
-    IMG_xcf.c
-    IMG_xpm.c
-    IMG_xv.c
-    IMG_xxx.c
+    src/IMG.c
+    src/IMG_WIC.c
+    src/IMG_avif.c
+    src/IMG_bmp.c
+    src/IMG_gif.c
+    src/IMG_jpg.c
+    src/IMG_jxl.c
+    src/IMG_lbm.c
+    src/IMG_pcx.c
+    src/IMG_png.c
+    src/IMG_pnm.c
+    src/IMG_qoi.c
+    src/IMG_stb.c
+    src/IMG_svg.c
+    src/IMG_tga.c
+    src/IMG_tif.c
+    src/IMG_webp.c
+    src/IMG_xcf.c
+    src/IMG_xpm.c
+    src/IMG_xv.c
+    src/IMG_xxx.c
 )
 add_library(SDL3_image::${sdl3_image_target_name} ALIAS ${sdl3_image_target_name})
 if(NOT TARGET SDL3_image::SDL3_image)
     add_library(SDL3_image::SDL3_image ALIAS ${sdl3_image_target_name})
 endif()
-target_include_directories(${sdl3_image_target_name} PUBLIC
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/SDL3>"
-    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL3>"
+target_include_directories(${sdl3_image_target_name}
+    PUBLIC
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/SDL3>"
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL3>"
+    PRIVATE
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>"
 )
 target_compile_definitions(${sdl3_image_target_name} PRIVATE
     BUILD_SDL
@@ -227,7 +230,7 @@ target_link_libraries(${sdl3_image_target_name} PRIVATE $<BUILD_INTERFACE:${sdl3
 sdl_add_warning_options(${sdl3_image_target_name} WARNING_AS_ERROR ${SDL3IMAGE_WERROR})
 if(WIN32 AND SDL3IMAGE_BUILD_SHARED_LIBS)
     target_sources(${sdl3_image_target_name} PRIVATE
-        version.rc
+        src/version.rc
     )
 endif()
 set_target_properties(${sdl3_image_target_name} PROPERTIES
@@ -237,7 +240,7 @@ set_target_properties(${sdl3_image_target_name} PROPERTIES
     C_VISIBILITY_PRESET "hidden"
 )
 
-sdl_target_link_option_version_file(${sdl3_image_target_name} "${CMAKE_CURRENT_SOURCE_DIR}/SDL_image.sym")
+sdl_target_link_option_version_file(${sdl3_image_target_name} "${CMAKE_CURRENT_SOURCE_DIR}/src/SDL_image.sym")
 
 if(NOT ANDROID)
     if(APPLE)
@@ -296,7 +299,7 @@ if(APPLE)
         target_link_libraries(${sdl3_image_target_name} PRIVATE -Wl,-framework,ApplicationServices)
         target_link_libraries(${sdl3_image_target_name} PRIVATE objc)
         target_sources(${sdl3_image_target_name} PRIVATE
-            IMG_ImageIO.m
+            src/IMG_ImageIO.m
         )
 
         if (SDL3IMAGE_PNG AND NOT SDL3IMAGE_BACKEND_STB)
@@ -762,8 +765,8 @@ if(SDL3IMAGE_INSTALL)
 endif()
 
 if(SDL3IMAGE_SAMPLES)
-    add_executable(showanim showanim.c)
-    add_executable(showimage showimage.c)
+    add_executable(showanim examples/showanim.c)
+    add_executable(showimage examples/showimage.c)
 
     foreach(prog showanim showimage)
         sdl_add_warning_options(${prog} WARNING_AS_ERROR ${SDL3IMAGE_WERROR})
