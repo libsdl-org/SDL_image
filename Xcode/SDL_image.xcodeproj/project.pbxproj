@@ -653,7 +653,6 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)/../include\"",
-					"\"$(SRCROOT)/../src\"",
 					"\"$(SRCROOT)/$(PLATFORM)/SDL2.framework/Headers\"",
 					"\"$(SRCROOT)/../external/jpeg\"",
 				);
@@ -744,7 +743,6 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)/../include\"",
-					"\"$(SRCROOT)/../src\"",
 					"\"$(SRCROOT)/$(PLATFORM)/SDL2.framework/Headers\"",
 					"\"$(SRCROOT)/../external/jpeg\"",
 				);
