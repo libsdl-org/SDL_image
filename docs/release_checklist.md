@@ -10,7 +10,7 @@
         `SDL_IMAGE_MAJOR_VERSION`, `SDL_IMAGE_MINOR_VERSION`, `SDL_IMAGE_PATCHLEVEL`
     * `CMakeLists.txt`:
         `MAJOR_VERSION`, `MINOR_VERSION`, `MICRO_VERSION`
-    * `version.rc`:
+    * `src/version.rc`:
         `FILEVERSION`, `PRODUCTVERSION`, `FileVersion`, `ProductVersion`
     * `VisualC/Version.rc`:
         `FILEVERSION`, `PRODUCTVERSION`, `FileVersion`, `ProductVersion`
@@ -26,9 +26,7 @@
         * set second number in `DYLIB_CURRENT_VERSION` to 0
         * set `DYLIB_COMPATIBILITY_VERSION` to the same value
 
-* Regenerate `configure`
-
-* Run `./test-versioning.sh` to verify that everything is consistent
+* Run `./build-scripts/test-versioning.sh` to verify that everything is consistent
 
 * Do the release
 
@@ -49,9 +47,7 @@
         * set second number in `DYLIB_CURRENT_VERSION` to *patchlevel*
         * Leave `DYLIB_COMPATIBILITY_VERSION` unchanged
 
-* Regenerate `configure`
-
-* Run test/versioning.sh to verify that everything is consistent
+* Run `./build-scripts/test-versioning.sh` to verify that everything is consistent
 
 * Do the release
 
@@ -68,7 +64,7 @@
     * Same places as listed above
     * Assume that the next feature release will contain new API/ABI
 
-* Run test/versioning.sh to verify that everything is consistent
+* Run `./build-scripts/test-versioning.sh` to verify that everything is consistent
 
 * Add a new milestone for issues
 
@@ -87,8 +83,6 @@
         * set second number in `DYLIB_CURRENT_VERSION` to 0
         * set `DYLIB_COMPATIBILITY_VERSION` to the same value
 
-* Regenerate `configure`
-
-* Run test/versioning.sh to verify that everything is consistent
+* Run `./build-scripts/test-versioning.sh` to verify that everything is consistent
 
 * Do the release

@@ -27,7 +27,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\SDL_image.h" />
+    <ClInclude Include="..\include\SDL3\SDL_image.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SDL\VisualC-WinRT\SDL-UWP.vcxproj">
@@ -35,26 +35,26 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\IMG.c" />
-    <ClCompile Include="..\IMG_avif.c" />
-    <ClCompile Include="..\IMG_bmp.c" />
-    <ClCompile Include="..\IMG_gif.c" />
-    <ClCompile Include="..\IMG_jpg.c" />
-    <ClCompile Include="..\IMG_jxl.c" />
-    <ClCompile Include="..\IMG_lbm.c" />
-    <ClCompile Include="..\IMG_pcx.c" />
-    <ClCompile Include="..\IMG_png.c" />
-    <ClCompile Include="..\IMG_pnm.c" />
-    <ClCompile Include="..\IMG_qoi.c" />
-    <ClCompile Include="..\IMG_stb.c" />
-    <ClCompile Include="..\IMG_svg.c" />
-    <ClCompile Include="..\IMG_tga.c" />
-    <ClCompile Include="..\IMG_tif.c" />
-    <ClCompile Include="..\IMG_webp.c" />
-    <ClCompile Include="..\IMG_WIC.c" />
-    <ClCompile Include="..\IMG_xcf.c" />
-    <ClCompile Include="..\IMG_xpm.c" />
-    <ClCompile Include="..\IMG_xv.c" />
+    <ClCompile Include="..\src\IMG.c" />
+    <ClCompile Include="..\src\IMG_avif.c" />
+    <ClCompile Include="..\src\IMG_bmp.c" />
+    <ClCompile Include="..\src\IMG_gif.c" />
+    <ClCompile Include="..\src\IMG_jpg.c" />
+    <ClCompile Include="..\src\IMG_jxl.c" />
+    <ClCompile Include="..\src\IMG_lbm.c" />
+    <ClCompile Include="..\src\IMG_pcx.c" />
+    <ClCompile Include="..\src\IMG_png.c" />
+    <ClCompile Include="..\src\IMG_pnm.c" />
+    <ClCompile Include="..\src\IMG_qoi.c" />
+    <ClCompile Include="..\src\IMG_stb.c" />
+    <ClCompile Include="..\src\IMG_svg.c" />
+    <ClCompile Include="..\src\IMG_tga.c" />
+    <ClCompile Include="..\src\IMG_tif.c" />
+    <ClCompile Include="..\src\IMG_webp.c" />
+    <ClCompile Include="..\src\IMG_WIC.c" />
+    <ClCompile Include="..\src\IMG_xcf.c" />
+    <ClCompile Include="..\src\IMG_xpm.c" />
+    <ClCompile Include="..\src\IMG_xv.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{18665277-e558-4484-93f4-e4dc7bb614cb}</ProjectGuid>
@@ -158,7 +158,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <AdditionalIncludeDirectories>..\include;..\src;..\src\codecs;..\src\codecs\timidity;..\external\ogg\include;..\external\vorbis\include;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\src;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -171,7 +171,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <AdditionalIncludeDirectories>..\include;..\src;..\src\codecs;..\src\codecs\timidity;..\external\ogg\include;..\external\vorbis\include;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\src;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -184,7 +184,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <AdditionalIncludeDirectories>..\include;..\src;..\src\codecs;..\src\codecs\timidity;..\external\ogg\include;..\external\vorbis\include;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\src;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -197,7 +197,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <AdditionalIncludeDirectories>..\include;..\src;..\src\codecs;..\src\codecs\timidity;..\external\ogg\include;..\external\vorbis\include;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\src;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -210,7 +210,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <AdditionalIncludeDirectories>..\include;..\src;..\src\codecs;..\src\codecs\timidity;..\external\ogg\include;..\external\vorbis\include;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\src;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -223,7 +223,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>false</CompileAsWinRT>
-      <AdditionalIncludeDirectories>..\include;..\src;..\src\codecs;..\src\codecs\timidity;..\external\ogg\include;..\external\vorbis\include;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\src;..\..\SDL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;USE_STBIMAGE;LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

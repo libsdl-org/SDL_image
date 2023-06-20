@@ -7,3 +7,9 @@ end_of_line = lf
 indent_size = 4
 insert_final_newline = true
 trim_trailing_whitespace = true
+
+[README.txt]
+end_of_line = crlf
+
+[*.{filters,sln,vcxproj}]
+end_of_line = crlf
