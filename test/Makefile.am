@@ -5,7 +5,7 @@ test_programs = \
 	testimage \
 	$(NULL)
 
-testimage_CPPFLAGS = -I$(top_srcdir)
+testimage_CPPFLAGS = -I$(top_srcdir)/include
 testimage_SOURCES = main.c
 testimage_LDADD = \
 	../libSDL2_image.la \

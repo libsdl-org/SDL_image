@@ -11,7 +11,7 @@ AC_INIT([SDL2_image],
         [https://github.com/libsdl-org/SDL_image/issues],
         [SDL2_image])
 AC_CONFIG_MACRO_DIR([acinclude])
-AC_CONFIG_SRCDIR([IMG.c])
+AC_CONFIG_SRCDIR([src/IMG.c])
 
 AC_SUBST([MAJOR_VERSION], MAJOR_VERSION_MACRO)
 AC_SUBST([MINOR_VERSION], MINOR_VERSION_MACRO)
@@ -58,7 +58,7 @@ dnl Detect the canonical build and host environments
 AC_CANONICAL_HOST
 
 dnl Setup for automake
-AM_INIT_AUTOMAKE([foreign tar-ustar])
+AM_INIT_AUTOMAKE([foreign subdir-objects tar-ustar])
 
 dnl Check for tools
 AC_PROG_AWK
@@ -94,7 +94,7 @@ case "$host" in
             fi
         fi
         use_version_rc=true
-        LT_EXTRA="-Wl,version.o"
+        LT_EXTRA="-Wl,src/version.o"
         ;;
     *-*-darwin*)
         AC_ARG_ENABLE([imageio], [AS_HELP_STRING([--enable-imageio], [use native Mac OS X frameworks for loading images [default=yes]])],

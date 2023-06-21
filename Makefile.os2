@@ -20,9 +20,9 @@ DEPS_INC=-IC:\SDL2DEV\h\SDL2 -IC:\SDL2DEV\h
 # change DEPS_LIB in order to point to the dependency libraries.
 DEPS_LIB=C:\SDL2DEV\lib
 
-SRCS = IMG.c IMG_bmp.c IMG_gif.c IMG_jpg.c IMG_lbm.c IMG_pcx.c IMG_png.c &
-       IMG_pnm.c IMG_svg.c IMG_tga.c IMG_tif.c IMG_xcf.c IMG_xpm.c IMG_xv.c &
-       IMG_webp.c IMG_qoi.c IMG_avif.c IMG_jxl.c IMG_stb.c
+SRCS = src\IMG.c src\IMG_bmp.c src\IMG_gif.c src\IMG_jpg.c src\IMG_lbm.c src\IMG_pcx.c src\IMG_png.c &
+       src\IMG_pnm.c src\IMG_svg.c src\IMG_tga.c src\IMG_tif.c src\IMG_xcf.c src\IMG_xpm.c src\IMG_xv.c &
+       src\IMG_webp.c src\IMG_qoi.c src\IMG_avif.c src\IMG_jxl.c src\IMG_stb.c
 
 LIBS = libpng.lib libtiff.lib zlib.lib jpeg.lib webpdec.lib webpdemux.lib SDL2.lib
 
@@ -33,7 +33,7 @@ CFLAGS_BASE+= -wx -wcd=202
 CFLAGS_BASE+= -wcd=303
 # include paths:
 CFLAGS_BASE+= -I"$(%WATCOM)/h/os2" -I"$(%WATCOM)/h"
-CFLAGS_BASE+= -I. $(DEPS_INC)
+CFLAGS_BASE+= -Iinclude -Isrc $(DEPS_INC)
 CFLAGS =$(CFLAGS_BASE)
 # to build a dll:
 CFLAGS+= -bd
@@ -89,16 +89,16 @@ $(LNKFILE):
 .c.obj:
   wcc386 $(CFLAGS) -fo=$^@ $<
 
-showimage.obj: showimage.c
+examples\showimage.obj: examples\showimage.c
   wcc386 $(CFLAGS_BASE) -fo=$^@ $<
 
-showanim.obj: showanim.c
+examples\showanim.obj: examples\showanim.c
   wcc386 $(CFLAGS_BASE) -fo=$^@ $<
 
-showimage.exe: $(LIBFILE) showimage.obj
+showimage.exe: $(LIBFILE) examples\showimage.obj
   wlink SYS os2v2 OP q LIBPATH $(DEPS_LIB) LIBR {$(LIBFILE) SDL2.lib} F {showimage.obj}  N showimage.exe
 
-showanim.exe: $(LIBFILE) showanim.obj
+showanim.exe: $(LIBFILE) examples\showanim.obj
   wlink SYS os2v2 OP q LIBPATH $(DEPS_LIB) LIBR {$(LIBFILE) SDL2.lib} F {showanim.obj}  N showanim.exe
 
 clean: .SYMBOLIC

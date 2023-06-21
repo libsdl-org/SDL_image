@@ -765,7 +765,7 @@ PACKAGE_STRING='SDL2_image 2.7.0'
 PACKAGE_BUGREPORT='https://github.com/libsdl-org/SDL_image/issues'
 PACKAGE_URL=''
 
-ac_unique_file="IMG.c"
+ac_unique_file="src/IMG.c"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stddef.h>
@@ -13542,7 +13542,7 @@ case "$host" in
             fi
         fi
         use_version_rc=true
-        LT_EXTRA="-Wl,version.o"
+        LT_EXTRA="-Wl,src/version.o"
         ;;
     *-*-darwin*)
         # Check whether --enable-imageio was given.

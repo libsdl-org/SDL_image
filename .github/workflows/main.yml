@@ -104,7 +104,7 @@ jobs:
     - name: Check that versioning is consistent
       # We only need to run this once: arbitrarily use the Linux/CMake build
       if: "runner.os == 'Linux' && matrix.platform.cmake"
-      run: ./test-versioning.sh
+      run: ./build-scripts/test-versioning.sh
 
     - name: Setup (CMake)
       if: ${{ matrix.platform.cmake && !matrix.platform.msystem && !matrix.platform.msvc }}
