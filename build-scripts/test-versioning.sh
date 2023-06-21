@@ -9,9 +9,9 @@ cd `dirname $0`/..
 # Needed so sed doesn't report illegal byte sequences on macOS
 export LC_CTYPE=C
 
-ref_major=$(sed -ne 's/^#define SDL_IMAGE_MAJOR_VERSION  *//p' SDL_image.h)
-ref_minor=$(sed -ne 's/^#define SDL_IMAGE_MINOR_VERSION  *//p' SDL_image.h)
-ref_micro=$(sed -ne 's/^#define SDL_IMAGE_PATCHLEVEL  *//p' SDL_image.h)
+ref_major=$(sed -ne 's/^#define SDL_IMAGE_MAJOR_VERSION  *//p' include/SDL_image.h)
+ref_minor=$(sed -ne 's/^#define SDL_IMAGE_MINOR_VERSION  *//p' include/SDL_image.h)
+ref_micro=$(sed -ne 's/^#define SDL_IMAGE_PATCHLEVEL  *//p' include/SDL_image.h)
 ref_version="${ref_major}.${ref_minor}.${ref_micro}"
 
 tests=0
