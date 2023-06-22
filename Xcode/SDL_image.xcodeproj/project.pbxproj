@@ -716,7 +716,6 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
-					"\"$(SRCROOT)/../src\"",
 					"\"$(SRCROOT)/../include\"",
 					"\"$(SRCROOT)/../external/jpeg\"",
 				);
@@ -801,7 +800,6 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				HEADER_SEARCH_PATHS = (
-					"\"$(SRCROOT)/../src\"",
 					"\"$(SRCROOT)/../include\"",
 					"\"$(SRCROOT)/../external/jpeg\"",
 				);

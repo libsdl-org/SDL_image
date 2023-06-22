@@ -217,8 +217,6 @@ target_include_directories(${sdl3_image_target_name}
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/SDL3>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL3>"
-    PRIVATE
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>"
 )
 target_compile_definitions(${sdl3_image_target_name} PRIVATE
     BUILD_SDL

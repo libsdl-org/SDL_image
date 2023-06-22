@@ -92,7 +92,7 @@ LOCAL_SRC_FILES :=  \
     src/IMG_xpm.c.arm   \
     src/IMG_xv.c
 
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/src $(LOCAL_PATH)/include
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/include
 
 LOCAL_CFLAGS := -DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM \
                 -DLOAD_SVG -DLOAD_TGA -DLOAD_XCF -DLOAD_XPM -DLOAD_XV  \
