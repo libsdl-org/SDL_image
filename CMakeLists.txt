@@ -55,6 +55,7 @@ option(CMAKE_POSITION_INDEPENDENT_CODE "Build static libraries with -fPIC" ON)
 option(BUILD_SHARED_LIBS "Build the library as a shared library" ON)
 
 cmake_dependent_option(SDL3IMAGE_INSTALL "Enable SDL3_image install target" ${SDL3IMAGE_ROOTPROJECT} "${sdl3image_install_enableable}" OFF)
+cmake_dependent_option(SDL3IMAGE_INSTALL_MAN "Install man pages for SDL3_image" ${SDL3IMAGE_ROOTPROJECT} "SDL3IMAGE_INSTALL" OFF)
 option(SDL3IMAGE_DEPS_SHARED "Load dependencies dynamically" ON)
 option(SDL3IMAGE_VENDORED "Use vendored third-party libraries" ${vendored_default})
 option(SDL3IMAGE_WERROR "Treat warnings as errors" OFF)
@@ -760,6 +761,12 @@ if(SDL3IMAGE_INSTALL)
         DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/licenses/${PROJECT_NAME}"
         COMPONENT library
     )
+
+    if(SDL3IMAGE_INSTALL_MAN AND COMMAND SDL_generate_manpages)
+        SDL_generate_manpages(
+          SYMBOL "IMG_Init"
+        )
+    endif()
 endif()
 
 if(SDL3IMAGE_SAMPLES)
