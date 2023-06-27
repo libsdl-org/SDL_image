@@ -18,6 +18,7 @@ project(SDL3_image
 )
 
 include(PrivateSdlFunctions)
+include(sdlmanpages)
 sdl_calculate_derived_version_variables(${MAJOR_VERSION} ${MINOR_VERSION} ${MICRO_VERSION})
 
 message(STATUS "Configuring ${PROJECT_NAME} ${PROJECT_VERSION}")
@@ -772,7 +773,8 @@ if(SDL3IMAGE_INSTALL)
 
     if(SDL3IMAGE_INSTALL_MAN AND COMMAND SDL_generate_manpages)
         SDL_generate_manpages(
-          SYMBOL "IMG_Init"
+            SYMBOL "IMG_Init"
+            WIKIHEADERS_PL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/build-scripts/wikiheaders.pl"
         )
     endif()
 endif()
