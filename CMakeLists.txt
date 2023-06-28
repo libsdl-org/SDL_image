@@ -771,7 +771,7 @@ if(SDL3IMAGE_INSTALL)
         COMPONENT library
     )
 
-    if(SDL3IMAGE_INSTALL_MAN AND COMMAND SDL_generate_manpages)
+    if(SDL3IMAGE_INSTALL_MAN)
         SDL_generate_manpages(
             SYMBOL "IMG_Init"
             WIKIHEADERS_PL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/build-scripts/wikiheaders.pl"
