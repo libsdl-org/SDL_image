@@ -15,24 +15,28 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows (MSVC+CMake),         os: windows-latest, shell: sh,   cmake: '-DSDL2IMAGE_VENDORED=ON -GNinja', msvc: 1, shared: 1, static: 0 }
+        - { name: Windows (MSVC+CMake),         os: windows-latest, shell: sh, cmake: '-GNinja', msvc: 1, shared: 1, static: 0, vendored: 1 }
         - { name: Windows (mingw32+autotools),  os: windows-latest, shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686, shared: 1, static: 1 }
         - { name: Windows (mingw64+CMake),      os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0,
-            cmake: '-DSDL2IMAGE_BACKEND_STB=OFF -DSDL2IMAGE_BACKEND_WIC=OFF -DSDL2IMAGE_VENDORED=OFF -DSDL2IMAGE_AVIF=ON -G "Ninja Multi-Config"' }
+            cmake: '-DSDL2IMAGE_BACKEND_STB=OFF -DSDL2IMAGE_BACKEND_WIC=OFF -G "Ninja Multi-Config"' }
         - { name: Linux (autotools),            os: ubuntu-latest,  shell: sh, shared: 1, static: 1}
-        - { name: Linux (CMake),                os: ubuntu-latest,  shell: sh,  cmake: '-DSDL2IMAGE_VENDORED=ON -GNinja', shared: 1, static: 0 }
-        - { name: 'Linux (CMake, static)',      os: ubuntu-latest,  shell: sh,   cmake: '-DSDL2IMAGE_VENDORED=ON -DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1 }
+        - { name: Linux (CMake),                os: ubuntu-latest,  shell: sh, cmake: '-GNinja', shared: 1, static: 0, vendored: 1 }
+        - { name: 'Linux (CMake, static)',      os: ubuntu-latest,  shell: sh, cmake: '-DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1, vendored: 1 }
         - { name: Macos (autotools),            os: macos-latest,   shell: sh, shared: 1, static: 1 }
-        - { name: Macos (CMake),                os: macos-latest,   shell: sh,   cmake: '-DSDL2IMAGE_VENDORED=ON -GNinja', shared: 1, static: 0 }
+        - { name: Macos (CMake),                os: macos-latest,   shell: sh, cmake: '-GNinja', shared: 1, static: 0, vendored: 1 }
 
     steps:
+    - uses: ilammy/msvc-dev-cmd@v1
+      if: ${{ matrix.platform.msvc }}
+      with:
+        arch: x64
     - name: Set up MSYS2
       if: ${{ contains(matrix.platform.shell, 'msys2') }}
       uses: msys2/setup-msys2@v2
       with:
         msystem: ${{ matrix.platform.msystem }}
+        path-type: inherit
         install: >-
-          ${{ matrix.platform.msys-env }}-SDL2
           ${{ matrix.platform.msys-env }}-autotools
           ${{ matrix.platform.msys-env }}-cmake
           ${{ matrix.platform.msys-env }}-gcc
@@ -45,25 +49,36 @@ jobs:
           ${{ matrix.platform.msys-env }}-ninja
           ${{ matrix.platform.msys-env }}-pkg-config
           ${{ matrix.platform.msys-env }}-zlib
+    - name: Install Ninja
+      uses: turtlesec-no/get-ninja@main
+      if: ${{ !contains(matrix.platform.shell, 'msys2') && matrix.platform.cmake }}
+    - name: Set up SDL
+      id: sdl
+      uses: libsdl-org/setup-sdl@main
+      with:
+        cmake-generator: Ninja
+        version: 2-head
+        sdl-test: true
+        shell: ${{ matrix.platform.shell }}
+        add-to-environment: true
     - name: Setup Macos dependencies
-      if: runner.os == 'macOS'
+      if: ${{ runner.os == 'macOS' }}
       run: |
-          brew install \
-            autoconf \
-            automake \
-            jpeg \
-            libavif \
-            libpng \
-            libtiff \
-            libtool \
-            ninja \
-            pkg-config \
-            webp \
-            zlib \
-            ${NULL+}
-          brew install sdl2
+        brew install \
+          autoconf \
+          automake \
+          jpeg \
+          libavif \
+          libpng \
+          libtiff \
+          libtool \
+          ninja \
+          pkg-config \
+          webp \
+          zlib \
+          ${NULL+}
     - name: Setup Linux dependencies
-      if: runner.os == 'Linux'
+      if: ${{ runner.os == 'Linux' }}
       run: |
         sudo apt-get update
         sudo apt-get -y install \
@@ -73,7 +88,6 @@ jobs:
           libavif-dev \
           libjpeg-dev \
           libpng-dev \
-          libsdl2-dev \
           libtiff-dev \
           libtool \
           libwebp-dev \
@@ -82,72 +96,60 @@ jobs:
           zlib1g-dev \
           ${NULL+}
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
 
-    - name: Setup MSVC dependencies
-      if: "matrix.platform.msvc"
-      shell: pwsh
-      run: |
-        .github/fetch_sdl_vc.ps1
-        echo "SDL2_DIR=$Env:GITHUB_WORKSPACE/SDL2-devel-VC" >> $Env:GITHUB_ENV
-    - name: Setup Ninja for MSVC
-      if: "matrix.platform.msvc"
-      uses: ashutoshvarma/setup-ninja@master
-      with:
-        version: 1.10.2
-    - uses: ilammy/msvc-dev-cmd@v1
-      if: "matrix.platform.msvc"
-      with:
-        arch: x64
-
     - name: Check that versioning is consistent
       # We only need to run this once: arbitrarily use the Linux/CMake build
-      if: "runner.os == 'Linux' && matrix.platform.cmake"
+      if: ${{ runner.os == 'Linux' && matrix.platform.cmake }}
       run: ./build-scripts/test-versioning.sh
 
     - name: Setup (CMake)
       if: ${{ matrix.platform.cmake && !matrix.platform.msystem && !matrix.platform.msvc }}
-      uses: jwlawson/actions-setup-cmake@v1.12
+      uses: jwlawson/actions-setup-cmake@master
       with:
         cmake-version: '3.16'
     - name: Configure (CMake)
-      if: "matrix.platform.cmake"
+      if: ${{ matrix.platform.cmake }}
       run: |
-        set -- \
+        export CMAKE_CONFIGURATION_TYPES=Debug
+        cmake -B build \
+          -DSDL2IMAGE_VENDORED=${{ matrix.platform.vendored }} \
+          -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=$PWD/build \
+          -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=$PWD/build \
           -DBUILD_SHARED_LIBS=ON \
-          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_BUILD_TYPE=Debug \
           -DSDL2IMAGE_SAMPLES=ON \
+          -DSDL2IMAGE_TESTS=ON \
           -DSDL2IMAGE_TESTS_INSTALL=ON \
+          -DSDL2IMAGE_AVIF=${{ !matrix.platform.vendored }} \
           -DSDL2IMAGE_JXL=ON \
           -DSDL2IMAGE_TIF=ON \
           -DSDL2IMAGE_WEBP=ON \
+          -DSDL2IMAGE_VENDORED=${{ !!matrix.platform.vendored }} \
           -DCMAKE_INSTALL_PREFIX=prefix_cmake \
-          ${NULL+}
-
-        if [ "${{ matrix.platform.msystem }}" = "" ]; then
-            # mingw-w64-*-SDL2 doesn't have SDL_test, and the macOS CMake
-            # build can't find it (see #260), so we only enable build-time
-            # tests for Linux at the moment.
-            set -- "$@" -DSDL2IMAGE_TESTS=ON
-            # If we dlopen() vendored soft dependencies, the test won't
-            # find them: https://github.com/libsdl-org/SDL_image/issues/259
-            set -- "$@" -DSDL2IMAGE_DEPS_SHARED=OFF
-        fi
-
-        cmake -B build \
-          "$@" \
           ${{ matrix.platform.cmake }}
     - name: Build (CMake)
-      if: "matrix.platform.cmake"
-      run: cmake --build build/ --config Release --parallel --verbose
+      if: ${{ matrix.platform.cmake }}
+      run: cmake --build build/ --config Debug --parallel --verbose
     - name: Run build-time tests (CMake)
-      if: "runner.os == 'Linux' && matrix.platform.cmake"
+      if: ${{ matrix.platform.cmake }}
       run: |
         set -eu
+        if [ "x${{ runner.os }}" = xLinux ]; then
+          export LD_LIBRARY_PATH="${{ github.workspace }}/build:$LD_LIBRARY_PATH"
+        fi
+        if [ "x${{ runner.os }}" = xmacos ]; then
+          export DYLD_LIBRARY_PATH="${{ github.workspace }}/build:$DYLD_LIBRARY_PATH"
+        fi
+        if [ "x${{ runner.os }}" = "xWindows" ]; then
+          sdl_binpath="$( cygpath -u "${{ steps.sdl.outputs.prefix }}" )"
+          sdlimage_binpath="$( cygpath -u "${{ github.workspace }}/build" )"
+          export PATH="$sdl_binpath:$sdlimage_binpath:$PATH"
+        fi
 
-        export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=${{ (matrix.platform.vendored && '0') || '1' }}
         export SDL_IMAGE_TEST_REQUIRE_LOAD_BMP=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_CUR=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_GIF=1
@@ -169,17 +171,18 @@ jobs:
         export SDL_IMAGE_TEST_REQUIRE_SAVE_JPG=1
         export SDL_IMAGE_TEST_REQUIRE_SAVE_PNG=1
 
-        ctest -VV --test-dir build/test
+        cd build/test
+        ctest -VV -C Debug
     - name: Install (CMake)
-      if: "(matrix.platform.shell == 'sh' || contains(matrix.platform.shell, 'msys2')) && matrix.platform.cmake"
+      if: ${{ (matrix.platform.shell == 'sh' || contains(matrix.platform.shell, 'msys2')) && matrix.platform.cmake }}
       run: |
         set -eu
         rm -fr DESTDIR-cmake
-        cmake --install build/ --config Release
+        cmake --install build/ --config Debug
         echo "SDL2_image_DIR=$(pwd)/prefix_cmake" >> $GITHUB_ENV
         ( cd prefix_cmake; find . ) | LC_ALL=C sort -u
     - name: Upload artifacts (CMake)
-      if: "failure() && runner.os == 'Linux' && matrix.platform.cmake"
+      if: ${{ failure() && runner.os == 'Linux' && matrix.platform.cmake }}
       uses: actions/upload-artifact@v3
       with:
         name: "${{ matrix.platform.name }} artifacts"
@@ -190,30 +193,32 @@ jobs:
         if-no-files-found: ignore
 
     - name: Configure (Autotools)
-      if: "! matrix.platform.cmake"
+      if: ${{ !matrix.platform.cmake }}
       run: |
         set -eu
-        rm -fr build-autotools
-        mkdir build-autotools
+        rm -fr build
+        mkdir build
         ./autogen.sh
-        # We do the CMake build with stb_image and the Autotools build without
-        set -- --disable-stb-image --prefix=$(pwd)/prefix_autotools
-        # mingw-w64-*-SDL2 doesn't have SDL_test, so only build this on Unix
-        if [ "${{ matrix.platform.shell }}" = 'sh' ]; then
-          set -- "$@" --enable-tests
-          set -- "$@" --enable-installed-tests
+        if [ "x${{ runner.os }}" = "xmacOS" ]; then
+          export LDFLAGS=-Wl,-rpath,${{ steps.sdl.outputs.prefix }}/lib
         fi
-        ( cd build-autotools && ../configure "$@" )
+        # We do the CMake build with stb_image and the Autotools build without
+        set -- --disable-stb-image --prefix=$(pwd)/prefix_autotools --enable-tests --enable-installed-tests
+        ( cd build && ../configure "$@" )
     - name: Build (Autotools)
-      if: "! matrix.platform.cmake"
+      if: ${{ !matrix.platform.cmake }}
       run: |
         set -eu
         parallel="$(getconf _NPROCESSORS_ONLN)"
-        make -j"${parallel}" -C build-autotools V=1
+        make -j"${parallel}" -C build V=1
     - name: Run build-time tests (Autotools)
-      if: "! matrix.platform.cmake"
+      if: ${{ !matrix.platform.cmake }}
       run: |
         set -eu
+        if [ "x${{ runner.os }}" = "xWindows" ]; then
+          sdl_binpath="$( cygpath -u "${{ steps.sdl.outputs.prefix }}" )"
+          export PATH="$sdl_binpath:$PATH"
+        fi
         parallel="$(getconf _NPROCESSORS_ONLN)"
 
         # Expect to support all formats except JXL in these builds.
@@ -240,38 +245,38 @@ jobs:
         export SDL_IMAGE_TEST_REQUIRE_SAVE_JPG=1
         export SDL_IMAGE_TEST_REQUIRE_SAVE_PNG=1
 
-        make -j"${parallel}" -C build-autotools check V=1 VERBOSE=1
+        make -j"${parallel}" -C build check V=1 VERBOSE=1
     - name: Install (Autotools)
-      if: "! matrix.platform.cmake"
+      if: ${{ !matrix.platform.cmake }}
       run: |
         set -eu
         curdir="$(pwd)"
         parallel="$(getconf _NPROCESSORS_ONLN)"
-        make -j"${parallel}" -C build-autotools install V=1
+        make -j"${parallel}" -C build install V=1
         echo "SDL2_image_DIR=$(pwd)/prefix_autotools" >> $GITHUB_ENV
         ( cd prefix_autotools; find . ) | LC_ALL=C sort -u
     - name: Distcheck (Autotools)
-      if: "runner.os == 'Linux' && ! matrix.platform.cmake"
+      if: ${{ runner.os == 'Linux' && !matrix.platform.cmake }}
       run: |
         set -eu
         parallel="$(getconf _NPROCESSORS_ONLN)"
-        make -j"${parallel}" -C build-autotools distcheck V=1
+        make -j"${parallel}" -C build distcheck V=1
     - name: Upload artifacts (Autotools)
-      if: "failure() && ! matrix.platform.cmake"
+      if: ${{ failure() && !matrix.platform.cmake }}
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.platform.name }} artifacts
         path: |
-          build-autotools/test/*.bmp
-          build-autotools/test/*.jpg
-          build-autotools/test/*.log
-          build-autotools/test/*.png
+          build/test/*.bmp
+          build/test/*.jpg
+          build/test/*.log
+          build/test/*.png
         if-no-files-found: ignore
     - name: Verify CMake configuration files
       run: |
           cmake -S cmake/test -B cmake_config_build \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH="${{ env.SDL2_image_DIR }};${{ env.SDL2_DIR }}" \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_PREFIX_PATH="${{ env.SDL2_image_DIR }}" \
             -DTEST_SHARED=${{ matrix.platform.shared }} \
             -DTEST_STATIC=${{ matrix.platform.static }}
           cmake --build cmake_config_build --verbose
