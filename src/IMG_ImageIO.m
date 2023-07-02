@@ -218,7 +218,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_RGB(CGImageRef image_ref)
         alpha == kCGImageAlphaNoneSkipFirst ||
         alpha == kCGImageAlphaNoneSkipLast) {
         bitmap_info = kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Host; /* XRGB */
-        format = SDL_PIXELFORMAT_RGB888;
+        format = SDL_PIXELFORMAT_XRGB8888;
     } else {
         /* kCGImageAlphaFirst isn't supported */
         //bitmap_info = kCGImageAlphaFirst | kCGBitmapByteOrder32Host; /* ARGB */
