@@ -578,7 +578,7 @@ SDL_Surface* IMG_LoadTIF_RW (SDL_RWops *src)
 SDL_Surface* IMG_Load (const char *file)
 {
     SDL_Surface *surface = NULL;
-    char *ext = strrchr(file, '.');
+    char *ext = SDL_strrchr(file, '.');
     if (ext) {
         ext++;
     }

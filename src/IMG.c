@@ -174,9 +174,9 @@ SDL_Surface *IMG_Load(const char *file)
     if (data != NULL) {
         surf = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_ABGR8888);
         if (surf != NULL) {
-            memcpy(surf->pixels, data, w * h * 4);
+            SDL_memcpy(surf->pixels, data, w * h * 4);
         }
-        free(data);
+        free(data); /* This should NOT be SDL_free() */
         return surf;
     }
 #endif
@@ -247,9 +247,9 @@ SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, const char *type)
         {
             surf = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_ABGR8888);
             if (surf != NULL) {
-                memcpy(surf->pixels, data, w * h * 4);
+                SDL_memcpy(surf->pixels, data, w * h * 4);
             }
-            free(data);
+            free(data); /* This should NOT be SDL_free() */
 
             if (freesrc)
                 SDL_RWclose(src);
