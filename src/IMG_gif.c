@@ -151,7 +151,7 @@ static SDL_bool NormalizeFrames(Frame_t *frames, int count)
     if (SDL_SurfaceHasColorKey(frames[0].image)) {
         image = SDL_ConvertSurfaceFormat(frames[0].image, SDL_PIXELFORMAT_ARGB8888);
     } else {
-        image = SDL_ConvertSurfaceFormat(frames[0].image, SDL_PIXELFORMAT_RGB888);
+        image = SDL_ConvertSurfaceFormat(frames[0].image, SDL_PIXELFORMAT_XRGB8888);
     }
     if (!image) {
         return SDL_FALSE;
