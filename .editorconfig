@@ -1,15 +1,45 @@
-root = true
+# For format see editorconfig.org
+# Copyright 2022 Collabora Ltd.
+# SPDX-License-Identifier: Zlib
 
-[*]
-indent_style = space
-charset = utf-8
-end_of_line = lf
-indent_size = 4
-insert_final_newline = true
-trim_trailing_whitespace = true
+root = true
 
 [README.txt]
 end_of_line = crlf
 
-[*.{filters,sln,vcxproj}]
+[*.{c,cc,cg,cpp,gradle,h,java,m,metal,pl,py,S,sh,txt}]
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{html,js,json,m4,yml,yaml,vcxproj,vcxproj.filters}]
+indent_size = 2
+indent_style = space
+trim_tailing_whitespace = true
+
+[{CMakeLists.txt,cmake/*.cmake}]
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[{cmake/*.cmake.in}]
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[{Makefile.*,*.mk,*.sln,*.pbxproj,*.plist}]
+indent_size = 8
+indent_style = tab
+tab_width = 8
+
+[*.{markdown,md}]
+indent_size = 4
+indent_style = space
+# Markdown syntax treats tabs as 4 spaces
+tab_width = 4
+
+[{*.bat,*.rc}]
 end_of_line = crlf
