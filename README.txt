@@ -12,9 +12,9 @@ API:
 
 	SDL_Surface *IMG_Load(const char *file);
 or
-	SDL_Surface *IMG_Load_RW(SDL_RWops *src, int freesrc);
+	SDL_Surface *IMG_Load_RW(SDL_RWops *src, SDL_bool freesrc);
 or
-	SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, char *type);
+	SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, SDL_bool freesrc, char *type);
 
 where type is a string specifying the format (i.e. "PNG" or "pcx").
 Note that IMG_Load_RW cannot load TGA images.

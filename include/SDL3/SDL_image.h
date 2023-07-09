@@ -211,7 +211,7 @@ extern DECLSPEC void SDLCALL IMG_Quit(void);
  * by calling: SDL_SetSurfaceColorKey(image, SDL_RLEACCEL,
  * image->format->colorkey);
  *
- * If `freesrc` is non-zero, the RWops will be closed before returning,
+ * If `freesrc` is SDL_TRUE, the RWops will be closed before returning,
  * whether this function succeeds or not. SDL_image reads everything it needs
  * from the RWops during this call in any case.
  *
@@ -238,7 +238,7 @@ extern DECLSPEC void SDLCALL IMG_Quit(void);
  * call to SDL_DestroySurface().
  *
  * \param src an SDL_RWops that data will be read from.
- * \param freesrc non-zero to close/free the SDL_RWops before returning, zero
+ * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning, SDL_FALSE
  *                to leave it open.
  * \param type a filename extension that represent this data ("BMP", "GIF",
  *             "PNG", etc).
@@ -250,7 +250,7 @@ extern DECLSPEC void SDLCALL IMG_Quit(void);
  * \sa IMG_Load_RW
  * \sa SDL_DestroySurface
  */
-extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, const char *type);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTyped_RW(SDL_RWops *src, SDL_bool freesrc, const char *type);
 
 /**
  * Load an image from a filesystem path into a software surface.
@@ -316,7 +316,7 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_Load(const char *file);
  * by calling: SDL_SetSurfaceColorKey(image, SDL_RLEACCEL,
  * image->format->colorkey);
  *
- * If `freesrc` is non-zero, the RWops will be closed before returning,
+ * If `freesrc` is SDL_TRUE, the RWops will be closed before returning,
  * whether this function succeeds or not. SDL_image reads everything it needs
  * from the RWops during this call in any case.
  *
@@ -337,7 +337,7 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_Load(const char *file);
  * call to SDL_DestroySurface().
  *
  * \param src an SDL_RWops that data will be read from.
- * \param freesrc non-zero to close/free the SDL_RWops before returning, zero
+ * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning, SDL_FALSE
  *                to leave it open.
  * \returns a new SDL surface, or NULL on error.
  *
@@ -347,7 +347,7 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_Load(const char *file);
  * \sa IMG_LoadTyped_RW
  * \sa SDL_DestroySurface
  */
-extern DECLSPEC SDL_Surface * SDLCALL IMG_Load_RW(SDL_RWops *src, int freesrc);
+extern DECLSPEC SDL_Surface * SDLCALL IMG_Load_RW(SDL_RWops *src, SDL_bool freesrc);
 
 #if SDL_VERSION_ATLEAST(2,0,0)
 
@@ -400,7 +400,7 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *renderer, co
  * data (but in many cases, this will just end up being 32-bit RGB or 32-bit
  * RGBA).
  *
- * If `freesrc` is non-zero, the RWops will be closed before returning,
+ * If `freesrc` is SDL_TRUE, the RWops will be closed before returning,
  * whether this function succeeds or not. SDL_image reads everything it needs
  * from the RWops during this call in any case.
  *
@@ -421,7 +421,7 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *renderer, co
  *
  * \param renderer the SDL_Renderer to use to create the GPU texture.
  * \param src an SDL_RWops that data will be read from.
- * \param freesrc non-zero to close/free the SDL_RWops before returning, zero
+ * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning, SDL_FALSE
  *                to leave it open.
  * \returns a new texture, or NULL on error.
  *
@@ -431,7 +431,7 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *renderer, co
  * \sa IMG_LoadTextureTyped_RW
  * \sa SDL_DestroyTexture
  */
-extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_RW(SDL_Renderer *renderer, SDL_RWops *src, int freesrc);
+extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_RW(SDL_Renderer *renderer, SDL_RWops *src, SDL_bool freesrc);
 
 /**
  * Load an image from an SDL data source into a GPU texture.
@@ -447,7 +447,7 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_RW(SDL_Renderer *renderer,
  * data (but in many cases, this will just end up being 32-bit RGB or 32-bit
  * RGBA).
  *
- * If `freesrc` is non-zero, the RWops will be closed before returning,
+ * If `freesrc` is SDL_TRUE, the RWops will be closed before returning,
  * whether this function succeeds or not. SDL_image reads everything it needs
  * from the RWops during this call in any case.
  *
@@ -474,7 +474,7 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_RW(SDL_Renderer *renderer,
  *
  * \param renderer the SDL_Renderer to use to create the GPU texture.
  * \param src an SDL_RWops that data will be read from.
- * \param freesrc non-zero to close/free the SDL_RWops before returning, zero
+ * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning, SDL_FALSE
  *                to leave it open.
  * \param type a filename extension that represent this data ("BMP", "GIF",
  *             "PNG", etc).
@@ -486,7 +486,7 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_RW(SDL_Renderer *renderer,
  * \sa IMG_LoadTexture_RW
  * \sa SDL_DestroyTexture
  */
-extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_RW(SDL_Renderer *renderer, SDL_RWops *src, int freesrc, const char *type);
+extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_RW(SDL_Renderer *renderer, SDL_RWops *src, SDL_bool freesrc, const char *type);
 #endif /* SDL 2.0 */
 
 /**
@@ -2069,7 +2069,7 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation(const char *file);
 /**
  * Load an animation from an SDL_RWops.
  *
- * If `freesrc` is non-zero, the RWops will be closed before returning,
+ * If `freesrc` is SDL_TRUE, the RWops will be closed before returning,
  * whether this function succeeds or not. SDL_image reads everything it needs
  * from the RWops during this call in any case.
  *
@@ -2077,7 +2077,7 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation(const char *file);
  * call to IMG_FreeAnimation().
  *
  * \param src an SDL_RWops that data will be read from.
- * \param freesrc non-zero to close/free the SDL_RWops before returning, zero
+ * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning, SDL_FALSE
  *                to leave it open.
  * \returns a new IMG_Animation, or NULL on error.
  *
@@ -2085,7 +2085,7 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation(const char *file);
  *
  * \sa IMG_FreeAnimation
  */
-extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation_RW(SDL_RWops *src, int freesrc);
+extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation_RW(SDL_RWops *src, SDL_bool freesrc);
 
 /**
  * Load an animation from an SDL datasource
@@ -2096,7 +2096,7 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation_RW(SDL_RWops *src, int
  * that it cannot autodetect. If `type` is NULL, SDL_image will rely solely on
  * its ability to guess the format.
  *
- * If `freesrc` is non-zero, the RWops will be closed before returning,
+ * If `freesrc` is SDL_TRUE, the RWops will be closed before returning,
  * whether this function succeeds or not. SDL_image reads everything it needs
  * from the RWops during this call in any case.
  *
@@ -2104,7 +2104,7 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation_RW(SDL_RWops *src, int
  * call to IMG_FreeAnimation().
  *
  * \param src an SDL_RWops that data will be read from.
- * \param freesrc non-zero to close/free the SDL_RWops before returning, zero
+ * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning, SDL_FALSE
  *                to leave it open.
  * \param type a filename extension that represent this data ("GIF", etc).
  * \returns a new IMG_Animation, or NULL on error.
@@ -2115,7 +2115,7 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation_RW(SDL_RWops *src, int
  * \sa IMG_LoadAnimation_RW
  * \sa IMG_FreeAnimation
  */
-extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimationTyped_RW(SDL_RWops *src, int freesrc, const char *type);
+extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimationTyped_RW(SDL_RWops *src, SDL_bool freesrc, const char *type);
 
 /**
  * Dispose of an IMG_Animation and free its resources.

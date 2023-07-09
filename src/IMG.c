@@ -195,7 +195,7 @@ SDL_Surface *IMG_Load(const char *file)
 #endif
 
 /* Load an image from an SDL datasource (for compatibility) */
-SDL_Surface *IMG_Load_RW(SDL_RWops *src, int freesrc)
+SDL_Surface *IMG_Load_RW(SDL_RWops *src, SDL_bool freesrc)
 {
     return IMG_LoadTyped_RW(src, freesrc, NULL);
 }
@@ -214,7 +214,7 @@ static int IMG_string_equals(const char *str1, const char *str2)
 }
 
 /* Load an image from an SDL datasource, optionally specifying the type */
-SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, int freesrc, const char *type)
+SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, SDL_bool freesrc, const char *type)
 {
     size_t i;
     SDL_Surface *image;
@@ -299,7 +299,7 @@ SDL_Texture *IMG_LoadTexture(SDL_Renderer *renderer, const char *file)
     return texture;
 }
 
-SDL_Texture *IMG_LoadTexture_RW(SDL_Renderer *renderer, SDL_RWops *src, int freesrc)
+SDL_Texture *IMG_LoadTexture_RW(SDL_Renderer *renderer, SDL_RWops *src, SDL_bool freesrc)
 {
     SDL_Texture *texture = NULL;
     SDL_Surface *surface = IMG_Load_RW(src, freesrc);
@@ -310,7 +310,7 @@ SDL_Texture *IMG_LoadTexture_RW(SDL_Renderer *renderer, SDL_RWops *src, int free
     return texture;
 }
 
-SDL_Texture *IMG_LoadTextureTyped_RW(SDL_Renderer *renderer, SDL_RWops *src, int freesrc, const char *type)
+SDL_Texture *IMG_LoadTextureTyped_RW(SDL_Renderer *renderer, SDL_RWops *src, SDL_bool freesrc, const char *type)
 {
     SDL_Texture *texture = NULL;
     SDL_Surface *surface = IMG_LoadTyped_RW(src, freesrc, type);
@@ -338,13 +338,13 @@ IMG_Animation *IMG_LoadAnimation(const char *file)
 }
 
 /* Load an animation from an SDL datasource (for compatibility) */
-IMG_Animation *IMG_LoadAnimation_RW(SDL_RWops *src, int freesrc)
+IMG_Animation *IMG_LoadAnimation_RW(SDL_RWops *src, SDL_bool freesrc)
 {
     return IMG_LoadAnimationTyped_RW(src, freesrc, NULL);
 }
 
 /* Load an animation from an SDL datasource, optionally specifying the type */
-IMG_Animation *IMG_LoadAnimationTyped_RW(SDL_RWops *src, int freesrc, const char *type)
+IMG_Animation *IMG_LoadAnimationTyped_RW(SDL_RWops *src, SDL_bool freesrc, const char *type)
 {
     size_t i;
     IMG_Animation *anim;

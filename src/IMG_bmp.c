@@ -101,13 +101,13 @@ int IMG_isCUR(SDL_RWops *src)
 #define BI_BITFIELDS    3
 #endif
 
-static SDL_Surface *LoadBMP_RW (SDL_RWops *src, int freesrc)
+static SDL_Surface *LoadBMP_RW (SDL_RWops *src, SDL_bool freesrc)
 {
     return SDL_LoadBMP_RW(src, freesrc);
 }
 
 static SDL_Surface *
-LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
+LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
 {
     SDL_bool was_error;
     Sint64 fp_offset = 0;
@@ -436,19 +436,19 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
 /* Load a BMP type image from an SDL datasource */
 SDL_Surface *IMG_LoadBMP_RW(SDL_RWops *src)
 {
-    return(LoadBMP_RW(src, 0));
+    return(LoadBMP_RW(src, SDL_FALSE));
 }
 
 /* Load a ICO type image from an SDL datasource */
 SDL_Surface *IMG_LoadICO_RW(SDL_RWops *src)
 {
-    return(LoadICOCUR_RW(src, 1, 0));
+    return(LoadICOCUR_RW(src, 1, SDL_FALSE));
 }
 
 /* Load a CUR type image from an SDL datasource */
 SDL_Surface *IMG_LoadCUR_RW(SDL_RWops *src)
 {
-    return(LoadICOCUR_RW(src, 2, 0));
+    return(LoadICOCUR_RW(src, 2, SDL_FALSE));
 }
 
 #else
