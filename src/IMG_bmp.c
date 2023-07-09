@@ -109,11 +109,11 @@ static SDL_Surface *LoadBMP_RW (SDL_RWops *src, SDL_bool freesrc)
 static SDL_Surface *
 LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
 {
-    SDL_bool was_error;
+    SDL_bool was_error = SDL_TRUE;
     Sint64 fp_offset = 0;
     int bmpPitch;
     int i,j, pad;
-    SDL_Surface *surface;
+    SDL_Surface *surface = NULL;
     /*
     Uint32 Rmask;
     Uint32 Gmask;
@@ -146,10 +146,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
     Uint32 biClrUsed;
 
     /* Make sure we are passed a valid data source */
-    surface = NULL;
-    was_error = SDL_FALSE;
     if (src == NULL) {
-        was_error = SDL_TRUE;
         goto done;
     }
 
@@ -162,7 +159,6 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
     bfCount = SDL_ReadLE16(src);
     if ((bfReserved != 0) || (bfType != type) || (bfCount == 0)) {
         IMG_SetError("File is not a Windows %s file", type == 1 ? "ICO" : "CUR");
-        was_error = SDL_TRUE;
         goto done;
     }
 
@@ -204,7 +200,6 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
     /* Advance to the DIB Data */
     if (SDL_RWseek(src, icoOfs, SDL_RW_SEEK_SET) < 0) {
         SDL_Error(SDL_EFSEEK);
-        was_error = SDL_TRUE;
         goto done;
     }
 
@@ -223,13 +218,11 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
         /* biClrImportant = */ SDL_ReadLE32(src);
     } else {
         IMG_SetError("Unsupported ICO bitmap format");
-        was_error = SDL_TRUE;
         goto done;
     }
 
     /* Check for read error */
     if (SDL_strcmp(SDL_GetError(), "") != 0) {
-        was_error = SDL_TRUE;
         goto done;
     }
 
@@ -258,13 +251,11 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
             break;
         default:
             IMG_SetError("ICO file with unsupported bit count");
-            was_error = SDL_TRUE;
             goto done;
         }
         break;
     default:
         IMG_SetError("Compressed ICO files not supported");
-        was_error = SDL_TRUE;
         goto done;
     }
 
@@ -272,7 +263,6 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
     if ((biWidth < 0) || (biWidth > 0xFFFFFF) ||
         (biHeight < 0) || (biHeight > 0xFFFFFF)) {
         IMG_SetError("Unsupported or invalid ICO dimensions");
-        was_error = SDL_TRUE;
         goto done;
     }
 
@@ -281,7 +271,6 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
     //printf("%d x %d\n", biWidth, biHeight);
     surface = SDL_CreateSurface(biWidth, biHeight, SDL_PIXELFORMAT_ARGB8888);
     if (surface == NULL) {
-        was_error = SDL_TRUE;
         goto done;
     }
 
@@ -293,12 +282,10 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
         }
         if (biClrUsed > SDL_arraysize(palette)) {
             IMG_SetError("Unsupported or incorrect biClrUsed field");
-            was_error = SDL_TRUE;
             goto done;
         }
         for (i = 0; i < (int) biClrUsed; ++i) {
             if (SDL_RWread(src, &palette[i], 4) != 4) {
-                was_error = SDL_TRUE;
                 goto done;
             }
         }
@@ -340,7 +327,6 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
                 for (i = 0; i < surface->w; ++i) {
                     if (i % (8 / ExpandBMP) == 0) {
                         if (SDL_RWread(src, &pixel, 1) != 1) {
-                            was_error = SDL_TRUE;
                             goto done;
                         }
                     }
@@ -358,7 +344,6 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
                     for (j = 0; j < 3; ++j) {
                         /* Load each color channel into pixel */
                         if (SDL_RWread(src, &channel, 1) != 1) {
-                            was_error = SDL_TRUE;
                             goto done;
                         }
                         pixel |= (channel << (j * 8));
@@ -370,7 +355,6 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
 
         default:
             if (SDL_RWread(src, bits, surface->pitch) != surface->pitch) {
-                was_error = SDL_TRUE;
                 goto done;
             }
             break;
@@ -380,7 +364,6 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
             Uint8 padbyte;
             for (i = 0; i < pad; ++i) {
                 if (SDL_RWread(src, &padbyte, 1) != 1) {
-                    was_error = SDL_TRUE;
                     goto done;
                 }
             }
@@ -399,7 +382,6 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
         for (i = 0; i < surface->w; ++i) {
             if (i % (8 / ExpandBMP) == 0) {
                 if (SDL_RWread(src, &pixel, 1) != 1) {
-                    was_error = SDL_TRUE;
                     goto done;
                 }
             }
@@ -411,15 +393,20 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
             Uint8 padbyte;
             for (i = 0; i < pad; ++i) {
                 if (SDL_RWread(src, &padbyte, 1) != 1) {
-                    was_error = SDL_TRUE;
                     goto done;
                 }
             }
         }
     }
-  done:
+
+    was_error = SDL_FALSE;
+
+done:
+    if (freesrc && src) {
+        SDL_RWclose(src);
+    }
     if (was_error) {
-        if (src) {
+        if (src && !freesrc) {
             SDL_RWseek(src, fp_offset, SDL_RW_SEEK_SET);
         }
         if (surface) {
@@ -427,10 +414,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
         }
         surface = NULL;
     }
-    if (freesrc && src) {
-        SDL_RWclose(src);
-    }
-    return (surface);
+    return surface;
 }
 
 /* Load a BMP type image from an SDL datasource */
