@@ -74,9 +74,10 @@ static void IMG_LoadSTB_RW_skip(void *user, int n)
 static int IMG_LoadSTB_RW_eof(void *user)
 {
     /* FIXME: Do we not have a way to detect EOF? -flibit */
-    size_t bytes, filler;
+    Uint8 filler;
+    Sint64 bytes;
     SDL_RWops *src = (SDL_RWops*)user;
-    bytes = SDL_RWread(src, &filler, 1);
+    bytes = SDL_RWread(src, &filler, sizeof(filler));
     if (bytes != 1) { /* FIXME: Could also be an error... */
         return 1;
     }
