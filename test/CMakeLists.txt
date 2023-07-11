@@ -65,6 +65,7 @@ set(TESTS_ENVIRONMENT
 
 foreach(prog IN LISTS ALL_TESTS)
     target_compile_definitions(${prog} PRIVATE
+        $<TARGET_PROPERTY:${sdl3_image_target_name},COMPILE_DEFINITIONS>
         "SDL_IMAGE_SAVE_JPG=$<BOOL:${SDL3IMAGE_JPG_SAVE}>"
         "SDL_IMAGE_SAVE_PNG=$<BOOL:${SDL3IMAGE_PNG_SAVE}>"
     )
