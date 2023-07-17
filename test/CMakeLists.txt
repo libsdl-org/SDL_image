@@ -1,31 +1,6 @@
-cmake_minimum_required(VERSION 3.0)
-project(SDL3_image_tests)
+# CMake script for building SDL_image tests
 
 enable_testing()
-
-option(SDL3IMAGE_TESTS_LINK_SHARED "link tests to shared SDL_image library" ${BUILD_SHARED_LIBS})
-option(SDL3IMAGE_TESTS_INSTALL "Install unit tests?" OFF)
-
-set(SDL_REQUIRED_VERSION 3.0.0)
-
-if(SDL3IMAGE_TESTS_LINK_SHARED)
-    set(sdlimage_target_name SDL3_image::SDL3_image-shared)
-else()
-    set(sdlimage_target_name SDL3_image::SDL3_image-static)
-endif()
-
-if(NOT TARGET SDL3::SDL3 OR NOT TARGET SDL3::SDL3_test)
-    find_package(SDL3 ${SDL_REQUIRED_VERSION} REQUIRED COMPONENTS SDL3 SDL3_test)
-    if(NOT TARGET SDL3::SDL3 OR NOT TARGET SDL3::SDL3_test)
-        message(FATAL_ERROR "find_package(SDL3) did not create SDL3::SDL3.")
-    endif()
-endif()
-if(NOT TARGET ${sdlimage_target_name})
-    find_package(SDL3_image 3.0.0 REQUIRED)
-    if(NOT TARGET ${sdlimage_target_name})
-        message(FATAL_ERROR "find_package(SDL3_image) did not create ${sdlimage_target_name}.")
-    endif()
-endif()
 
 add_executable(testimage main.c)
 
@@ -70,7 +45,7 @@ foreach(prog IN LISTS ALL_TESTS)
         "SDL_IMAGE_SAVE_PNG=$<BOOL:${SDL3IMAGE_PNG_SAVE}>"
     )
     sdl_add_warning_options(${prog} WARNING_AS_ERROR ${SDL3IMAGE_WERROR})
-    target_link_libraries(${prog} PRIVATE ${sdlimage_target_name} SDL3::SDL3_test SDL3::SDL3)
+    target_link_libraries(${prog} PRIVATE SDL3_image::SDL3_image SDL3::SDL3_test SDL3::SDL3)
     if(TARGET sdl3image_build_options)
         target_link_libraries(${prog} PRIVATE $<BUILD_INTERFACE:sdl3image_build_options>)
     endif()

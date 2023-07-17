@@ -43,9 +43,13 @@ else()
 endif()
 
 set(sdl3image_install_enableable ON)
-if ((TARGET SDL3 OR TARGET SDL3-static) AND SDL3_DISABLE_INSTALL)
+if((TARGET SDL3-shared OR TARGET SDL3-static) AND SDL_DISABLE_INSTALL)
     # Cannot install SDL3_image when SDL3 is built in same built, and is not installed.
     set(sdl3image_install_enableable OFF)
+endif()
+
+if(NOT DEFINED CMAKE_FIND_PACKAGE_PREFER_CONFIG)
+    set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 endif()
 
 include(CMakeDependentOption)
@@ -65,6 +69,7 @@ option(SDL3IMAGE_SAMPLES "Build the SDL3_image sample program(s)" ${SDL3IMAGE_SA
 cmake_dependent_option(SDL3IMAGE_SAMPLES_INSTALL "Install the SDL3_image sample program(s)" OFF "SDL3IMAGE_SAMPLES;SDL3IMAGE_INSTALL" OFF)
 
 option(SDL3IMAGE_TESTS "Build unit tests?" OFF)
+option(SDL3IMAGE_TESTS_INSTALL "Install unit tests?" OFF)
 
 option(SDL3IMAGE_BACKEND_STB "Use stb_image for loading JPEG and PNG files" ON)
 cmake_dependent_option(SDL3IMAGE_BACKEND_WIC "Add WIC backend (Windows Imaging Component)" OFF WIN32 OFF)
@@ -172,7 +177,7 @@ else()
     set(sdl3_target_name SDL3::SDL3)
 endif()
 
-if(NOT TARGET SDL3::Headers)
+if(NOT TARGET SDL3::Headers OR NOT TARGET ${sdl3_target_name})
     find_package(SDL3 ${SDL_REQUIRED_VERSION} REQUIRED COMPONENTS ${sdl_required_components})
 endif()
 
@@ -645,6 +650,7 @@ if(SDL3IMAGE_WEBP)
         add_library(WebP::webpdemux ALIAS webpdemux)
         list(APPEND INSTALL_EXTRA_TARGETS webp webpdemux)
         set_target_properties(webp PROPERTIES EXPORT_NAME "external_libwebp")
+        set_target_properties(webpdemux PROPERTIES EXPORT_NAME "external_webpdemux")
         add_library(SDL3_image::external_libwebp ALIAS webp)
     else()
         message(STATUS "${PROJECT_NAME}: Using system libwebp")
@@ -721,6 +727,7 @@ if(SDL3IMAGE_INSTALL)
         set(SDL3IMAGE_INSTALL_CMAKEDIR_ROOT_DEFAULT "${CMAKE_INSTALL_LIBDIR}/cmake")
     endif()
     set(SDL3IMAGE_INSTALL_CMAKEDIR_ROOT "${SDL3IMAGE_INSTALL_CMAKEDIR_ROOT_DEFAULT}" CACHE STRING "Root folder where to install SDL3Config.cmake related files (SDL3 subfolder for MSVC projects)")
+    set(SDLIMAGE_PKGCONFIG_INSTALLDIR "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
     if(WIN32 AND NOT MINGW)
         set(SDL3IMAGE_INSTALL_CMAKEDIR "${SDL3IMAGE_INSTALL_CMAKEDIR_ROOT}")
@@ -752,19 +759,17 @@ if(SDL3IMAGE_INSTALL)
         COMPONENT devel
     )
 
+    file(RELATIVE_PATH SDL_PATH_PREFIX_RELATIVE_TO_PKGCONFIG "${CMAKE_INSTALL_PREFIX}/${SDLIMAGE_PKGCONFIG_INSTALLDIR}" "${CMAKE_INSTALL_PREFIX}")
+    string(REGEX REPLACE "[/]+$" "" SDL_PATH_PREFIX_RELATIVE_TO_PKGCONFIG "${SDL_PATH_PREFIX_RELATIVE_TO_PKGCONFIG}")
+    set(SDL_PKGCONFIG_PREFIX "\${pcfiledir}/${SDL_PATH_PREFIX_RELATIVE_TO_PKGCONFIG}")
+
     string(JOIN " " PC_REQUIRES ${PC_REQUIRES})
     string(JOIN " " PC_LIBS ${PC_LIBS})
     configure_file(cmake/sdl3-image.pc.in sdl3-image.pc @ONLY)
 
-    if(CMAKE_SYSTEM_NAME MATCHES FreeBSD)
-        # FreeBSD uses ${PREFIX}/libdata/pkgconfig
-        set(PC_DESTDIR "libdata/pkgconfig")
-    else()
-        set(PC_DESTDIR "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
-    endif()
     # Always install sdl3-image.pc file: libraries might be different between config modes
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/sdl3-image.pc"
-        DESTINATION "${PC_DESTDIR}" COMPONENT devel)
+        DESTINATION "${SDLIMAGE_PKGCONFIG_INSTALLDIR}" COMPONENT devel)
 
     install(FILES "LICENSE.txt"
         DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/licenses/${PROJECT_NAME}"

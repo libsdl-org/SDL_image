@@ -20,7 +20,7 @@ if(TEST_SHARED)
     find_package(SDL3 REQUIRED CONFIG COMPONENTS SDL3)
     find_package(SDL3_image REQUIRED CONFIG)
     add_executable(main_shared main.c)
-    target_link_libraries(main_shared PRIVATE SDL3_image::SDL3_image SDL3::SDL3)
+    target_link_libraries(main_shared PRIVATE SDL3_image::SDL3_image-shared SDL3::SDL3)
 endif()
 
 if(TEST_STATIC)

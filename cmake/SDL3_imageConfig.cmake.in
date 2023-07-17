@@ -37,56 +37,58 @@ set(SDL3IMAGE_BACKEND_WIC       @SDL3IMAGE_BACKEND_WIC@)
 
 set(SDL3IMAGE_SDL3_REQUIRED_VERSION  @SDL_REQUIRED_VERSION@)
 
-if(NOT SDL3IMAGE_VENDORED)
-    set(_sdl_cmake_module_path "${CMAKE_MODULE_PATH}")
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
-endif()
-
-include(CMakeFindDependencyMacro)
-
-if(SDL3IMAGE_AVIF AND NOT SDL3IMAGE_VENDORED AND NOT TARGET avif)
-    find_dependency(libavif @LIBAVIF_MINIMUM_VERSION@)
-endif()
-
-if(SDL3IMAGE_JPG AND NOT SDL3IMAGE_VENDORED AND NOT TARGET JPEG::JPEG)
-    find_dependency(JPEG)
-endif()
-
-if(SDL3IMAGE_JXL AND NOT SDL3IMAGE_VENDORED AND NOT TARGET libjxl::libjxl)
-    list(APPEND libjxl_ROOT "${CMAKE_CURRENT_LIST_DIR}")
-    find_dependency(libjxl)
-endif()
-
-if(SDL3IMAGE_PNG AND NOT SDL3IMAGE_VENDORED AND NOT TARGET PNG::PNG)
-    find_dependency(PNG)
-endif()
-
-if(SDL3IMAGE_TIF AND NOT SDL3IMAGE_VENDORED AND NOT TARGET TIFF::TIFF)
-    find_dependency(TIFF)
-endif()
-
-if(SDL3IMAGE_WEBP AND NOT SDL3IMAGE_VENDORED AND NOT TARGET WebP::webp)
-    list(APPEND webp_ROOT "${CMAKE_CURRENT_LIST_DIR}")
-    find_dependency(webp)
-endif()
-
-#FIXME: can't add SDL3IMAGE_SDL3_REQUIRED_VERSION since not all SDL3 installs ship SDL3ConfigVersion.cmake
 if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/SDL3_image-shared-targets.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/SDL3_image-shared-targets.cmake")
 endif()
 
 if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/SDL3_image-static-targets.cmake")
-    include(CheckLanguage)
-    check_language(CXX)
-    if(SDL3IMAGE_VENDORED AND NOT CMAKE_CXX_COMPILER AND NOT _sdl3image_nowarning)
-        message(WARNING "CXX language not enabled. Linking to SDL3_image::SDL3_image-static might fail.")
-    endif()
-    include("${CMAKE_CURRENT_LIST_DIR}/SDL3_image-static-targets.cmake")
-endif()
 
-if(NOT SDL3IMAGE_VENDORED)
-    set(CMAKE_MODULE_PATH "${_sdl_cmake_module_path}")
-    unset(_sdl_cmake_module_path)
+    if(SDL3IMAGE_VENDORED)
+        if(SDL3IMAGE_JXL)
+            include(CheckLanguage)
+            check_language(CXX)
+            if(NOT CMAKE_CXX_COMPILER AND NOT _sdl3image_nowarning)
+                message(WARNING "CXX language not enabled. Linking to SDL3_image::SDL3_image-static might fail.")
+            endif()
+        endif()
+    else()
+        set(_sdl_cmake_module_path "${CMAKE_MODULE_PATH}")
+        list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+
+        include(CMakeFindDependencyMacro)
+
+        if(SDL3IMAGE_AVIF AND NOT TARGET avif)
+            find_dependency(libavif @LIBAVIF_MINIMUM_VERSION@)
+        endif()
+
+        if(SDL3IMAGE_JPG AND NOT TARGET JPEG::JPEG)
+            find_dependency(JPEG)
+        endif()
+
+        if(SDL3IMAGE_JXL AND NOT TARGET libjxl::libjxl)
+            list(APPEND libjxl_ROOT "${CMAKE_CURRENT_LIST_DIR}")
+            find_dependency(libjxl)
+        endif()
+
+        if(SDL3IMAGE_PNG AND NOT TARGET PNG::PNG)
+            find_dependency(PNG)
+        endif()
+
+        if(SDL3IMAGE_TIF AND NOT TARGET TIFF::TIFF)
+            find_dependency(TIFF)
+        endif()
+
+        if(SDL3IMAGE_WEBP AND NOT TARGET WebP::webp)
+            list(APPEND webp_ROOT "${CMAKE_CURRENT_LIST_DIR}")
+            find_dependency(webp)
+        endif()
+
+        set(CMAKE_MODULE_PATH "${_sdl_cmake_module_path}")
+        unset(_sdl_cmake_module_path)
+
+    endif()
+
+    include("${CMAKE_CURRENT_LIST_DIR}/SDL3_image-static-targets.cmake")
 endif()
 
 function(_sdl_create_target_alias_compat NEW_TARGET TARGET)
