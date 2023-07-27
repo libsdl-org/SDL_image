@@ -190,7 +190,7 @@ SDL_Surface *IMG_Load(const char *file)
         /* The error message has been set in SDL_RWFromFile */
         return NULL;
     }
-    return IMG_LoadTyped_RW(src, 1, ext);
+    return IMG_LoadTyped_RW(src, SDL_TRUE, ext);
 }
 #endif
 
@@ -334,7 +334,7 @@ IMG_Animation *IMG_LoadAnimation(const char *file)
         /* The error message has been set in SDL_RWFromFile */
         return NULL;
     }
-    return IMG_LoadAnimationTyped_RW(src, 1, ext);
+    return IMG_LoadAnimationTyped_RW(src, SDL_TRUE, ext);
 }
 
 /* Load an animation from an SDL datasource (for compatibility) */
