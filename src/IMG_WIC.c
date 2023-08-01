@@ -21,7 +21,7 @@
 
 #if defined(SDL_IMAGE_USE_WIC_BACKEND)
 
-#include <SDL3/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 #include "IMG.h"
 #define COBJMACROS
 #include <initguid.h>
@@ -219,12 +219,12 @@ static SDL_Surface* WIC_LoadImage(SDL_RWops *src)
         IMG_SetError("WIC failed to initialize!");
         return NULL;
     }
-    
+
     Sint64 fileSize = SDL_RWsize(src);
     Uint8* memoryBuffer = (Uint8*)SDL_malloc(fileSize);
     if (!memoryBuffer) {
         SDL_OutOfMemory();
-        return NULL;  
+        return NULL;
     }
 
     if (SDL_RWread(src, memoryBuffer, fileSize) != fileSize) {

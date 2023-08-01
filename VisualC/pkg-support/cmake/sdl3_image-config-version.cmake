@@ -3,12 +3,12 @@
 # SDL3_image CMake version configuration file:
 # This file is meant to be placed in a cmake subfolder of SDL3_image-devel-3.x.y-VC
 
-if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/../include/SDL3/SDL_image.h")
-    message(AUTHOR_WARNING "Could not find SDL3/SDL_image.h. This script is meant to be placed in a CMake subfolder of SDL3_image-devel-3.x.y-VC")
+if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/../include/SDL3_image/SDL_image.h")
+    message(AUTHOR_WARNING "Could not find SDL3_image/SDL_image.h. This script is meant to be placed in a CMake subfolder of SDL3_image-devel-3.x.y-VC")
     return()
 endif()
 
-file(READ "${CMAKE_CURRENT_LIST_DIR}/../include/SDL3/SDL_image.h" _sdl_image_h)
+file(READ "${CMAKE_CURRENT_LIST_DIR}/../include/SDL3_image/SDL_image.h" _sdl_image_h)
 string(REGEX MATCH "#define[ \t]+SDL_IMAGE_MAJOR_VERSION[ \t]+([0-9]+)" _sdl_major_re "${_sdl_image_h}")
 set(_sdl_major "${CMAKE_MATCH_1}")
 string(REGEX MATCH "#define[ \t]+SDL_IMAGE_MINOR_VERSION[ \t]+([0-9]+)" _sdl_minor_re "${_sdl_image_h}")

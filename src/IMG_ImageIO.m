@@ -9,7 +9,7 @@
 
 #if defined(__APPLE__) && !defined(SDL_IMAGE_USE_COMMON_BACKEND)
 
-#include <SDL3/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 #include "IMG.h"
 
 // Used because CGDataProviderCreate became deprecated in 10.5

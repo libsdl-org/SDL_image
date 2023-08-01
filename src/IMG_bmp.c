@@ -30,7 +30,7 @@
  * http://entropymine.com/jason/bmpsuite/bmpsuite/html/bmpsuite.html
  */
 
-#include <SDL3/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 #include "IMG.h"
 
 #ifdef LOAD_BMP

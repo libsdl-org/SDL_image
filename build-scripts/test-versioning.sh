@@ -9,7 +9,7 @@ cd `dirname $0`/..
 # Needed so sed doesn't report illegal byte sequences on macOS
 export LC_CTYPE=C
 
-header=include/SDL3/SDL_image.h
+header=include/SDL3_image/SDL_image.h
 ref_major=$(sed -ne 's/^#define SDL_IMAGE_MAJOR_VERSION  *//p' $header)
 ref_minor=$(sed -ne 's/^#define SDL_IMAGE_MINOR_VERSION  *//p' $header)
 ref_micro=$(sed -ne 's/^#define SDL_IMAGE_PATCHLEVEL  *//p' $header)

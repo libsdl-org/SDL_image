@@ -77,7 +77,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\SDL3\SDL_image.h">
+    <ClInclude Include="..\include\SDL3_image\SDL_image.h">
       <Filter>Public Headers</Filter>
     </ClInclude>
   </ItemGroup>

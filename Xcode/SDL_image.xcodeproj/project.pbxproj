@@ -149,7 +149,7 @@
 
 /* Begin PBXFileReference section */
 		007288A60F0DA79800C302A9 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
-		1014BAEA010A4B677F000001 /* SDL_image.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SDL_image.h; path = ../include/SDL3/SDL_image.h; sourceTree = SOURCE_ROOT; };
+		1014BAEA010A4B677F000001 /* SDL_image.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SDL_image.h; path = ../include/SDL3_image/SDL_image.h; sourceTree = SOURCE_ROOT; };
 		61F85449145A19BC002CA294 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6313BF522785566D00F268AD /* IMG_qoi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_qoi.c; path = ../src/IMG_qoi.c; sourceTree = "<group>"; };
 		AA50AA461F9C7C50003B9C0C /* IMG_svg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_svg.c; path = ../src/IMG_svg.c; sourceTree = "<group>"; };

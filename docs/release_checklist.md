@@ -6,7 +6,7 @@
 
 * Bump version number to 3.EVEN.0 in all these locations:
 
-    * `include/SDL3/SDL_image.h`:
+    * `include/SDL3_image/SDL_image.h`:
         `SDL_IMAGE_MAJOR_VERSION`, `SDL_IMAGE_MINOR_VERSION`, `SDL_IMAGE_PATCHLEVEL`
     * `CMakeLists.txt`:
         `MAJOR_VERSION`, `MINOR_VERSION`, `MICRO_VERSION`

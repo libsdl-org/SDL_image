@@ -21,7 +21,7 @@
 
 /* This is a PNG image file loading framework */
 
-#include <SDL3/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 #include "IMG.h"
 
 /* We'll have PNG save support by default */

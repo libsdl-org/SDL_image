@@ -21,7 +21,7 @@
 
 /* This is a XV thumbnail image file loading framework */
 
-#include <SDL3/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 #include "IMG.h"
 
 #ifdef LOAD_XV

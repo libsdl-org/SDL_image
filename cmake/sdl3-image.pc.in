@@ -10,4 +10,4 @@ Requires: sdl3 >= @SDL_REQUIRED_VERSION@
 Libs: -L${libdir} -lSDL3_image
 Requires.private: @PC_REQUIRES@
 Libs.private: @PC_LIBS@
-Cflags: -I${includedir} -I${includedir}/SDL3
+Cflags: -I${includedir} -I${includedir}/SDL3_image

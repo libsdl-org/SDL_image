@@ -21,7 +21,7 @@
 
 /* A simple library to load images of various formats as SDL surfaces */
 
-#include <SDL3/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 #include "IMG.h"
 
 #ifdef __EMSCRIPTEN__
