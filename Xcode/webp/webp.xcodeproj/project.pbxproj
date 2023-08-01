@@ -129,6 +129,8 @@
 		F3D87D12281EA550005DA540 /* backward_references_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = F3D87CFB281EA550005DA540 /* backward_references_enc.c */; };
 		F3D87D13281EA550005DA540 /* vp8l_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = F3D87CFC281EA550005DA540 /* vp8l_enc.c */; };
 		F3D87D14281EA550005DA540 /* analysis_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = F3D87CFD281EA550005DA540 /* analysis_enc.c */; };
+		F3E1F8112A78CAE800AC76D3 /* demux.c in Sources */ = {isa = PBXBuildFile; fileRef = F3E1F80F2A78CAE800AC76D3 /* demux.c */; };
+		F3E1F8122A78CAE800AC76D3 /* anim_decode.c in Sources */ = {isa = PBXBuildFile; fileRef = F3E1F8102A78CAE800AC76D3 /* anim_decode.c */; };
 		F3E949F7281F144C00B8F4EA /* demux.h in Headers */ = {isa = PBXBuildFile; fileRef = F3E949F2281F144C00B8F4EA /* demux.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F3E949F8281F144C00B8F4EA /* mux_types.h in Headers */ = {isa = PBXBuildFile; fileRef = F3E949F3281F144C00B8F4EA /* mux_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F3E949F9281F144C00B8F4EA /* types.h in Headers */ = {isa = PBXBuildFile; fileRef = F3E949F4281F144C00B8F4EA /* types.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -248,6 +250,8 @@
 		F3D87CFC281EA550005DA540 /* vp8l_enc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vp8l_enc.c; path = ../../external/libwebp/src/enc/vp8l_enc.c; sourceTree = "<group>"; };
 		F3D87CFD281EA550005DA540 /* analysis_enc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = analysis_enc.c; path = ../../external/libwebp/src/enc/analysis_enc.c; sourceTree = "<group>"; };
 		F3D87D21281EA9C3005DA540 /* webp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = webp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3E1F80F2A78CAE800AC76D3 /* demux.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = demux.c; path = ../../external/libwebp/src/demux/demux.c; sourceTree = "<group>"; };
+		F3E1F8102A78CAE800AC76D3 /* anim_decode.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = anim_decode.c; path = ../../external/libwebp/src/demux/anim_decode.c; sourceTree = "<group>"; };
 		F3E949F2281F144C00B8F4EA /* demux.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = demux.h; path = ../../external/libwebp/src/webp/demux.h; sourceTree = "<group>"; };
 		F3E949F3281F144C00B8F4EA /* mux_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mux_types.h; path = ../../external/libwebp/src/webp/mux_types.h; sourceTree = "<group>"; };
 		F3E949F4281F144C00B8F4EA /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = types.h; path = ../../external/libwebp/src/webp/types.h; sourceTree = "<group>"; };
@@ -289,6 +293,7 @@
 				F3D87C5A281EA37D005DA540 /* alpha_processing_sse41.c */,
 				F3D87C63281EA37D005DA540 /* alpha_processing.c */,
 				F3D87CFD281EA550005DA540 /* analysis_enc.c */,
+				F3E1F8102A78CAE800AC76D3 /* anim_decode.c */,
 				F3D87CF0281EA54F005DA540 /* backward_references_cost_enc.c */,
 				F3D87CFB281EA550005DA540 /* backward_references_enc.c */,
 				F3D87CA6281EA3DF005DA540 /* bit_reader_utils.c */,
@@ -311,6 +316,7 @@
 				F3D87C66281EA37D005DA540 /* dec_sse2.c */,
 				F3D87C64281EA37D005DA540 /* dec_sse41.c */,
 				F3D87C5F281EA37D005DA540 /* dec.c */,
+				F3E1F80F2A78CAE800AC76D3 /* demux.c */,
 				F3D87CC1281EA50F005DA540 /* enc_mips_dsp_r2.c */,
 				F3D87CC4281EA510005DA540 /* enc_mips32.c */,
 				F3D87CC5281EA510005DA540 /* enc_msa.c */,
@@ -551,6 +557,7 @@
 				F3D87C4E281EA2CB005DA540 /* vp8l_dec.c in Sources */,
 				F3D87C85281EA37D005DA540 /* yuv_sse41.c in Sources */,
 				F3D87D02281EA550005DA540 /* histogram_enc.c in Sources */,
+				F3E1F8112A78CAE800AC76D3 /* demux.c in Sources */,
 				F3D87D01281EA550005DA540 /* iterator_enc.c in Sources */,
 				F3D87CE2281EA510005DA540 /* cost_neon.c in Sources */,
 				F3D87C8B281EA37D005DA540 /* yuv_neon.c in Sources */,
@@ -595,6 +602,7 @@
 				F3D87CE4281EA510005DA540 /* enc_sse41.c in Sources */,
 				F3D87D07281EA550005DA540 /* backward_references_cost_enc.c in Sources */,
 				F3D87C7D281EA37D005DA540 /* rescaler_msa.c in Sources */,
+				F3E1F8122A78CAE800AC76D3 /* anim_decode.c in Sources */,
 				F3D87CB6281EA3DF005DA540 /* rescaler_utils.c in Sources */,
 				F3D87C8F281EA37D005DA540 /* filters_sse2.c in Sources */,
 				F3D87D0A281EA550005DA540 /* quant_enc.c in Sources */,
@@ -649,16 +657,12 @@
 		F3B38D30296F7549005DA6D3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
 		F3B38D31296F7549005DA6D3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};

@@ -7,66 +7,60 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		F3B38D1E296F730C005DA6D3 /* SDL_image.xcframework */ = {
+		F3B38D1E296F730C005DA6D3 /* SDL3_image.xcframework */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = F3B38D1F296F730C005DA6D3 /* Build configuration list for PBXAggregateTarget "SDL_image.xcframework" */;
+			buildConfigurationList = F3B38D1F296F730C005DA6D3 /* Build configuration list for PBXAggregateTarget "SDL3_image.xcframework" */;
 			buildPhases = (
 				F3B38D22296F7329005DA6D3 /* ShellScript */,
 			);
 			dependencies = (
 			);
-			name = SDL_image.xcframework;
+			name = SDL3_image.xcframework;
 			productName = xcFramework;
+		};
+		F3E1F74A2A789BFE00AC76D3 /* SDL3_image.dmg */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = F3E1F74B2A789BFF00AC76D3 /* Build configuration list for PBXAggregateTarget "SDL3_image.dmg" */;
+			buildPhases = (
+				F3E1F74E2A789C1000AC76D3 /* ShellScript */,
+			);
+			dependencies = (
+				F3E1F7502A789C2B00AC76D3 /* PBXTargetDependency */,
+				F3E1F7522A789C3000AC76D3 /* PBXTargetDependency */,
+				F3E1F7562A789C4200AC76D3 /* PBXTargetDependency */,
+				F3E1F7542A789C3A00AC76D3 /* PBXTargetDependency */,
+			);
+			name = SDL3_image.dmg;
+			productName = "Create DMG";
 		};
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
 		6313BF532785566D00F268AD /* IMG_qoi.c in Sources */ = {isa = PBXBuildFile; fileRef = 6313BF522785566D00F268AD /* IMG_qoi.c */; };
-		6313BF542785566D00F268AD /* IMG_qoi.c in Sources */ = {isa = PBXBuildFile; fileRef = 6313BF522785566D00F268AD /* IMG_qoi.c */; };
-		AA23FC7D20A2A1B90017DFB9 /* IMG_svg.c in Sources */ = {isa = PBXBuildFile; fileRef = AA50AA461F9C7C50003B9C0C /* IMG_svg.c */; };
 		AA50AA471F9C7C50003B9C0C /* IMG_svg.c in Sources */ = {isa = PBXBuildFile; fileRef = AA50AA461F9C7C50003B9C0C /* IMG_svg.c */; };
 		AA579DF2161C07E6005F809B /* IMG_bmp.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE2161C07E6005F809B /* IMG_bmp.c */; };
-		AA579DF3161C07E7005F809B /* IMG_bmp.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE2161C07E6005F809B /* IMG_bmp.c */; };
 		AA579DF4161C07E7005F809B /* IMG_gif.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE3161C07E6005F809B /* IMG_gif.c */; };
-		AA579DF5161C07E7005F809B /* IMG_gif.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE3161C07E6005F809B /* IMG_gif.c */; };
 		AA579DF6161C07E7005F809B /* IMG_ImageIO.m in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE4161C07E6005F809B /* IMG_ImageIO.m */; };
-		AA579DF7161C07E7005F809B /* IMG_ImageIO.m in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE4161C07E6005F809B /* IMG_ImageIO.m */; };
 		AA579DF8161C07E7005F809B /* IMG_jpg.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE5161C07E6005F809B /* IMG_jpg.c */; };
-		AA579DF9161C07E7005F809B /* IMG_jpg.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE5161C07E6005F809B /* IMG_jpg.c */; };
 		AA579DFA161C07E7005F809B /* IMG_lbm.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE6161C07E6005F809B /* IMG_lbm.c */; };
-		AA579DFB161C07E7005F809B /* IMG_lbm.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE6161C07E6005F809B /* IMG_lbm.c */; };
 		AA579DFC161C07E7005F809B /* IMG_pcx.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE7161C07E6005F809B /* IMG_pcx.c */; };
-		AA579DFD161C07E7005F809B /* IMG_pcx.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE7161C07E6005F809B /* IMG_pcx.c */; };
 		AA579DFE161C07E7005F809B /* IMG_png.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE8161C07E6005F809B /* IMG_png.c */; };
-		AA579DFF161C07E7005F809B /* IMG_png.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE8161C07E6005F809B /* IMG_png.c */; };
 		AA579E00161C07E7005F809B /* IMG_pnm.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE9161C07E6005F809B /* IMG_pnm.c */; };
-		AA579E01161C07E7005F809B /* IMG_pnm.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DE9161C07E6005F809B /* IMG_pnm.c */; };
 		AA579E02161C07E7005F809B /* IMG_tga.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DEA161C07E6005F809B /* IMG_tga.c */; };
-		AA579E03161C07E7005F809B /* IMG_tga.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DEA161C07E6005F809B /* IMG_tga.c */; };
 		AA579E04161C07E7005F809B /* IMG_tif.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DEB161C07E6005F809B /* IMG_tif.c */; };
-		AA579E05161C07E7005F809B /* IMG_tif.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DEB161C07E6005F809B /* IMG_tif.c */; };
 		AA579E06161C07E7005F809B /* IMG_webp.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DEC161C07E6005F809B /* IMG_webp.c */; };
-		AA579E07161C07E7005F809B /* IMG_webp.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DEC161C07E6005F809B /* IMG_webp.c */; };
 		AA579E08161C07E7005F809B /* IMG_xcf.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DED161C07E6005F809B /* IMG_xcf.c */; };
-		AA579E09161C07E7005F809B /* IMG_xcf.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DED161C07E6005F809B /* IMG_xcf.c */; };
 		AA579E0A161C07E7005F809B /* IMG_xpm.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DEE161C07E6005F809B /* IMG_xpm.c */; };
-		AA579E0B161C07E7005F809B /* IMG_xpm.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DEE161C07E6005F809B /* IMG_xpm.c */; };
 		AA579E0C161C07E7005F809B /* IMG_xv.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DEF161C07E6005F809B /* IMG_xv.c */; };
-		AA579E0D161C07E7005F809B /* IMG_xv.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DEF161C07E6005F809B /* IMG_xv.c */; };
 		AA579E10161C07E7005F809B /* IMG.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DF1161C07E6005F809B /* IMG.c */; };
-		AA579E11161C07E7005F809B /* IMG.c in Sources */ = {isa = PBXBuildFile; fileRef = AA579DF1161C07E6005F809B /* IMG.c */; };
 		AADBAC89175C6B4C004F8ED2 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007288A60F0DA79800C302A9 /* ApplicationServices.framework */; platformFilters = (macos, ); };
 		AADBAC8A175C6B4F004F8ED2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F85449145A19BC002CA294 /* Foundation.framework */; };
 		BE1FA71A07AF4C44004B6283 /* SDL_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 1014BAEA010A4B677F000001 /* SDL_image.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F31094C3282AE42D008EF641 /* IMG_stb.c in Sources */ = {isa = PBXBuildFile; fileRef = F31094C2282AE42D008EF641 /* IMG_stb.c */; };
-		F31094C4282AE42D008EF641 /* IMG_stb.c in Sources */ = {isa = PBXBuildFile; fileRef = F31094C2282AE42D008EF641 /* IMG_stb.c */; };
 		F354743E2828CA66007E9EDA /* IMG_jxl.c in Sources */ = {isa = PBXBuildFile; fileRef = F354743B2828CA66007E9EDA /* IMG_jxl.c */; };
-		F354743F2828CA66007E9EDA /* IMG_jxl.c in Sources */ = {isa = PBXBuildFile; fileRef = F354743B2828CA66007E9EDA /* IMG_jxl.c */; };
 		F35475FD2829BAF9007E9EDA /* IMG_avif.c in Sources */ = {isa = PBXBuildFile; fileRef = F35475FC2829BAF9007E9EDA /* IMG_avif.c */; };
-		F35475FE2829BAF9007E9EDA /* IMG_avif.c in Sources */ = {isa = PBXBuildFile; fileRef = F35475FC2829BAF9007E9EDA /* IMG_avif.c */; };
 		F382070E284EF58C004DD584 /* CMake in Resources */ = {isa = PBXBuildFile; fileRef = F3820707284EF58C004DD584 /* CMake */; };
 		F3B38CF6296F6DB1005DA6D3 /* SDL3.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3B38CF5296F6DB1005DA6D3 /* SDL3.xcframework */; };
-		F3B38D76296F91E1005DA6D3 /* SDL3.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3B38CF5296F6DB1005DA6D3 /* SDL3.xcframework */; };
 		F3E1AAEB281CBABD00740E39 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAEA281CBABD00740E39 /* CoreGraphics.framework */; platformFilters = (ios, tvos, ); };
 		F3E1AAEC281CBB1F00740E39 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */; platformFilters = (ios, tvos, ); };
 		F3E1AAEE281CBD9F00740E39 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAED281CBD9F00740E39 /* UIKit.framework */; platformFilters = (ios, tvos, ); };
@@ -109,40 +103,40 @@
 			remoteGlobalIDString = F35475972829B847007E9EDA;
 			remoteInfo = "dav1d-16bit";
 		};
-		F3B38D23296F73B8005DA6D3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = F3B38D1E296F730C005DA6D3;
-			remoteInfo = xcFramework;
-		};
-		F3B38D34296F7581005DA6D3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F35475D42829BA80007E9EDA /* avif.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = F3B38D25296F74CC005DA6D3;
-			remoteInfo = xcFramework;
-		};
-		F3B38D39296F7586005DA6D3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F307EFA82828C8FA003915D7 /* jxl.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = F3B38D2A296F7515005DA6D3;
-			remoteInfo = xcFramework;
-		};
-		F3B38D3B296F758B005DA6D3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F3D87D15281EA88F005DA540 /* webp.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = F3B38D2F296F7549005DA6D3;
-			remoteInfo = xcFramework;
-		};
 		F3D87D23281EA9D8005DA540 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F3D87D15281EA88F005DA540 /* webp.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = F3D87D21281EA9C3005DA540;
 			remoteInfo = webp;
+		};
+		F3E1F74F2A789C2B00AC76D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F3B38D1E296F730C005DA6D3;
+			remoteInfo = SDL_image.xcframework;
+		};
+		F3E1F7512A789C3000AC76D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F35475D42829BA80007E9EDA /* avif.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F3B38D25296F74CC005DA6D3;
+			remoteInfo = avif.xcframework;
+		};
+		F3E1F7532A789C3A00AC76D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F3D87D15281EA88F005DA540 /* webp.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F3B38D2F296F7549005DA6D3;
+			remoteInfo = webp.xcframework;
+		};
+		F3E1F7552A789C4200AC76D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F307EFA82828C8FA003915D7 /* jxl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F3B38D2A296F7515005DA6D3;
+			remoteInfo = jxl.xcframework;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -182,8 +176,6 @@
 		AA579DF1161C07E6005F809B /* IMG.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG.c; path = ../src/IMG.c; sourceTree = "<group>"; };
 		BE1FA72D07AF4C44004B6283 /* Info-Framework.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Framework.plist"; sourceTree = "<group>"; };
 		BE1FA72E07AF4C45004B6283 /* SDL3_image.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDL3_image.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		BE1FA74107AF4C45004B6283 /* libSDL3_image.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSDL3_image.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		BE1FA74507AF4C45004B6283 /* Create DMG */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Create DMG"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F307EFA82828C8FA003915D7 /* jxl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jxl.xcodeproj; path = jxl/jxl.xcodeproj; sourceTree = "<group>"; };
 		F31094C2282AE42D008EF641 /* IMG_stb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_stb.c; path = ../src/IMG_stb.c; sourceTree = "<group>"; };
 		F354743B2828CA66007E9EDA /* IMG_jxl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_jxl.c; path = ../src/IMG_jxl.c; sourceTree = "<group>"; };
@@ -218,14 +210,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BE1FA73F07AF4C45004B6283 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F3B38D76296F91E1005DA6D3 /* SDL3.xcframework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -242,8 +226,6 @@
 			children = (
 				089C1665FE841158C02AAC07 /* Resources */,
 				BE1FA72E07AF4C45004B6283 /* SDL3_image.framework */,
-				BE1FA74107AF4C45004B6283 /* libSDL3_image.a */,
-				BE1FA74507AF4C45004B6283 /* Create DMG */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -379,19 +361,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BE1FA73007AF4C45004B6283 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		BE1FA71807AF4C44004B6283 /* Framework */ = {
+		BE1FA71807AF4C44004B6283 /* SDL3_image */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 00B7E3AA097EB73D00826121 /* Build configuration list for PBXNativeTarget "Framework" */;
+			buildConfigurationList = 00B7E3AA097EB73D00826121 /* Build configuration list for PBXNativeTarget "SDL3_image" */;
 			buildPhases = (
 				BE1FA71907AF4C44004B6283 /* Headers */,
 				BE1FA71B07AF4C44004B6283 /* Resources */,
@@ -405,50 +380,11 @@
 			comments = "Installed into ~/Library/Frameworks/SDL_image.framework\n\nAdd -framework SDL_image to your linker flags\nAdd ~/Library/Frameworks/SDL_image.framework/Headers to your header search path\nAdd ~/Library/Frameworks to your library search path";
 			dependencies = (
 			);
-			name = Framework;
+			name = SDL3_image;
 			productInstallPath = "@executable_path/../Frameworks";
 			productName = SDL_image;
 			productReference = BE1FA72E07AF4C45004B6283 /* SDL3_image.framework */;
 			productType = "com.apple.product-type.framework";
-		};
-		BE1FA72F07AF4C45004B6283 /* Static Library */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 00B7E3AE097EB73D00826121 /* Build configuration list for PBXNativeTarget "Static Library" */;
-			buildPhases = (
-				BE1FA73007AF4C45004B6283 /* Headers */,
-				BE1FA73107AF4C45004B6283 /* Sources */,
-				BE1FA73F07AF4C45004B6283 /* Frameworks */,
-				BE1FA74007AF4C45004B6283 /* Rez */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "Static Library";
-			productInstallPath = /usr/local/lib;
-			productName = "Static Library";
-			productReference = BE1FA74107AF4C45004B6283 /* libSDL3_image.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		BE1FA74207AF4C45004B6283 /* Create DMG */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 00B7E3B2097EB73D00826121 /* Build configuration list for PBXNativeTarget "Create DMG" */;
-			buildPhases = (
-				BE1FA74407AF4C45004B6283 /* ShellScript */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				F3B38D24296F73B8005DA6D3 /* PBXTargetDependency */,
-				F3B38D35296F7581005DA6D3 /* PBXTargetDependency */,
-				F3B38D3A296F7586005DA6D3 /* PBXTargetDependency */,
-				F3B38D3C296F758B005DA6D3 /* PBXTargetDependency */,
-			);
-			name = "Create DMG";
-			productInstallPath = /usr/local/bin;
-			productName = "Standard Package";
-			productReference = BE1FA74507AF4C45004B6283 /* Create DMG */;
-			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
@@ -460,6 +396,9 @@
 				TargetAttributes = {
 					F3B38D1E296F730C005DA6D3 = {
 						CreatedOnToolsVersion = 14.2;
+					};
+					F3E1F74A2A789BFE00AC76D3 = {
+						CreatedOnToolsVersion = 14.3.1;
 					};
 				};
 			};
@@ -492,10 +431,9 @@
 			);
 			projectRoot = ..;
 			targets = (
-				BE1FA71807AF4C44004B6283 /* Framework */,
-				BE1FA72F07AF4C45004B6283 /* Static Library */,
-				BE1FA74207AF4C45004B6283 /* Create DMG */,
-				F3B38D1E296F730C005DA6D3 /* SDL_image.xcframework */,
+				BE1FA71807AF4C44004B6283 /* SDL3_image */,
+				F3B38D1E296F730C005DA6D3 /* SDL3_image.xcframework */,
+				F3E1F74A2A789BFE00AC76D3 /* SDL3_image.dmg */,
 			);
 		};
 /* End PBXProject section */
@@ -564,26 +502,9 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BE1FA74007AF4C45004B6283 /* Rez */ = {
-			isa = PBXRezBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXRezBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		BE1FA74407AF4C45004B6283 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "PRODUCT_NAME=SDL3_image\nOPTIONAL_FRAMEWORKS=\"avif jxl webp\"\n\nmkdir -p build/dmg-tmp\ncp -a build/$PRODUCT_NAME.xcframework build/dmg-tmp/\ncp pkg-support/resources/ReadMe.txt build/dmg-tmp\nfor i in $OPTIONAL_FRAMEWORKS; do\n    if [ -d build/$i.xcframework ]; then\n        mkdir -p build/dmg-tmp/optional\n        cp -a build/$i.xcframework build/dmg-tmp/optional/\n    fi\ndone\n\n# remove the .DS_Store files if any (we may want to provide one in the future for fancy .dmgs)\nrm -rf build/dmg-tmp/.DS_Store\n\n# create the dmg\nhdiutil create -ov -fs HFS+ -volname $PRODUCT_NAME -srcfolder build/dmg-tmp build/$PRODUCT_NAME.dmg\n\n# clean up\nrm -rf build/dmg-tmp\n";
-		};
 		F3B38D22296F7329005DA6D3 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -600,7 +521,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Build an xcframework with both device and simulator files for all platforms.\n# Adapted from an answer in\n# https://developer.apple.com/forums/thread/666335?answerId=685927022#685927022\n\nif [ \"$XCODE_VERSION_ACTUAL\" -lt 1100 ]\nthen\n    echo \"error: Building an xcframework requires Xcode 11 minimum.\"\n    exit 1\nfi\n\nFRAMEWORK_NAME=\"SDL3_image\"\nPROJECT_NAME=\"SDL_image\"\nSCHEME=\"Framework\"\n\nMACOS_ARCHIVE_PATH=\"${BUILD_DIR}/${CONFIGURATION}/${FRAMEWORK_NAME}-macosx.xcarchive\"\nIOS_SIMULATOR_ARCHIVE_PATH=\"${BUILD_DIR}/${CONFIGURATION}/${FRAMEWORK_NAME}-iphonesimulator.xcarchive\"\nIOS_DEVICE_ARCHIVE_PATH=\"${BUILD_DIR}/${CONFIGURATION}/${FRAMEWORK_NAME}-iphoneos.xcarchive\"\nTVOS_SIMULATOR_ARCHIVE_PATH=\"${BUILD_DIR}/${CONFIGURATION}/${FRAMEWORK_NAME}-appletvsimulator.xcarchive\"\nTVOS_DEVICE_ARCHIVE_PATH=\"${BUILD_DIR}/${CONFIGURATION}/${FRAMEWORK_NAME}-appletvos.xcarchive\"\n\nOUTPUT_DIR=\"./build/\"\n\n# macOS\nxcodebuild archive \\\n    ONLY_ACTIVE_ARCH=NO \\\n    -scheme \"${SCHEME}\" \\\n    -project \"${PROJECT_NAME}.xcodeproj\" \\\n    -archivePath ${MACOS_ARCHIVE_PATH} \\\n    -sdk macosx \\\n    BUILD_LIBRARY_FOR_DISTRIBUTION=YES \\\n    SKIP_INSTALL=NO || exit $?\n    \n# iOS simulator\nxcodebuild archive \\\n    ONLY_ACTIVE_ARCH=NO \\\n    -scheme \"${SCHEME}\" \\\n    -project \"${PROJECT_NAME}.xcodeproj\" \\\n    -archivePath ${IOS_SIMULATOR_ARCHIVE_PATH} \\\n    -sdk iphonesimulator \\\n    BUILD_LIBRARY_FOR_DISTRIBUTION=YES \\\n    SKIP_INSTALL=NO || exit $?\n\n# iOS device\nxcodebuild archive \\\n    -scheme \"${SCHEME}\" \\\n    -project \"${PROJECT_NAME}.xcodeproj\" \\\n    -archivePath ${IOS_DEVICE_ARCHIVE_PATH} \\\n    -sdk iphoneos \\\n    BUILD_LIBRARY_FOR_DISTRIBUTION=YES \\\n    SKIP_INSTALL=NO || exit $?\n\n# tvOS simulator\nxcodebuild archive \\\n    ONLY_ACTIVE_ARCH=NO \\\n    -scheme \"${SCHEME}\" \\\n    -project \"${PROJECT_NAME}.xcodeproj\" \\\n    -archivePath ${TVOS_SIMULATOR_ARCHIVE_PATH} \\\n    -sdk appletvsimulator \\\n    BUILD_LIBRARY_FOR_DISTRIBUTION=YES \\\n    SKIP_INSTALL=NO || exit $?\n\n# tvOS device\nxcodebuild archive \\\n    -scheme \"${SCHEME}\" \\\n    -project \"${PROJECT_NAME}.xcodeproj\" \\\n    -archivePath ${TVOS_DEVICE_ARCHIVE_PATH} \\\n    -sdk appletvos \\\n    BUILD_LIBRARY_FOR_DISTRIBUTION=YES \\\n    SKIP_INSTALL=NO || exit $?\n\n# Clean-up any existing instance of this xcframework from the Products directory\nrm -rf \"${OUTPUT_DIR}${FRAMEWORK_NAME}.xcframework\"\n\n# Create final xcframework\nxcodebuild -create-xcframework \\\n    -framework \"${MACOS_ARCHIVE_PATH}\"/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework \\\n    -framework \"${IOS_DEVICE_ARCHIVE_PATH}\"/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework \\\n    -framework \"${IOS_SIMULATOR_ARCHIVE_PATH}\"/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework \\\n    -framework \"${TVOS_DEVICE_ARCHIVE_PATH}\"/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework \\\n    -framework \"${TVOS_SIMULATOR_ARCHIVE_PATH}\"/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework \\\n    -output ${OUTPUT_DIR}/${FRAMEWORK_NAME}.xcframework\n\n# Ensure git doesn't pick up on our Products folder. \nrm -rf ${OUTPUT_DIR}/.gitignore\necho \"*\" >> ${OUTPUT_DIR}/.gitignore\n";
+			shellScript = "# Build an xcframework with both device and simulator files for all platforms.\n# Adapted from an answer in\n# https://developer.apple.com/forums/thread/666335?answerId=685927022#685927022\n\nif [ \"$XCODE_VERSION_ACTUAL\" -lt 1100 ]\nthen\n    echo \"error: Building an xcframework requires Xcode 11 minimum.\"\n    exit 1\nfi\n\nFRAMEWORK_NAME=\"SDL3_image\"\nPROJECT_NAME=\"SDL_image\"\nSCHEME=\"SDL3_image\"\n\nMACOS_ARCHIVE_PATH=\"${BUILD_DIR}/${CONFIGURATION}/${FRAMEWORK_NAME}-macosx.xcarchive\"\nIOS_SIMULATOR_ARCHIVE_PATH=\"${BUILD_DIR}/${CONFIGURATION}/${FRAMEWORK_NAME}-iphonesimulator.xcarchive\"\nIOS_DEVICE_ARCHIVE_PATH=\"${BUILD_DIR}/${CONFIGURATION}/${FRAMEWORK_NAME}-iphoneos.xcarchive\"\nTVOS_SIMULATOR_ARCHIVE_PATH=\"${BUILD_DIR}/${CONFIGURATION}/${FRAMEWORK_NAME}-appletvsimulator.xcarchive\"\nTVOS_DEVICE_ARCHIVE_PATH=\"${BUILD_DIR}/${CONFIGURATION}/${FRAMEWORK_NAME}-appletvos.xcarchive\"\n\nOUTPUT_DIR=\"./build/\"\n\n# macOS\nxcodebuild archive \\\n    ONLY_ACTIVE_ARCH=NO \\\n    -scheme \"${SCHEME}\" \\\n    -project \"${PROJECT_NAME}.xcodeproj\" \\\n    -archivePath ${MACOS_ARCHIVE_PATH} \\\n    -sdk macosx \\\n    BUILD_LIBRARY_FOR_DISTRIBUTION=YES \\\n    SKIP_INSTALL=NO || exit $?\n    \n# iOS simulator\nxcodebuild archive \\\n    ONLY_ACTIVE_ARCH=NO \\\n    -scheme \"${SCHEME}\" \\\n    -project \"${PROJECT_NAME}.xcodeproj\" \\\n    -archivePath ${IOS_SIMULATOR_ARCHIVE_PATH} \\\n    -sdk iphonesimulator \\\n    BUILD_LIBRARY_FOR_DISTRIBUTION=YES \\\n    SKIP_INSTALL=NO || exit $?\n\n# iOS device\nxcodebuild archive \\\n    -scheme \"${SCHEME}\" \\\n    -project \"${PROJECT_NAME}.xcodeproj\" \\\n    -archivePath ${IOS_DEVICE_ARCHIVE_PATH} \\\n    -sdk iphoneos \\\n    BUILD_LIBRARY_FOR_DISTRIBUTION=YES \\\n    SKIP_INSTALL=NO || exit $?\n\n# tvOS simulator\nxcodebuild archive \\\n    ONLY_ACTIVE_ARCH=NO \\\n    -scheme \"${SCHEME}\" \\\n    -project \"${PROJECT_NAME}.xcodeproj\" \\\n    -archivePath ${TVOS_SIMULATOR_ARCHIVE_PATH} \\\n    -sdk appletvsimulator \\\n    BUILD_LIBRARY_FOR_DISTRIBUTION=YES \\\n    SKIP_INSTALL=NO || exit $?\n\n# tvOS device\nxcodebuild archive \\\n    -scheme \"${SCHEME}\" \\\n    -project \"${PROJECT_NAME}.xcodeproj\" \\\n    -archivePath ${TVOS_DEVICE_ARCHIVE_PATH} \\\n    -sdk appletvos \\\n    BUILD_LIBRARY_FOR_DISTRIBUTION=YES \\\n    SKIP_INSTALL=NO || exit $?\n\n# Clean-up any existing instance of this xcframework from the Products directory\nrm -rf \"${OUTPUT_DIR}${FRAMEWORK_NAME}.xcframework\"\n\n# Create final xcframework\nxcodebuild -create-xcframework \\\n    -framework \"${MACOS_ARCHIVE_PATH}\"/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework \\\n    -framework \"${IOS_DEVICE_ARCHIVE_PATH}\"/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework \\\n    -framework \"${IOS_SIMULATOR_ARCHIVE_PATH}\"/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework \\\n    -framework \"${TVOS_DEVICE_ARCHIVE_PATH}\"/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework \\\n    -framework \"${TVOS_SIMULATOR_ARCHIVE_PATH}\"/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework \\\n    -output ${OUTPUT_DIR}/${FRAMEWORK_NAME}.xcframework\n\n# Ensure git doesn't pick up on our Products folder. \nrm -rf ${OUTPUT_DIR}/.gitignore\necho \"*\" >> ${OUTPUT_DIR}/.gitignore\n";
+		};
+		F3E1F74E2A789C1000AC76D3 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "PRODUCT_NAME=SDL3_image\nOPTIONAL_FRAMEWORKS=\"avif jxl webp\"\n\nmkdir -p build/dmg-tmp\ncp -a build/$PRODUCT_NAME.xcframework build/dmg-tmp/\ncp pkg-support/resources/ReadMe.txt build/dmg-tmp\nfor i in $OPTIONAL_FRAMEWORKS; do\n    if [ -d build/$i.xcframework ]; then\n        mkdir -p build/dmg-tmp/optional\n        cp -a build/$i.xcframework build/dmg-tmp/optional/\n    fi\ndone\n\n# remove the .DS_Store files if any (we may want to provide one in the future for fancy .dmgs)\nrm -rf build/dmg-tmp/.DS_Store\n\n# create the dmg\nhdiutil create -ov -fs HFS+ -volname $PRODUCT_NAME -srcfolder build/dmg-tmp build/$PRODUCT_NAME.dmg\n\n# clean up\nrm -rf build/dmg-tmp\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -632,55 +571,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BE1FA73107AF4C45004B6283 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				AA579DF3161C07E7005F809B /* IMG_bmp.c in Sources */,
-				AA579DF5161C07E7005F809B /* IMG_gif.c in Sources */,
-				AA579DF7161C07E7005F809B /* IMG_ImageIO.m in Sources */,
-				AA579DF9161C07E7005F809B /* IMG_jpg.c in Sources */,
-				AA579DFB161C07E7005F809B /* IMG_lbm.c in Sources */,
-				AA579DFD161C07E7005F809B /* IMG_pcx.c in Sources */,
-				AA579DFF161C07E7005F809B /* IMG_png.c in Sources */,
-				AA579E01161C07E7005F809B /* IMG_pnm.c in Sources */,
-				AA579E03161C07E7005F809B /* IMG_tga.c in Sources */,
-				F35475FE2829BAF9007E9EDA /* IMG_avif.c in Sources */,
-				AA579E05161C07E7005F809B /* IMG_tif.c in Sources */,
-				AA579E07161C07E7005F809B /* IMG_webp.c in Sources */,
-				AA579E09161C07E7005F809B /* IMG_xcf.c in Sources */,
-				AA579E0B161C07E7005F809B /* IMG_xpm.c in Sources */,
-				F354743F2828CA66007E9EDA /* IMG_jxl.c in Sources */,
-				AA579E0D161C07E7005F809B /* IMG_xv.c in Sources */,
-				AA579E11161C07E7005F809B /* IMG.c in Sources */,
-				AA23FC7D20A2A1B90017DFB9 /* IMG_svg.c in Sources */,
-				F31094C4282AE42D008EF641 /* IMG_stb.c in Sources */,
-				6313BF542785566D00F268AD /* IMG_qoi.c in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		F3B38D24296F73B8005DA6D3 /* PBXTargetDependency */ = {
+		F3E1F7502A789C2B00AC76D3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = F3B38D1E296F730C005DA6D3 /* SDL_image.xcframework */;
-			targetProxy = F3B38D23296F73B8005DA6D3 /* PBXContainerItemProxy */;
+			target = F3B38D1E296F730C005DA6D3 /* SDL3_image.xcframework */;
+			targetProxy = F3E1F74F2A789C2B00AC76D3 /* PBXContainerItemProxy */;
 		};
-		F3B38D35296F7581005DA6D3 /* PBXTargetDependency */ = {
+		F3E1F7522A789C3000AC76D3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = xcFramework;
-			targetProxy = F3B38D34296F7581005DA6D3 /* PBXContainerItemProxy */;
+			name = avif.xcframework;
+			targetProxy = F3E1F7512A789C3000AC76D3 /* PBXContainerItemProxy */;
 		};
-		F3B38D3A296F7586005DA6D3 /* PBXTargetDependency */ = {
+		F3E1F7542A789C3A00AC76D3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = xcFramework;
-			targetProxy = F3B38D39296F7586005DA6D3 /* PBXContainerItemProxy */;
+			name = webp.xcframework;
+			targetProxy = F3E1F7532A789C3A00AC76D3 /* PBXContainerItemProxy */;
 		};
-		F3B38D3C296F758B005DA6D3 /* PBXTargetDependency */ = {
+		F3E1F7562A789C4200AC76D3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = xcFramework;
-			targetProxy = F3B38D3B296F758B005DA6D3 /* PBXContainerItemProxy */;
+			name = jxl.xcframework;
+			targetProxy = F3E1F7552A789C4200AC76D3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -726,7 +638,12 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MARKETING_VERSION = 3.0.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libsdl.SDL3-image";
 				PRODUCT_NAME = SDL3_image;
@@ -740,33 +657,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				OTHER_LDFLAGS = "$(CONFIG_FRAMEWORK_LDFLAGS)";
-			};
-			name = Debug;
-		};
-		007288130F0DA5BA00C302A9 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-			};
-			name = Debug;
-		};
-		007288140F0DA5BA00C302A9 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = "Create DMG";
-				REZ_EXECUTABLE = YES;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				ZERO_LINK = YES;
 			};
 			name = Debug;
 		};
@@ -810,7 +700,12 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MARKETING_VERSION = 3.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libsdl.SDL3-image";
 				PRODUCT_NAME = SDL3_image;
 				SUPPORTED_PLATFORMS = "watchsimulator watchos macosx iphonesimulator iphoneos driverkit appletvsimulator appletvos";
@@ -826,72 +721,38 @@
 			};
 			name = Release;
 		};
-		007288170F0DA5C400C302A9 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-			};
-			name = Release;
-		};
-		007288180F0DA5C400C302A9 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = "Create DMG";
-				REZ_EXECUTABLE = YES;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
 		F3B38D20296F730C005DA6D3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
 		F3B38D21296F730C005DA6D3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		F3E1F74C2A789BFF00AC76D3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		F3E1F74D2A789BFF00AC76D3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
 			};
 			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		00B7E3AA097EB73D00826121 /* Build configuration list for PBXNativeTarget "Framework" */ = {
+		00B7E3AA097EB73D00826121 /* Build configuration list for PBXNativeTarget "SDL3_image" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				007288160F0DA5C400C302A9 /* Release */,
 				007288120F0DA5BA00C302A9 /* Debug */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		00B7E3AE097EB73D00826121 /* Build configuration list for PBXNativeTarget "Static Library" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				007288170F0DA5C400C302A9 /* Release */,
-				007288130F0DA5BA00C302A9 /* Debug */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		00B7E3B2097EB73D00826121 /* Build configuration list for PBXNativeTarget "Create DMG" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				007288180F0DA5C400C302A9 /* Release */,
-				007288140F0DA5BA00C302A9 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -905,11 +766,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F3B38D1F296F730C005DA6D3 /* Build configuration list for PBXAggregateTarget "SDL_image.xcframework" */ = {
+		F3B38D1F296F730C005DA6D3 /* Build configuration list for PBXAggregateTarget "SDL3_image.xcframework" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F3B38D20296F730C005DA6D3 /* Release */,
 				F3B38D21296F730C005DA6D3 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F3E1F74B2A789BFF00AC76D3 /* Build configuration list for PBXAggregateTarget "SDL3_image.dmg" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F3E1F74C2A789BFF00AC76D3 /* Release */,
+				F3E1F74D2A789BFF00AC76D3 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

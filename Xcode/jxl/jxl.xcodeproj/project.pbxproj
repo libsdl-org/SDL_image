@@ -654,6 +654,7 @@
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/../../external/libjxl\"",
+					"\"$(SRCROOT)/../../external/libjxl/lib/include\"",
 					"\"$(SRCROOT)/../../external/libjxl/third_party/highway\"",
 					"\"$(SRCROOT)/../../external/libjxl/third_party/brotli/c/include\"",
 					"\"$(SRCROOT)/../../external/libjxl/third_party/brotli/c/dec\"",
@@ -729,6 +730,7 @@
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/../../external/libjxl\"",
+					"\"$(SRCROOT)/../../external/libjxl/lib/include\"",
 					"\"$(SRCROOT)/../../external/libjxl/third_party/highway\"",
 					"\"$(SRCROOT)/../../external/libjxl/third_party/brotli/c/include\"",
 					"\"$(SRCROOT)/../../external/libjxl/third_party/brotli/c/dec\"",
@@ -798,16 +800,12 @@
 		F3B38D2B296F7515005DA6D3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
 		F3B38D2C296F7515005DA6D3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};

@@ -83,20 +83,6 @@
 			remoteGlobalIDString = BE1FA72E07AF4C45004B6283;
 			remoteInfo = Framework;
 		};
-		F3ED80D5281D9ED600C33C5B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BE1FA74107AF4C45004B6283;
-			remoteInfo = "Static Library";
-		};
-		F3ED80D7281D9ED600C33C5B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BE1FA74507AF4C45004B6283;
-			remoteInfo = "Create DMG";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -151,11 +137,12 @@
 		F35474462828CADB007E9EDA /* jxl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jxl.xcodeproj; path = ../jxl/jxl.xcodeproj; sourceTree = "<group>"; };
 		F35475E52829BAB1007E9EDA /* avif.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = avif.xcodeproj; path = ../avif/avif.xcodeproj; sourceTree = "<group>"; };
 		F3B38D08296F6F3B005DA6D3 /* SDL3.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SDL3.xcframework; path = ../SDL/SDL3.xcframework; sourceTree = "<group>"; };
+		F3E1F7742A78A12600AC76D3 /* config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = config.xcconfig; sourceTree = "<group>"; };
 		F3E949D5281EAC1B00B8F4EA /* webp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = webp.xcodeproj; path = ../webp/webp.xcodeproj; sourceTree = "<group>"; };
 		F3ED80B3281D9E8900C33C5B /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3ED80B9281D9E8900C33C5B /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3ED80BB281D9E8900C33C5B /* macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOS.entitlements; sourceTree = "<group>"; };
-		F3ED80CA281D9ECB00C33C5B /* showimage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = showimage.c; path = ../../showimage.c; sourceTree = SOURCE_ROOT; };
+		F3ED80CA281D9ECB00C33C5B /* showimage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = showimage.c; path = ../../examples/showimage.c; sourceTree = SOURCE_ROOT; };
 		F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL_image.xcodeproj; path = ../SDL_image.xcodeproj; sourceTree = "<group>"; };
 		F3ED80E1281D9F2100C33C5B /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3ED80E4281DA17800C33C5B /* SDL3.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL3.framework; path = ../macOS/SDL3.framework; sourceTree = "<group>"; };
@@ -224,6 +211,7 @@
 		F3ED80A6281D9E8800C33C5B = {
 			isa = PBXGroup;
 			children = (
+				F3E1F7742A78A12600AC76D3 /* config.xcconfig */,
 				F3B38D08296F6F3B005DA6D3 /* SDL3.xcframework */,
 				F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */,
 				F35475E52829BAB1007E9EDA /* avif.xcodeproj */,
@@ -266,8 +254,6 @@
 			isa = PBXGroup;
 			children = (
 				F3ED80D4281D9ED600C33C5B /* SDL3_image.framework */,
-				F3ED80D6281D9ED600C33C5B /* libSDL3_image.a */,
-				F3ED80D8281D9ED600C33C5B /* Create DMG */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -469,20 +455,6 @@
 			remoteRef = F3ED80D3281D9ED600C33C5B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		F3ED80D6281D9ED600C33C5B /* libSDL3_image.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libSDL3_image.a;
-			remoteRef = F3ED80D5281D9ED600C33C5B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		F3ED80D8281D9ED600C33C5B /* Create DMG */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = "Create DMG";
-			remoteRef = F3ED80D7281D9ED600C33C5B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -539,6 +511,7 @@
 /* Begin XCBuildConfiguration section */
 		F3ED80C2281D9E8900C33C5B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F3E1F7742A78A12600AC76D3 /* config.xcconfig */;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -559,6 +532,7 @@
 		};
 		F3ED80C3281D9E8900C33C5B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F3E1F7742A78A12600AC76D3 /* config.xcconfig */;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -574,7 +548,6 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = EH385AYQ6F;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -599,7 +572,6 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = EH385AYQ6F;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -665,7 +637,6 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = EH385AYQ6F;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -686,7 +657,6 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = EH385AYQ6F;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

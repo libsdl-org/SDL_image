@@ -1,6 +1,5 @@
 //
 //  config.xcconfig
-//  SDL_image
 //
 
 // Configuration settings file format documentation can be found at:
@@ -11,15 +10,19 @@
 
 // Uncomment these lines to enable AVIF support
 // If you do this, you should run external/download.sh to download the decode libraries and add avif.framework to your application bundle.
-//CONFIG_PREPROCESSOR_DEFINITIONS = $(inherited) LOAD_AVIF
-//CONFIG_FRAMEWORK_LDFLAGS = $(inherited) -weak_framework avif
+//AVIF_PREPROCESSOR_DEFINITIONS = LOAD_AVIF
+//AVIF_FRAMEWORK_LDFLAGS = -weak_framework avif
 
 // Uncomment these lines to enable JPEG-XL support
 // If you do this, you should run external/download.sh to download the decode libraries and add jxl.framework to your application bundle.
-//CONFIG_PREPROCESSOR_DEFINITIONS = $(inherited) LOAD_JXL
-//CONFIG_FRAMEWORK_LDFLAGS = $(inherited) -weak_framework jxl
+//JXL_PREPROCESSOR_DEFINITIONS = LOAD_JXL
+//JXL_FRAMEWORK_LDFLAGS = -weak_framework jxl
 
 // Uncomment these lines to enable WebP support
 // If you do this, you should run external/download.sh to download the decode libraries and add webp.framework to your application bundle.
-//CONFIG_PREPROCESSOR_DEFINITIONS = $(inherited) LOAD_WEBP
-//CONFIG_FRAMEWORK_LDFLAGS = $(inherited) -weak_framework webp
+//WEBP_PREPROCESSOR_DEFINITIONS = LOAD_WEBP
+//WEBP_FRAMEWORK_LDFLAGS = -weak_framework webp
+
+CONFIG_PREPROCESSOR_DEFINITIONS = $(inherited) $(AVIF_PREPROCESSOR_DEFINITIONS) $(JXL_PREPROCESSOR_DEFINITIONS) $(WEBP_PREPROCESSOR_DEFINITIONS)
+CONFIG_FRAMEWORK_LDFLAGS = $(inherited) $(AVIF_FRAMEWORK_LDFLAGS) $(JXL_FRAMEWORK_LDFLAGS) $(WEBP_FRAMEWORK_LDFLAGS)
+
