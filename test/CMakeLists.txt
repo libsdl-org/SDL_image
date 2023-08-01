@@ -2,11 +2,51 @@
 
 enable_testing()
 
-add_executable(testimage main.c)
-
-set(ALL_TESTS
-    testimage
+set(TESTS_ENVIRONMENT
+    "SDL_TEST_SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}"
+    "SDL_TEST_BUILDDIR=${CMAKE_CURRENT_BINARY_DIR}"
+    "SDL_VIDEO_DRIVER=dummy"
 )
+
+function(add_sdl_image_test_executable TARGET)
+    add_executable(${TARGET} ${ARGN})
+    target_compile_definitions(${TARGET}
+        PRIVATE
+            $<TARGET_PROPERTY:${sdl3_image_target_name},COMPILE_DEFINITIONS>
+            "SDL_IMAGE_SAVE_JPG=$<BOOL:${SDL3IMAGE_JPG_SAVE}>"
+            "SDL_IMAGE_SAVE_PNG=$<BOOL:${SDL3IMAGE_PNG_SAVE}>"
+    )
+    sdl_add_warning_options(${TARGET} WARNING_AS_ERROR ${SDL3IMAGE_WERROR})
+    target_link_libraries(${TARGET} PRIVATE SDL3_image::SDL3_image SDL3::SDL3_test SDL3::SDL3)
+
+    add_test(
+        NAME ${TARGET}
+        COMMAND ${TARGET}
+        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    )
+    set_tests_properties(${TARGET}
+        PROPERTIES
+            ENVIRONMENT "${TESTS_ENVIRONMENT}"
+            TIMEOUT 30
+    )
+    if(SDL3IMAGE_TESTS_INSTALL)
+        set(installedtestsdir "${CMAKE_INSTALL_FULL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}")
+        configure_file(template.test.in "${TARGET}.test" @ONLY)
+        install(
+            FILES "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.test"
+            DESTINATION "${CMAKE_INSTALL_DATADIR}/installed-tests/${PROJECT_NAME}"
+        )
+    endif()
+    if(SDL3IMAGE_TESTS_INSTALL)
+        install(
+            TARGETS ${TARGET}
+            DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}"
+        )
+    endif()
+endfunction()
+
+add_sdl_image_test_executable(testimage main.c)
+
 set(RESOURCE_FILES
     palette.bmp
     palette.gif
@@ -32,51 +72,7 @@ set(RESOURCE_FILES
     svg64.bmp
 )
 
-set(TESTS_ENVIRONMENT
-    "SDL_TEST_SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}"
-    "SDL_TEST_BUILDDIR=${CMAKE_CURRENT_BINARY_DIR}"
-    "SDL_VIDEO_DRIVER=dummy"
-)
-
-foreach(prog IN LISTS ALL_TESTS)
-    target_compile_definitions(${prog} PRIVATE
-        $<TARGET_PROPERTY:${sdl3_image_target_name},COMPILE_DEFINITIONS>
-        "SDL_IMAGE_SAVE_JPG=$<BOOL:${SDL3IMAGE_JPG_SAVE}>"
-        "SDL_IMAGE_SAVE_PNG=$<BOOL:${SDL3IMAGE_PNG_SAVE}>"
-    )
-    sdl_add_warning_options(${prog} WARNING_AS_ERROR ${SDL3IMAGE_WERROR})
-    target_link_libraries(${prog} PRIVATE SDL3_image::SDL3_image SDL3::SDL3_test SDL3::SDL3)
-    if(TARGET sdl3image_build_options)
-        target_link_libraries(${prog} PRIVATE $<BUILD_INTERFACE:sdl3image_build_options>)
-    endif()
-
-    add_test(
-        NAME ${prog}
-        COMMAND ${prog}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    )
-    set_tests_properties(
-        ${prog}
-        PROPERTIES
-        ENVIRONMENT "${TESTS_ENVIRONMENT}"
-        TIMEOUT 30
-    )
-    if(SDL3IMAGE_TESTS_INSTALL)
-        set(exe ${prog})
-        set(installedtestsdir "${CMAKE_INSTALL_FULL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}")
-        configure_file(template.test.in "${exe}.test" @ONLY)
-        install(
-            FILES "${CMAKE_CURRENT_BINARY_DIR}/${exe}.test"
-            DESTINATION "${CMAKE_INSTALL_DATADIR}/installed-tests/${PROJECT_NAME}"
-        )
-    endif()
-endforeach()
-
 if(SDL3IMAGE_TESTS_INSTALL)
-    install(
-        TARGETS ${ALL_TESTS}
-        DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}"
-    )
     install(
         FILES ${RESOURCE_FILES}
         DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}"
