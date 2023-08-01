@@ -23,7 +23,7 @@
  * https://github.com/phoboslab/qoi
  */
 
-#include <SDL3/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 #include "IMG.h"
 #include <limits.h> /* for INT_MAX */
 

@@ -225,9 +225,9 @@ endif()
 target_include_directories(${sdl3_image_target_name}
     PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/SDL3>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/SDL3_image>"
         "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL3>"
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/SDL3_image>"
 )
 target_compile_definitions(${sdl3_image_target_name} PRIVATE
     BUILD_SDL
@@ -237,7 +237,7 @@ target_compile_definitions(${sdl3_image_target_name} PRIVATE
 )
 target_link_libraries(${sdl3_image_target_name} PUBLIC SDL3::Headers)
 if(SDL3IMAGE_BUILD_SHARED_LIBS)
-    target_link_libraries(${sdl3_image_target_name} PUBLIC SDL3::SDL3-shared)
+    target_link_libraries(${sdl3_image_target_name} PRIVATE SDL3::SDL3-shared)
 endif()
 sdl_add_warning_options(${sdl3_image_target_name} WARNING_AS_ERROR ${SDL3IMAGE_WERROR})
 if(WIN32 AND SDL3IMAGE_BUILD_SHARED_LIBS)
@@ -706,8 +706,8 @@ if(SDL3IMAGE_INSTALL)
         RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT library
     )
     install(
-        FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/SDL3/SDL_image.h"
-        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SDL3" COMPONENT DEVEL
+        FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/SDL3_image/SDL_image.h"
+        DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SDL3_image" COMPONENT DEVEL
     )
 
     if(INSTALL_EXTRA_TARGETS)
@@ -778,6 +778,7 @@ if(SDL3IMAGE_INSTALL)
 
     if(SDL3IMAGE_INSTALL_MAN)
         SDL_generate_manpages(
+            HEADERS_DIR "${PROJECT_SOURCE_DIR}/include/SDL3_image"
             SYMBOL "IMG_Init"
             WIKIHEADERS_PL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/build-scripts/wikiheaders.pl"
         )

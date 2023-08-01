@@ -19,7 +19,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <SDL3/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 #include "IMG.h"
 
 #ifdef USE_STBIMAGE

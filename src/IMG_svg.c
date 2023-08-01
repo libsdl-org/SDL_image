@@ -23,7 +23,7 @@
  * https://github.com/memononen/nanosvg
  */
 
-#include <SDL3/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 #include "IMG.h"
 
 #ifdef LOAD_SVG

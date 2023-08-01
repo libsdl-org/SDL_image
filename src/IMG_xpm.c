@@ -45,7 +45,7 @@
  * requires about 13K in binary form.
  */
 
-#include <SDL3/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 #include "IMG.h"
 
 #ifdef LOAD_XPM

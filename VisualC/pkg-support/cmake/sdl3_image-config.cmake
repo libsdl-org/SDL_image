@@ -59,7 +59,7 @@ if(NOT TARGET SDL3_image::SDL3_image)
     add_library(SDL3_image::SDL3_image SHARED IMPORTED)
     set_target_properties(SDL3_image::SDL3_image
         PROPERTIES
-            INTERFACE_INCLUDE_DIRECTORIES "${_sdl3image_incdir};${_sdl3image_incdir}/SDL3"
+            INTERFACE_INCLUDE_DIRECTORIES "${_sdl3image_incdir};${_sdl3image_incdir}/SDL3_image"
             IMPORTED_IMPLIB "${_sdl3image_library}"
             IMPORTED_LOCATION "${_sdl3image_dll}"
             COMPATIBLE_INTERFACE_BOOL "SDL3_SHARED"

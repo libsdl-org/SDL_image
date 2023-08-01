@@ -236,7 +236,7 @@
     <ResourceCompile Include="..\src\Version.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\SDL3\SDL_image.h" />
+    <ClInclude Include="..\include\SDL3_image\SDL_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,10 +1,10 @@
 projectfullname = SDL_image
 projectshortname = SDL_image
-incsubdir = include/SDL3
+incsubdir = include/SDL3_image
 wikisubdir = SDL_image
 apiprefixregex = IMG_
-mainincludefname = SDL3/SDL_image.h
-versionfname = include/SDL3/SDL_image.h
+mainincludefname = SDL3_image/SDL_image.h
+versionfname = include/SDL3_image/SDL_image.h
 versionmajorregex = \A\#define\s+SDL_IMAGE_MAJOR_VERSION\s+(\d+)\Z
 versionminorregex = \A\#define\s+SDL_IMAGE_MINOR_VERSION\s+(\d+)\Z
 versionpatchregex = \A\#define\s+SDL_IMAGE_PATCHLEVEL\s+(\d+)\Z

@@ -21,7 +21,7 @@
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
-#include <SDL3/SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 
 
 /* Draw a Gimpish background pattern to show transparency in the image */
