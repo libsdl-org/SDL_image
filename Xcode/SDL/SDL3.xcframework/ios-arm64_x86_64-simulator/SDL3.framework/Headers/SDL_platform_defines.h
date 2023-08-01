@@ -28,11 +28,11 @@
 #ifndef SDL_platform_defines_h_
 #define SDL_platform_defines_h_
 
-#if defined(_AIX)
+#ifdef _AIX
 #undef __AIX__
 #define __AIX__     1
 #endif
-#if defined(__HAIKU__)
+#ifdef __HAIKU__
 #undef __HAIKU__
 #define __HAIKU__   1
 #endif
@@ -40,7 +40,7 @@
 #undef __BSDI__
 #define __BSDI__    1
 #endif
-#if defined(_arch_dreamcast)
+#ifdef _arch_dreamcast
 #undef __DREAMCAST__
 #define __DREAMCAST__   1
 #endif
@@ -65,12 +65,12 @@
 #undef __LINUX__ /* do we need to do this? */
 #define __ANDROID__ 1
 #endif
-#if defined(__NGAGE__)
+#ifdef __NGAGE__
 #undef __NGAGE__
 #define __NGAGE__ 1
 #endif
 
-#if defined(__APPLE__)
+#ifdef __APPLE__
 /* lets us know what version of macOS we're compiling on */
 #include <AvailabilityMacros.h>
 #include <TargetConditionals.h>
@@ -111,11 +111,11 @@
 #endif /* TARGET_OS_IPHONE */
 #endif /* defined(__APPLE__) */
 
-#if defined(__NetBSD__)
+#ifdef __NetBSD__
 #undef __NETBSD__
 #define __NETBSD__  1
 #endif
-#if defined(__OpenBSD__)
+#ifdef __OpenBSD__
 #undef __OPENBSD__
 #define __OPENBSD__ 1
 #endif
@@ -127,7 +127,7 @@
 #undef __OSF__
 #define __OSF__     1
 #endif
-#if defined(__QNXNTO__)
+#ifdef __QNXNTO__
 #undef __QNXNTO__
 #define __QNXNTO__  1
 #endif
@@ -163,6 +163,12 @@
 #define WINAPI_FAMILY_WINRT 0
 #endif /* HAVE_WINAPIFAMILY_H */
 
+#if HAVE_WINAPIFAMILY_H && HAVE_WINAPIFAMILY_H
+#define SDL_WINAPI_FAMILY_PHONE (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
+#else
+#define SDL_WINAPI_FAMILY_PHONE 0
+#endif
+
 #if WINAPI_FAMILY_WINRT
 #undef __WINRT__
 #define __WINRT__ 1
@@ -181,7 +187,7 @@
 #endif
 #endif /* defined(WIN32) || defined(_WIN32) || defined(__CYGWIN__) */
 
-#if defined(__WINDOWS__)
+#ifdef __WINDOWS__
 #undef __WIN32__
 #define __WIN32__ 1
 #endif
@@ -190,19 +196,19 @@
 #undef __GDK__
 #define __GDK__ 1
 #endif
-#if defined(__PSP__)
+#ifdef __PSP__
 #undef __PSP__
 #define __PSP__ 1
 #endif
-#if defined(PS2)
+#ifdef PS2
 #define __PS2__ 1
 #endif
 
-#if defined(__vita__)
+#ifdef __vita__
 #define __VITA__ 1
 #endif
 
-#if defined(__3DS__)
+#ifdef __3DS__
 #undef __3DS__
 #define __3DS__ 1
 #endif

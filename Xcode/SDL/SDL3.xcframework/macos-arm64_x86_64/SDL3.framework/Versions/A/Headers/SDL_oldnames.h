@@ -39,7 +39,24 @@
  */
 #ifdef SDL_ENABLE_OLD_NAMES
 
+/* ##SDL_atomic.h */
+#define SDL_atomic_t SDL_AtomicInt
+
 /* ##SDL_audio.h */
+#define AUDIO_F32 SDL_AUDIO_F32
+#define AUDIO_F32LSB SDL_AUDIO_F32LSB
+#define AUDIO_F32MSB SDL_AUDIO_F32MSB
+#define AUDIO_F32SYS SDL_AUDIO_F32SYS
+#define AUDIO_S16 SDL_AUDIO_S16
+#define AUDIO_S16LSB SDL_AUDIO_S16LSB
+#define AUDIO_S16MSB SDL_AUDIO_S16MSB
+#define AUDIO_S16SYS SDL_AUDIO_S16SYS
+#define AUDIO_S32 SDL_AUDIO_S32
+#define AUDIO_S32LSB SDL_AUDIO_S32LSB
+#define AUDIO_S32MSB SDL_AUDIO_S32MSB
+#define AUDIO_S32SYS SDL_AUDIO_S32SYS
+#define AUDIO_S8 SDL_AUDIO_S8
+#define AUDIO_U8 SDL_AUDIO_U8
 #define SDL_AudioStreamAvailable SDL_GetAudioStreamAvailable
 #define SDL_AudioStreamClear SDL_ClearAudioStream
 #define SDL_AudioStreamFlush SDL_FlushAudioStream
@@ -167,17 +184,14 @@
 #define SDL_CONTROLLER_BUTTON_TOUCHPAD SDL_GAMEPAD_BUTTON_TOUCHPAD
 #define SDL_CONTROLLER_BUTTON_X SDL_GAMEPAD_BUTTON_X
 #define SDL_CONTROLLER_BUTTON_Y SDL_GAMEPAD_BUTTON_Y
-#define SDL_CONTROLLER_TYPE_AMAZON_LUNA SDL_GAMEPAD_TYPE_AMAZON_LUNA
-#define SDL_CONTROLLER_TYPE_GOOGLE_STADIA SDL_GAMEPAD_TYPE_GOOGLE_STADIA
 #define SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT
 #define SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR
 #define SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT
 #define SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO
-#define SDL_CONTROLLER_TYPE_NVIDIA_SHIELD SDL_GAMEPAD_TYPE_NVIDIA_SHIELD
 #define SDL_CONTROLLER_TYPE_PS3 SDL_GAMEPAD_TYPE_PS3
 #define SDL_CONTROLLER_TYPE_PS4 SDL_GAMEPAD_TYPE_PS4
 #define SDL_CONTROLLER_TYPE_PS5 SDL_GAMEPAD_TYPE_PS5
-#define SDL_CONTROLLER_TYPE_UNKNOWN SDL_GAMEPAD_TYPE_UNKNOWN
+#define SDL_CONTROLLER_TYPE_UNKNOWN SDL_GAMEPAD_TYPE_STANDARD
 #define SDL_CONTROLLER_TYPE_VIRTUAL SDL_GAMEPAD_TYPE_VIRTUAL
 #define SDL_CONTROLLER_TYPE_XBOX360 SDL_GAMEPAD_TYPE_XBOX360
 #define SDL_CONTROLLER_TYPE_XBOXONE SDL_GAMEPAD_TYPE_XBOXONE
@@ -311,12 +325,32 @@
 /* ##SDL_mouse.h */
 #define SDL_FreeCursor SDL_DestroyCursor
 
+/* ##SDL_mutex.h */
+#define SDL_CondBroadcast SDL_BroadcastCondition
+#define SDL_CondSignal SDL_SignalCondition
+#define SDL_CondWait SDL_WaitCondition
+#define SDL_CondWaitTimeout SDL_WaitConditionTimeout
+#define SDL_CreateCond SDL_CreateCondition
+#define SDL_DestroyCond SDL_DestroyCondition
+#define SDL_SemPost SDL_PostSemaphore
+#define SDL_SemTryWait SDL_TryWaitSemaphore
+#define SDL_SemValue SDL_GetSemaphoreValue
+#define SDL_SemWait SDL_WaitSemaphore
+#define SDL_SemWaitTimeout SDL_WaitSemaphoreTimeout
+
+/* ##SDL_mutex.h */
+#define SDL_cond SDL_Condition
+#define SDL_mutex SDL_Mutex
+#define SDL_sem SDL_Semaphore
+
 /* ##SDL_pixels.h */
 #define SDL_AllocFormat SDL_CreatePixelFormat
 #define SDL_AllocPalette SDL_CreatePalette
 #define SDL_FreeFormat SDL_DestroyPixelFormat
 #define SDL_FreePalette SDL_DestroyPalette
 #define SDL_MasksToPixelFormatEnum SDL_GetPixelFormatEnumForMasks
+#define SDL_PIXELFORMAT_BGR888 SDL_PIXELFORMAT_XBGR8888
+#define SDL_PIXELFORMAT_RGB888 SDL_PIXELFORMAT_XRGB8888
 #define SDL_PixelFormatEnumToMasks SDL_GetMasksForPixelFormatEnum
 
 /* ##SDL_platform.h */
@@ -401,6 +435,9 @@
 #define SDL_SensorOpen SDL_OpenSensor
 #define SDL_SensorUpdate SDL_UpdateSensors
 
+/* ##SDL_stdinc.h */
+#define SDL_strtokr SDL_strtok_r
+
 /* ##SDL_surface.h */
 #define SDL_FillRect SDL_FillSurfaceRect
 #define SDL_FillRects SDL_FillSurfaceRects
@@ -420,22 +457,45 @@
 #define SDL_RenderGetD3D11Device SDL_GetRenderD3D11Device
 #define SDL_RenderGetD3D9Device SDL_GetRenderD3D9Device
 
+/* ##SDL_thread.h */
+#define SDL_TLSCleanup SDL_CleanupTLS
+#define SDL_TLSCreate SDL_CreateTLS
+#define SDL_TLSGet SDL_GetTLS
+#define SDL_TLSSet SDL_SetTLS
+
 /* ##SDL_timer.h */
 #define SDL_GetTicks64 SDL_GetTicks
 
 /* ##SDL_video.h */
 #define SDL_GetClosestDisplayMode SDL_GetClosestFullscreenDisplayMode
+#define SDL_GetDisplayOrientation SDL_GetCurrentDisplayOrientation
 #define SDL_GetPointDisplayIndex SDL_GetDisplayForPoint
 #define SDL_GetRectDisplayIndex SDL_GetDisplayForRect
 #define SDL_GetWindowDisplayIndex SDL_GetDisplayForWindow
 #define SDL_GetWindowDisplayMode SDL_GetWindowFullscreenMode
 #define SDL_IsScreenSaverEnabled SDL_ScreenSaverEnabled
 #define SDL_SetWindowDisplayMode SDL_SetWindowFullscreenMode
+#define SDL_WINDOW_ALLOW_HIGHDPI SDL_WINDOW_HIGH_PIXEL_DENSITY
 #define SDL_WINDOW_INPUT_GRABBED SDL_WINDOW_MOUSE_GRABBED
+#define SDL_WINDOW_SKIP_TASKBAR SDL_WINDOW_UTILITY
 
 #elif !defined(SDL_DISABLE_OLD_NAMES)
 
 /* ##SDL_audio.h */
+#define AUDIO_F32 AUDIO_F32_renamed_SDL_AUDIO_F32
+#define AUDIO_F32LSB AUDIO_F32LSB_renamed_SDL_AUDIO_F32LSB
+#define AUDIO_F32MSB AUDIO_F32MSB_renamed_SDL_AUDIO_F32MSB
+#define AUDIO_F32SYS AUDIO_F32SYS_renamed_SDL_AUDIO_F32SYS
+#define AUDIO_S16 AUDIO_S16_renamed_SDL_AUDIO_S16
+#define AUDIO_S16LSB AUDIO_S16LSB_renamed_SDL_AUDIO_S16LSB
+#define AUDIO_S16MSB AUDIO_S16MSB_renamed_SDL_AUDIO_S16MSB
+#define AUDIO_S16SYS AUDIO_S16SYS_renamed_SDL_AUDIO_S16SYS
+#define AUDIO_S32 AUDIO_S32_renamed_SDL_AUDIO_S32
+#define AUDIO_S32LSB AUDIO_S32LSB_renamed_SDL_AUDIO_S32LSB
+#define AUDIO_S32MSB AUDIO_S32MSB_renamed_SDL_AUDIO_S32MSB
+#define AUDIO_S32SYS AUDIO_S32SYS_renamed_SDL_AUDIO_S32SYS
+#define AUDIO_S8 AUDIO_S8_renamed_SDL_AUDIO_S8
+#define AUDIO_U8 AUDIO_U8_renamed_SDL_AUDIO_U8
 #define SDL_AudioStreamAvailable SDL_AudioStreamAvailable_renamed_SDL_GetAudioStreamAvailable
 #define SDL_AudioStreamClear SDL_AudioStreamClear_renamed_SDL_ClearAudioStream
 #define SDL_AudioStreamFlush SDL_AudioStreamFlush_renamed_SDL_FlushAudioStream
@@ -458,9 +518,9 @@
 #define SDL_CONTROLLERAXISMOTION SDL_CONTROLLERAXISMOTION_renamed_SDL_GAMEPADAXISMOTION
 #define SDL_CONTROLLERBUTTONDOWN SDL_CONTROLLERBUTTONDOWN_renamed_SDL_GAMEPADBUTTONDOWN
 #define SDL_CONTROLLERBUTTONUP SDL_CONTROLLERBUTTONUP_renamed_SDL_GAMEPADBUTTONUP
-#define SDL_CONTROLLERDEVICEADDED SDL_CONTROLLERDEVICEADDED_renamed_SDL_GAMEPADADDED
-#define SDL_CONTROLLERDEVICEREMAPPED SDL_CONTROLLERDEVICEREMAPPED_renamed_SDL_GAMEPADREMAPPED
-#define SDL_CONTROLLERDEVICEREMOVED SDL_CONTROLLERDEVICEREMOVED_renamed_SDL_GAMEPADREMOVED
+#define SDL_CONTROLLERDEVICEADDED SDL_CONTROLLERDEVICEADDED_renamed_SDL_EVENT_GAMEPAD_ADDED
+#define SDL_CONTROLLERDEVICEREMAPPED SDL_CONTROLLERDEVICEREMAPPED_renamed_SDL_EVENT_GAMEPAD_REMAPPED
+#define SDL_CONTROLLERDEVICEREMOVED SDL_CONTROLLERDEVICEREMOVED_renamed_SDL_EVENT_GAMEPAD_REMOVED
 #define SDL_CONTROLLERSENSORUPDATE SDL_CONTROLLERSENSORUPDATE_renamed_SDL_GAMEPADSENSORUPDATE
 #define SDL_CONTROLLERTOUCHPADDOWN SDL_CONTROLLERTOUCHPADDOWN_renamed_SDL_GAMEPADTOUCHPADDOWN
 #define SDL_CONTROLLERTOUCHPADMOTION SDL_CONTROLLERTOUCHPADMOTION_renamed_SDL_GAMEPADTOUCHPADMOTION
@@ -510,14 +570,14 @@
 #define SDL_USEREVENT SDL_USEREVENT_renamed_SDL_EVENT_USER
 #define SDL_WINDOWEVENT_CLOSE SDL_WINDOWEVENT_CLOSE_renamed_SDL_EVENT_WINDOW_CLOSE_REQUESTED
 #define SDL_WINDOWEVENT_DISPLAY_CHANGED SDL_WINDOWEVENT_DISPLAY_CHANGED_renamed_SDL_EVENT_WINDOW_DISPLAY_CHANGED
-#define SDL_WINDOWEVENT_ENTER SDL_WINDOWEVENT_ENTER_renamed_SDL_EVENT_WINDOW_ENTER
+#define SDL_WINDOWEVENT_ENTER SDL_WINDOWEVENT_ENTER_renamed_SDL_EVENT_WINDOW_MOUSE_ENTER
 #define SDL_WINDOWEVENT_EXPOSED SDL_WINDOWEVENT_EXPOSED_renamed_SDL_EVENT_WINDOW_EXPOSED
 #define SDL_WINDOWEVENT_FOCUS_GAINED SDL_WINDOWEVENT_FOCUS_GAINED_renamed_SDL_EVENT_WINDOW_FOCUS_GAINED
 #define SDL_WINDOWEVENT_FOCUS_LOST SDL_WINDOWEVENT_FOCUS_LOST_renamed_SDL_EVENT_WINDOW_FOCUS_LOST
 #define SDL_WINDOWEVENT_HIDDEN SDL_WINDOWEVENT_HIDDEN_renamed_SDL_EVENT_WINDOW_HIDDEN
 #define SDL_WINDOWEVENT_HIT_TEST SDL_WINDOWEVENT_HIT_TEST_renamed_SDL_EVENT_WINDOW_HIT_TEST
 #define SDL_WINDOWEVENT_ICCPROF_CHANGED SDL_WINDOWEVENT_ICCPROF_CHANGED_renamed_SDL_EVENT_WINDOW_ICCPROF_CHANGED
-#define SDL_WINDOWEVENT_LEAVE SDL_WINDOWEVENT_LEAVE_renamed_SDL_EVENT_WINDOW_LEAVE
+#define SDL_WINDOWEVENT_LEAVE SDL_WINDOWEVENT_LEAVE_renamed_SDL_EVENT_WINDOW_MOUSE_LEAVE
 #define SDL_WINDOWEVENT_MAXIMIZED SDL_WINDOWEVENT_MAXIMIZED_renamed_SDL_EVENT_WINDOW_MAXIMIZED
 #define SDL_WINDOWEVENT_MINIMIZED SDL_WINDOWEVENT_MINIMIZED_renamed_SDL_EVENT_WINDOW_MINIMIZED
 #define SDL_WINDOWEVENT_MOVED SDL_WINDOWEVENT_MOVED_renamed_SDL_EVENT_WINDOW_MOVED
@@ -563,17 +623,14 @@
 #define SDL_CONTROLLER_BUTTON_TOUCHPAD SDL_CONTROLLER_BUTTON_TOUCHPAD_renamed_SDL_GAMEPAD_BUTTON_TOUCHPAD
 #define SDL_CONTROLLER_BUTTON_X SDL_CONTROLLER_BUTTON_X_renamed_SDL_GAMEPAD_BUTTON_X
 #define SDL_CONTROLLER_BUTTON_Y SDL_CONTROLLER_BUTTON_Y_renamed_SDL_GAMEPAD_BUTTON_Y
-#define SDL_CONTROLLER_TYPE_AMAZON_LUNA SDL_CONTROLLER_TYPE_AMAZON_LUNA_renamed_SDL_GAMEPAD_TYPE_AMAZON_LUNA
-#define SDL_CONTROLLER_TYPE_GOOGLE_STADIA SDL_CONTROLLER_TYPE_GOOGLE_STADIA_renamed_SDL_GAMEPAD_TYPE_GOOGLE_STADIA
 #define SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT_renamed_SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT
 #define SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR_renamed_SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR
 #define SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT_renamed_SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT
 #define SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO_renamed_SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO
-#define SDL_CONTROLLER_TYPE_NVIDIA_SHIELD SDL_CONTROLLER_TYPE_NVIDIA_SHIELD_renamed_SDL_GAMEPAD_TYPE_NVIDIA_SHIELD
 #define SDL_CONTROLLER_TYPE_PS3 SDL_CONTROLLER_TYPE_PS3_renamed_SDL_GAMEPAD_TYPE_PS3
 #define SDL_CONTROLLER_TYPE_PS4 SDL_CONTROLLER_TYPE_PS4_renamed_SDL_GAMEPAD_TYPE_PS4
 #define SDL_CONTROLLER_TYPE_PS5 SDL_CONTROLLER_TYPE_PS5_renamed_SDL_GAMEPAD_TYPE_PS5
-#define SDL_CONTROLLER_TYPE_UNKNOWN SDL_CONTROLLER_TYPE_UNKNOWN_renamed_SDL_GAMEPAD_TYPE_UNKNOWN
+#define SDL_CONTROLLER_TYPE_UNKNOWN SDL_CONTROLLER_TYPE_UNKNOWN_renamed_SDL_GAMEPAD_TYPE_STANDARD
 #define SDL_CONTROLLER_TYPE_VIRTUAL SDL_CONTROLLER_TYPE_VIRTUAL_renamed_SDL_GAMEPAD_TYPE_VIRTUAL
 #define SDL_CONTROLLER_TYPE_XBOX360 SDL_CONTROLLER_TYPE_XBOX360_renamed_SDL_GAMEPAD_TYPE_XBOX360
 #define SDL_CONTROLLER_TYPE_XBOXONE SDL_CONTROLLER_TYPE_XBOXONE_renamed_SDL_GAMEPAD_TYPE_XBOXONE
@@ -708,12 +765,32 @@
 /* ##SDL_mouse.h */
 #define SDL_FreeCursor SDL_FreeCursor_renamed_SDL_DestroyCursor
 
+/* ##SDL_mutex.h */
+#define SDL_CondBroadcast SDL_CondBroadcast_renamed_SDL_BroadcastCondition
+#define SDL_CondSignal SDL_CondSignal_renamed_SDL_SignalCondition
+#define SDL_CondWait SDL_CondWait_renamed_SDL_WaitCondition
+#define SDL_CondWaitTimeout SDL_CondWaitTimeout_renamed_SDL_WaitConditionTimeout
+#define SDL_CreateCond SDL_CreateCond_renamed_SDL_CreateCondition
+#define SDL_DestroyCond SDL_DestroyCond_renamed_SDL_DestroyCondition
+#define SDL_SemPost SDL_SemPost_renamed_SDL_PostSemaphore
+#define SDL_SemTryWait SDL_SemTryWait_renamed_SDL_TryWaitSemaphore
+#define SDL_SemValue SDL_SemValue_renamed_SDL_GetSemaphoreValue
+#define SDL_SemWait SDL_SemWait_renamed_SDL_WaitSemaphore
+#define SDL_SemWaitTimeout SDL_SemWaitTimeout_renamed_SDL_WaitSemaphoreTimeout
+
+/* ##SDL_mutex.h */
+#define SDL_cond SDL_cond_renamed_SDL_Condition
+#define SDL_mutex SDL_mutex_renamed_SDL_Mutex
+#define SDL_sem SDL_sem_renamed_SDL_Semaphore
+
 /* ##SDL_pixels.h */
 #define SDL_AllocFormat SDL_AllocFormat_renamed_SDL_CreatePixelFormat
 #define SDL_AllocPalette SDL_AllocPalette_renamed_SDL_CreatePalette
 #define SDL_FreeFormat SDL_FreeFormat_renamed_SDL_DestroyPixelFormat
 #define SDL_FreePalette SDL_FreePalette_renamed_SDL_DestroyPalette
 #define SDL_MasksToPixelFormatEnum SDL_MasksToPixelFormatEnum_renamed_SDL_GetPixelFormatEnumForMasks
+#define SDL_PIXELFORMAT_BGR888 SDL_PIXELFORMAT_BGR888_renamed_SDL_PIXELFORMAT_XBGR8888
+#define SDL_PIXELFORMAT_RGB888 SDL_PIXELFORMAT_RGB888_renamed_SDL_PIXELFORMAT_XRGB8888
 #define SDL_PixelFormatEnumToMasks SDL_PixelFormatEnumToMasks_renamed_SDL_GetMasksForPixelFormatEnum
 
 /* ##SDL_platform.h */
@@ -798,6 +875,9 @@
 #define SDL_SensorOpen SDL_SensorOpen_renamed_SDL_OpenSensor
 #define SDL_SensorUpdate SDL_SensorUpdate_renamed_SDL_UpdateSensors
 
+/* ##SDL_stdinc.h */
+#define SDL_strtokr SDL_strtokr_renamed_SDL_strtok_r
+
 /* ##SDL_surface.h */
 #define SDL_FillRect SDL_FillRect_renamed_SDL_FillSurfaceRect
 #define SDL_FillRects SDL_FillRects_renamed_SDL_FillSurfaceRects
@@ -817,18 +897,27 @@
 #define SDL_RenderGetD3D11Device SDL_RenderGetD3D11Device_renamed_SDL_GetRenderD3D11Device
 #define SDL_RenderGetD3D9Device SDL_RenderGetD3D9Device_renamed_SDL_GetRenderD3D9Device
 
+/* ##SDL_thread.h */
+#define SDL_TLSCleanup SDL_TLSCleanup_renamed_SDL_CleanupTLS
+#define SDL_TLSCreate SDL_TLSCreate_renamed_SDL_CreateTLS
+#define SDL_TLSGet SDL_TLSGet_renamed_SDL_GetTLS
+#define SDL_TLSSet SDL_TLSSet_renamed_SDL_SetTLS
+
 /* ##SDL_timer.h */
 #define SDL_GetTicks64 SDL_GetTicks64_renamed_SDL_GetTicks
 
 /* ##SDL_video.h */
 #define SDL_GetClosestDisplayMode SDL_GetClosestDisplayMode_renamed_SDL_GetClosestFullscreenDisplayMode
+#define SDL_GetDisplayOrientation SDL_GetDisplayOrientation_renamed_SDL_GetCurrentDisplayOrientation
 #define SDL_GetPointDisplayIndex SDL_GetPointDisplayIndex_renamed_SDL_GetDisplayForPoint
 #define SDL_GetRectDisplayIndex SDL_GetRectDisplayIndex_renamed_SDL_GetDisplayForRect
 #define SDL_GetWindowDisplayIndex SDL_GetWindowDisplayIndex_renamed_SDL_GetDisplayForWindow
 #define SDL_GetWindowDisplayMode SDL_GetWindowDisplayMode_renamed_SDL_GetWindowFullscreenMode
 #define SDL_IsScreenSaverEnabled SDL_IsScreenSaverEnabled_renamed_SDL_ScreenSaverEnabled
 #define SDL_SetWindowDisplayMode SDL_SetWindowDisplayMode_renamed_SDL_SetWindowFullscreenMode
+#define SDL_WINDOW_ALLOW_HIGHDPI SDL_WINDOW_ALLOW_HIGHDPI_renamed_SDL_WINDOW_HIGH_PIXEL_DENSITY
 #define SDL_WINDOW_INPUT_GRABBED SDL_WINDOW_INPUT_GRABBED_renamed_SDL_WINDOW_MOUSE_GRABBED
+#define SDL_WINDOW_SKIP_TASKBAR SDL_WINDOW_SKIP_TASKBAR_renamed_SDL_WINDOW_UTILITY
 
 #endif /* SDL_ENABLE_OLD_NAMES */
 

@@ -44,6 +44,16 @@ typedef Uint32 SDL_DisplayID;
 typedef Uint32 SDL_WindowID;
 
 /**
+ *  \brief System theme
+ */
+typedef enum
+{
+    SDL_SYSTEM_THEME_UNKNOWN,   /**< Unknown system theme */
+    SDL_SYSTEM_THEME_LIGHT,     /**< Light colored system theme */
+    SDL_SYSTEM_THEME_DARK       /**< Dark colored system theme */
+} SDL_SystemTheme;
+
+/**
  *  \brief  The structure that defines a display mode
  *
  *  \sa SDL_GetFullscreenDisplayModes()
@@ -56,20 +66,31 @@ typedef struct
 {
     SDL_DisplayID displayID;    /**< the display this mode is associated with */
     Uint32 format;              /**< pixel format */
-    int pixel_w;                /**< width in pixels (used for creating back buffers) */
-    int pixel_h;                /**< height in pixels (used for creating back buffers) */
-    int screen_w;               /**< width in screen coordinates (used for creating windows) */
-    int screen_h;               /**< height in screen coordinates (used for creating windows) */
-    float display_scale;        /**< scale converting screen coordinates to pixels (e.g. a 2560x1440 screen size mode with 1.5 scale would have 3840x2160 pixels) */
+    int w;                      /**< width */
+    int h;                      /**< height */
+    float pixel_density;        /**< scale converting size to pixels (e.g. a 1920x1080 mode with 2.0 scale would have 3840x2160 pixels) */
     float refresh_rate;         /**< refresh rate (or zero for unspecified) */
     void *driverdata;           /**< driver-specific data, initialize to 0 */
 } SDL_DisplayMode;
+
+/**
+ *  \brief Display orientation
+ */
+typedef enum
+{
+    SDL_ORIENTATION_UNKNOWN,            /**< The display orientation can't be determined */
+    SDL_ORIENTATION_LANDSCAPE,          /**< The display is in landscape mode, with the right side up, relative to portrait mode */
+    SDL_ORIENTATION_LANDSCAPE_FLIPPED,  /**< The display is in landscape mode, with the left side up, relative to portrait mode */
+    SDL_ORIENTATION_PORTRAIT,           /**< The display is in portrait mode */
+    SDL_ORIENTATION_PORTRAIT_FLIPPED    /**< The display is in portrait mode, upside down */
+} SDL_DisplayOrientation;
 
 /**
  *  \brief The type used to identify a window
  *
  *  \sa SDL_CreateWindow()
  *  \sa SDL_CreateWindowFrom()
+ *  \sa SDL_CreateWindowWithPosition()
  *  \sa SDL_DestroyWindow()
  *  \sa SDL_FlashWindow()
  *  \sa SDL_GetWindowData()
@@ -109,7 +130,7 @@ typedef enum
 {
     SDL_WINDOW_FULLSCREEN           = 0x00000001,   /**< window is in fullscreen mode */
     SDL_WINDOW_OPENGL               = 0x00000002,   /**< window usable with OpenGL context */
-    /* 0x00000004 was SDL_WINDOW_SHOWN in SDL2, please reserve this bit for sdl2-compat. */
+    SDL_WINDOW_OCCLUDED             = 0x00000004,   /**< window is occluded */
     SDL_WINDOW_HIDDEN               = 0x00000008,   /**< window is not visible */
     SDL_WINDOW_BORDERLESS           = 0x00000010,   /**< no window decoration */
     SDL_WINDOW_RESIZABLE            = 0x00000020,   /**< window can be resized */
@@ -118,18 +139,17 @@ typedef enum
     SDL_WINDOW_MOUSE_GRABBED        = 0x00000100,   /**< window has grabbed mouse input */
     SDL_WINDOW_INPUT_FOCUS          = 0x00000200,   /**< window has input focus */
     SDL_WINDOW_MOUSE_FOCUS          = 0x00000400,   /**< window has mouse focus */
-    /* 0x00001000 was SDL_WINDOW_FULLSCREEN_DESKTOP in SDL2, please reserve this bit for sdl2-compat. */
     SDL_WINDOW_FOREIGN              = 0x00000800,   /**< window not created by SDL */
-    /* 0x00002000 was SDL_WINDOW_ALLOW_HIGHDPI in SDL2, please reserve this bit for sdl2-compat. */
+    SDL_WINDOW_HIGH_PIXEL_DENSITY   = 0x00002000,   /**< window uses high pixel density back buffer if possible */
     SDL_WINDOW_MOUSE_CAPTURE        = 0x00004000,   /**< window has mouse captured (unrelated to MOUSE_GRABBED) */
     SDL_WINDOW_ALWAYS_ON_TOP        = 0x00008000,   /**< window should always be above others */
-    SDL_WINDOW_SKIP_TASKBAR         = 0x00010000,   /**< window should not be added to the taskbar */
-    SDL_WINDOW_UTILITY              = 0x00020000,   /**< window should be treated as a utility window */
-    SDL_WINDOW_TOOLTIP              = 0x00040000,   /**< window should be treated as a tooltip */
-    SDL_WINDOW_POPUP_MENU           = 0x00080000,   /**< window should be treated as a popup menu */
+    SDL_WINDOW_UTILITY              = 0x00020000,   /**< window should be treated as a utility window, not showing in the task bar and window list */
+    SDL_WINDOW_TOOLTIP              = 0x00040000,   /**< window should be treated as a tooltip and must be created using SDL_CreatePopupWindow() */
+    SDL_WINDOW_POPUP_MENU           = 0x00080000,   /**< window should be treated as a popup menu and must be created using SDL_CreatePopupWindow() */
     SDL_WINDOW_KEYBOARD_GRABBED     = 0x00100000,   /**< window has grabbed keyboard input */
     SDL_WINDOW_VULKAN               = 0x10000000,   /**< window usable for Vulkan surface */
     SDL_WINDOW_METAL                = 0x20000000,   /**< window usable for Metal view */
+    SDL_WINDOW_TRANSPARENT          = 0x40000000    /**< window with transparent buffer */
 
 } SDL_WindowFlags;
 
@@ -150,18 +170,6 @@ typedef enum
 #define SDL_WINDOWPOS_CENTERED         SDL_WINDOWPOS_CENTERED_DISPLAY(0)
 #define SDL_WINDOWPOS_ISCENTERED(X)    \
             (((X)&0xFFFF0000) == SDL_WINDOWPOS_CENTERED_MASK)
-
-/**
- *  \brief Display orientation
- */
-typedef enum
-{
-    SDL_ORIENTATION_UNKNOWN,            /**< The display orientation can't be determined */
-    SDL_ORIENTATION_LANDSCAPE,          /**< The display is in landscape mode, with the right side up, relative to portrait mode */
-    SDL_ORIENTATION_LANDSCAPE_FLIPPED,  /**< The display is in landscape mode, with the left side up, relative to portrait mode */
-    SDL_ORIENTATION_PORTRAIT,           /**< The display is in portrait mode */
-    SDL_ORIENTATION_PORTRAIT_FLIPPED    /**< The display is in portrait mode, upside down */
-} SDL_DisplayOrientation;
 
 /**
  *  \brief Window flash operation
@@ -298,6 +306,15 @@ extern DECLSPEC const char *SDLCALL SDL_GetVideoDriver(int index);
 extern DECLSPEC const char *SDLCALL SDL_GetCurrentVideoDriver(void);
 
 /**
+ * Get the current system theme
+ *
+ * \returns the current system theme, light, dark, or unknown
+ *
+ * \since This function is available since SDL 3.0.0.
+ */
+extern DECLSPEC SDL_SystemTheme SDLCALL SDL_GetSystemTheme(void);
+
+/**
  * Get a list of currently connected displays.
  *
  * \param count a pointer filled in with the number of displays returned
@@ -335,7 +352,7 @@ extern DECLSPEC SDL_DisplayID SDLCALL SDL_GetPrimaryDisplay(void);
 extern DECLSPEC const char *SDLCALL SDL_GetDisplayName(SDL_DisplayID displayID);
 
 /**
- * Get the desktop area represented by a display, in screen coordinates.
+ * Get the desktop area represented by a display.
  *
  * The primary display is always located at (0,0).
  *
@@ -376,6 +393,19 @@ extern DECLSPEC int SDLCALL SDL_GetDisplayBounds(SDL_DisplayID displayID, SDL_Re
 extern DECLSPEC int SDLCALL SDL_GetDisplayUsableBounds(SDL_DisplayID displayID, SDL_Rect *rect);
 
 /**
+ * Get the orientation of a display when it is unrotated.
+ *
+ * \param displayID the instance ID of the display to query
+ * \returns The SDL_DisplayOrientation enum value of the display, or
+ *          `SDL_ORIENTATION_UNKNOWN` if it isn't available.
+ *
+ * \since This function is available since SDL 3.0.0.
+ *
+ * \sa SDL_GetDisplays
+ */
+extern DECLSPEC SDL_DisplayOrientation SDLCALL SDL_GetNaturalDisplayOrientation(SDL_DisplayID displayID);
+
+/**
  * Get the orientation of a display.
  *
  * \param displayID the instance ID of the display to query
@@ -386,20 +416,37 @@ extern DECLSPEC int SDLCALL SDL_GetDisplayUsableBounds(SDL_DisplayID displayID, 
  *
  * \sa SDL_GetDisplays
  */
-extern DECLSPEC SDL_DisplayOrientation SDLCALL SDL_GetDisplayOrientation(SDL_DisplayID displayID);
+extern DECLSPEC SDL_DisplayOrientation SDLCALL SDL_GetCurrentDisplayOrientation(SDL_DisplayID displayID);
+
+/**
+ * Get the content scale of a display.
+ *
+ * The content scale is the expected scale for content based on the DPI
+ * settings of the display. For example, a 4K display might have a 2.0 (200%)
+ * display scale, which means that the user expects UI elements to be twice as
+ * big on this display, to aid in readability.
+ *
+ * \param displayID the instance ID of the display to query
+ * \returns The content scale of the display, or 0.0f on error; call
+ *          SDL_GetError() for more details.
+ *
+ * \since This function is available since SDL 3.0.0.
+ *
+ * \sa SDL_GetDisplays
+ */
+extern DECLSPEC float SDLCALL SDL_GetDisplayContentScale(SDL_DisplayID displayID);
 
 /**
  * Get a list of fullscreen display modes available on a display.
  *
  * The display modes are sorted in this priority:
  *
- * - screen_w -> largest to smallest
- * - screen_h -> largest to smallest
- * - pixel_w -> largest to smallest
- * - pixel_h -> largest to smallest
+ * - w -> largest to smallest
+ * - h -> largest to smallest
  * - bits per pixel -> more colors to fewer colors
  * - packed pixel layout -> largest to smallest
  * - refresh rate -> highest to lowest
+ * - pixel density -> lowest to highest
  *
  * \param displayID the instance ID of the display to query
  * \param count a pointer filled in with the number of displays returned
@@ -428,6 +475,8 @@ extern DECLSPEC const SDL_DisplayMode **SDLCALL SDL_GetFullscreenDisplayModes(SD
  * \param h the height in pixels of the desired display mode
  * \param refresh_rate the refresh rate of the desired display mode, or 0.0f
  *                     for the desktop refresh rate
+ * \param include_high_density_modes Boolean to include high density modes in
+ *                                   the search
  * \returns a pointer to the closest display mode equal to or larger than the
  *          desired mode, or NULL on error; call SDL_GetError() for more
  *          information.
@@ -437,7 +486,7 @@ extern DECLSPEC const SDL_DisplayMode **SDLCALL SDL_GetFullscreenDisplayModes(SD
  * \sa SDL_GetDisplays
  * \sa SDL_GetFullscreenDisplayModes
  */
-extern DECLSPEC const SDL_DisplayMode *SDLCALL SDL_GetClosestFullscreenDisplayMode(SDL_DisplayID displayID, int w, int h, float refresh_rate);
+extern DECLSPEC const SDL_DisplayMode *SDLCALL SDL_GetClosestFullscreenDisplayMode(SDL_DisplayID displayID, int w, int h, float refresh_rate, SDL_bool include_high_density_modes);
 
 /**
  * Get information about the desktop's display mode.
@@ -478,7 +527,7 @@ extern DECLSPEC const SDL_DisplayMode *SDLCALL SDL_GetDesktopDisplayMode(SDL_Dis
 extern DECLSPEC const SDL_DisplayMode *SDLCALL SDL_GetCurrentDisplayMode(SDL_DisplayID displayID);
 
 /**
- * Get the display containing a point, in screen coordinates.
+ * Get the display containing a point.
  *
  * \param point the point to query
  * \returns the instance ID of the display containing the point or 0 on
@@ -492,7 +541,7 @@ extern DECLSPEC const SDL_DisplayMode *SDLCALL SDL_GetCurrentDisplayMode(SDL_Dis
 extern DECLSPEC SDL_DisplayID SDLCALL SDL_GetDisplayForPoint(const SDL_Point *point);
 
 /**
- * Get the display primarily containing a rect, in screen coordinates.
+ * Get the display primarily containing a rect.
  *
  * \param rect the rect to query
  * \returns the instance ID of the display entirely containing the rect or
@@ -520,6 +569,45 @@ extern DECLSPEC SDL_DisplayID SDLCALL SDL_GetDisplayForRect(const SDL_Rect *rect
  * \sa SDL_GetDisplays
  */
 extern DECLSPEC SDL_DisplayID SDLCALL SDL_GetDisplayForWindow(SDL_Window *window);
+
+/**
+ * Get the pixel density of a window.
+ *
+ * This is a ratio of pixel size to window size. For example, if the window is
+ * 1920x1080 and it has a high density back buffer of 3840x2160 pixels, it
+ * would have a pixel density of 2.0.
+ *
+ * \param window the window to query
+ * \returns the pixel density or 0.0f on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL 3.0.0.
+ *
+ * \sa SDL_GetWindowDisplayScale
+ */
+extern DECLSPEC float SDLCALL SDL_GetWindowPixelDensity(SDL_Window *window);
+
+/**
+ * Get the content display scale relative to a window's pixel size.
+ *
+ * This is a combination of the window pixel density and the display content
+ * scale, and is the expected scale for displaying content in this window. For
+ * example, if a 3840x2160 window had a display scale of 2.0, the user expects
+ * the content to take twice as many pixels and be the same physical size as
+ * if it were being displayed in a 1920x1080 window with a display scale of
+ * 1.0.
+ *
+ * Conceptually this value corresponds to the scale display setting, and is
+ * updated when that setting is changed, or the window moves to a display with
+ * a different scale setting.
+ *
+ * \param window the window to query
+ * \returns the display scale, or 0.0f on failure; call SDL_GetError() for
+ *          more information.
+ *
+ * \since This function is available since SDL 3.0.0.
+ */
+extern DECLSPEC float SDLCALL SDL_GetWindowDisplayScale(SDL_Window *window);
 
 /**
  * Set the display mode to use when a window is visible and fullscreen.
@@ -582,7 +670,7 @@ extern DECLSPEC void *SDLCALL SDL_GetWindowICCProfile(SDL_Window *window, size_t
 extern DECLSPEC Uint32 SDLCALL SDL_GetWindowPixelFormat(SDL_Window *window);
 
 /**
- * Create a window with the specified position, dimensions, and flags.
+ * Create a window with the specified dimensions and flags.
  *
  * `flags` may be any of the following OR'd together:
  *
@@ -602,12 +690,12 @@ extern DECLSPEC Uint32 SDLCALL SDL_GetWindowPixelFormat(SDL_Window *window);
  * On Apple's macOS, you **must** set the NSHighResolutionCapable Info.plist
  * property to YES, otherwise you will not receive a High-DPI OpenGL canvas.
  *
- * The window size in pixels may differ from its size in screen coordinates if
- * the window is on a high density display (one with an OS scaling factor).
- * Use SDL_GetWindowSize() to query the client area's size in screen
- * coordinates, and SDL_GetWindowSizeInPixels() or SDL_GetRenderOutputSize()
- * to query the drawable size in pixels. Note that the drawable size can vary
- * after the window is created and should be queried again if you get an
+ * The window pixel size may differ from its window coordinate size if the
+ * window is on a high pixel density display. Use SDL_GetWindowSize() to query
+ * the client area's size in window coordinates, and
+ * SDL_GetWindowSizeInPixels() or SDL_GetRenderOutputSize() to query the
+ * drawable size in pixels. Note that the drawable size can vary after the
+ * window is created and should be queried again if you get an
  * SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED event.
  *
  * If the window is set fullscreen, the width and height parameters `w` and
@@ -631,22 +719,138 @@ extern DECLSPEC Uint32 SDLCALL SDL_GetWindowPixelFormat(SDL_Window *window);
  * in a future version of SDL.
  *
  * \param title the title of the window, in UTF-8 encoding
- * \param x the x position of the window, `SDL_WINDOWPOS_CENTERED`, or
- *          `SDL_WINDOWPOS_UNDEFINED`
- * \param y the y position of the window, `SDL_WINDOWPOS_CENTERED`, or
- *          `SDL_WINDOWPOS_UNDEFINED`
- * \param w the width of the window, in screen coordinates
- * \param h the height of the window, in screen coordinates
+ * \param w the width of the window
+ * \param h the height of the window
  * \param flags 0, or one or more SDL_WindowFlags OR'd together
  * \returns the window that was created or NULL on failure; call
  *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL 3.0.0.
  *
+ * \sa SDL_CreatePopupWindow
+ * \sa SDL_CreateWindowFrom
+ * \sa SDL_CreateWindowWithPosition
+ * \sa SDL_DestroyWindow
+ */
+extern DECLSPEC SDL_Window *SDLCALL SDL_CreateWindow(const char *title, int w, int h, Uint32 flags);
+
+/**
+ * Create a window with the specified position, dimensions, and flags.
+ *
+ * `flags` may be any of the following OR'd together:
+ *
+ * - `SDL_WINDOW_FULLSCREEN`: fullscreen window at desktop resolution
+ * - `SDL_WINDOW_OPENGL`: window usable with an OpenGL context
+ * - `SDL_WINDOW_VULKAN`: window usable with a Vulkan instance
+ * - `SDL_WINDOW_METAL`: window usable with a Metal instance
+ * - `SDL_WINDOW_HIDDEN`: window is not visible
+ * - `SDL_WINDOW_BORDERLESS`: no window decoration
+ * - `SDL_WINDOW_RESIZABLE`: window can be resized
+ * - `SDL_WINDOW_MINIMIZED`: window is minimized
+ * - `SDL_WINDOW_MAXIMIZED`: window is maximized
+ * - `SDL_WINDOW_MOUSE_GRABBED`: window has grabbed mouse focus
+ *
+ * The SDL_Window is implicitly shown if SDL_WINDOW_HIDDEN is not set.
+ *
+ * On Apple's macOS, you **must** set the NSHighResolutionCapable Info.plist
+ * property to YES, otherwise you will not receive a High-DPI OpenGL canvas.
+ *
+ * The window pixel size may differ from its window coordinate size if the
+ * window is on a high pixel density display. Use SDL_GetWindowSize() to query
+ * the client area's size in window coordinates, and
+ * SDL_GetWindowSizeInPixels() or SDL_GetRenderOutputSize() to query the
+ * drawable size in pixels. Note that the drawable size can vary after the
+ * window is created and should be queried again if you get an
+ * SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED event.
+ *
+ * If the window is set fullscreen, the width and height parameters `w` and
+ * `h` will not be used. However, invalid size parameters (e.g. too large) may
+ * still fail. Window size is actually limited to 16384 x 16384 for all
+ * platforms at window creation.
+ *
+ * If the window is created with any of the SDL_WINDOW_OPENGL or
+ * SDL_WINDOW_VULKAN flags, then the corresponding LoadLibrary function
+ * (SDL_GL_LoadLibrary or SDL_Vulkan_LoadLibrary) is called and the
+ * corresponding UnloadLibrary function is called by SDL_DestroyWindow().
+ *
+ * If SDL_WINDOW_VULKAN is specified and there isn't a working Vulkan driver,
+ * SDL_CreateWindow() will fail because SDL_Vulkan_LoadLibrary() will fail.
+ *
+ * If SDL_WINDOW_METAL is specified on an OS that does not support Metal,
+ * SDL_CreateWindow() will fail.
+ *
+ * On non-Apple devices, SDL requires you to either not link to the Vulkan
+ * loader or link to a dynamic library version. This limitation may be removed
+ * in a future version of SDL.
+ *
+ * \param title the title of the window, in UTF-8 encoding
+ * \param x the x position of the window, or `SDL_WINDOWPOS_CENTERED`
+ * \param y the y position of the window, or `SDL_WINDOWPOS_CENTERED`
+ * \param w the width of the window
+ * \param h the height of the window
+ * \param flags 0, or one or more SDL_WindowFlags OR'd together
+ * \returns the window that was created or NULL on failure; call
+ *          SDL_GetError() for more information.
+ *
+ * \since This function is available since SDL 3.0.0.
+ *
+ * \sa SDL_CreatePopupWindow
+ * \sa SDL_CreateWindow
  * \sa SDL_CreateWindowFrom
  * \sa SDL_DestroyWindow
  */
-extern DECLSPEC SDL_Window *SDLCALL SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint32 flags);
+extern DECLSPEC SDL_Window *SDLCALL SDL_CreateWindowWithPosition(const char *title, int x, int y, int w, int h, Uint32 flags);
+
+/**
+ * Create a child popup window of the specified parent window.
+ *
+ * 'flags' **must** contain exactly one of the following: -
+ * 'SDL_WINDOW_TOOLTIP': The popup window is a tooltip and will not pass any
+ * input events. - 'SDL_WINDOW_POPUP_MENU': The popup window is a popup menu.
+ * The topmost popup menu will implicitly gain the keyboard focus.
+ *
+ * The following flags are not relevant to popup window creation and will be
+ * ignored: - 'SDL_WINDOW_MINIMIZED' - 'SDL_WINDOW_MAXIMIZED' -
+ * 'SDL_WINDOW_FULLSCREEN' - 'SDL_WINDOW_BORDERLESS' -
+ * 'SDL_WINDOW_SKIP_TASKBAR'
+ *
+ * The parent parameter **must** be non-null and a valid window. The parent of
+ * a popup window can be either a regular, toplevel window, or another popup
+ * window.
+ *
+ * Popup windows cannot be minimized, maximized, made fullscreen, raised,
+ * flash, be made a modal window, be the parent of a modal window, or grab the
+ * mouse and/or keyboard. Attempts to do so will fail.
+ *
+ * Popup windows implicitly do not have a border/decorations and do not appear
+ * on the taskbar/dock or in lists of windows such as alt-tab menus.
+ *
+ * If a parent window is hidden, any child popup windows will be recursively
+ * hidden as well. Child popup windows not explicitly hidden will be restored
+ * when the parent is shown.
+ *
+ * If the parent window is destroyed, any child popup windows will be
+ * recursively destroyed as well.
+ *
+ * \param parent the parent of the window, must not be NULL
+ * \param offset_x the x position of the popup window relative to the origin
+ *                 of the parent
+ * \param offset_y the y position of the popup window relative to the origin
+ *                 of the parent window
+ * \param w the width of the window
+ * \param h the height of the window
+ * \param flags SDL_WINDOW_TOOLTIP or SDL_WINDOW_POPUP MENU, and zero or more
+ *              additional SDL_WindowFlags OR'd together.
+ * \returns the window that was created or NULL on failure; call
+ *          SDL_GetError() for more information.
+ *
+ * \since This function is available since SDL 3.0.0.
+ *
+ * \sa SDL_CreateWindow
+ * \sa SDL_DestroyWindow
+ * \sa SDL_GetWindowParent
+ */
+extern DECLSPEC SDL_Window *SDLCALL SDL_CreatePopupWindow(SDL_Window *parent, int offset_x, int offset_y, int w, int h, Uint32 flags);
 
 /**
  * Create an SDL window from an existing native window.
@@ -698,6 +902,19 @@ extern DECLSPEC SDL_WindowID SDLCALL SDL_GetWindowID(SDL_Window *window);
  * \sa SDL_GetWindowID
  */
 extern DECLSPEC SDL_Window *SDLCALL SDL_GetWindowFromID(SDL_WindowID id);
+
+/**
+ * Get parent of a window.
+ *
+ * \param window the window to query
+ * \returns the parent of the window on success or NULL if the window has no
+ *          parent.
+ *
+ * \since This function is available since SDL 3.0.0.
+ *
+ * \sa SDL_CreatePopupWindow
+ */
+extern DECLSPEC SDL_Window *SDLCALL SDL_GetWindowParent(SDL_Window *window);
 
 /**
  * Get the window flags.
@@ -788,7 +1005,7 @@ extern DECLSPEC void *SDLCALL SDL_SetWindowData(SDL_Window *window, const char *
 extern DECLSPEC void *SDLCALL SDL_GetWindowData(SDL_Window *window, const char *name);
 
 /**
- * Set the position of a window, in screen coordinates.
+ * Set the position of a window.
  *
  * \param window the window to reposition
  * \param x the x coordinate of the window, or `SDL_WINDOWPOS_CENTERED` or
@@ -805,7 +1022,7 @@ extern DECLSPEC void *SDLCALL SDL_GetWindowData(SDL_Window *window, const char *
 extern DECLSPEC int SDLCALL SDL_SetWindowPosition(SDL_Window *window, int x, int y);
 
 /**
- * Get the position of a window, in screen coordinates.
+ * Get the position of a window.
  *
  * If you do not need the value for one of the positions a NULL may be passed
  * in the `x` or `y` parameter.
@@ -823,10 +1040,7 @@ extern DECLSPEC int SDLCALL SDL_SetWindowPosition(SDL_Window *window, int x, int
 extern DECLSPEC int SDLCALL SDL_GetWindowPosition(SDL_Window *window, int *x, int *y);
 
 /**
- * Set the size of a window's client area, in screen coordinates.
- *
- * The window size in screen coordinates may differ from the size in pixels if
- * the window is on a high density display (one with an OS scaling factor).
+ * Set the size of a window's client area.
  *
  * This only affects the size of the window when not in fullscreen mode. To
  * change the fullscreen mode of a window, use SDL_SetWindowFullscreenMode()
@@ -845,15 +1059,14 @@ extern DECLSPEC int SDLCALL SDL_GetWindowPosition(SDL_Window *window, int *x, in
 extern DECLSPEC int SDLCALL SDL_SetWindowSize(SDL_Window *window, int w, int h);
 
 /**
- * Get the size of a window's client area, in screen coordinates.
+ * Get the size of a window's client area.
  *
  * NULL can safely be passed as the `w` or `h` parameter if the width or
  * height value is not desired.
  *
- * The window size in screen coordinates may differ from the size in pixels if
- * the window is on a high density display (one with an OS scaling factor).
- * Use SDL_GetWindowSizeInPixels() or SDL_GetRenderOutputSize() to get the
- * real client area size in pixels.
+ * The window pixel size may differ from its window coordinate size if the
+ * window is on a high pixel density display. Use SDL_GetWindowSizeInPixels()
+ * or SDL_GetRenderOutputSize() to get the real client area size in pixels.
  *
  * \param window the window to query the width and height from
  * \param w a pointer filled in with the width of the window, may be NULL
@@ -870,8 +1083,7 @@ extern DECLSPEC int SDLCALL SDL_SetWindowSize(SDL_Window *window, int w, int h);
 extern DECLSPEC int SDLCALL SDL_GetWindowSize(SDL_Window *window, int *w, int *h);
 
 /**
- * Get the size of a window's borders (decorations) around the client area, in
- * screen coordinates.
+ * Get the size of a window's borders (decorations) around the client area.
  *
  * Note: If this function fails (returns -1), the size values will be
  * initialized to 0, 0, 0, 0 (if a non-NULL pointer is provided), as if the
@@ -907,9 +1119,6 @@ extern DECLSPEC int SDLCALL SDL_GetWindowBordersSize(SDL_Window *window, int *to
 /**
  * Get the size of a window's client area, in pixels.
  *
- * The window size in pixels may differ from the size in screen coordinates if
- * the window is on a high density display (one with an OS scaling factor).
- *
  * \param window the window from which the drawable size should be queried
  * \param w a pointer to variable for storing the width in pixels, may be NULL
  * \param h a pointer to variable for storing the height in pixels, may be
@@ -925,11 +1134,11 @@ extern DECLSPEC int SDLCALL SDL_GetWindowBordersSize(SDL_Window *window, int *to
 extern DECLSPEC int SDLCALL SDL_GetWindowSizeInPixels(SDL_Window *window, int *w, int *h);
 
 /**
- * Set the minimum size of a window's client area, in screen coordinates.
+ * Set the minimum size of a window's client area.
  *
  * \param window the window to change
- * \param min_w the minimum width of the window
- * \param min_h the minimum height of the window
+ * \param min_w the minimum width of the window, or 0 for no limit
+ * \param min_h the minimum height of the window, or 0 for no limit
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
  *
@@ -941,7 +1150,7 @@ extern DECLSPEC int SDLCALL SDL_GetWindowSizeInPixels(SDL_Window *window, int *w
 extern DECLSPEC int SDLCALL SDL_SetWindowMinimumSize(SDL_Window *window, int min_w, int min_h);
 
 /**
- * Get the minimum size of a window's client area, in screen coordinates.
+ * Get the minimum size of a window's client area.
  *
  * \param window the window to query
  * \param w a pointer filled in with the minimum width of the window, may be
@@ -959,11 +1168,11 @@ extern DECLSPEC int SDLCALL SDL_SetWindowMinimumSize(SDL_Window *window, int min
 extern DECLSPEC int SDLCALL SDL_GetWindowMinimumSize(SDL_Window *window, int *w, int *h);
 
 /**
- * Set the maximum size of a window's client area, in screen coordinates.
+ * Set the maximum size of a window's client area.
  *
  * \param window the window to change
- * \param max_w the maximum width of the window
- * \param max_h the maximum height of the window
+ * \param max_w the maximum width of the window, or 0 for no limit
+ * \param max_h the maximum height of the window, or 0 for no limit
  * \returns 0 on success or a negative error code on failure; call
  *          SDL_GetError() for more information.
  *
@@ -975,7 +1184,7 @@ extern DECLSPEC int SDLCALL SDL_GetWindowMinimumSize(SDL_Window *window, int *w,
 extern DECLSPEC int SDLCALL SDL_SetWindowMaximumSize(SDL_Window *window, int max_w, int max_h);
 
 /**
- * Get the maximum size of a window's client area, in screen coordinates.
+ * Get the maximum size of a window's client area.
  *
  * \param window the window to query
  * \param w a pointer filled in with the maximum width of the window, may be
@@ -1149,6 +1358,19 @@ extern DECLSPEC int SDLCALL SDL_RestoreWindow(SDL_Window *window);
 extern DECLSPEC int SDLCALL SDL_SetWindowFullscreen(SDL_Window *window, SDL_bool fullscreen);
 
 /**
+ * Return whether the window has a surface associated with it.
+ *
+ * \param window the window to query
+ * \returns SDL_TRUE if there is a surface associated with the window, or
+ *          SDL_FALSE otherwise.
+ *
+ * \since This function is available since SDL 3.0.0.
+ *
+ * \sa SDL_GetWindowSurface
+ */
+extern DECLSPEC SDL_bool SDLCALL SDL_HasWindowSurface(SDL_Window *window);
+
+/**
  * Get the SDL surface associated with the window.
  *
  * A new surface will be created with the optimal format for the window, if
@@ -1168,6 +1390,8 @@ extern DECLSPEC int SDLCALL SDL_SetWindowFullscreen(SDL_Window *window, SDL_bool
  *
  * \since This function is available since SDL 3.0.0.
  *
+ * \sa SDL_DestroyWindowSurface
+ * \sa SDL_HasWindowSurface
  * \sa SDL_UpdateWindowSurface
  * \sa SDL_UpdateWindowSurfaceRects
  */
@@ -1213,6 +1437,20 @@ extern DECLSPEC int SDLCALL SDL_UpdateWindowSurface(SDL_Window *window);
  * \sa SDL_UpdateWindowSurface
  */
 extern DECLSPEC int SDLCALL SDL_UpdateWindowSurfaceRects(SDL_Window *window, const SDL_Rect *rects, int numrects);
+
+/**
+ * Destroy the surface associated with the window.
+ *
+ * \param window the window to update
+ * \returns 0 on success or a negative error code on failure; call
+ *          SDL_GetError() for more information.
+ *
+ * \since This function is available since SDL 3.0.0.
+ *
+ * \sa SDL_GetWindowSurface
+ * \sa SDL_HasWindowSurface
+ */
+extern DECLSPEC int SDLCALL SDL_DestroyWindowSurface(SDL_Window *window);
 
 /**
  * Set a window's input grab mode.

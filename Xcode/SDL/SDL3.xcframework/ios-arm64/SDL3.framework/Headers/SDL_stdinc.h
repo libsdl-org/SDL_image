@@ -37,8 +37,8 @@
 #include <stdint.h>
 #include <wchar.h>
 
-#if !defined(alloca)
-# if defined(HAVE_ALLOCA_H)
+#ifndef alloca
+# ifdef HAVE_ALLOCA_H
 #  include <alloca.h>
 # elif defined(__GNUC__)
 #  define alloca __builtin_alloca
@@ -286,6 +286,8 @@ typedef uint64_t Uint64;
 #define SDL_SCANF_FORMAT_STRING
 #define SDL_PRINTF_VARARG_FUNC( fmtargnumber )
 #define SDL_SCANF_VARARG_FUNC( fmtargnumber )
+#define SDL_WPRINTF_VARARG_FUNC( fmtargnumber )
+#define SDL_WSCANF_VARARG_FUNC( fmtargnumber )
 #else
 #if defined(_MSC_VER) && (_MSC_VER >= 1600) /* VS 2010 and above */
 #include <sal.h>
@@ -309,17 +311,21 @@ typedef uint64_t Uint64;
 #define SDL_PRINTF_FORMAT_STRING
 #define SDL_SCANF_FORMAT_STRING
 #endif
-#if defined(__GNUC__)
+#ifdef __GNUC__
 #define SDL_PRINTF_VARARG_FUNC( fmtargnumber ) __attribute__ (( format( __printf__, fmtargnumber, fmtargnumber+1 )))
 #define SDL_SCANF_VARARG_FUNC( fmtargnumber ) __attribute__ (( format( __scanf__, fmtargnumber, fmtargnumber+1 )))
+#define SDL_WPRINTF_VARARG_FUNC( fmtargnumber ) /* __attribute__ (( format( __wprintf__, fmtargnumber, fmtargnumber+1 ))) */
+#define SDL_WSCANF_VARARG_FUNC( fmtargnumber ) /* __attribute__ (( format( __wscanf__, fmtargnumber, fmtargnumber+1 ))) */
 #else
 #define SDL_PRINTF_VARARG_FUNC( fmtargnumber )
 #define SDL_SCANF_VARARG_FUNC( fmtargnumber )
+#define SDL_WPRINTF_VARARG_FUNC( fmtargnumber )
+#define SDL_WSCANF_VARARG_FUNC( fmtargnumber )
 #endif
 #endif /* SDL_DISABLE_ANALYZE_MACROS */
 
 #ifndef SDL_COMPILE_TIME_ASSERT
-#if defined(__cplusplus)
+#ifdef __cplusplus
 #if (__cplusplus >= 201103L)
 #define SDL_COMPILE_TIME_ASSERT(name, x)  static_assert(x, #x)
 #endif
@@ -527,6 +533,7 @@ extern DECLSPEC void *SDLCALL SDL_memmove(SDL_OUT_BYTECAP(len) void *dst, SDL_IN
 extern DECLSPEC int SDLCALL SDL_memcmp(const void *s1, const void *s2, size_t len);
 
 extern DECLSPEC size_t SDLCALL SDL_wcslen(const wchar_t *wstr);
+extern DECLSPEC size_t SDLCALL SDL_wcsnlen(const wchar_t *wstr, size_t maxlen);
 extern DECLSPEC size_t SDLCALL SDL_wcslcpy(SDL_OUT_Z_CAP(maxlen) wchar_t *dst, const wchar_t *src, size_t maxlen);
 extern DECLSPEC size_t SDLCALL SDL_wcslcat(SDL_INOUT_Z_CAP(maxlen) wchar_t *dst, const wchar_t *src, size_t maxlen);
 extern DECLSPEC wchar_t *SDLCALL SDL_wcsdup(const wchar_t *wstr);
@@ -536,12 +543,15 @@ extern DECLSPEC int SDLCALL SDL_wcscmp(const wchar_t *str1, const wchar_t *str2)
 extern DECLSPEC int SDLCALL SDL_wcsncmp(const wchar_t *str1, const wchar_t *str2, size_t maxlen);
 extern DECLSPEC int SDLCALL SDL_wcscasecmp(const wchar_t *str1, const wchar_t *str2);
 extern DECLSPEC int SDLCALL SDL_wcsncasecmp(const wchar_t *str1, const wchar_t *str2, size_t len);
+extern DECLSPEC long SDLCALL SDL_wcstol(const wchar_t *str, wchar_t **endp, int base);
 
 extern DECLSPEC size_t SDLCALL SDL_strlen(const char *str);
+extern DECLSPEC size_t SDLCALL SDL_strnlen(const char *str, size_t maxlen);
 extern DECLSPEC size_t SDLCALL SDL_strlcpy(SDL_OUT_Z_CAP(maxlen) char *dst, const char *src, size_t maxlen);
 extern DECLSPEC size_t SDLCALL SDL_utf8strlcpy(SDL_OUT_Z_CAP(dst_bytes) char *dst, const char *src, size_t dst_bytes);
 extern DECLSPEC size_t SDLCALL SDL_strlcat(SDL_INOUT_Z_CAP(maxlen) char *dst, const char *src, size_t maxlen);
 extern DECLSPEC SDL_MALLOC char *SDLCALL SDL_strdup(const char *str);
+extern DECLSPEC SDL_MALLOC char *SDLCALL SDL_strndup(const char *str, size_t maxlen);
 extern DECLSPEC char *SDLCALL SDL_strrev(char *str);
 extern DECLSPEC char *SDLCALL SDL_strupr(char *str);
 extern DECLSPEC char *SDLCALL SDL_strlwr(char *str);
@@ -549,7 +559,7 @@ extern DECLSPEC char *SDLCALL SDL_strchr(const char *str, int c);
 extern DECLSPEC char *SDLCALL SDL_strrchr(const char *str, int c);
 extern DECLSPEC char *SDLCALL SDL_strstr(const char *haystack, const char *needle);
 extern DECLSPEC char *SDLCALL SDL_strcasestr(const char *haystack, const char *needle);
-extern DECLSPEC char *SDLCALL SDL_strtokr(char *s1, const char *s2, char **saveptr);
+extern DECLSPEC char *SDLCALL SDL_strtok_r(char *s1, const char *s2, char **saveptr);
 extern DECLSPEC size_t SDLCALL SDL_utf8strlen(const char *str);
 extern DECLSPEC size_t SDLCALL SDL_utf8strnlen(const char *str, size_t bytes);
 
@@ -576,7 +586,9 @@ extern DECLSPEC int SDLCALL SDL_strncasecmp(const char *str1, const char *str2, 
 extern DECLSPEC int SDLCALL SDL_sscanf(const char *text, SDL_SCANF_FORMAT_STRING const char *fmt, ...) SDL_SCANF_VARARG_FUNC(2);
 extern DECLSPEC int SDLCALL SDL_vsscanf(const char *text, const char *fmt, va_list ap);
 extern DECLSPEC int SDLCALL SDL_snprintf(SDL_OUT_Z_CAP(maxlen) char *text, size_t maxlen, SDL_PRINTF_FORMAT_STRING const char *fmt, ... ) SDL_PRINTF_VARARG_FUNC(3);
+extern DECLSPEC int SDLCALL SDL_swprintf(SDL_OUT_Z_CAP(maxlen) wchar_t *text, size_t maxlen, SDL_PRINTF_FORMAT_STRING const wchar_t *fmt, ... ) SDL_WPRINTF_VARARG_FUNC(3);
 extern DECLSPEC int SDLCALL SDL_vsnprintf(SDL_OUT_Z_CAP(maxlen) char *text, size_t maxlen, const char *fmt, va_list ap);
+extern DECLSPEC int SDLCALL SDL_vswprintf(SDL_OUT_Z_CAP(maxlen) wchar_t *text, size_t maxlen, const wchar_t *fmt, va_list ap);
 extern DECLSPEC int SDLCALL SDL_asprintf(char **strp, SDL_PRINTF_FORMAT_STRING const char *fmt, ...) SDL_PRINTF_VARARG_FUNC(2);
 extern DECLSPEC int SDLCALL SDL_vasprintf(char **strp, const char *fmt, va_list ap);
 
@@ -690,6 +702,20 @@ size_t strlcpy(char* dst, const char* src, size_t size);
 size_t strlcat(char* dst, const char* src, size_t size);
 #endif
 
+#ifndef HAVE_WCSLCPY
+size_t wcslcpy(wchar_t *dst, const wchar_t *src, size_t size);
+#endif
+
+#ifndef HAVE_WCSLCAT
+size_t wcslcat(wchar_t *dst, const wchar_t *src, size_t size);
+#endif
+
+/* Starting LLVM 16, the analyser errors out if these functions do not have
+   their prototype defined (clang-diagnostic-implicit-function-declaration) */
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+
 #define SDL_malloc malloc
 #define SDL_calloc calloc
 #define SDL_realloc realloc
@@ -710,7 +736,7 @@ size_t strlcat(char* dst, const char* src, size_t size);
 #define SDL_strrchr strrchr
 #define SDL_strstr strstr
 #define SDL_wcsstr wcsstr
-#define SDL_strtokr strtok_r
+#define SDL_strtok_r strtok_r
 #define SDL_strcmp strcmp
 #define SDL_wcscmp wcscmp
 #define SDL_strncmp strncmp
