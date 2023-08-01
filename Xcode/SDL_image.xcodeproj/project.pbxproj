@@ -60,11 +60,11 @@
 		F354743E2828CA66007E9EDA /* IMG_jxl.c in Sources */ = {isa = PBXBuildFile; fileRef = F354743B2828CA66007E9EDA /* IMG_jxl.c */; };
 		F35475FD2829BAF9007E9EDA /* IMG_avif.c in Sources */ = {isa = PBXBuildFile; fileRef = F35475FC2829BAF9007E9EDA /* IMG_avif.c */; };
 		F382070E284EF58C004DD584 /* CMake in Resources */ = {isa = PBXBuildFile; fileRef = F3820707284EF58C004DD584 /* CMake */; };
-		F3B38CF6296F6DB1005DA6D3 /* SDL3.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3B38CF5296F6DB1005DA6D3 /* SDL3.xcframework */; };
 		F3E1AAEB281CBABD00740E39 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAEA281CBABD00740E39 /* CoreGraphics.framework */; platformFilters = (ios, tvos, ); };
 		F3E1AAEC281CBB1F00740E39 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */; platformFilters = (ios, tvos, ); };
 		F3E1AAEE281CBD9F00740E39 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAED281CBD9F00740E39 /* UIKit.framework */; platformFilters = (ios, tvos, ); };
 		F3E1AAF0281CBDD100740E39 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAEF281CBDD100740E39 /* MobileCoreServices.framework */; platformFilters = (ios, tvos, ); };
+		F3E1F8962A794A6300AC76D3 /* SDL3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1F8952A794A3D00AC76D3 /* SDL3.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -138,20 +138,14 @@
 			remoteGlobalIDString = F3B38D2A296F7515005DA6D3;
 			remoteInfo = jxl.xcframework;
 		};
-/* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		AA9EE77214B27810008773C0 /* Copy Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Copy Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
+		F3E1F8942A794A3D00AC76D3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F3E1F88E2A794A3D00AC76D3 /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BECDF66C0761BA81005FE872;
+			remoteInfo = SDL3;
 		};
-/* End PBXCopyFilesBuildPhase section */
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		007288A60F0DA79800C302A9 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
@@ -183,13 +177,13 @@
 		F35475FC2829BAF9007E9EDA /* IMG_avif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_avif.c; path = ../src/IMG_avif.c; sourceTree = "<group>"; };
 		F3547625282AE1C6007E9EDA /* config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = config.xcconfig; sourceTree = "<group>"; };
 		F3820707284EF58C004DD584 /* CMake */ = {isa = PBXFileReference; lastKnownFileType = folder; path = CMake; sourceTree = "<group>"; };
-		F3B38CF5296F6DB1005DA6D3 /* SDL3.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SDL3.xcframework; path = SDL/SDL3.xcframework; sourceTree = "<group>"; };
 		F3D87C03281DF8FC005DA540 /* SDL3.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL3.framework; path = macOS/SDL3.framework; sourceTree = "<group>"; };
 		F3D87D15281EA88F005DA540 /* webp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = webp.xcodeproj; path = webp/webp.xcodeproj; sourceTree = "<group>"; };
 		F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		F3E1AAEA281CBABD00740E39 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		F3E1AAED281CBD9F00740E39 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/System/iOSSupport/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		F3E1AAEF281CBDD100740E39 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/iOSSupport/System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		F3E1F88E2A794A3D00AC76D3 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = ../external/SDL/Xcode/SDL/SDL.xcodeproj; sourceTree = "<group>"; };
 		F59C710300D5CB5801000001 /* ReadMe.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
 		F59C710400D5CB5801000001 /* Welcome.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Welcome.txt; sourceTree = "<group>"; };
 		F59C710600D5CB5801000001 /* SDL_image.info */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SDL_image.info; sourceTree = "<group>"; };
@@ -203,10 +197,10 @@
 				AADBAC89175C6B4C004F8ED2 /* ApplicationServices.framework in Frameworks */,
 				F3E1AAEB281CBABD00740E39 /* CoreGraphics.framework in Frameworks */,
 				AADBAC8A175C6B4F004F8ED2 /* Foundation.framework in Frameworks */,
+				F3E1F8962A794A6300AC76D3 /* SDL3.framework in Frameworks */,
 				F3E1AAEC281CBB1F00740E39 /* ImageIO.framework in Frameworks */,
 				F3E1AAF0281CBDD100740E39 /* MobileCoreServices.framework in Frameworks */,
 				F3E1AAEE281CBD9F00740E39 /* UIKit.framework in Frameworks */,
-				F3B38CF6296F6DB1005DA6D3 /* SDL3.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -234,7 +228,7 @@
 			isa = PBXGroup;
 			children = (
 				F3547625282AE1C6007E9EDA /* config.xcconfig */,
-				F3B38CF5296F6DB1005DA6D3 /* SDL3.xcframework */,
+				F3E1F88E2A794A3D00AC76D3 /* SDL.xcodeproj */,
 				F35475D42829BA80007E9EDA /* avif.xcodeproj */,
 				F307EFA82828C8FA003915D7 /* jxl.xcodeproj */,
 				F3D87D15281EA88F005DA540 /* webp.xcodeproj */,
@@ -331,6 +325,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		F3E1F88F2A794A3D00AC76D3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F3E1F8952A794A3D00AC76D3 /* SDL3.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		F59C70FC00D5CB5801000001 /* pkg-support */ = {
 			isa = PBXGroup;
 			children = (
@@ -373,7 +375,6 @@
 				BE1FA71C07AF4C44004B6283 /* Sources */,
 				BE1FA72A07AF4C44004B6283 /* Frameworks */,
 				BE1FA72B07AF4C44004B6283 /* Rez */,
-				AA9EE77214B27810008773C0 /* Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -423,6 +424,10 @@
 				{
 					ProductGroup = F307EFA92828C8FA003915D7 /* Products */;
 					ProjectRef = F307EFA82828C8FA003915D7 /* jxl.xcodeproj */;
+				},
+				{
+					ProductGroup = F3E1F88F2A794A3D00AC76D3 /* Products */;
+					ProjectRef = F3E1F88E2A794A3D00AC76D3 /* SDL.xcodeproj */;
 				},
 				{
 					ProductGroup = F3D87D16281EA88F005DA540 /* Products */;
@@ -479,6 +484,13 @@
 			fileType = wrapper.framework;
 			path = webp.framework;
 			remoteRef = F3D87D23281EA9D8005DA540 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F3E1F8952A794A3D00AC76D3 /* SDL3.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SDL3.framework;
+			remoteRef = F3E1F8942A794A3D00AC76D3 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
