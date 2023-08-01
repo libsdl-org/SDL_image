@@ -447,7 +447,10 @@ if(SDL3IMAGE_JXL)
     if(SDL3IMAGE_JXL_VENDORED)
         enable_language(CXX)
         message(STATUS "${PROJECT_NAME}: Using vendored libjxl")
-        set(BUILD_TESTING OFF)
+        # BUILD_TESTING variable is used by libjxl
+        set(BUILD_TESTING OFF CACHE BOOL "build testing")
+        # JPEGXL_ENABLE_TOOLS variable is used by libjxl
+        set(JPEGXL_ENABLE_JNI OFF CACHE BOOL "build jpegxl fni")
         # JPEGXL_ENABLE_MANPAGES variable is used by libjxl
         set(JPEGXL_ENABLE_MANPAGES OFF CACHE BOOL "libjxl manpage option" FORCE)
         # JPEGXL_ENABLE_PLUGINS variable is used by libjxl

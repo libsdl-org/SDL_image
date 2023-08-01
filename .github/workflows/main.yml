@@ -15,12 +15,12 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows (MSVC),    os: windows-latest, shell: sh,  cmake: '-DSDL3IMAGE_VENDORED=ON -GNinja', msvc: 1, shared: 1, static: 0 }
-        - { name: Windows (mingw64), os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0,
-            cmake: '-DSDL3IMAGE_BACKEND_STB=OFF -DSDL3IMAGE_BACKEND_WIC=OFF -DSDL3IMAGE_VENDORED=OFF -DSDL3IMAGE_AVIF=ON -G "Ninja Multi-Config"' }
-        - { name: Linux,             os: ubuntu-20.04,   shell: sh,  cmake: '-DSDL3IMAGE_VENDORED=ON -GNinja', shared: 1, static: 0 }
-        - { name: 'Linux (static)',  os: ubuntu-20.04,   shell: sh,  cmake: '-DSDL3IMAGE_VENDORED=ON -DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1 }
-        - { name: Macos,             os: macos-latest,   shell: sh,  cmake: '-DSDL3IMAGE_VENDORED=ON -GNinja', shared: 1, static: 0 }
+        - { name: Windows (MSVC),    os: windows-latest, shell: sh,  vendored: true, cmake: '-GNinja', msvc: 1, shared: 1, static: 0 }
+        - { name: Windows (mingw64), os: windows-latest, shell: 'msys2 {0}', vendored: false, msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0,
+            cmake: '-DSDL3IMAGE_BACKEND_STB=OFF -DSDL3IMAGE_BACKEND_WIC=OFF  -DSDL3IMAGE_AVIF=ON -G "Ninja Multi-Config"' }
+        - { name: Linux,             os: ubuntu-20.04,   shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0, nojxl: true }
+        - { name: 'Linux (static)',  os: ubuntu-20.04,   shell: sh,  vendored: true, cmake: '-DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1 }
+        - { name: Macos,             os: macos-latest,   shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0 }
 
     steps:
 
@@ -33,6 +33,7 @@ jobs:
       uses: msys2/setup-msys2@v2
       with:
         msystem: ${{ matrix.platform.msystem }}
+        path-type: inherit
         install: >-
           ${{ matrix.platform.msys-env }}-cmake
           ${{ matrix.platform.msys-env }}-gcc
@@ -45,11 +46,9 @@ jobs:
           ${{ matrix.platform.msys-env }}-ninja
           ${{ matrix.platform.msys-env }}-pkg-config
           ${{ matrix.platform.msys-env }}-zlib
-    - name: Setup Ninja
+    - name: Install Ninja
+      uses: turtlesec-no/get-ninja@main
       if: ${{ !contains(matrix.platform.shell, 'msys2') }}
-      uses: ashutoshvarma/setup-ninja@master
-      with:
-        version: 1.11.1
     - name: Set up SDL
       id: sdl
       uses: libsdl-org/setup-sdl@main
@@ -58,26 +57,24 @@ jobs:
         version: 3-head
         sdl-test: true
         shell: ${{ matrix.platform.shell }}
-    - name: Setup Macos dependencies
-      if: ${{ runner.os == 'macOS' }}
+    - name: Set up Macos dependencies
+      if: ${{ runner.os == 'macOS' && !matrix.platform.vendored }}
       run: |
         brew install \
           jpeg \
           libavif \
           libpng \
           libtiff \
-          libtool \
           ninja \
           pkg-config \
           webp \
           zlib \
           ${NULL+}
-    - name: Setup Linux dependencies
-      if: ${{ runner.os == 'Linux' }}
+    - name: Set up Linux dependencies
+      if: ${{ runner.os == 'Linux' && !matrix.platform.vendored }}
       run: |
         sudo apt-get update
         sudo apt-get -y install \
-          cmake \
           libjpeg-dev \
           libpng-dev \
           libtiff-dev \
@@ -89,50 +86,47 @@ jobs:
 
     - uses: actions/checkout@v3
       with:
-        submodules: recursive
+        submodules: ${{ matrix.platform.vendored && 'recursive' }}
 
     - name: Check that versioning is consistent
       # We only need to run this once: arbitrarily use the Linux build
       if: ${{ runner.os == 'Linux' }}
       run: ./build-scripts/test-versioning.sh
 
-    - name: Setup
+    - name: Set up CMake 3.16
       if: ${{ !matrix.platform.msystem && !matrix.platform.msvc }}
       uses: jwlawson/actions-setup-cmake@v1.14
       with:
         cmake-version: '3.16'
     - name: Configure (CMake)
       run: |
-        set -- \
+        export CMAKE_CONFIGURATION_TYPES=Release
+        cmake -B build \
+          -DSDL3IMAGE_VENDORED=${{ matrix.platform.vendored }} \
           -DBUILD_SHARED_LIBS=ON \
           -DCMAKE_BUILD_TYPE=Release \
           -DSDL3IMAGE_SAMPLES=ON \
+          -DSDL3IMAGE_TESTS=ON \
           -DSDL3IMAGE_TESTS_INSTALL=ON \
-          -DSDL3IMAGE_JXL=ON \
+          -DSDL3IMAGE_JXL=${{ !matrix.platform.nojxl }} \
           -DSDL3IMAGE_TIF=ON \
           -DSDL3IMAGE_WEBP=ON \
           -DSDL3IMAGE_WERROR=ON \
           -DCMAKE_INSTALL_PREFIX=prefix_cmake \
-          ${NULL+}
-
-        if [ "${{ matrix.platform.msystem }}" = "" ]; then
-          # mingw-w64-*-SDL3 doesn't have SDL_test, and the macOS CMake
-          # build can't find it (see #260), so we only enable build-time
-          # tests for Linux at the moment.
-          set -- "$@" -DSDL3IMAGE_TESTS=ON
-          # If we dlopen() vendored soft dependencies, the test won't
-          # find them: https://github.com/libsdl-org/SDL_image/issues/259
-          set -- "$@" -DSDL3IMAGE_DEPS_SHARED=OFF
-        fi
-
-        cmake -B build \
-          "$@" \
+          -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=$PWD/build \
+          -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=$PWD/build \
           ${{ matrix.platform.cmake }}
     - name: Build (CMake)
       run: cmake --build build/ --config Release --parallel --verbose
     - name: Run build-time tests
-      if: ${{ runner.os != 'Windows' }}
       run: |
+        sdl_binpath="${{ steps.sdl.outputs.prefix }}/bin"
+        if [ "x${{ runner.os }}" = "xWindows" ]; then
+          sdl_binpath="$( cygpath -u "$sdl_binpath" )"
+        fi
+        echo "sdl_binpath=$sdl_binpath"
+        export PATH="$sdl_binpath:$PATH"
+        export LD_LIBRARY_PATH="$PWD:$LD_LIBRARY_PATH"
         set -eu
 
         # Expect to support all formats except AVIF in these builds
@@ -142,7 +136,7 @@ jobs:
         export SDL_IMAGE_TEST_REQUIRE_LOAD_GIF=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_ICO=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_JPG=1
-        export SDL_IMAGE_TEST_REQUIRE_LOAD_JXL=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_JXL=${{ (matrix.platform.nojxl && '0') || '1' }}
         export SDL_IMAGE_TEST_REQUIRE_LOAD_LBM=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_PCX=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_PNG=1
@@ -158,7 +152,8 @@ jobs:
         export SDL_IMAGE_TEST_REQUIRE_SAVE_JPG=1
         export SDL_IMAGE_TEST_REQUIRE_SAVE_PNG=1
 
-        ctest -VV --test-dir build/test
+        cd build
+        ctest --no-tests=error -VV -C Release
     - name: Install (CMake)
       if: ${{ matrix.platform.shell == 'sh' || contains(matrix.platform.shell, 'msys2') }}
       run: |
