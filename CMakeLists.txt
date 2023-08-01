@@ -583,6 +583,8 @@ if(SDL3IMAGE_TIF)
     target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_TIF)
     if(SDL3IMAGE_TIF_VENDORED)
         message(STATUS "${PROJECT_NAME}: Using vendored libtiff")
+        # tiff-tests variable is used by vendored libtiff
+        set(tiff-tests OFF CACHE BOOL "libtiff: tests" FORCE)
         # jpeg variable is used by vendored libtiff
         set(jpeg OFF CACHE BOOL "libtiff: jpeg option" FORCE)
         # libdeflate variable is used by vendored libtiff
