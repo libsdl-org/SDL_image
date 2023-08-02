@@ -587,7 +587,7 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint64 len, int bpp, 
           t += 2;
         }
 
-        if (((size_t) (t - load) + length) >= read) {
+        if (((Sint64) (t - load) + length) >= read) {
           break;  /* bogus data */
         } else if (length > size) {
           break;  /* bogus data */
@@ -606,7 +606,7 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint64 len, int bpp, 
           t += 2;
         }
 
-        if (((size_t) (t - load)) >= read) {
+        if (((Sint64) (t - load)) >= read) {
           break;  /* bogus data */
         } else if (length > size) {
           break;  /* bogus data */
