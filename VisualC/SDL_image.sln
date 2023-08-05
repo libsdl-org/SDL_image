@@ -1,9 +1,13 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33920.266
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDL3_image", "SDL_image.vcxproj", "{2BD5534E-00E2-4BEA-AC96-D9A92EA24696}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "showimage", "showimage\showimage.vcxproj", "{FEE80C5D-762E-4E57-9BCB-928749E8203F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDL3", "..\external\SDL\VisualC\SDL\SDL.vcxproj", "{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,8 +33,19 @@ Global
 		{FEE80C5D-762E-4E57-9BCB-928749E8203F}.Release|Win32.Build.0 = Release|Win32
 		{FEE80C5D-762E-4E57-9BCB-928749E8203F}.Release|x64.ActiveCfg = Release|x64
 		{FEE80C5D-762E-4E57-9BCB-928749E8203F}.Release|x64.Build.0 = Release|x64
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Debug|Win32.ActiveCfg = Debug|Win32
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Debug|Win32.Build.0 = Debug|Win32
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Debug|x64.ActiveCfg = Debug|x64
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Debug|x64.Build.0 = Debug|x64
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Release|Win32.ActiveCfg = Release|Win32
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Release|Win32.Build.0 = Release|Win32
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Release|x64.ActiveCfg = Release|x64
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3EDEF78E-211F-4AA9-98F3-D35AB42F75AE}
 	EndGlobalSection
 EndGlobal

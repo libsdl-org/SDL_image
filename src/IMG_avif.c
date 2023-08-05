@@ -140,7 +140,7 @@ static SDL_bool ReadAVIFHeader(SDL_RWops *src, Uint8 **header_data, size_t *head
     if (!data) {
         return SDL_FALSE;
     }
-    SDL_memcpy(data, magic, read);
+    SDL_memcpy(data, magic, (size_t)read);
 
     if (SDL_RWread(src, &data[read], (size - read)) != (size - read)) {
         SDL_free(data);
@@ -209,7 +209,7 @@ static avifResult ReadAVIFIO(struct avifIO * io, uint32_t readFlags, uint64_t of
     }
 
     out->data = context->data;
-    out->size = SDL_RWread(context->src, context->data, size);
+    out->size = (size_t)SDL_RWread(context->src, context->data, size);
     if (out->size <= 0) {
         return AVIF_RESULT_IO_ERROR;
     }
