@@ -91,7 +91,8 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
     struct PCXheader pcxh;
     SDL_Surface *surface = NULL;
     int width, height;
-    int y, bpl;
+    int y;
+    size_t bpl;
     Uint8 *row, *buf = NULL;
     char *error = NULL;
     int bits, src_bits;
@@ -158,7 +159,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
     row = (Uint8 *)surface->pixels;
     for ( y=0; y<surface->h; ++y ) {
         /* decode a scan line to a temporary buffer first */
-        int i;
+        size_t i;
         if ( pcxh.Encoding == 0 ) {
             if ( SDL_RWread(src, buf, bpl) != bpl ) {
                 error = "file truncated";
@@ -205,7 +206,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
             }
         } else if ( src_bits == 8 ) {
             /* Copy the row directly */
-            SDL_memcpy(row, buf, SDL_min(width, bpl));
+            SDL_memcpy(row, buf, SDL_min((size_t)width, bpl));
         } else if ( src_bits == 24 ) {
             /* de-interlace planes */
             Uint8 *innerSrc = buf;

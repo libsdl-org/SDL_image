@@ -88,11 +88,7 @@ void IMG_QuitTIF(void)
 
 static tsize_t tiff_read(thandle_t fd, tdata_t buf, tsize_t size)
 {
-    Sint64 amount = SDL_RWread((SDL_RWops*)fd, buf, size);
-    if (amount <= 0) {
-        return 0;
-    }
-    return (tsize_t)amount;
+    return SDL_RWread((SDL_RWops*)fd, buf, size);
 }
 
 static toff_t tiff_seek(thandle_t fd, toff_t offset, int origin)
@@ -102,7 +98,7 @@ static toff_t tiff_seek(thandle_t fd, toff_t offset, int origin)
 
 static tsize_t tiff_write(thandle_t fd, tdata_t buf, tsize_t size)
 {
-    return (tsize_t)SDL_RWwrite((SDL_RWops*)fd, buf, size);
+    return SDL_RWwrite((SDL_RWops*)fd, buf, size);
 }
 
 static int tiff_close(thandle_t fd)

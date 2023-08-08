@@ -90,7 +90,7 @@ int IMG_isSVG(SDL_RWops *src)
     Sint64 start;
     int is_SVG;
     char magic[4096];
-    Sint64 magic_len;
+    size_t magic_len;
 
     if (!src)
         return 0;

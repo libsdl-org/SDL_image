@@ -220,15 +220,10 @@ static SDL_Surface* WIC_LoadImage(SDL_RWops *src)
         return NULL;
     }
 
-    Sint64 fileSize = SDL_RWsize(src);
-    Uint8* memoryBuffer = (Uint8*)SDL_malloc(fileSize);
+    size_t fileSize;
+    Uint8 *memoryBuffer = (Uint8 *)SDL_LoadFile_RW(src, &fileSize, SDL_FALSE);
     if (!memoryBuffer) {
-        SDL_OutOfMemory();
-        return NULL;
-    }
-
-    if (SDL_RWread(src, memoryBuffer, fileSize) != fileSize) {
-        return NULL;
+        return NULL;  
     }
 
 #define DONE_IF_FAILED(X) if (FAILED((X))) { goto done; }

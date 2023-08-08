@@ -111,8 +111,8 @@ void IMG_QuitWEBP(void)
     --lib.loaded;
 }
 
-static int webp_getinfo (SDL_RWops *src, int *datasize) {
-    Sint64 start;
+static int webp_getinfo(SDL_RWops *src, size_t *datasize) {
+    Sint64 start, size;
     int is_WEBP;
     Uint8 magic[20];
 
@@ -136,7 +136,12 @@ static int webp_getinfo (SDL_RWops *src, int *datasize) {
            (magic[15] == ' ' || magic[15] == 'X' || magic[15] == 'L')) {
             is_WEBP = 1;
             if (datasize) {
-                *datasize = (int)(SDL_RWseek(src, 0, SDL_RW_SEEK_END) - start);
+                size = SDL_RWsize(src);
+                if (size > 0) {
+                    *datasize = (size_t)(size - start);
+                } else {
+                    *datasize = 0;
+                }
             }
         }
     }
@@ -157,7 +162,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
     SDL_Surface *surface = NULL;
     Uint32 format;
     WebPBitstreamFeatures features;
-    int raw_data_size;
+    size_t raw_data_size;
     uint8_t *raw_data = NULL;
     uint8_t *ret;
 
@@ -184,7 +189,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
         goto error;
     }
 
-    if (SDL_RWread(src, raw_data, raw_data_size) != (Sint64)raw_data_size) {
+    if (SDL_RWread(src, raw_data, raw_data_size) != raw_data_size) {
         error = "Failed to read WEBP";
         goto error;
     }
@@ -259,7 +264,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
     struct WebPDemuxer* dmuxer = NULL;
     WebPIterator iter;
     IMG_Animation *anim = NULL;
-    int raw_data_size;
+    size_t raw_data_size;
     uint8_t *raw_data = NULL;
     uint8_t *ret;
     int frame_idx;
@@ -288,7 +293,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
         goto error;
     }
 
-    if (SDL_RWread(src, raw_data, raw_data_size) != (Sint64)raw_data_size) {
+    if (SDL_RWread(src, raw_data, raw_data_size) != raw_data_size) {
         error = "Failed to read WEBP Animation";
         goto error;
     }

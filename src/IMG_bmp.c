@@ -65,15 +65,17 @@ static int IMG_isICOCUR(SDL_RWops *src, int type)
     Uint16 bfType;
     Uint16 bfCount;
 
-    if ( !src )
+    if (!src) {
         return 0;
+    }
     start = SDL_RWtell(src);
     is_ICOCUR = 0;
-    bfReserved = SDL_ReadLE16(src);
-    bfType = SDL_ReadLE16(src);
-    bfCount = SDL_ReadLE16(src);
-    if ((bfReserved == 0) && (bfType == type) && (bfCount != 0))
+    if (SDL_ReadU16LE(src, &bfReserved) &&
+        SDL_ReadU16LE(src, &bfType) &&
+        SDL_ReadU16LE(src, &bfCount) &&
+        (bfReserved == 0) && (bfType == type) && (bfCount != 0)) {
         is_ICOCUR = 1;
+    }
     SDL_RWseek(src, start, SDL_RW_SEEK_SET);
 
     return (is_ICOCUR);
@@ -121,8 +123,8 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
     */
     Uint8 *bits;
     int ExpandBMP;
-    int maxCol = 0;
-    int icoOfs = 0;
+    Uint8 maxCol = 0;
+    Uint32 icoOfs = 0;
     Uint32 palette[256];
 
     /* The Win32 ICO file header (14 bytes) */
@@ -152,12 +154,11 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
 
     /* Read in the ICO file header */
     fp_offset = SDL_RWtell(src);
-    SDL_ClearError();
 
-    bfReserved = SDL_ReadLE16(src);
-    bfType = SDL_ReadLE16(src);
-    bfCount = SDL_ReadLE16(src);
-    if ((bfReserved != 0) || (bfType != type) || (bfCount == 0)) {
+    if (!SDL_ReadU16LE(src, &bfReserved) ||
+        !SDL_ReadU16LE(src, &bfType) ||
+        !SDL_ReadU16LE(src, &bfCount) ||
+        (bfReserved != 0) || (bfType != type) || (bfCount == 0)) {
         IMG_SetError("File is not a Windows %s file", type == 1 ? "ICO" : "CUR");
         goto done;
     }
@@ -165,9 +166,9 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
     /* Read the Win32 Icon Directory */
     for (i = 0; i < bfCount; i++) {
         /* Icon Directory Entries */
-        int bWidth = SDL_ReadU8(src);    /* Uint8, but 0 = 256 ! */
-        int bHeight = SDL_ReadU8(src);   /* Uint8, but 0 = 256 ! */
-        int bColorCount = SDL_ReadU8(src);       /* Uint8, but 0 = 256 ! */
+        Uint8 bWidth;       /* Uint8, but 0 = 256 ! */
+        Uint8 bHeight;      /* Uint8, but 0 = 256 ! */
+        Uint8 bColorCount;  /* Uint8, but 0 = 256 ! */
         /*
         Uint8 bReserved;
         Uint16 wPlanes;
@@ -175,54 +176,69 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
         Uint32 dwBytesInRes;
         */
         Uint32 dwImageOffset;
+        int nWidth, nHeight, nColorCount;
 
-        /* bReserved = */ SDL_ReadU8(src);
-        /* wPlanes = */ SDL_ReadLE16(src);
-        /* wBitCount = */ SDL_ReadLE16(src);
-        /* dwBytesInRes = */ SDL_ReadLE32(src);
-        dwImageOffset = SDL_ReadLE32(src);
+        if (!SDL_ReadU8(src, &bWidth) ||
+            !SDL_ReadU8(src, &bHeight) ||
+            !SDL_ReadU8(src, &bColorCount) ||
+            !SDL_ReadU8(src, NULL /* bReserved */) ||
+            !SDL_ReadU16LE(src, NULL /* wPlanes */) ||
+            !SDL_ReadU16LE(src, NULL /* wBitCount */) ||
+            !SDL_ReadU32LE(src, NULL /* dwBytesInRes */) ||
+            !SDL_ReadU32LE(src, &dwImageOffset)) {
+            goto done;
+        }
 
-        if (!bWidth)
-            bWidth = 256;
-        if (!bHeight)
-            bHeight = 256;
-        if (!bColorCount)
-            bColorCount = 256;
+        if (bWidth) {
+            nWidth = bWidth;
+        } else {
+            nWidth = 256;
+        }
+        if (bHeight) {
+            nHeight = bHeight;
+        } else {
+            nHeight = 256;
+        }
+        if (bColorCount) {
+            nColorCount = bColorCount;
+        } else {
+            nColorCount = 256;
+        }
 
-        //printf("%dx%d@%d - %08x\n", bWidth, bHeight, bColorCount, dwImageOffset);
-        if (bColorCount > maxCol) {
-            maxCol = bColorCount;
+        //SDL_Log("%dx%d@%d - %08x\n", nWidth, nHeight, nColorCount, dwImageOffset);
+        (void)nWidth;
+        (void)nHeight;
+        if (nColorCount > maxCol) {
+            maxCol = nColorCount;
             icoOfs = dwImageOffset;
-            //printf("marked\n");
+            //SDL_Log("marked\n");
         }
     }
 
     /* Advance to the DIB Data */
     if (SDL_RWseek(src, icoOfs, SDL_RW_SEEK_SET) < 0) {
-        SDL_Error(SDL_EFSEEK);
         goto done;
     }
 
     /* Read the Win32 BITMAPINFOHEADER */
-    biSize = SDL_ReadLE32(src);
-    if (biSize == 40) {
-        biWidth = SDL_ReadLE32(src);
-        biHeight = SDL_ReadLE32(src);
-        /* biPlanes = */ SDL_ReadLE16(src);
-        biBitCount = SDL_ReadLE16(src);
-        biCompression = SDL_ReadLE32(src);
-        /* biSizeImage = */ SDL_ReadLE32(src);
-        /* biXPelsPerMeter = */ SDL_ReadLE32(src);
-        /* biYPelsPerMeter = */ SDL_ReadLE32(src);
-        biClrUsed = SDL_ReadLE32(src);
-        /* biClrImportant = */ SDL_ReadLE32(src);
-    } else {
-        IMG_SetError("Unsupported ICO bitmap format");
+    if (!SDL_ReadU32LE(src, &biSize)) {
         goto done;
     }
-
-    /* Check for read error */
-    if (SDL_strcmp(SDL_GetError(), "") != 0) {
+    if (biSize == 40) {
+        if (!SDL_ReadS32LE(src, &biWidth) ||
+            !SDL_ReadS32LE(src, &biHeight) ||
+            !SDL_ReadU16LE(src, NULL /* biPlanes */) ||
+            !SDL_ReadU16LE(src, &biBitCount) ||
+            !SDL_ReadU32LE(src, &biCompression) ||
+            !SDL_ReadU32LE(src, NULL /* biSizeImage */) ||
+            !SDL_ReadU32LE(src, NULL /* biXPelsPerMeter */) ||
+            !SDL_ReadU32LE(src, NULL /* biYPelsPerMeter */) ||
+            !SDL_ReadU32LE(src, &biClrUsed) ||
+            !SDL_ReadU32LE(src, NULL /* biClrImportant */)) {
+            goto done;
+        }
+    } else {
+        IMG_SetError("Unsupported ICO bitmap format");
         goto done;
     }
 
@@ -354,7 +370,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
             break;
 
         default:
-            if (SDL_RWread(src, bits, surface->pitch) != surface->pitch) {
+            if (SDL_RWread(src, bits, surface->pitch) != (size_t)surface->pitch) {
                 goto done;
             }
             break;

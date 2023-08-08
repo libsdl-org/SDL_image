@@ -91,8 +91,8 @@ void IMG_QuitAVIF(void)
 static SDL_bool ReadAVIFHeader(SDL_RWops *src, Uint8 **header_data, size_t *header_size)
 {
     Uint8 magic[16];
-    Sint64 size;
-    Sint64 read = 0;
+    Uint64 size;
+    Uint64 read = 0;
     Uint8 *data;
 
     *header_data = NULL;
@@ -107,10 +107,10 @@ static SDL_bool ReadAVIFHeader(SDL_RWops *src, Uint8 **header_data, size_t *head
         return SDL_FALSE;
     }
 
-    size = (((size_t)magic[0] << 24) |
-            ((size_t)magic[1] << 16) |
-            ((size_t)magic[2] << 8) |
-            ((size_t)magic[3] << 0));
+    size = (((Uint64)magic[0] << 24) |
+            ((Uint64)magic[1] << 16) |
+            ((Uint64)magic[2] << 8) |
+            ((Uint64)magic[3] << 0));
     if (size == 1) {
         /* 64-bit header size */
         if (SDL_RWread(src, &magic[8], 8) != 8) {
@@ -128,7 +128,7 @@ static SDL_bool ReadAVIFHeader(SDL_RWops *src, Uint8 **header_data, size_t *head
                 ((Uint64)magic[15] << 0));
     }
 
-    if (size > INT_MAX) {
+    if (size > SDL_SIZE_MAX) {
         return SDL_FALSE;
     }
     if (size <= read) {
@@ -142,7 +142,7 @@ static SDL_bool ReadAVIFHeader(SDL_RWops *src, Uint8 **header_data, size_t *head
     }
     SDL_memcpy(data, magic, (size_t)read);
 
-    if (SDL_RWread(src, &data[read], (size - read)) != (size - read)) {
+    if (SDL_RWread(src, &data[read], (size_t)(size - read)) != (size_t)(size - read)) {
         SDL_free(data);
         return SDL_FALSE;
     }
@@ -209,9 +209,13 @@ static avifResult ReadAVIFIO(struct avifIO * io, uint32_t readFlags, uint64_t of
     }
 
     out->data = context->data;
-    out->size = (size_t)SDL_RWread(context->src, context->data, size);
-    if (out->size <= 0) {
-        return AVIF_RESULT_IO_ERROR;
+    out->size = SDL_RWread(context->src, context->data, size);
+    if (out->size == 0) {
+        if (context->src->status == SDL_RWOPS_STATUS_NOT_READY) {
+            return AVIF_RESULT_WAITING_ON_IO;
+        } else {
+            return AVIF_RESULT_IO_ERROR;
+        }
     }
 
     return AVIF_RESULT_OK;

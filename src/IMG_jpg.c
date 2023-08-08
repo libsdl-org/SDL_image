@@ -155,7 +155,7 @@ int IMG_isJPG(SDL_RWops *src)
     start = SDL_RWtell(src);
     is_JPG = 0;
     in_scan = 0;
-    if ( SDL_RWread(src, magic, 2) == 2 ) {
+    if (SDL_RWread(src, magic, 2) == 2) {
         if ( (magic[0] == 0xFF) && (magic[1] == 0xD8) ) {
             is_JPG = 1;
             while (is_JPG == 1) {
@@ -228,10 +228,10 @@ static void init_source (j_decompress_ptr cinfo)
 static boolean fill_input_buffer (j_decompress_ptr cinfo)
 {
     my_source_mgr * src = (my_source_mgr *) cinfo->src;
-    int nbytes;
+    size_t nbytes;
 
-    nbytes = (int)SDL_RWread(src->ctx, src->buffer, INPUT_BUFFER_SIZE);
-    if (nbytes <= 0) {
+    nbytes = SDL_RWread(src->ctx, src->buffer, INPUT_BUFFER_SIZE);
+    if (nbytes == 0) {
         /* Insert a fake EOI marker */
         src->buffer[0] = (Uint8) 0xFF;
         src->buffer[1] = (Uint8) JPEG_EOI;

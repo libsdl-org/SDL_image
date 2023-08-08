@@ -127,7 +127,7 @@ SDL_Surface *IMG_LoadXV_RW(SDL_RWops *src)
 
     /* Load the image data */
     for ( pixels = (Uint8 *)surface->pixels; h > 0; --h ) {
-        if ( SDL_RWread(src, pixels, w) != w ) {
+        if ( SDL_RWread(src, pixels, w) != (size_t)w ) {
             error = "Couldn't read image data";
             goto done;
         }

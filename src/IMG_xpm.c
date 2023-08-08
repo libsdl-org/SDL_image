@@ -915,7 +915,7 @@ static int color_to_argb(char *spec, int speclen, Uint32 *argb)
 }
 
 static char *linebuf;
-static int buflen;
+static size_t buflen;
 static char *error;
 
 /*
@@ -923,7 +923,7 @@ static char *error;
  * If len > 0, it's assumed to be at least len chars (for efficiency).
  * Return NULL and set error upon EOF or parse error.
  */
-static char *get_next_line(char ***lines, SDL_RWops *src, int len)
+static char *get_next_line(char ***lines, SDL_RWops *src, size_t len)
 {
     char *linebufnew;
 
@@ -931,7 +931,7 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
         return *(*lines)++;
     } else {
         char c;
-        int n;
+        size_t n;
         do {
             if (SDL_RWread(src, &c, 1) != 1) {
                 error = "Premature end of data";
@@ -939,7 +939,7 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
             }
         } while (c != '"');
         if (len) {
-            len += 4;   /* "\",\n\0" */
+            len += 3;   /* "\",\n" */
             if (len > buflen){
                 buflen = len;
                 linebufnew = (char *)SDL_realloc(linebuf, buflen);
@@ -950,15 +950,15 @@ static char *get_next_line(char ***lines, SDL_RWops *src, int len)
                 }
                 linebuf = linebufnew;
             }
-            if (SDL_RWread(src, linebuf, len - 1) != (len - 1)) {
+            if (SDL_RWread(src, linebuf, len) != len) {
                 error = "Premature end of data";
                 return NULL;
             }
-            n = len - 2;
+            n = len - 1;
         } else {
             n = 0;
             do {
-                if (n >= buflen - 1) {
+                if (n >= buflen) {
                     if (buflen == 0)
                         buflen = 16;
                     buflen *= 2;
@@ -1009,7 +1009,7 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src, SDL_bool force_32bit)
     char *keystrings = NULL, *nextkey;
     char *line;
     char ***xpmlines = NULL;
-    int pixels_len;
+    size_t pixels_len;
 
     error = NULL;
     linebuf = NULL;

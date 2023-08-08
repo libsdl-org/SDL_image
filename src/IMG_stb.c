@@ -59,10 +59,7 @@
 
 static int IMG_LoadSTB_RW_read(void *user, char *data, int size)
 {
-    Sint64 amount = SDL_RWread((SDL_RWops*)user, data, size);
-    if (amount <= 0) {
-        return 0;
-    }
+    size_t amount = SDL_RWread((SDL_RWops*)user, data, size);
     return (int)amount;
 }
 
@@ -73,16 +70,8 @@ static void IMG_LoadSTB_RW_skip(void *user, int n)
 
 static int IMG_LoadSTB_RW_eof(void *user)
 {
-    /* FIXME: Do we not have a way to detect EOF? -flibit */
-    Uint8 filler;
-    Sint64 bytes;
     SDL_RWops *src = (SDL_RWops*)user;
-    bytes = SDL_RWread(src, &filler, sizeof(filler));
-    if (bytes != 1) { /* FIXME: Could also be an error... */
-        return 1;
-    }
-    SDL_RWseek(src, -1, SDL_RW_SEEK_CUR);
-    return 0;
+    return (src->status == SDL_RWOPS_STATUS_EOF);
 }
 
 SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)

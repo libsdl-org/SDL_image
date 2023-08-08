@@ -186,7 +186,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
     }
 
     if (hdr.has_cmap) {
-        int palsiz = ncols * ((hdr.cmap_bits + 7) >> 3);
+        size_t palsiz = ncols * ((hdr.cmap_bits + 7) >> 3);
         if (indexed && !grey) {
             Uint8 *pal = (Uint8 *)SDL_malloc(palsiz), *p = pal;
             SDL_Color *colors = img->format->palette->colors;
@@ -254,7 +254,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
                     int n = count;
                     if (n > w - x)
                         n = w - x;
-                    if (SDL_RWread(src, dst + x * bpp, n * bpp) != (n * bpp)) {
+                    if (SDL_RWread(src, dst + x * bpp, n * bpp) != (size_t)(n * bpp)) {
                         error = "Error reading TGA data";
                         goto error;
                     }
@@ -280,7 +280,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
                     goto error;
                 }
                 if (c & 0x80) {
-                    if (SDL_RWread(src, &pixel, bpp) != bpp) {
+                    if (SDL_RWread(src, &pixel, bpp) != (size_t)bpp) {
                         error = "Error reading TGA data";
                         goto error;
                     }
@@ -290,7 +290,7 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
                 }
             }
         } else {
-            if (SDL_RWread(src, dst, w * bpp) != (w * bpp)) {
+            if (SDL_RWread(src, dst, w * bpp) != (size_t)(w * bpp)) {
                 error = "Error reading TGA data";
                 goto error;
             }

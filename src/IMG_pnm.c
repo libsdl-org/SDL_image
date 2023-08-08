@@ -111,7 +111,8 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
     Sint64 start;
     SDL_Surface *surface = NULL;
     int width, height;
-    int maxval, y, bpl;
+    int maxval, y;
+    size_t bpl;
     Uint8 *row;
     Uint8 *buf = NULL;
     char *error = NULL;
@@ -184,8 +185,8 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
     row = (Uint8 *)surface->pixels;
     for(y = 0; y < height; y++) {
         if(ascii) {
-            int i;
             if(kind == PBM) {
+                int i;
                 for(i = 0; i < width; i++) {
                     Uint8 ch;
                     do {
@@ -196,6 +197,7 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
                     row[i] = ch;
                 }
             } else {
+                size_t i;
                 for(i = 0; i < bpl; i++) {
                     int c;
                     c = ReadNumber(src);
@@ -219,7 +221,7 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
         }
         if(maxval < 255) {
             /* scale up to full dynamic range (slow) */
-            int i;
+            size_t i;
             for(i = 0; i < bpl; i++)
                 row[i] = row[i] * 255 / maxval;
         }
