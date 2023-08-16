@@ -18,9 +18,9 @@ jobs:
         - { name: Windows (MSVC),    os: windows-latest, shell: sh,  vendored: true, cmake: '-GNinja', msvc: 1, shared: 1, static: 0 }
         - { name: Windows (mingw64), os: windows-latest, shell: 'msys2 {0}', vendored: false, msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0,
             cmake: '-DSDL3IMAGE_BACKEND_STB=OFF -DSDL3IMAGE_BACKEND_WIC=OFF  -DSDL3IMAGE_AVIF=ON -G "Ninja Multi-Config"' }
-        - { name: Linux,             os: ubuntu-20.04,   shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0, nojxl: true }
-        - { name: 'Linux (static)',  os: ubuntu-20.04,   shell: sh,  vendored: true, cmake: '-DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1 }
-        - { name: Macos,             os: macos-latest,   shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0 }
+        - { name: Linux,             os: ubuntu-latest,  shell: sh,  vendored: false, cmake: '-DSDL3IMAGE_AVIF=ON -GNinja', shared: 1, static: 0, nojxl: true }
+        - { name: 'Linux (static)',  os: ubuntu-latest,  shell: sh,  vendored: true, cmake: '-DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1 }
+        - { name: Macos,             os: macos-latest,   shell: sh,  vendored: false, cmake: '-DSDL3IMAGE_AVIF=ON -GNinja', shared: 1, static: 0 }
 
     steps:
 
@@ -75,6 +75,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get -y install \
+          libavif-dev \
           libjpeg-dev \
           libpng-dev \
           libtiff-dev \
@@ -129,8 +130,7 @@ jobs:
         export LD_LIBRARY_PATH="$PWD:$LD_LIBRARY_PATH"
         set -eu
 
-        # Expect to support all formats except AVIF in these builds
-        export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=0
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=${{ (matrix.platform.vendored && '0') || '1' }}
         export SDL_IMAGE_TEST_REQUIRE_LOAD_BMP=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_CUR=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_GIF=1
