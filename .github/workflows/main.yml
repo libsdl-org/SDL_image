@@ -19,9 +19,9 @@ jobs:
         - { name: Windows (mingw32+autotools),  os: windows-latest, shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686, shared: 1, static: 1 }
         - { name: Windows (mingw64+CMake),      os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0,
             cmake: '-DSDL2IMAGE_BACKEND_STB=OFF -DSDL2IMAGE_BACKEND_WIC=OFF -DSDL2IMAGE_VENDORED=OFF -DSDL2IMAGE_AVIF=ON -G "Ninja Multi-Config"' }
-        - { name: Linux (autotools),            os: ubuntu-20.04,   shell: sh, shared: 1, static: 1}
-        - { name: Linux (CMake),                os: ubuntu-20.04,   shell: sh,  cmake: '-DSDL2IMAGE_VENDORED=ON -GNinja', shared: 1, static: 0 }
-        - { name: 'Linux (CMake, static)',      os: ubuntu-20.04,   shell: sh,   cmake: '-DSDL2IMAGE_VENDORED=ON -DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1 }
+        - { name: Linux (autotools),            os: ubuntu-latest,  shell: sh, shared: 1, static: 1}
+        - { name: Linux (CMake),                os: ubuntu-latest,  shell: sh,  cmake: '-DSDL2IMAGE_VENDORED=ON -GNinja', shared: 1, static: 0 }
+        - { name: 'Linux (CMake, static)',      os: ubuntu-latest,  shell: sh,   cmake: '-DSDL2IMAGE_VENDORED=ON -DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1 }
         - { name: Macos (autotools),            os: macos-latest,   shell: sh, shared: 1, static: 1 }
         - { name: Macos (CMake),                os: macos-latest,   shell: sh,   cmake: '-DSDL2IMAGE_VENDORED=ON -GNinja', shared: 1, static: 0 }
 
@@ -70,6 +70,7 @@ jobs:
           autoconf \
           automake \
           cmake \
+          libavif-dev \
           libjpeg-dev \
           libpng-dev \
           libsdl2-dev \
@@ -146,8 +147,7 @@ jobs:
       run: |
         set -eu
 
-        # Expect to support all formats except AVIF in these builds
-        export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=0
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_BMP=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_CUR=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_GIF=1
@@ -216,9 +216,9 @@ jobs:
         set -eu
         parallel="$(getconf _NPROCESSORS_ONLN)"
 
-        # Expect to support all formats except AVIF and JXL in these builds.
+        # Expect to support all formats except JXL in these builds.
         # See test/README.md for how this works.
-        export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=0
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_BMP=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_CUR=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_GIF=1
