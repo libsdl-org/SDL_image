@@ -156,7 +156,7 @@
 		F3ED80B3281D9E8900C33C5B /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3ED80B9281D9E8900C33C5B /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3ED80BB281D9E8900C33C5B /* macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOS.entitlements; sourceTree = "<group>"; };
-		F3ED80CA281D9ECB00C33C5B /* showimage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = showimage.c; path = ../../showimage.c; sourceTree = SOURCE_ROOT; };
+		F3ED80CA281D9ECB00C33C5B /* showimage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = showimage.c; path = ../../examples/showimage.c; sourceTree = SOURCE_ROOT; };
 		F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL_image.xcodeproj; path = ../SDL_image.xcodeproj; sourceTree = "<group>"; };
 		F3ED80E1281D9F2100C33C5B /* showimage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showimage.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3ED80E4281DA17800C33C5B /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../macOS/SDL2.framework; sourceTree = "<group>"; };
