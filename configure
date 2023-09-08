@@ -14380,7 +14380,17 @@ fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$LIBAVIF_PKG_ERRORS" >&5
 
-	        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+	        save_LIBS="$LIBS"
+        LIBS="-lavif"
+        ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for libavif >= 0.9.3" >&5
+printf %s "checking for libavif >= 0.9.3... " >&6; }
+        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
           #include <avif/avif.h>
@@ -14389,11 +14399,16 @@ int
 main (void)
 {
 
+          #if (AVIF_VERSION < 90300)
+          #error libavif too old.
+          #endif
+          return !!avifVersion();
+
   ;
   return 0;
 }
 _ACEOF
-if ac_fn_c_try_compile "$LINENO"
+if ac_fn_c_try_link "$LINENO"
 then :
 
             have_avif_hdr=yes
@@ -14401,13 +14416,35 @@ then :
             LIBAVIF_CFLAGS=""
             LIBAVIF_LIBS="-lavif"
 
+else $as_nop
+  have_avif_lib=no
 fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+        LIBS="$save_LIBS"
+        ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $have_avif_lib" >&5
+printf "%s\n" "$have_avif_lib" >&6; }
 
 elif test $pkg_failed = untried; then
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
-	        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+	        save_LIBS="$LIBS"
+        LIBS="-lavif"
+        ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for libavif >= 0.9.3" >&5
+printf %s "checking for libavif >= 0.9.3... " >&6; }
+        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
           #include <avif/avif.h>
@@ -14416,11 +14453,16 @@ int
 main (void)
 {
 
+          #if (AVIF_VERSION < 90300)
+          #error libavif too old.
+          #endif
+          return !!avifVersion();
+
   ;
   return 0;
 }
 _ACEOF
-if ac_fn_c_try_compile "$LINENO"
+if ac_fn_c_try_link "$LINENO"
 then :
 
             have_avif_hdr=yes
@@ -14428,8 +14470,20 @@ then :
             LIBAVIF_CFLAGS=""
             LIBAVIF_LIBS="-lavif"
 
+else $as_nop
+  have_avif_lib=no
 fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+        LIBS="$save_LIBS"
+        ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $have_avif_lib" >&5
+printf "%s\n" "$have_avif_lib" >&6; }
 
 else
 	LIBAVIF_CFLAGS=$pkg_cv_LIBAVIF_CFLAGS

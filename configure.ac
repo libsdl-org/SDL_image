@@ -311,19 +311,26 @@ if test x$enable_avif = xyes; then
         have_avif_lib=yes
         have_avif_pc=yes
       ], [dnl
-        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+        save_LIBS="$LIBS"
+        LIBS="-lavif"
+        AC_LANG_PUSH([C])
+        AC_MSG_CHECKING([for libavif >= 0.9.3])
+        AC_LINK_IFELSE([AC_LANG_PROGRAM([[
           #include <avif/avif.h>
-        ]],, [[
+        ]], [[
           #if (AVIF_VERSION < 90300)
           #error libavif too old.
           #endif
           return !!avifVersion();
-        ]])], [
+        ]])],[
             have_avif_hdr=yes
             have_avif_lib=yes
             LIBAVIF_CFLAGS=""
             LIBAVIF_LIBS="-lavif"
-        ])
+        ], [have_avif_lib=no])
+        LIBS="$save_LIBS"
+        AC_LANG_POP([C])
+        AC_MSG_RESULT([$have_avif_lib])
       ])
     if test x$have_avif_hdr = xyes -a x$have_avif_lib = xyes; then
         if test x$enable_avif = xyes; then
