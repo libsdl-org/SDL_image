@@ -306,17 +306,22 @@ AC_SUBST([USE_WIC], 0)
 
 load_avif=0
 if test x$enable_avif = xyes; then
-    PKG_CHECK_MODULES([LIBAVIF], [libavif], [dnl
+    PKG_CHECK_MODULES([LIBAVIF], [libavif >= 0.9.3], [dnl
         have_avif_hdr=yes
         have_avif_lib=yes
         have_avif_pc=yes
       ], [dnl
-        AC_CHECK_HEADER([avif/avif.h], [
+        AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+          #include <avif/avif.h>
+        ]],, [[
+          #if (AVIF_VERSION < 90300)
+          #error libavif too old.
+          #endif
+          return !!avifVersion();
+        ]])], [
             have_avif_hdr=yes
-            LIBAVIF_CFLAGS=""
-        ])
-        AC_CHECK_LIB([avif], [avifVersion], [
             have_avif_lib=yes
+            LIBAVIF_CFLAGS=""
             LIBAVIF_LIBS="-lavif"
         ])
       ])

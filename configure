@@ -14323,19 +14323,19 @@ load_avif=0
 if test x$enable_avif = xyes; then
 
 pkg_failed=no
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for libavif" >&5
-printf %s "checking for libavif... " >&6; }
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for libavif >= 0.9.3" >&5
+printf %s "checking for libavif >= 0.9.3... " >&6; }
 
 if test -n "$LIBAVIF_CFLAGS"; then
     pkg_cv_LIBAVIF_CFLAGS="$LIBAVIF_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libavif\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libavif") 2>&5
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libavif >= 0.9.3\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libavif >= 0.9.3") 2>&5
   ac_status=$?
   printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_LIBAVIF_CFLAGS=`$PKG_CONFIG --cflags "libavif" 2>/dev/null`
+  pkg_cv_LIBAVIF_CFLAGS=`$PKG_CONFIG --cflags "libavif >= 0.9.3" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -14347,12 +14347,12 @@ if test -n "$LIBAVIF_LIBS"; then
     pkg_cv_LIBAVIF_LIBS="$LIBAVIF_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libavif\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "libavif") 2>&5
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libavif >= 0.9.3\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libavif >= 0.9.3") 2>&5
   ac_status=$?
   printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_LIBAVIF_LIBS=`$PKG_CONFIG --libs "libavif" 2>/dev/null`
+  pkg_cv_LIBAVIF_LIBS=`$PKG_CONFIG --libs "libavif >= 0.9.3" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -14373,121 +14373,63 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        LIBAVIF_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libavif" 2>&1`
+	        LIBAVIF_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libavif >= 0.9.3" 2>&1`
         else
-	        LIBAVIF_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libavif" 2>&1`
+	        LIBAVIF_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libavif >= 0.9.3" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$LIBAVIF_PKG_ERRORS" >&5
 
-	        ac_fn_c_check_header_compile "$LINENO" "avif/avif.h" "ac_cv_header_avif_avif_h" "$ac_includes_default"
-if test "x$ac_cv_header_avif_avif_h" = xyes
-then :
-
-            have_avif_hdr=yes
-            LIBAVIF_CFLAGS=""
-
-fi
-
-        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for avifVersion in -lavif" >&5
-printf %s "checking for avifVersion in -lavif... " >&6; }
-if test ${ac_cv_lib_avif_avifVersion+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lavif  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+	        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-char avifVersion ();
+          #include <avif/avif.h>
+
 int
 main (void)
 {
-return avifVersion ();
+
   ;
   return 0;
 }
 _ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_avif_avifVersion=yes
-else $as_nop
-  ac_cv_lib_avif_avifVersion=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_avif_avifVersion" >&5
-printf "%s\n" "$ac_cv_lib_avif_avifVersion" >&6; }
-if test "x$ac_cv_lib_avif_avifVersion" = xyes
+if ac_fn_c_try_compile "$LINENO"
 then :
 
+            have_avif_hdr=yes
             have_avif_lib=yes
+            LIBAVIF_CFLAGS=""
             LIBAVIF_LIBS="-lavif"
 
 fi
-
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
 
 elif test $pkg_failed = untried; then
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
-	        ac_fn_c_check_header_compile "$LINENO" "avif/avif.h" "ac_cv_header_avif_avif_h" "$ac_includes_default"
-if test "x$ac_cv_header_avif_avif_h" = xyes
-then :
-
-            have_avif_hdr=yes
-            LIBAVIF_CFLAGS=""
-
-fi
-
-        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for avifVersion in -lavif" >&5
-printf %s "checking for avifVersion in -lavif... " >&6; }
-if test ${ac_cv_lib_avif_avifVersion+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lavif  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+	        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-char avifVersion ();
+          #include <avif/avif.h>
+
 int
 main (void)
 {
-return avifVersion ();
+
   ;
   return 0;
 }
 _ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_avif_avifVersion=yes
-else $as_nop
-  ac_cv_lib_avif_avifVersion=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_avif_avifVersion" >&5
-printf "%s\n" "$ac_cv_lib_avif_avifVersion" >&6; }
-if test "x$ac_cv_lib_avif_avifVersion" = xyes
+if ac_fn_c_try_compile "$LINENO"
 then :
 
+            have_avif_hdr=yes
             have_avif_lib=yes
+            LIBAVIF_CFLAGS=""
             LIBAVIF_LIBS="-lavif"
 
 fi
-
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
 
 else
 	LIBAVIF_CFLAGS=$pkg_cv_LIBAVIF_CFLAGS
