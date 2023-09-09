@@ -51,7 +51,7 @@ jobs:
           ${{ matrix.platform.msys-env }}-zlib
     - name: Install Ninja
       uses: turtlesec-no/get-ninja@main
-      if: ${{ !contains(matrix.platform.shell, 'msys2') && matrix.platform.cmake }}
+      if: ${{ !contains(matrix.platform.shell, 'msys2') }}
     - name: Set up SDL
       id: sdl
       uses: libsdl-org/setup-sdl@main
