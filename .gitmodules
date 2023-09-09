@@ -13,7 +13,7 @@
 [submodule "external/libwebp"]
 	path = external/libwebp
 	url = https://github.com/libsdl-org/libwebp.git
-	branch = 1.0.3-SDL
+	branch = 1.3.2-SDL
 [submodule "external/libtiff"]
 	path = external/libtiff
 	url = https://github.com/libsdl-org/libtiff.git
