@@ -438,7 +438,7 @@ if test x$enable_jxl = xyes; then
                 jxl_lib=[`find_lib libjxl.dylib`]
                 ;;
             *-*-cygwin* | *-*-mingw*)
-                jxl_lib=[`find_lib "libjxl*.dll"`]
+                jxl_lib=[`find_lib "libjxl.dll"`]
                 ;;
             *)
                 jxl_lib=[`find_lib "libjxl[0-9]*.so.*"`]
