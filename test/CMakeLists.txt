@@ -1,3 +1,5 @@
+enable_testing()
+
 if(NOT TARGET SDL2::SDL2main)
     find_package(SDL2main)
 endif()
