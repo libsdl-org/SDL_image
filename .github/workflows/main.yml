@@ -18,9 +18,9 @@ jobs:
         - { name: Windows (MSVC),    os: windows-latest, shell: sh,  vendored: true, cmake: '-GNinja', msvc: 1, shared: 1, static: 0 }
         - { name: Windows (mingw64), os: windows-latest, shell: 'msys2 {0}', vendored: false, msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0,
             cmake: '-DSDL3IMAGE_BACKEND_STB=OFF -DSDL3IMAGE_BACKEND_WIC=OFF  -DSDL3IMAGE_AVIF=ON -G "Ninja Multi-Config"' }
-        - { name: Linux,             os: ubuntu-latest,  shell: sh,  vendored: false, cmake: '-DSDL3IMAGE_AVIF=ON -GNinja', shared: 1, static: 0, nojxl: true }
+        - { name: Linux,             os: ubuntu-latest,  shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0, nojxl: true }
         - { name: 'Linux (static)',  os: ubuntu-latest,  shell: sh,  vendored: true, cmake: '-DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1 }
-        - { name: Macos,             os: macos-latest,   shell: sh,  vendored: false, cmake: '-DSDL3IMAGE_AVIF=ON -GNinja', shared: 1, static: 0 }
+        - { name: Macos,             os: macos-latest,   shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0 }
 
     steps:
 
@@ -37,14 +37,15 @@ jobs:
         install: >-
           ${{ matrix.platform.msys-env }}-cmake
           ${{ matrix.platform.msys-env }}-gcc
+          ${{ matrix.platform.msys-env }}-ninja
+          ${{ matrix.platform.msys-env }}-pkg-config
+          ${{ matrix.platform.msys-env }}-nasm
           ${{ matrix.platform.msys-env }}-libavif
           ${{ matrix.platform.msys-env }}-libjpeg-turbo
           ${{ matrix.platform.msys-env }}-libjxl
           ${{ matrix.platform.msys-env }}-libpng
           ${{ matrix.platform.msys-env }}-libtiff
           ${{ matrix.platform.msys-env }}-libwebp
-          ${{ matrix.platform.msys-env }}-ninja
-          ${{ matrix.platform.msys-env }}-pkg-config
           ${{ matrix.platform.msys-env }}-zlib
     - name: Install Ninja
       uses: turtlesec-no/get-ninja@main
@@ -65,8 +66,6 @@ jobs:
           libavif \
           libpng \
           libtiff \
-          ninja \
-          pkg-config \
           webp \
           zlib \
           ${NULL+}
@@ -80,10 +79,11 @@ jobs:
           libpng-dev \
           libtiff-dev \
           libwebp-dev \
-          ninja-build \
-          pkg-config \
           zlib1g-dev \
           ${NULL+}
+    - name: Set up NASM
+      uses: ilammy/setup-nasm@v1
+      if: ${{ matrix.platform.vendored && !contains(matrix.platform.shell, 'msys2') }}
 
     - uses: actions/checkout@v3
       with:
@@ -109,6 +109,7 @@ jobs:
           -DSDL3IMAGE_SAMPLES=ON \
           -DSDL3IMAGE_TESTS=ON \
           -DSDL3IMAGE_TESTS_INSTALL=ON \
+          -DSDL3IMAGE_AVIF=ON \
           -DSDL3IMAGE_JXL=${{ !matrix.platform.nojxl }} \
           -DSDL3IMAGE_TIF=ON \
           -DSDL3IMAGE_WEBP=ON \
@@ -130,7 +131,7 @@ jobs:
         export LD_LIBRARY_PATH="$PWD:$LD_LIBRARY_PATH"
         set -eu
 
-        export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=${{ (matrix.platform.vendored && '0') || '1' }}
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_BMP=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_CUR=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_GIF=1
