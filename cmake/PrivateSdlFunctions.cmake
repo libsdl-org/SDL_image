@@ -219,12 +219,16 @@ function(target_get_dynamic_library DEST TARGET)
     set(${DEST} ${result} PARENT_SCOPE)
 endfunction()
 
-macro(sdl_check_project_in_subfolder relative_subfolder name vendored_option)
-    if(NOT EXISTS "${PROJECT_SOURCE_DIR}/${relative_subfolder}/CMakeLists.txt")
-        message(FATAL_ERROR "No cmake project for ${name} found in ${relative_subfolder}.\n"
+function(sdl_check_project_in_subfolder relative_subfolder name vendored_option)
+    cmake_parse_arguments(ARG "" "FILE" "" ${ARGN})
+    if(NOT ARG_FILE)
+        set(ARG_FILE "CMakeLists.txt")
+    endif()
+    if(NOT EXISTS "${PROJECT_SOURCE_DIR}/${relative_subfolder}/${ARG_FILE}")
+        message(FATAL_ERROR "Could not find ${ARG_FILE} for ${name} in ${relative_subfolder}.\n"
             "Run the download script in the external folder, or re-configure with -D${vendored_option}=OFF to use system packages.")
     endif()
-endmacro()
+endfunction()
 
 macro(sdl_check_linker_flag flag var)
     # FIXME: Use CheckLinkerFlag module once cmake minimum version >= 3.18
