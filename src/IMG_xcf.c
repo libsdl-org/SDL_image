@@ -768,7 +768,7 @@ do_layer_surface(SDL_Surface *surface, SDL_RWops *src, xcf_header *head, xcf_lay
                 length = level->tile_file_offsets[j + 1] - level->tile_file_offsets[j];
             }
             if (length <= SDL_SIZE_MAX) {
-                tile = load_tile(src, length, hierarchy->bpp, ox, oy);
+                tile = load_tile(src, (size_t)length, hierarchy->bpp, ox, oy);
             } else {
                 IMG_SetError("Gimp image invalid tile offsets");
                 tile = NULL;
