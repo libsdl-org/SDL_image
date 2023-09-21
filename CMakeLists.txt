@@ -474,7 +474,7 @@ if(SDL3IMAGE_JXL)
         add_subdirectory(external/libjxl EXCLUDE_FROM_ALL)
         if(BUILD_SHARED_LIBS)
             set(jxl_lib jxl)
-            list(APPEND INSTALL_EXTRA_TARGETS brotlidec brotlicommon brotlienc hwy ${jxl_lib})
+            list(APPEND INSTALL_EXTRA_TARGETS brotlidec brotlicommon brotlienc ${jxl_lib})
             if(NOT SDL3IMAGE_JXL_SHARED)
                 list(APPEND PC_LIBS
                     -l$<TARGET_FILE_BASE_NAME:brotlidec> -l$<TARGET_FILE_BASE_NAME:brotlicommon>
