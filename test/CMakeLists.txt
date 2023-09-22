@@ -2,6 +2,8 @@
 
 enable_testing()
 
+set(CMAKE_POSITION_INDEPENDENT_CODE OFF)
+
 set(RESOURCE_FILES
     palette.bmp
     palette.gif
