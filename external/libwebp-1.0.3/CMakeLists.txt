@@ -77,11 +77,11 @@ set(INSTALLED_LIBRARIES)
 # Android only.
 if(ANDROID)
   include_directories(${ANDROID_NDK}/sources/android/cpufeatures)
-  add_library(cpufeatures STATIC
+  add_library(cpufeatures-libwebp STATIC
               ${ANDROID_NDK}/sources/android/cpufeatures/cpu-features.c)
-  list(APPEND INSTALLED_LIBRARIES cpufeatures)
-  target_link_libraries(cpufeatures dl)
-  set(WEBP_DEP_LIBRARIES ${WEBP_DEP_LIBRARIES} cpufeatures)
+  list(APPEND INSTALLED_LIBRARIES cpufeatures-libwebp)
+  target_link_libraries(cpufeatures-libwebp dl)
+  set(WEBP_DEP_LIBRARIES ${WEBP_DEP_LIBRARIES} cpufeatures-libwebp)
   set(WEBP_DEP_INCLUDE_DIRS ${WEBP_DEP_INCLUDE_DIRS}
       ${ANDROID_NDK}/sources/android/cpufeatures)
   add_definitions(-DHAVE_CPU_FEATURES_H=1)
@@ -239,6 +239,9 @@ set_target_properties(
   PROPERTIES PUBLIC_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/webp/decode.h;\
 ${CMAKE_CURRENT_SOURCE_DIR}/src/webp/encode.h;\
 ${CMAKE_CURRENT_SOURCE_DIR}/src/webp/types.h")
+if(BUILD_SHARED_LIBS)
+  set_target_properties(webp PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+endif()
 
 # Make sure the OBJECT libraries are built with position independent code (it is
 # not ON by default).
@@ -264,7 +267,9 @@ set_target_properties(
 ${CMAKE_CURRENT_SOURCE_DIR}/src/webp/demux.h;\
 ${CMAKE_CURRENT_SOURCE_DIR}/src/webp/mux_types.h;\
 ${CMAKE_CURRENT_SOURCE_DIR}/src/webp/types.h")
-
+if(BUILD_SHARED_LIBS)
+  set_target_properties(webpdemux PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+endif()
 configure_pkg_config("src/demux/libwebpdemux.pc")
 
 # Set the version numbers.
