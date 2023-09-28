@@ -41,7 +41,7 @@ else
     not_ok "CMakeLists.txt $version disagrees with SDL_image.h $ref_version"
 fi
 
-for rcfile in src/version.rc VisualC/Version.rc; do
+for rcfile in src/version.rc; do
     tuple=$(sed -ne 's/^ *FILEVERSION *//p' "$rcfile" | tr -d '\r')
     ref_tuple="${ref_major},${ref_minor},${ref_micro},0"
 
