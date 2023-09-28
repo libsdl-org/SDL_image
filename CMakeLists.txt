@@ -17,8 +17,9 @@ project(SDL3_image
     VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}"
 )
 
-include(PrivateSdlFunctions)
-include(sdlmanpages)
+include("${SDL3_image_SOURCE_DIR}/cmake/GetGitRevisionDescription.cmake" )
+include("${SDL3_image_SOURCE_DIR}/cmake/PrivateSdlFunctions.cmake" )
+include("${SDL3_image_SOURCE_DIR}/cmake/sdlmanpages.cmake")
 sdl_calculate_derived_version_variables(${MAJOR_VERSION} ${MINOR_VERSION} ${MICRO_VERSION})
 
 message(STATUS "Configuring ${PROJECT_NAME} ${PROJECT_VERSION}")
@@ -804,7 +805,7 @@ if(SDL3IMAGE_INSTALL)
     else()
         set(SDL3IMAGE_INSTALL_CMAKEDIR_ROOT_DEFAULT "${CMAKE_INSTALL_LIBDIR}/cmake")
     endif()
-    set(SDL3IMAGE_INSTALL_CMAKEDIR_ROOT "${SDL3IMAGE_INSTALL_CMAKEDIR_ROOT_DEFAULT}" CACHE STRING "Root folder where to install SDL3Config.cmake related files (SDL3 subfolder for MSVC projects)")
+    set(SDL3IMAGE_INSTALL_CMAKEDIR_ROOT "${SDL3IMAGE_INSTALL_CMAKEDIR_ROOT_DEFAULT}" CACHE STRING "Root folder where to install SDL3_imageConfig.cmake related files (SDL3_image subfolder for MSVC projects)")
     set(SDLIMAGE_PKGCONFIG_INSTALLDIR "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
     if(WIN32 AND NOT MINGW)
@@ -854,10 +855,12 @@ if(SDL3IMAGE_INSTALL)
     )
 
     if(SDL3IMAGE_INSTALL_MAN)
+        sdl_get_git_revision_hash(SDL3IMAGE_REVISION)
         SDL_generate_manpages(
             HEADERS_DIR "${PROJECT_SOURCE_DIR}/include/SDL3_image"
             SYMBOL "IMG_Init"
             WIKIHEADERS_PL_PATH "${CMAKE_CURRENT_SOURCE_DIR}/build-scripts/wikiheaders.pl"
+            REVISION "${SDL3IMAGE_REVISION}"
         )
     endif()
 endif()
