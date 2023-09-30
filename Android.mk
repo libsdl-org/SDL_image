@@ -62,7 +62,6 @@ ifeq ($(SUPPORT_WEBP),true)
     include $(SDL_IMAGE_LOCAL_PATH)/$(WEBP_LIBRARY_PATH)/Android.mk
 endif
 
-
 # Restore local path
 LOCAL_PATH := $(SDL_IMAGE_LOCAL_PATH)
 
@@ -150,7 +149,7 @@ ifeq ($(SUPPORT_WEBP),true)
     LOCAL_STATIC_LIBRARIES += webp
 endif
 
-LOCAL_EXPORT_C_INCLUDES += $(LOCAL_PATH)/include $(LOCAL_PATH)/include/SDL3
+LOCAL_EXPORT_C_INCLUDES += $(LOCAL_PATH)/include
 
 include $(BUILD_SHARED_LIBRARY)
 
