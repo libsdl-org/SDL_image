@@ -64,32 +64,32 @@ unset(libdir)
 
 include(CMakeFindDependencyMacro)
 
-if(NOT TARGET SDL2_image::SDL2_image)
-    add_library(SDL2_image::SDL2_image SHARED IMPORTED)
-    set_target_properties(SDL2_image::SDL2_image
+if(NOT TARGET ${SDL2_IMAGE_LIBRARIES})
+    add_library(${SDL2_IMAGE_LIBRARIES} SHARED IMPORTED)
+    set_target_properties(${SDL2_IMAGE_LIBRARIES}
         PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${_sdl2image_incdir}"
             COMPATIBLE_INTERFACE_BOOL "SDL2_SHARED"
             INTERFACE_SDL2_SHARED "ON"
     )
     if(WIN32)
-        set_target_properties(SDL2_image::SDL2_image
+        set_target_properties(${SDL2_IMAGE_LIBRARIES}
             PROPERTIES
                 IMPORTED_LOCATION "${_sdl2image_bindir}/SDL2_image.dll"
                 IMPORTED_IMPLIB "${_sdl2image_libdir}/${CMAKE_STATIC_LIBRARY_PREFIX}SDL2_image.dll${CMAKE_STATIC_LIBRARY_SUFFIX}"
         )
     else()
-        set_target_properties(SDL2_image::SDL2_image
+        set_target_properties(${SDL2_IMAGE_LIBRARIES}
             PROPERTIES
                 IMPORTED_LOCATION "${_sdl2image_libdir}/${CMAKE_SHARED_LIBRARY_PREFIX}SDL2_image${CMAKE_SHARED_LIBRARY_SUFFIX}"
         )
     endif()
 endif()
 
-if(NOT TARGET SDL2_image::SDL2_image-static)
-    add_library(SDL2_image::SDL2_image-static STATIC IMPORTED)
+if(NOT TARGET ${SDL2_IMAGE_STATIC_LIBRARIES})
+    add_library(${SDL2_IMAGE_STATIC_LIBRARIES} STATIC IMPORTED)
 
-    set_target_properties(SDL2_image::SDL2_image-static
+    set_target_properties(${SDL2_IMAGE_STATIC_LIBRARIES}
         PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${_sdl2image_incdir}"
             IMPORTED_LOCATION "${_sdl2image_libdir}/${CMAKE_STATIC_LIBRARY_PREFIX}SDL2_image${CMAKE_STATIC_LIBRARY_SUFFIX}"
