@@ -8,6 +8,9 @@ set_package_properties(SDL2_image PROPERTIES
 
 set(SDL2_image_FOUND TRUE)
 
+set(SDL2_IMAGE_LIBRARIES SDL2_image::SDL2_image)
+set(SDL2_IMAGE_STATIC_LIBRARIES SDL2_image::SDL2_image-static)
+
 set(SDL2IMAGE_AVIF  @LOAD_AVIF@)
 set(SDL2IMAGE_BMP   @LOAD_BMP@)
 set(SDL2IMAGE_GIF   @LOAD_GIF@)
