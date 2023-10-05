@@ -11,7 +11,7 @@ set(SDL_REQUIRED_VERSION 2.0.9)
 include(PrivateSdlFunctions)
 sdl_calculate_derived_version_variables()
 
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
     message(FATAL_ERROR "Prevented in-tree built. Please create a build directory outside of the SDL_image source code and call cmake from there")
 endif()
 
