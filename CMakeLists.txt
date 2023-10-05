@@ -8,7 +8,7 @@ set(MINOR_VERSION 0)
 set(MICRO_VERSION 0)
 set(SDL_REQUIRED_VERSION 3.0.0)
 
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
     message(FATAL_ERROR "Prevented in-tree built. Please create a build directory outside of the SDL_image source code and call cmake from there")
 endif()
 
