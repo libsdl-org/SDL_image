@@ -40,14 +40,15 @@ jobs:
           ${{ matrix.platform.msys-env }}-autotools
           ${{ matrix.platform.msys-env }}-cmake
           ${{ matrix.platform.msys-env }}-gcc
+          ${{ matrix.platform.msys-env }}-ninja
+          ${{ matrix.platform.msys-env }}-pkg-config
+          ${{ matrix.platform.msys-env }}-nasm
           ${{ matrix.platform.msys-env }}-libavif
           ${{ matrix.platform.msys-env }}-libjpeg-turbo
           ${{ matrix.platform.msys-env }}-libjxl
           ${{ matrix.platform.msys-env }}-libpng
           ${{ matrix.platform.msys-env }}-libtiff
           ${{ matrix.platform.msys-env }}-libwebp
-          ${{ matrix.platform.msys-env }}-ninja
-          ${{ matrix.platform.msys-env }}-pkg-config
           ${{ matrix.platform.msys-env }}-zlib
     - name: Install Ninja
       uses: turtlesec-no/get-ninja@main
@@ -72,6 +73,7 @@ jobs:
           libpng \
           libtiff \
           libtool \
+          nasm \
           ninja \
           pkg-config \
           webp \
@@ -91,10 +93,14 @@ jobs:
           libtiff-dev \
           libtool \
           libwebp-dev \
+          nasm \
           ninja-build \
           pkg-config \
           zlib1g-dev \
           ${NULL+}
+    - name: Set up NASM
+      uses: ilammy/setup-nasm@v1
+      if: ${{ matrix.platform.vendored && !contains(matrix.platform.shell, 'msys2') }}
 
     - uses: actions/checkout@v3
       with:
@@ -123,11 +129,10 @@ jobs:
           -DSDL2IMAGE_SAMPLES=ON \
           -DSDL2IMAGE_TESTS=ON \
           -DSDL2IMAGE_TESTS_INSTALL=ON \
-          -DSDL2IMAGE_AVIF=${{ !matrix.platform.vendored }} \
+          -DSDL2IMAGE_AVIF=ON \
           -DSDL2IMAGE_JXL=ON \
           -DSDL2IMAGE_TIF=ON \
           -DSDL2IMAGE_WEBP=ON \
-          -DSDL2IMAGE_VENDORED=${{ !!matrix.platform.vendored }} \
           -DCMAKE_INSTALL_PREFIX=prefix_cmake \
           ${{ matrix.platform.cmake }}
     - name: Build (CMake)
@@ -149,7 +154,7 @@ jobs:
           export PATH="$sdl_binpath:$sdlimage_binpath:$PATH"
         fi
 
-        export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=${{ (matrix.platform.vendored && '0') || '1' }}
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_BMP=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_CUR=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_GIF=1
