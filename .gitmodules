@@ -25,8 +25,8 @@
 [submodule "external/libavif"]
 	path = external/libavif
 	url = https://github.com/libsdl-org/libavif.git
-	branch = v0.10.1-SDL
+	branch = v1.0.1-SDL
 [submodule "external/dav1d"]
 	path = external/dav1d
 	url = https://github.com/libsdl-org/dav1d.git
-	branch = 1.0.0-SDL
+	branch = 1.2.1-SDL
