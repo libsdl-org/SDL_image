@@ -21,6 +21,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		F313F5A02ADDB009008B58D6 /* exif.c in Sources */ = {isa = PBXBuildFile; fileRef = F313F59F2ADDB009008B58D6 /* exif.c */; };
+		F313F5A22ADDB03F008B58D6 /* reformat_libsharpyuv.c in Sources */ = {isa = PBXBuildFile; fileRef = F313F5A12ADDB03F008B58D6 /* reformat_libsharpyuv.c */; };
 		F35474862829A9CB007E9EDA /* alpha.c in Sources */ = {isa = PBXBuildFile; fileRef = F35474772829A9CB007E9EDA /* alpha.c */; };
 		F35474872829A9CB007E9EDA /* avif.c in Sources */ = {isa = PBXBuildFile; fileRef = F35474782829A9CB007E9EDA /* avif.c */; };
 		F35474882829A9CB007E9EDA /* scale.c in Sources */ = {isa = PBXBuildFile; fileRef = F35474792829A9CB007E9EDA /* scale.c */; };
@@ -125,6 +127,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F313F59F2ADDB009008B58D6 /* exif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exif.c; path = ../../external/libavif/src/exif.c; sourceTree = "<group>"; };
+		F313F5A12ADDB03F008B58D6 /* reformat_libsharpyuv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = reformat_libsharpyuv.c; path = ../../external/libavif/src/reformat_libsharpyuv.c; sourceTree = "<group>"; };
 		F35474682829A8B3007E9EDA /* avif.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = avif.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F35474772829A9CB007E9EDA /* alpha.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = alpha.c; path = ../../external/libavif/src/alpha.c; sourceTree = "<group>"; };
 		F35474782829A9CB007E9EDA /* avif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = avif.c; path = ../../external/libavif/src/avif.c; sourceTree = "<group>"; };
@@ -252,11 +256,13 @@
 				F35474952829A9E0007E9EDA /* codec_dav1d.c */,
 				F354747A2829A9CB007E9EDA /* colr.c */,
 				F354747B2829A9CB007E9EDA /* diag.c */,
+				F313F59F2ADDB009008B58D6 /* exif.c */,
 				F354747F2829A9CB007E9EDA /* io.c */,
 				F35474832829A9CB007E9EDA /* mem.c */,
 				F35474812829A9CB007E9EDA /* obu.c */,
 				F354747C2829A9CB007E9EDA /* rawdata.c */,
 				F35474852829A9CB007E9EDA /* read.c */,
+				F313F5A12ADDB03F008B58D6 /* reformat_libsharpyuv.c */,
 				F354747E2829A9CB007E9EDA /* reformat_libyuv.c */,
 				F354747D2829A9CB007E9EDA /* reformat.c */,
 				F35474792829A9CB007E9EDA /* scale.c */,
@@ -509,8 +515,10 @@
 				F35474912829A9CB007E9EDA /* write.c in Sources */,
 				F35474862829A9CB007E9EDA /* alpha.c in Sources */,
 				F35474942829A9CB007E9EDA /* read.c in Sources */,
+				F313F5A02ADDB009008B58D6 /* exif.c in Sources */,
 				F35474922829A9CB007E9EDA /* mem.c in Sources */,
 				F35474872829A9CB007E9EDA /* avif.c in Sources */,
+				F313F5A22ADDB03F008B58D6 /* reformat_libsharpyuv.c in Sources */,
 				F354748D2829A9CB007E9EDA /* reformat_libyuv.c in Sources */,
 				F354748F2829A9CB007E9EDA /* utils.c in Sources */,
 				F35474932829A9CB007E9EDA /* stream.c in Sources */,
