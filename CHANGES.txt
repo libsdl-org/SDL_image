@@ -1,3 +1,9 @@
+2.6.3:
+ * Fixed loading of 4-bit .ico files
+
+2.6.2:
+ * Updated autotools to use ax_compute_relative_paths, fixing homebrew on macOS
+
 2.6.1:
  * Fixed loading grayscale PNGs when using stb_image
 
