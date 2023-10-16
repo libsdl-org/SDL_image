@@ -81,10 +81,13 @@ static int IMG_LoadSTB_RW_eof(void *user)
 SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
 {
     Sint64 start;
+    Uint8 magic[26];
     int w, h, format;
     stbi_uc *pixels;
     stbi_io_callbacks rw_callbacks;
     SDL_Surface *surface = NULL;
+    SDL_bool use_palette = SDL_FALSE;
+    unsigned int palette_colors[256];
 
     if (!src) {
         /* The error message has been set in SDL_RWFromFile */
@@ -92,25 +95,83 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
     }
     start = SDL_RWtell(src);
 
+    if (SDL_RWread(src, magic, 1, sizeof(magic)) == sizeof(magic)) {
+        const Uint8 PNG_COLOR_INDEXED = 3;
+        if (magic[0] == 0x89 &&
+            magic[1] == 'P' &&
+            magic[2] == 'N' &&
+            magic[3] == 'G' &&
+            magic[12] == 'I' &&
+            magic[13] == 'H' &&
+            magic[14] == 'D' &&
+            magic[15] == 'R' &&
+            magic[25] == PNG_COLOR_INDEXED) {
+            use_palette = SDL_TRUE;
+        }
+    }
+    SDL_RWseek(src, start, RW_SEEK_SET);
+
     /* Load the image data */
     rw_callbacks.read = IMG_LoadSTB_RW_read;
     rw_callbacks.skip = IMG_LoadSTB_RW_skip;
     rw_callbacks.eof = IMG_LoadSTB_RW_eof;
     w = h = format = 0; /* silence warning */
-    pixels = stbi_load_from_callbacks(
-        &rw_callbacks,
-        src,
-        &w,
-        &h,
-        &format,
-        STBI_default
-    );
+    if (use_palette) {
+        pixels = stbi_load_from_callbacks_with_palette(
+            &rw_callbacks,
+            src,
+            &w,
+            &h,
+            palette_colors,
+            SDL_arraysize(palette_colors)
+        );
+    } else {
+        pixels = stbi_load_from_callbacks(
+            &rw_callbacks,
+            src,
+            &w,
+            &h,
+            &format,
+            STBI_default
+        );
+    }
     if (!pixels) {
         SDL_RWseek(src, start, RW_SEEK_SET);
         return NULL;
     }
 
-    if (format == STBI_grey || format == STBI_rgb || format == STBI_rgb_alpha) {
+    if (use_palette) {
+        surface = SDL_CreateRGBSurfaceWithFormatFrom(
+            pixels,
+            w,
+            h,
+            8,
+            w,
+            SDL_PIXELFORMAT_INDEX8
+        );
+        if (surface) {
+            SDL_Palette *palette = surface->format->palette;
+            if (palette) {
+                int i;
+                Uint8 *palette_bytes = (Uint8 *)palette_colors;
+
+                for (i = 0; i < palette->ncolors; i++) {
+                    palette->colors[i].r = *palette_bytes++;
+                    palette->colors[i].g = *palette_bytes++;
+                    palette->colors[i].b = *palette_bytes++;
+                    palette->colors[i].a = *palette_bytes++;
+                }
+            }
+
+            /* FIXME: This sucks. It'd be better to allocate the surface first, then
+             * write directly to the pixel buffer:
+             * https://github.com/nothings/stb/issues/58
+             * -flibit
+             */
+            surface->flags &= ~SDL_PREALLOC;
+        }
+
+    } else if (format == STBI_grey || format == STBI_rgb || format == STBI_rgb_alpha) {
         surface = SDL_CreateRGBSurfaceWithFormatFrom(
             pixels,
             w,
