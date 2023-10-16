@@ -7,14 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F313F5842ADDAE2D008B58D6 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F313F5832ADDAE2C008B58D6 /* README.md */; };
-		F313F5942ADDAF99008B58D6 /* sharpyuv_neon.c in Sources */ = {isa = PBXBuildFile; fileRef = F313F5882ADDAF99008B58D6 /* sharpyuv_neon.c */; };
-		F313F5952ADDAF99008B58D6 /* sharpyuv.c in Sources */ = {isa = PBXBuildFile; fileRef = F313F5892ADDAF99008B58D6 /* sharpyuv.c */; };
-		F313F5962ADDAF99008B58D6 /* sharpyuv_csp.c in Sources */ = {isa = PBXBuildFile; fileRef = F313F58A2ADDAF99008B58D6 /* sharpyuv_csp.c */; };
-		F313F5982ADDAF99008B58D6 /* sharpyuv_cpu.c in Sources */ = {isa = PBXBuildFile; fileRef = F313F58C2ADDAF99008B58D6 /* sharpyuv_cpu.c */; };
-		F313F5992ADDAF99008B58D6 /* sharpyuv_dsp.c in Sources */ = {isa = PBXBuildFile; fileRef = F313F58D2ADDAF99008B58D6 /* sharpyuv_dsp.c */; };
-		F313F59B2ADDAF99008B58D6 /* sharpyuv_gamma.c in Sources */ = {isa = PBXBuildFile; fileRef = F313F58F2ADDAF99008B58D6 /* sharpyuv_gamma.c */; };
-		F313F59E2ADDAF99008B58D6 /* sharpyuv_sse2.c in Sources */ = {isa = PBXBuildFile; fileRef = F313F5922ADDAF99008B58D6 /* sharpyuv_sse2.c */; };
 		F3D87C46281EA2CB005DA540 /* webp_dec.c in Sources */ = {isa = PBXBuildFile; fileRef = F3D87C3C281EA2CB005DA540 /* webp_dec.c */; };
 		F3D87C47281EA2CB005DA540 /* frame_dec.c in Sources */ = {isa = PBXBuildFile; fileRef = F3D87C3D281EA2CB005DA540 /* frame_dec.c */; };
 		F3D87C48281EA2CB005DA540 /* vp8_dec.c in Sources */ = {isa = PBXBuildFile; fileRef = F3D87C3E281EA2CB005DA540 /* vp8_dec.c */; };
@@ -130,18 +122,11 @@
 		F3E949F9281F144C00B8F4EA /* types.h in Headers */ = {isa = PBXBuildFile; fileRef = F3E949F4281F144C00B8F4EA /* types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F3E949FA281F144C00B8F4EA /* encode.h in Headers */ = {isa = PBXBuildFile; fileRef = F3E949F5281F144C00B8F4EA /* encode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F3E949FB281F144C00B8F4EA /* decode.h in Headers */ = {isa = PBXBuildFile; fileRef = F3E949F6281F144C00B8F4EA /* decode.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F3E94A00281F14F700B8F4EA /* README in Resources */ = {isa = PBXBuildFile; fileRef = F3E949FE281F14F700B8F4EA /* README */; };
 		F3E94A01281F14F700B8F4EA /* COPYING in Resources */ = {isa = PBXBuildFile; fileRef = F3E949FF281F14F700B8F4EA /* COPYING */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		F313F5832ADDAE2C008B58D6 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../../external/libwebp/README.md; sourceTree = "<group>"; };
-		F313F5882ADDAF99008B58D6 /* sharpyuv_neon.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sharpyuv_neon.c; path = ../../external/libwebp/sharpyuv/sharpyuv_neon.c; sourceTree = "<group>"; };
-		F313F5892ADDAF99008B58D6 /* sharpyuv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sharpyuv.c; path = ../../external/libwebp/sharpyuv/sharpyuv.c; sourceTree = "<group>"; };
-		F313F58A2ADDAF99008B58D6 /* sharpyuv_csp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sharpyuv_csp.c; path = ../../external/libwebp/sharpyuv/sharpyuv_csp.c; sourceTree = "<group>"; };
-		F313F58C2ADDAF99008B58D6 /* sharpyuv_cpu.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sharpyuv_cpu.c; path = ../../external/libwebp/sharpyuv/sharpyuv_cpu.c; sourceTree = "<group>"; };
-		F313F58D2ADDAF99008B58D6 /* sharpyuv_dsp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sharpyuv_dsp.c; path = ../../external/libwebp/sharpyuv/sharpyuv_dsp.c; sourceTree = "<group>"; };
-		F313F58F2ADDAF99008B58D6 /* sharpyuv_gamma.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sharpyuv_gamma.c; path = ../../external/libwebp/sharpyuv/sharpyuv_gamma.c; sourceTree = "<group>"; };
-		F313F5922ADDAF99008B58D6 /* sharpyuv_sse2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sharpyuv_sse2.c; path = ../../external/libwebp/sharpyuv/sharpyuv_sse2.c; sourceTree = "<group>"; };
 		F3D87C3C281EA2CB005DA540 /* webp_dec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = webp_dec.c; path = ../../external/libwebp/src/dec/webp_dec.c; sourceTree = "<group>"; };
 		F3D87C3D281EA2CB005DA540 /* frame_dec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = frame_dec.c; path = ../../external/libwebp/src/dec/frame_dec.c; sourceTree = "<group>"; };
 		F3D87C3E281EA2CB005DA540 /* vp8_dec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vp8_dec.c; path = ../../external/libwebp/src/dec/vp8_dec.c; sourceTree = "<group>"; };
@@ -258,6 +243,7 @@
 		F3E949F4281F144C00B8F4EA /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = types.h; path = ../../external/libwebp/src/webp/types.h; sourceTree = "<group>"; };
 		F3E949F5281F144C00B8F4EA /* encode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = encode.h; path = ../../external/libwebp/src/webp/encode.h; sourceTree = "<group>"; };
 		F3E949F6281F144C00B8F4EA /* decode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = decode.h; path = ../../external/libwebp/src/webp/decode.h; sourceTree = "<group>"; };
+		F3E949FE281F14F700B8F4EA /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README; path = ../../external/libwebp/README; sourceTree = "<group>"; };
 		F3E949FF281F14F700B8F4EA /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = COPYING; path = ../../external/libwebp/COPYING; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -370,13 +356,6 @@
 				F3D87C54281EA37D005DA540 /* rescaler_sse2.c */,
 				F3D87CAA281EA3DF005DA540 /* rescaler_utils.c */,
 				F3D87C77281EA37D005DA540 /* rescaler.c */,
-				F313F58C2ADDAF99008B58D6 /* sharpyuv_cpu.c */,
-				F313F58A2ADDAF99008B58D6 /* sharpyuv_csp.c */,
-				F313F58D2ADDAF99008B58D6 /* sharpyuv_dsp.c */,
-				F313F58F2ADDAF99008B58D6 /* sharpyuv_gamma.c */,
-				F313F5882ADDAF99008B58D6 /* sharpyuv_neon.c */,
-				F313F5922ADDAF99008B58D6 /* sharpyuv_sse2.c */,
-				F313F5892ADDAF99008B58D6 /* sharpyuv.c */,
 				F3D87CC6281EA510005DA540 /* ssim_sse2.c */,
 				F3D87CCA281EA510005DA540 /* ssim.c */,
 				F3D87CE7281EA54F005DA540 /* syntax_enc.c */,
@@ -430,7 +409,7 @@
 			isa = PBXGroup;
 			children = (
 				F3E949FF281F14F700B8F4EA /* COPYING */,
-				F313F5832ADDAE2C008B58D6 /* README.md */,
+				F3E949FE281F14F700B8F4EA /* README */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -509,7 +488,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F3E94A01281F14F700B8F4EA /* COPYING in Resources */,
-				F313F5842ADDAE2D008B58D6 /* README.md in Resources */,
+				F3E94A00281F14F700B8F4EA /* README in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -525,9 +504,7 @@
 				F3D87C4F281EA2CB005DA540 /* buffer_dec.c in Sources */,
 				F3D87C80281EA37D005DA540 /* upsampling_sse2.c in Sources */,
 				F3D87C8E281EA37D005DA540 /* dec_sse41.c in Sources */,
-				F313F59B2ADDAF99008B58D6 /* sharpyuv_gamma.c in Sources */,
 				F3D87D0C281EA550005DA540 /* picture_rescale_enc.c in Sources */,
-				F313F5942ADDAF99008B58D6 /* sharpyuv_neon.c in Sources */,
 				F3D87C7A281EA37D005DA540 /* lossless_msa.c in Sources */,
 				F3D87CB5281EA3DF005DA540 /* bit_writer_utils.c in Sources */,
 				F3D87C8C281EA37D005DA540 /* upsampling_msa.c in Sources */,
@@ -538,7 +515,6 @@
 				F3D87CBB281EA3DF005DA540 /* utils.c in Sources */,
 				F3D87D0E281EA550005DA540 /* filter_enc.c in Sources */,
 				F3D87CB3281EA3DF005DA540 /* random_utils.c in Sources */,
-				F313F59E2ADDAF99008B58D6 /* sharpyuv_sse2.c in Sources */,
 				F3D87C4E281EA2CB005DA540 /* vp8l_dec.c in Sources */,
 				F3D87C85281EA37D005DA540 /* yuv_sse41.c in Sources */,
 				F3D87D02281EA550005DA540 /* histogram_enc.c in Sources */,
@@ -553,7 +529,6 @@
 				F3D87D11281EA550005DA540 /* tree_enc.c in Sources */,
 				F3D87CE3281EA510005DA540 /* lossless_enc_msa.c in Sources */,
 				F3D87CDA281EA510005DA540 /* enc_msa.c in Sources */,
-				F313F5992ADDAF99008B58D6 /* sharpyuv_dsp.c in Sources */,
 				F3D87CB4281EA3DF005DA540 /* thread_utils.c in Sources */,
 				F3D87CDE281EA510005DA540 /* lossless_enc.c in Sources */,
 				F3D87CDB281EA510005DA540 /* ssim_sse2.c in Sources */,
@@ -616,8 +591,6 @@
 				F3D87C91281EA37D005DA540 /* cpu.c in Sources */,
 				F3D87CD8281EA510005DA540 /* lossless_enc_mips_dsp_r2.c in Sources */,
 				F3D87CE1281EA510005DA540 /* cost_sse2.c in Sources */,
-				F313F5952ADDAF99008B58D6 /* sharpyuv.c in Sources */,
-				F313F5982ADDAF99008B58D6 /* sharpyuv_cpu.c in Sources */,
 				F3D87C84281EA37D005DA540 /* alpha_processing_sse41.c in Sources */,
 				F3D87C90281EA37D005DA540 /* dec_sse2.c in Sources */,
 				F3D87C98281EA37D005DA540 /* yuv_mips_dsp_r2.c in Sources */,
@@ -629,7 +602,6 @@
 				F3D87CB7281EA3DF005DA540 /* huffman_utils.c in Sources */,
 				F3D87CA1281EA37D005DA540 /* rescaler.c in Sources */,
 				F3D87D08281EA550005DA540 /* picture_csp_enc.c in Sources */,
-				F313F5962ADDAF99008B58D6 /* sharpyuv_csp.c in Sources */,
 				F3D87C82281EA37D005DA540 /* upsampling_mips_dsp_r2.c in Sources */,
 				F3D87C4B281EA2CB005DA540 /* idec_dec.c in Sources */,
 				F3D87CFE281EA550005DA540 /* syntax_enc.c in Sources */,
