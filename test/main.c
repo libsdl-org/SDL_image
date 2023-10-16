@@ -303,7 +303,11 @@ static const Format formats[] =
 #else
         SDL_FALSE,
 #endif
-        SDL_IMAGE_SAVE_PNG,
+#ifdef SDL_IMAGE_SAVE_PNG
+        SDL_IMAGE_SAVE_PNG ? SDL_TRUE : SDL_FALSE,
+#else
+        SDL_FALSE,
+#endif
         IMG_isPNG,
         IMG_LoadPNG_RW,
     },
