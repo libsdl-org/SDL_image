@@ -1336,13 +1336,14 @@ static void stbi__vertical_flip_slices(void *image, int w, int h, int z, int byt
 
 static unsigned char *stbi__load_indexed(stbi__context *s, int *x, int *y, unsigned int *palette_buffer, int palette_buffer_len)
 {
+   stbi__result_info ri;
+   int comp;
+   void *result;
+
    if (!palette_buffer)
        return NULL;
 
-   stbi__result_info ri;
-   int comp;
-   void *result = stbi__load_main(s, x, y, &comp, 1, &ri, 8, palette_buffer, palette_buffer_len);
-
+   result = stbi__load_main(s, x, y, &comp, 1, &ri, 8, palette_buffer, palette_buffer_len);
    if (result == NULL)
       return NULL;
 
