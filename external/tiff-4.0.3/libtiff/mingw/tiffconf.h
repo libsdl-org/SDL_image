@@ -8,29 +8,29 @@
 #ifndef _TIFFCONF_
 #define _TIFFCONF_
 
-/* Signed 16-bit type */
-#define TIFF_INT16_T signed short
-
-/* Signed 32-bit type */
-#define TIFF_INT32_T signed int
-
-/* Signed 64-bit type */
-#define TIFF_INT64_T signed long long
-
 /* Signed 8-bit type */
 #define TIFF_INT8_T signed char
+
+/* Unsigned 8-bit type */
+#define TIFF_UINT8_T unsigned char
+
+/* Signed 16-bit type */
+#define TIFF_INT16_T signed short
 
 /* Unsigned 16-bit type */
 #define TIFF_UINT16_T unsigned short
 
+/* Signed 32-bit type */
+#define TIFF_INT32_T signed int
+
 /* Unsigned 32-bit type */
 #define TIFF_UINT32_T unsigned int
 
+/* Signed 64-bit type */
+#define TIFF_INT64_T signed long long
+
 /* Unsigned 64-bit type */
 #define TIFF_UINT64_T unsigned long long
-
-/* Unsigned 8-bit type */
-#define TIFF_UINT8_T unsigned char
 
 /* Signed size type */
 #if defined _WIN64
@@ -41,15 +41,6 @@
 
 /* Pointer difference type */
 #define TIFF_PTRDIFF_T ptrdiff_t
-
-/* Define to 1 if the system has the type `int16'. */
-/* #undef HAVE_INT16 */
-
-/* Define to 1 if the system has the type `int32'. */
-/* #undef HAVE_INT32 */
-
-/* Define to 1 if the system has the type `int8'. */
-/* #undef HAVE_INT8 */
 
 /* Compatibility stuff. */
 
@@ -67,8 +58,16 @@
 /* Support CCITT Group 3 & 4 algorithms */
 #define CCITT_SUPPORT 1
 
+/* Pick up YCbCr subsampling info from the JPEG data stream to support files
+   lacking the tag (default enabled). */
+/* #undef CHECK_JPEG_YCBCR_SUBSAMPLING */
+
 /* Support JPEG compression (requires IJG JPEG library) */
-#define JPEG_SUPPORT 1
+/* #undef JPEG_SUPPORT */
+
+/* Support Old JPEG compresson (read contrib/ojpeg/README first! Compilation
+   fails with unpatched IJG JPEG library) */
+/* #undef OJPEG_SUPPORT */
 
 /* Support JBIG compression (requires JBIG-KIT library) */
 /* #undef JBIG_SUPPORT */
@@ -82,21 +81,17 @@
 /* Support NeXT 2-bit RLE algorithm */
 #define NEXT_SUPPORT 1
 
-/* Support Old JPEG compresson (read contrib/ojpeg/README first! Compilation
-   fails with unpatched IJG JPEG library) */
-#define OJPEG_SUPPORT 1
-
 /* Support Macintosh PackBits algorithm */
 #define PACKBITS_SUPPORT 1
 
 /* Support Pixar log-format algorithm (requires Zlib) */
-#define PIXARLOG_SUPPORT 1
+/* #undef PIXARLOG_SUPPORT */
 
 /* Support ThunderScan 4-bit RLE algorithm */
 #define THUNDER_SUPPORT 1
 
 /* Support Deflate compression */
-#define ZIP_SUPPORT 1
+/* #undef ZIP_SUPPORT */
 
 /* Support strip chopping (whether or not to convert single-strip uncompressed
    images to mutiple strips of ~8Kb to reduce memory usage) */
@@ -109,10 +104,6 @@
    treat a fourth sample with no EXTRASAMPLE_ value as being ASSOCALPHA. Many
    packages produce RGBA files but don't mark the alpha properly. */
 #define DEFAULT_EXTRASAMPLE_AS_ALPHA 1
-
-/* Pick up YCbCr subsampling info from the JPEG data stream to support files
-   lacking the tag (default enabled). */
-#define CHECK_JPEG_YCBCR_SUBSAMPLING 1
 
 /* Support MS MDI magic number files as TIFF */
 #define MDI_SUPPORT 1

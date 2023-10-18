@@ -1627,7 +1627,7 @@ TIFFWriteDirectoryTagLongLong8Array(TIFF* tif, uint32* ndir, TIFFDirEntry* dir, 
 
     for (q=p, ma=value, mb=0; mb<count; ma++, mb++, q++)
     {
-        if (*ma>0xFFFFFFFF)
+        if (*ma>0xFFFFFFFFULL)
         {
             TIFFErrorExt(tif->tif_clientdata,module,
                          "Attempt to write value larger than 0xFFFFFFFF in Classic TIFF file.");
@@ -1685,7 +1685,7 @@ TIFFWriteDirectoryTagIfdIfd8Array(TIFF* tif, uint32* ndir, TIFFDirEntry* dir, ui
 
     for (q=p, ma=value, mb=0; mb<count; ma++, mb++, q++)
     {
-        if (*ma>0xFFFFFFFF)
+        if (*ma>0xFFFFFFFFULL)
         {
             TIFFErrorExt(tif->tif_clientdata,module,
                          "Attempt to write value larger than 0xFFFFFFFF in Classic TIFF file.");

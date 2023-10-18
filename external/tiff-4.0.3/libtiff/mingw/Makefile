@@ -3,11 +3,11 @@ CC	= $(CROSS)gcc
 
 DLLNAME = libtiff-5.dll
 LIBNAME = libtiff.dll.a
-INCLUDES= -I. -Iexternal/include
+INCLUDES= -I.
 CPPFLAGS= -DDLL_EXPORT -DNDEBUG
 CFLAGS	= -O2 -Wall
 LDFLAGS = -Wl,--enable-auto-image-base -Wl,--no-undefined
-LDLIBS	= -Lexternal/lib -ljpeg -lz
+LDLIBS	= 
 
 OBJ =	tif_aux.o \
 	tif_close.o \

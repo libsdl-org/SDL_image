@@ -5598,7 +5598,7 @@ ChopUpSingleUncompressedStrip(TIFF* tif)
 	if (rowsperstrip >= td->td_rowsperstrip)
 		return;
 	nstrips64 = TIFFhowmany_64(bytecount, stripbytes);
-	if ((nstrips64==0)||(nstrips64>0xFFFFFFFF)) /* something is wonky, do nothing. */
+	if ((nstrips64==0)||(nstrips64>0xFFFFFFFFULL)) /* something is wonky, do nothing. */
 	    return;
 	nstrips32 = (uint32)nstrips64;
 

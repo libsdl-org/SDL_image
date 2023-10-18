@@ -581,7 +581,7 @@ _TIFFVSetField(TIFF* tif, uint32 tag, va_list ap)
 				uint16 v[2];
 				v[0] = (uint16)va_arg(ap, int);
 				v[1] = (uint16)va_arg(ap, int);
-				_TIFFmemcpy(tv->value, &v, 4);
+				_TIFFmemcpy(tv->value, v, 4);
 			}
 
 			else if (fip->field_passcount
