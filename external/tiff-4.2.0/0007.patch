@@ -1,0 +1,81 @@
+From 984933ea05b8e26db71d50004f534d725ede59f7 Mon Sep 17 00:00:00 2001
+From: Su_Laus <sulau@freenet.de>
+Date: Tue, 28 Dec 2021 15:25:48 +0100
+Subject: [PATCH 07/10] Fix Issue #354 Segmentation Fault due to field_name=NULL
+
+Backported from commit b55cfc746a8449b135cecb8bc1b97f27efd28da1
+---
+ libtiff/tif_close.c   |   10 ++++++----
+ libtiff/tif_dirinfo.c |   11 +++++++++--
+ libtiff/tif_print.c   |    2 +-
+ 3 files changed, 16 insertions(+), 7 deletions(-)
+
+diff --git a/libtiff/tif_close.c b/libtiff/tif_close.c
+index e4228df..be97951 100644
+--- a/libtiff/tif_close.c
++++ b/libtiff/tif_close.c
+@@ -80,10 +80,12 @@ TIFFCleanup(TIFF* tif)
+ 
+ 		for (i = 0; i < tif->tif_nfields; i++) {
+ 			TIFFField *fld = tif->tif_fields[i];
+-			if (fld->field_bit == FIELD_CUSTOM &&
+-			    strncmp("Tag ", fld->field_name, 4) == 0) {
+-				_TIFFfree(fld->field_name);
+-				_TIFFfree(fld);
++			if (fld->field_name != NULL) {
++				if (fld->field_bit == FIELD_CUSTOM &&
++					strncmp("Tag ", fld->field_name, 4) == 0) {
++					_TIFFfree(fld->field_name);
++					_TIFFfree(fld);
++				}
+ 			}
+ 		}
+ 
+diff --git a/libtiff/tif_dirinfo.c b/libtiff/tif_dirinfo.c
+index c0a8da9..51de918 100644
+--- a/libtiff/tif_dirinfo.c
++++ b/libtiff/tif_dirinfo.c
+@@ -419,11 +419,13 @@ _TIFFSetupFields(TIFF* tif, const TIFFFieldArray* fieldarray)
+ 
+ 		for (i = 0; i < tif->tif_nfields; i++) {
+ 			TIFFField *fld = tif->tif_fields[i];
+-			if (fld->field_bit == FIELD_CUSTOM &&
+-				strncmp("Tag ", fld->field_name, 4) == 0) {
++			if (fld->field_name != NULL) {
++				if (fld->field_bit == FIELD_CUSTOM &&
++					strncmp("Tag ", fld->field_name, 4) == 0) {
+ 					_TIFFfree(fld->field_name);
+ 					_TIFFfree(fld);
+ 				}
++			}
+ 		}
+ 
+ 		_TIFFfree(tif->tif_fields);
+@@ -1114,6 +1116,11 @@ TIFFMergeFieldInfo(TIFF* tif, const TIFFFieldInfo info[], uint32 n)
+ 		tp->field_bit = info[i].field_bit;
+ 		tp->field_oktochange = info[i].field_oktochange;
+ 		tp->field_passcount = info[i].field_passcount;
++		if (info[i].field_name == NULL) {
++			TIFFErrorExt(tif->tif_clientdata, module,
++				"Field_name of %d.th allocation tag %d is NULL", i, info[i].field_tag);
++			return -1;
++		}
+ 		tp->field_name = info[i].field_name;
+ 		tp->field_subfields = NULL;
+ 		tp++;
+diff --git a/libtiff/tif_print.c b/libtiff/tif_print.c
+index 04b9e4b..6675372 100644
+--- a/libtiff/tif_print.c
++++ b/libtiff/tif_print.c
+@@ -150,7 +150,7 @@ _TIFFPrettyPrintField(TIFF* tif, const TIFFField *fip, FILE* fd, uint32 tag,
+         (void) tif;
+ 
+ 	/* do not try to pretty print auto-defined fields */
+-	if (strncmp(fip->field_name,"Tag ", 4) == 0) {
++	if (fip->field_name != NULL && strncmp(fip->field_name,"Tag ", 4) == 0) {
+ 		return 0;
+ 	}
+         
+-- 
+1.7.1
+

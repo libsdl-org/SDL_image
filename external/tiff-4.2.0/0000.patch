@@ -1,0 +1,30 @@
+Description: fix TIFFReadRawStrip man page typo
+ Change TIFFReadEncodedStrip to TIFFReadRawStrip as needed.
+Author: Laszlo Boszormenyi (GCS) <gcs@debian.org>
+Bug-Debian: https://bugs.debian.org/672858
+Last-Update: 2018-11-19
+
+---
+
+--- tiff-4.0.10.orig/html/man/TIFFReadRawStrip.3tiff.html
++++ tiff-4.0.10/html/man/TIFFReadRawStrip.3tiff.html
+@@ -71,7 +71,7 @@ typically be at least as large as the nu
+ <td width="8%"></td>
+ <td width="91%">
+ <p>The actual number of bytes of data that were placed in
+-<i>buf</i> is returned; <i>TIFFReadEncodedStrip</i> returns
++<i>buf</i> is returned; <i>TIFFReadRawStrip</i> returns
+ &minus;1 if an error was encountered.</p>
+ </td>
+ </table>
+--- tiff-4.0.10.orig/man/TIFFReadRawStrip.3tiff
++++ tiff-4.0.10/man/TIFFReadRawStrip.3tiff
+@@ -46,7 +46,7 @@ large as the number returned by
+ The actual number of bytes of data that were placed in
+ .I buf
+ is returned;
+-.IR TIFFReadEncodedStrip
++.IR TIFFReadRawStrip
+ returns \-1 if an error was encountered.
+ .SH DIAGNOSTICS
+ All error messages are directed to the

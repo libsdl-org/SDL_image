@@ -1,0 +1,146 @@
+From b9046c302bda7857ac8f01cc700df0a36f402af4 Mon Sep 17 00:00:00 2001
+From: Su_Laus <sulau@freenet.de>
+Date: Sun, 3 Apr 2022 22:04:58 +0200
+Subject: [PATCH 08/10] extra flag for anonymous (unknown) tags (fixes #8)
+
+Backported from commit 97574866cbab026acb1bbd735201f790091b9400
+---
+ libtiff/libtiff.def   |    2 ++
+ libtiff/tif_close.c   |    5 ++++-
+ libtiff/tif_dir.h     |    2 +-
+ libtiff/tif_dirinfo.c |   17 ++++++++++++++---
+ libtiff/tif_print.c   |    2 +-
+ libtiff/tiffio.h      |    1 +
+ 6 files changed, 23 insertions(+), 6 deletions(-)
+
+diff --git a/libtiff/libtiff.def b/libtiff/libtiff.def
+index b2d03fe..90850fd 100644
+--- a/libtiff/libtiff.def
++++ b/libtiff/libtiff.def
+@@ -29,6 +29,7 @@ EXPORTS	TIFFAccessTagMethods
+ 	TIFFFieldName
+ 	TIFFFieldPassCount
+ 	TIFFFieldReadCount
++	TIFFFieldIsAnonymous
+ 	TIFFFieldTag
+ 	TIFFFieldWithName
+ 	TIFFFieldWithTag
+@@ -177,3 +178,4 @@ EXPORTS	TIFFAccessTagMethods
+ 	_TIFFMultiply64
+ 	_TIFFGetExifFields
+ 	_TIFFGetGpsFields
++
+diff --git a/libtiff/tif_close.c b/libtiff/tif_close.c
+index be97951..9618b77 100644
+--- a/libtiff/tif_close.c
++++ b/libtiff/tif_close.c
+@@ -82,7 +82,10 @@ TIFFCleanup(TIFF* tif)
+ 			TIFFField *fld = tif->tif_fields[i];
+ 			if (fld->field_name != NULL) {
+ 				if (fld->field_bit == FIELD_CUSTOM &&
+-					strncmp("Tag ", fld->field_name, 4) == 0) {
++					/* catuion: tif_fields[i] must not be the beginning of a fields-array.
++					 *          Otherwise the following tags are also freed with the first free().
++					 */
++					TIFFFieldIsAnonymous(fld)) {
+ 					_TIFFfree(fld->field_name);
+ 					_TIFFfree(fld);
+ 				}
+diff --git a/libtiff/tif_dir.h b/libtiff/tif_dir.h
+index f608dd7..42a5c49 100644
+--- a/libtiff/tif_dir.h
++++ b/libtiff/tif_dir.h
+@@ -286,7 +286,7 @@ struct _TIFFField {
+ 	short field_readcount;                  /* read count/TIFF_VARIABLE/TIFF_SPP */
+ 	short field_writecount;                 /* write count/TIFF_VARIABLE */
+ 	TIFFDataType field_type;                /* type of associated data */
+-	uint32 reserved;                        /* reserved for future extension */
++	uint32 field_anonymous;                 /* if true, this is a unknown / anonymous tag */
+ 	TIFFSetGetFieldType set_field_type;     /* type to be passed to TIFFSetField */
+ 	TIFFSetGetFieldType get_field_type;     /* type to be passed to TIFFGetField */
+ 	unsigned short field_bit;               /* bit in fieldsset bit vector */
+diff --git a/libtiff/tif_dirinfo.c b/libtiff/tif_dirinfo.c
+index 51de918..3bba10e 100644
+--- a/libtiff/tif_dirinfo.c
++++ b/libtiff/tif_dirinfo.c
+@@ -421,8 +421,11 @@ _TIFFSetupFields(TIFF* tif, const TIFFFieldArray* fieldarray)
+ 			TIFFField *fld = tif->tif_fields[i];
+ 			if (fld->field_name != NULL) {
+ 				if (fld->field_bit == FIELD_CUSTOM &&
+-					strncmp("Tag ", fld->field_name, 4) == 0) {
++					TIFFFieldIsAnonymous(fld)) {
+ 					_TIFFfree(fld->field_name);
++					/* catuion: tif_fields[i] must not be the beginning of a fields-array. 
++					 *          Otherwise the following tags are also freed with the first free().
++					 */
+ 					_TIFFfree(fld);
+ 				}
+ 			}
+@@ -790,6 +793,12 @@ TIFFFieldWriteCount(const TIFFField* fip)
+ 	return fip->field_writecount;
+ }
+ 
++int
++TIFFFieldIsAnonymous(const TIFFField *fip)
++{
++	return fip->field_anonymous;
++}
++
+ const TIFFField*
+ _TIFFFindOrRegisterField(TIFF *tif, uint32 tag, TIFFDataType dt)
+ 
+@@ -821,7 +830,7 @@ _TIFFCreateAnonField(TIFF *tif, uint32 tag, TIFFDataType field_type)
+ 	fld->field_readcount = TIFF_VARIABLE2;
+ 	fld->field_writecount = TIFF_VARIABLE2;
+ 	fld->field_type = field_type;
+-	fld->reserved = 0;
++	fld->field_anonymous = 1;    /* indicate that this is an anonymous / unknown tag */
+ 	switch (field_type)
+ 	{
+ 		case TIFF_BYTE:
+@@ -894,6 +903,8 @@ _TIFFCreateAnonField(TIFF *tif, uint32 tag, TIFFDataType field_type)
+ 	/* 
+ 	 * note that this name is a special sign to TIFFClose() and
+ 	 * _TIFFSetupFields() to free the field
++	 * Update:
++	 *   This special sign is replaced by fld->field_anonymous  flag.
+ 	 */
+ 	(void) snprintf(fld->field_name, 32, "Tag %d", (int) tag);
+ 
+@@ -1104,7 +1115,7 @@ TIFFMergeFieldInfo(TIFF* tif, const TIFFFieldInfo info[], uint32 n)
+ 		tp->field_readcount = info[i].field_readcount;
+ 		tp->field_writecount = info[i].field_writecount;
+ 		tp->field_type = info[i].field_type;
+-		tp->reserved = 0;
++		tp->field_anonymous = 0;
+ 		tp->set_field_type =
+ 		     _TIFFSetGetType(info[i].field_type,
+ 				info[i].field_readcount,
+diff --git a/libtiff/tif_print.c b/libtiff/tif_print.c
+index 6675372..1fd1da8 100644
+--- a/libtiff/tif_print.c
++++ b/libtiff/tif_print.c
+@@ -150,7 +150,7 @@ _TIFFPrettyPrintField(TIFF* tif, const TIFFField *fip, FILE* fd, uint32 tag,
+         (void) tif;
+ 
+ 	/* do not try to pretty print auto-defined fields */
+-	if (fip->field_name != NULL && strncmp(fip->field_name,"Tag ", 4) == 0) {
++	if ( TIFFFieldIsAnonymous(fip) ) {
+ 		return 0;
+ 	}
+         
+diff --git a/libtiff/tiffio.h b/libtiff/tiffio.h
+index 6274f09..2c27dbd 100644
+--- a/libtiff/tiffio.h
++++ b/libtiff/tiffio.h
+@@ -326,6 +326,7 @@ extern TIFFDataType TIFFFieldDataType(const TIFFField*);
+ extern int TIFFFieldPassCount(const TIFFField*);
+ extern int TIFFFieldReadCount(const TIFFField*);
+ extern int TIFFFieldWriteCount(const TIFFField*);
++extern int TIFFFieldIsAnonymous(const TIFFField *);
+ 
+ typedef int (*TIFFVSetMethod)(TIFF*, uint32, va_list);
+ typedef int (*TIFFVGetMethod)(TIFF*, uint32, va_list);
+-- 
+1.7.1
+

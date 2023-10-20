@@ -1,0 +1,180 @@
+From 9e0e2be4356b2b4ed35a3c235eb5494288921ff8 Mon Sep 17 00:00:00 2001
+From: Su Laus <sulau@freenet.de>
+Date: Fri, 26 Nov 2021 15:02:35 +0000
+Subject: [PATCH 06/10] Fix Segmentation fault printing GPS directory if Altitude tag is present (tif_print.c/tiffinfo.c)
+
+Backported from commit 7db4f2b62206b9cba6cda538e0f296df0ac371bd
+---
+ libtiff/tif_dirinfo.c                |    6 +++---
+ libtiff/tif_print.c                  |   16 ++++++++++++----
+ test/CMakeLists.txt                  |    2 ++
+ test/Makefile.am                     |    3 ++-
+ test/images/custom_dir_EXIF_GPS.tiff |  Bin 0 -> 2504 bytes
+ tools/tiffinfo.c                     |   12 +++++++++++-
+ 6 files changed, 30 insertions(+), 9 deletions(-)
+ create mode 100644 test/images/custom_dir_EXIF_GPS.tiff
+
+diff --git a/libtiff/tif_dirinfo.c b/libtiff/tif_dirinfo.c
+index 7217042..c0a8da9 100644
+--- a/libtiff/tif_dirinfo.c
++++ b/libtiff/tif_dirinfo.c
+@@ -530,7 +530,7 @@ _TIFFPrintFieldInfo(TIFF* tif, FILE* fd)
+ }
+ 
+ /*
+- * Return size of TIFFDataType in bytes
++ * Return size of TIFFDataType within TIFF-file in bytes
+  */
+ int
+ TIFFDataWidth(TIFFDataType type)
+@@ -602,7 +602,7 @@ _TIFFDataSize(TIFFDataType type)
+ 
+ /*
+  * Rational2Double: 
+- * Return size of TIFFSetGetFieldType in bytes.
++ * Return size of TIFFSetGetFieldType for internal storage in bytes.
+  *
+  * XXX: TIFF_RATIONAL values for FIELD_CUSTOM are stored internally as 4-byte float.
+  * However, some of them should be stored internally as 8-byte double. 
+@@ -619,7 +619,7 @@ _TIFFSetGetFieldSize(TIFFSetGetFieldType setgettype)
+ 		case TIFF_SETGET_C16_ASCII:
+ 		case TIFF_SETGET_C32_ASCII:
+ 		case TIFF_SETGET_OTHER:
+-		    return 0;
++		    return 1;
+ 		case TIFF_SETGET_UINT8:
+ 		case TIFF_SETGET_SINT8:
+ 		case TIFF_SETGET_C0_UINT8:
+diff --git a/libtiff/tif_print.c b/libtiff/tif_print.c
+index a073794..04b9e4b 100644
+--- a/libtiff/tif_print.c
++++ b/libtiff/tif_print.c
+@@ -92,9 +92,15 @@ _TIFFPrintField(FILE* fd, const TIFFField *fip,
+ 			fprintf(fd, "0x%lx",
+ 				(unsigned long)((uint32 *) raw_data)[j]);
+ 		else if(fip->field_type == TIFF_RATIONAL
+-			|| fip->field_type == TIFF_SRATIONAL
+-			|| fip->field_type == TIFF_FLOAT)
+-			fprintf(fd, "%f", ((float *) raw_data)[j]);
++			|| fip->field_type == TIFF_SRATIONAL) {
++			int tv_size = _TIFFSetGetFieldSize(fip->set_field_type);
++			if(tv_size==8)
++				fprintf(fd, "%lf", ((double*)raw_data)[j]);
++			else
++				fprintf(fd, "%f", ((float *) raw_data)[j]);
++		}
++		else if(fip->field_type == TIFF_FLOAT)
++			fprintf(fd, "%f", ((float*)raw_data)[j]);
+ 		else if(fip->field_type == TIFF_LONG8)
+ #if defined(__WIN32__) && (defined(_MSC_VER) || defined(__MINGW32__))
+ 			fprintf(fd, "%I64u",
+@@ -624,8 +630,10 @@ TIFFPrintDirectory(TIFF* tif, FILE* fd, long flags)
+ 					if(TIFFGetField(tif, tag, &raw_data) != 1)
+ 						continue;
+ 				} else {
++					/*--: Rational2Double: For Rationals evaluate "set_field_type" to determine internal storage size. */
++					int tv_size = _TIFFSetGetFieldSize(fip->set_field_type);
+ 					raw_data = _TIFFmalloc(
+-					    _TIFFDataSize(fip->field_type)
++					    tv_size
+ 					    * value_count);
+ 					mem_alloc = 1;
+ 					if(TIFFGetField(tif, tag, raw_data) != 1) {
+diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
+index bffb8bf..4877ed1 100644
+--- a/test/CMakeLists.txt
++++ b/test/CMakeLists.txt
+@@ -116,6 +116,7 @@ set(TESTSCRIPTS
+ # subdirectory which are intended to be used as input images for
+ # tests.  All of these files should use the extension ".tiff".
+ set(TIFFIMAGES
++    images/custom_dir_EXIF_GPS.tiff
+     images/logluv-3c-16b.tiff
+     images/minisblack-1c-16b.tiff
+     images/minisblack-1c-8b.tiff
+@@ -401,6 +402,7 @@ add_convert_test_multi(tiffcp thumbnail "" thumbnail "g3:1d" "" ""
+ add_reader_test(tiffdump "" "images/miniswhite-1c-1b.tiff")
+ 
+ # tiffinfo
++add_reader_test(tiffinfo "-c -D -d -j -s" "images/custom_dir_EXIF_GPS.tiff")
+ add_reader_test(tiffinfo "-c -D -d -j -s" "images/minisblack-1c-16b.tiff")
+ 
+ # tiffcp split/join
+diff --git a/test/Makefile.am b/test/Makefile.am
+index 4973b61..437503f 100644
+--- a/test/Makefile.am
++++ b/test/Makefile.am
+@@ -184,7 +184,8 @@ TIFFIMAGES = \
+ 	images/ojpeg_chewey_subsamp21_multi_strip.tiff \
+ 	images/ojpeg_single_strip_no_rowsperstrip.tiff \
+ 	images/testfax4.tiff \
+-	images/deflate-last-strip-extra-data.tiff
++	images/deflate-last-strip-extra-data.tiff \
++	images/custom_dir_EXIF_GPS.tiff
+ 
+ PNMIMAGES = \
+ 	images/minisblack-1c-8b.pgm \
+diff --git a/test/images/custom_dir_EXIF_GPS.tiff b/test/images/custom_dir_EXIF_GPS.tiff
+new file mode 100644
+index 0000000000000000000000000000000000000000..e34e6dc4d7fe6e48e6980aa079f8b173ab606265
+GIT binary patch
+literal 2504
+zcmai#ZERCj7{{M`d;79>FRk6W$>vt}B4g{cx3}G0#@resgAuI2HZ+8nv1o)C4eDZu
+zqRs`eCS<IIC=p1Sb&3hT5s4-`O;kcOfuQh7CDHgnqediAqAVEvpK~6Xen5MZ-sgAz
+z_kYfPp6A?qJ2ccm<%HweYjiV_<{%9N`72@_?0~)*7aT>pi&@9DfM&>f9&iooVos>Y
+zU&|h$FVdXS-;XuxnFqlQMgB(CQ_!23*MnEHry1)U*Ss>f`=JMQmA?~u-IPzRzwwWJ
+za{CJvl7B#=ZE3~x@DF6mrM?Ti=#*2gvl|=+i<%CDJHZI_22LB9PY40Wb4NRI_R#2P
+zLdLsyR|wg^EEpBh<H0o#ef!?S*Dx~9RQV7MI&<13<MYOM6AwL8muwr#3b$ch`cnk5
+ztSd4uIkW~*Clxi!6W9HPScQ=WKRh~V8k{2Mlo*q$<p~H5*6)RGus#i4RK;bGOOA+M
+zgYIU}TVOxW9l_iHd(J_xhfD0Cue^d9z#@m5P;K2U@cY20;Aw<ItlxoO6VLqyx;TXH
+z#&4<P9u$$Je%6E@#BVehi4aZF@cxM}-#++x#U$D)u7%ha;CTM(JB>g+7ByqNrr8^f
+z6FrT4cp+wfo5z{-we-rA+QAbpq9e@n;O4Z-a37X#P3tn#lhBtyN1%&1wWr;Z7r;^W
+z=TW+uR!@67N{=zW3AUJHcm(6j?}HP}ePZDm)v;*IG95EIRf{~)4uiQG><5buwc`|E
+zj)HGu?g48VwN9|QCZuOnjY*+ry|P;?!FpEdYrqcH?*kjmV_+wHwt-#DJHYO&>W{k;
+zk23RKa2ay|d*@~UPWY>#i}EJHyRxcpd%=5{5oji>6SkHPf-}q~!CB@@U^<}kZ@{NS
+zJD~D!1?$Wau!B8uu)%sC*va}`V9KffbVj;v({ieo3wVU|oZ7pswOEJwN3fC8NxZ+S
+zG1oV%?z;h8KC5aO2UoJb4P3>%1MHtw>l^jx16Vxhk84kAHSF05Pc3`)H{fF4E%&Gn
+zs4*V_>tNYK__aB;=21N3I&-86IWr#z8*?hpJ@7kO|1gYwWKJ%|KC)*T9uMoQnz4_}
+zXTe_PkrvcGr*e1+{&Lngw-SZtbi#6U7<v>e_VHt|$@~jAhI`>Ppimj!1=hR4aprMw
+zf_WM|#_Ri*5^V*GzD0FgALkrCg@;~MHGUu%$BSQmAwC)^hVjL-x`rnn+y2OdUDlR~
+z|2wD!@3=`lG(dyoa(l|WzLZ&*Z1QYMnepojnsK!vv;;KV%k1W8%lK4a02@X0Nza`!
+zy2qBwc&IXiO~bcj)5|ixdknja@xVe}#z*5H$@n#WPe0K`x=dFoytuigwN0LGO<9G!
+ztWs5_tU|sP=lfq>K(9m{s#%E=-CD8XXPM*q*MFCB%U_pe6g5v`ANH*ai*1m#i*YJ0
+zdL!4ycUV@A&X_SPp6HhKV|3+QPWH#jcF4KC%lhu<ANXhLGpU~a`?QS92Un~dT9vY+
+z*VnV7H^>!tw9SIUyn&;r4e-Va-dG9m1J)+-w@&$A@gL&H|JQ}v@v0FWTNsmi$}V)=
+gF4=Lr&~dv|$5VEpgLZd`9OZ7Hqifd<kBqMW7f^qv_y7O^
+
+literal 0
+HcmV?d00001
+
+diff --git a/tools/tiffinfo.c b/tools/tiffinfo.c
+index 2271c9d..64a4bd1 100644
+--- a/tools/tiffinfo.c
++++ b/tools/tiffinfo.c
+@@ -156,12 +156,22 @@ main(int argc, char* argv[])
+ 			} else {
+ 				do {
+ 					toff_t offset=0;
+-
++					uint16 curdir =  TIFFCurrentDirectory(tif);
++					printf("=== TIFF directory %d ===\n", curdir);
+ 					tiffinfo(tif, order, flags, 1);
+ 					if (TIFFGetField(tif, TIFFTAG_EXIFIFD,
+ 							 &offset)) {
+ 						if (TIFFReadEXIFDirectory(tif, offset)) {
+ 							tiffinfo(tif, order, flags, 0);
++							/*-- Go back to previous directory, (directory is reloaded from file!) */
++							TIFFSetDirectory(tif, curdir);
++						}
++					}
++					if (TIFFGetField(tif, TIFFTAG_GPSIFD,
++							 &offset)) {
++						if (TIFFReadGPSDirectory(tif, offset)) {
++							tiffinfo(tif, order, flags, 0);
++							TIFFSetDirectory(tif, curdir);
+ 						}
+ 					}
+ 				} while (TIFFReadDirectory(tif));
+-- 
+1.7.1
+

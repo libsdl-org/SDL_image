@@ -1,0 +1,23 @@
+From 54eeadb88b74b3d6548bef3a2803dbaf333dc5dc Mon Sep 17 00:00:00 2001
+From: headshog <craaaaaachind@gmail.com>
+Date: Mon, 17 Jul 2023 09:50:42 +0000
+Subject: [PATCH 10/42] TIFFReadDirectoryCheckOrder: avoid integer overflow
+
+When it occurs, it should be harmless in practice though
+---
+ libtiff/tif_dirread.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/libtiff/tif_dirread.c b/libtiff/tif_dirread.c
+index 717cbc8..2c49dc6 100644
+--- a/libtiff/tif_dirread.c
++++ b/libtiff/tif_dirread.c
+@@ -4376,7 +4376,7 @@ static void TIFFReadDirectoryCheckOrder(TIFF *tif, TIFFDirEntry *dir,
+ TIFFReadDirectoryCheckOrder(TIFF* tif, TIFFDirEntry* dir, uint16 dircount)
+ {
+ 	static const char module[] = "TIFFReadDirectoryCheckOrder";
+-	uint16 m;
++	uint32 m;
+ 	uint16 n;
+ 	TIFFDirEntry* o;
+ 	m=0;

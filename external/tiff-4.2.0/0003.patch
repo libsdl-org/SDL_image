@@ -1,0 +1,27 @@
+From bf4e24589c0de26d40dd2eee37e8e569ec0c1471 Mon Sep 17 00:00:00 2001
+From: Even Rouault <even.rouault@spatialys.com>
+Date: Thu, 17 Feb 2022 15:28:43 +0100
+Subject: [PATCH 03/10] TIFFFetchNormalTag(): avoid calling memcpy() with a null source pointer and size of zero (fixes #383)
+
+Backported from commit a95b799f65064e4ba2e2dfc206808f86faf93e85
+---
+ libtiff/tif_dirread.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+diff --git a/libtiff/tif_dirread.c b/libtiff/tif_dirread.c
+index 6f6b1e2..aad9496 100644
+--- a/libtiff/tif_dirread.c
++++ b/libtiff/tif_dirread.c
+@@ -5080,7 +5080,8 @@ TIFFFetchNormalTag(TIFF* tif, TIFFDirEntry* dp, int recover)
+ 								_TIFFfree(data);
+ 							return(0);
+ 						}
+-						_TIFFmemcpy(o,data,(uint32)dp->tdir_count);
++						if (dp->tdir_count > 0 )
++						    _TIFFmemcpy(o,data,(uint32)dp->tdir_count);
+ 						o[(uint32)dp->tdir_count]=0;
+ 						if (data!=0)
+ 							_TIFFfree(data);
+-- 
+1.7.1
+

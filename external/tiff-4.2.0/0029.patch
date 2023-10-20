@@ -1,0 +1,14 @@
+fix watcom warning: &array may not produce intended result
+
+diff -up a/libtiff/tif_dir.c b/libtiff/tif_dir.c
+--- a/libtiff/tif_dir.c
++++ b/libtiff/tif_dir.c
+@@ -683,7 +683,7 @@ _TIFFVSetField(TIFF* tif, uint32 tag, va_list ap)
+ 				uint16 v2[2];
+ 				v2[0] = (uint16)va_arg(ap, int);
+ 				v2[1] = (uint16)va_arg(ap, int);
+-				_TIFFmemcpy(tv->value, &v2, 4);
++				_TIFFmemcpy(tv->value, v2, 4);
+ 			}
+ 
+ 			else if (fip->field_passcount
