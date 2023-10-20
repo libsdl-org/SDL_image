@@ -1,0 +1,19 @@
+add _TIFFClampDoubleToUInt32 from cve2022-2056 patch to libtiff.def
+
+diff --git a/libtiff/libtiff.def b/libtiff/libtiff.def
+index 90850fd..3f4380c 100644
+--- a/libtiff/libtiff.def
++++ b/libtiff/libtiff.def
+@@ -167,6 +167,7 @@ EXPORTS	TIFFAccessTagMethods
+ 	TIFFYCbCrtoRGB
+ 	_TIFFCheckMalloc
+ 	_TIFFCheckRealloc
++	_TIFFClampDoubleToUInt32
+ 	_TIFFRewriteField
+ 	_TIFFfree
+ 	_TIFFmalloc
+@@ -178,4 +179,3 @@ EXPORTS	TIFFAccessTagMethods
+ 	_TIFFMultiply64
+ 	_TIFFGetExifFields
+ 	_TIFFGetGpsFields
+-
