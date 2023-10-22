@@ -1021,6 +1021,7 @@ void t2p_free(T2P* t2p)
 */
 
 void t2p_validate(T2P* t2p){
+	(void)t2p;
 
 #ifdef JPEG_SUPPORT
 	if(t2p->pdf_defaultcompression==T2P_COMPRESS_JPEG){
@@ -1049,7 +1050,6 @@ void t2p_validate(T2P* t2p){
 		if(t2p->pdf_minorversion<2){t2p->pdf_minorversion=2;}
 	}
 #endif
-	(void)0;
 
 	return;
 }
@@ -3331,7 +3331,7 @@ tsize_t t2p_readwrite_pdf_image_tile(T2P* t2p, TIFF* input, TIFF* output, ttile_
 
 	if (TIFFStripSize(output) > t2p->tiff_datasize) {
 		TIFFError(TIFF2PDF_MODULE,
-		         "Size mismatch input %ld, output %ld",
+		         "Size mismatch input " TIFF_SSIZE_FORMAT ", output " TIFF_SSIZE_FORMAT,
 		          t2p->tiff_datasize, TIFFStripSize(output));
 		_TIFFfree(buffer);
 		t2p->t2p_error = T2P_ERR_ERROR;

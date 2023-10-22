@@ -32,7 +32,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdint.h>
 
 #include "tiffio.h"
 
@@ -152,7 +151,7 @@ main(int argc, char* argv[])
                 if(TIFFFieldPassCount( fip )) {
                     size_t len;
                     len = strlen(argv[arg_index]) + 1;
-                    if (len > UINT16_MAX || TIFFSetField(tiff, TIFFFieldTag(fip),
+                    if (len > 0xffff || TIFFSetField(tiff, TIFFFieldTag(fip),
                             (uint16)len, argv[arg_index]) != 1)
                         fprintf( stderr, "Failed to set %s=%s\n",
                             TIFFFieldName(fip), argv[arg_index] );

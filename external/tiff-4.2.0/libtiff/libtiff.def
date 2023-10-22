@@ -29,7 +29,6 @@ EXPORTS	TIFFAccessTagMethods
 	TIFFFieldName
 	TIFFFieldPassCount
 	TIFFFieldReadCount
-	TIFFFieldIsAnonymous
 	TIFFFieldTag
 	TIFFFieldWithName
 	TIFFFieldWithTag
@@ -167,7 +166,6 @@ EXPORTS	TIFFAccessTagMethods
 	TIFFYCbCrtoRGB
 	_TIFFCheckMalloc
 	_TIFFCheckRealloc
-	_TIFFClampDoubleToUInt32
 	_TIFFRewriteField
 	_TIFFfree
 	_TIFFmalloc

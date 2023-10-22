@@ -123,8 +123,9 @@ host_triplet = @host@
 @HAVE_CXX_TRUE@am__append_6 = libtiffxx.la
 @HAVE_RPATH_TRUE@am__append_7 = $(LIBDIR)
 @HAVE_LD_VERSION_SCRIPT_TRUE@am__append_8 = -Wl,--version-script=$(srcdir)/libtiff.map
-@HAVE_RPATH_TRUE@am__append_9 = $(LIBDIR)
-@HAVE_LD_VERSION_SCRIPT_TRUE@am__append_10 = -Wl,--version-script=$(srcdir)/libtiffxx.map
+@HAVE_DARWIN_EXPORTS_TRUE@am__append_9 = -Wl,-exported_symbols_list,$(srcdir)/libtiff.exp
+@HAVE_RPATH_TRUE@am__append_10 = $(LIBDIR)
+@HAVE_LD_VERSION_SCRIPT_TRUE@am__append_11 = -Wl,--version-script=$(srcdir)/libtiffxx.map
 noinst_PROGRAMS = mkg3states$(EXEEXT)
 subdir = libtiff
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -506,10 +507,11 @@ libtiffxx_la_SOURCES = \
 
 lib_LTLIBRARIES = libtiff.la $(am__append_6)
 libtiff_la_LDFLAGS = -no-undefined -version-info \
-	$(LIBTIFF_VERSION_INFO) $(am__append_7) $(am__append_8)
+	$(LIBTIFF_VERSION_INFO) $(am__append_7) $(am__append_8) \
+	$(am__append_9)
 libtiff_la_LIBADD = $(LIBPORT)
 libtiffxx_la_LDFLAGS = -no-undefined -version-info \
-	$(LIBTIFF_VERSION_INFO) $(am__append_9) $(am__append_10)
+	$(LIBTIFF_VERSION_INFO) $(am__append_10) $(am__append_11)
 libtiffxx_la_LIBADD = $(LIBTIFF) $(LIBPORT)
 libtiffxx_la_DEPENDENCIES = libtiff.la
 mkg3states_SOURCES = mkg3states.c tif_fax3.h

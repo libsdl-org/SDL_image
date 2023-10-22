@@ -409,15 +409,6 @@ int _TIFFSeekOK(TIFF* tif, toff_t off)
     return off <= (~(uint64)0)/2 && TIFFSeekFile(tif,off,SEEK_SET)==off;
 }
 
-uint32 _TIFFClampDoubleToUInt32(double val)
-{
-    if( val < 0 )
-        return 0;
-    if( val > 0xFFFFFFFFU || val != val )
-        return 0xFFFFFFFFU;
-    return (uint32)val;
-}
-
 /* vim: set ts=8 sts=8 sw=8 noet: */
 /*
  * Local Variables:

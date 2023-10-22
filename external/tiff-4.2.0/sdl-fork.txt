@@ -1,0 +1,2 @@
+https://github.com/libsdl-org/libtiff.git v4.2.0-SDL branch:
+https://github.com/libsdl-org/libtiff/tree/v4.2.0-SDL

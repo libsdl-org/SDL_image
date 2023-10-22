@@ -19,9 +19,9 @@
 
 #ifdef WIN32
 #define STRNICMP strnicmp
-#else 
+#else
 #define STRNICMP strncasecmp
-#endif 
+#endif
 
 typedef struct _tag_spec
 {
@@ -343,12 +343,12 @@ char *super_fgets(char *b, int *blen, FILE *file)
       c=fgetc(file);
       if (c == EOF || c == '\n')
         break;
-      if (((long)q - (long)b + 1 ) >= (long) len)
+      if ((int)(q - b + 1) >= len)
         {
           long
             tlen;
 
-          tlen=(long)q-(long)b;
+          tlen=(int)(q - b);
           len<<=1;
           b=(char *) realloc((char *) b,(len+2));
           if ((char *) b == (char *) NULL)
@@ -363,7 +363,7 @@ char *super_fgets(char *b, int *blen, FILE *file)
       int
         tlen;
 
-      tlen=(long)q - (long)b;
+      tlen=(int)(q - b);
       if (tlen == 0)
         return (char *) NULL;
       b[tlen] = '\0';
@@ -532,7 +532,7 @@ int main(int argc, char *argv[])
                       quoted;
 
                     next=0;
-                    len = strlen(token);
+                    len = (unsigned long)strlen(token);
                     while(tokenizer(0, newstr, inputlen, token, "", "&", "", 0,
                                     &brkused, &next, &quoted)==0)
                       {
@@ -541,7 +541,7 @@ int main(int argc, char *argv[])
                             char
                               *s = &token[next-1];
 
-                            len -= convertHTMLcodes(s, strlen(s));
+                            len -= convertHTMLcodes(s, (int)strlen(s));
                           }
                       }
 

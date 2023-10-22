@@ -108,7 +108,7 @@
 #cmakedefine JPEG_DUAL_MODE_8_12 1
 
 /* 12bit libjpeg primary include file with path */
-#define LIBJPEG_12_PATH @LIBJPEG_12_PATH@
+#cmakedefine LIBJPEG_12_PATH @LIBJPEG_12_PATH@
 
 /* Support LZMA2 compression */
 #cmakedefine LZMA_SUPPORT 1
@@ -149,6 +149,9 @@
 /* The size of `signed long long', as computed by sizeof. */
 #define SIZEOF_SIGNED_LONG_LONG @SIZEOF_SIGNED_LONG_LONG@
 
+/* The size of `size_t', as computed by sizeof. */
+#define SIZEOF_SIZE_T @SIZEOF_SIZE_T@
+
 /* The size of `unsigned char *', as computed by sizeof. */
 #define SIZEOF_UNSIGNED_CHAR_P @SIZEOF_UNSIGNED_CHAR_P@
 
@@ -160,9 +163,6 @@
 
 /* The size of `unsigned long long', as computed by sizeof. */
 #define SIZEOF_UNSIGNED_LONG_LONG @SIZEOF_UNSIGNED_LONG_LONG@
-
-/* The size of `unsigned short', as computed by sizeof. */
-#define SIZEOF_UNSIGNED_SHORT @SIZEOF_UNSIGNED_SHORT@
 
 /* Default size of the strip in bytes (when strip chopping enabled) */
 #define STRIP_SIZE_DEFAULT @STRIP_SIZE_DEFAULT@

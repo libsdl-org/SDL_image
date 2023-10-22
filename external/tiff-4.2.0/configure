@@ -701,6 +701,8 @@ LIBTOOL
 OBJDUMP
 DLLTOOL
 AS
+HAVE_DARWIN_EXPORTS_FALSE
+HAVE_DARWIN_EXPORTS_TRUE
 HAVE_LD_VERSION_SCRIPT_FALSE
 HAVE_LD_VERSION_SCRIPT_TRUE
 CMAKE
@@ -1512,8 +1514,9 @@ Optional Features:
                           do not reject slow dependency extractors
   --disable-dependency-tracking
                           speeds up one-time build
-  --enable-ld-version-script
-                          enable linker version script (default is disabled)
+  --disable-ld-version-script
+                          disable linker version script (default is enabled if
+                          supported)
   --enable-shared[=PKGS]  build shared libraries [default=yes]
   --enable-static[=PKGS]  build static libraries [default=yes]
   --enable-fast-install[=PKGS]
@@ -1866,8 +1869,8 @@ fi
 
 # ac_fn_c_try_run LINENO
 # ----------------------
-# Try to link conftest.$ac_ext, and return whether this succeeded. Assumes
-# that executables *can* be run.
+# Try to run conftest.$ac_ext, and return whether this succeeded. Assumes that
+# executables *can* be run.
 ac_fn_c_try_run ()
 {
   as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
@@ -2578,6 +2581,8 @@ done
 # WARNING: Use '\'' to represent an apostrophe within the trap.
 # WARNING: Do not start the trap code with a newline, due to a FreeBSD 4.0 bug.
 trap 'exit_status=$?
+  # Sanitize IFS.
+  IFS=" ""	$as_nl"
   # Save into config.log some information that might help in debugging.
   {
     echo
@@ -4155,6 +4160,8 @@ int
 main ()
 {
 FILE *f = fopen ("conftest.out", "w");
+ if (!f)
+  return 1;
  return ferror (f) || fclose (f) != 0;
 
   ;
@@ -4166,7 +4173,9 @@ ac_clean_files="$ac_clean_files conftest.out"
 # the compiler is broken, or we cross compile.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether we are cross compiling" >&5
 $as_echo_n "checking whether we are cross compiling... " >&6; }
-if test "$cross_compiling" != yes; then
+if test "$cross_compiling" = maybe && test "x$build" != "x$host"; then
+  cross_compiling=yes
+elif test "$cross_compiling" != yes; then
   { { ac_try="$ac_link"
 case "(($ac_try" in
   *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
@@ -4887,7 +4896,7 @@ fi
 if test "${enable_ld_version_script+set}" = set; then :
   enableval=$enable_ld_version_script; have_ld_version_script=$enableval
 else
-  have_ld_version_script=no
+  have_ld_version_script=yes
 fi
 
 if test "$have_ld_version_script" != no; then
@@ -4934,6 +4943,21 @@ fi
 else
   HAVE_LD_VERSION_SCRIPT_TRUE='#'
   HAVE_LD_VERSION_SCRIPT_FALSE=
+fi
+
+case "$host" in
+    *-*-darwin*)
+        have_darwin_exports=yes
+        ;;
+   *)   have_darwin_exports=no
+        ;;
+esac
+ if test "$have_darwin_exports" = "yes"; then
+  HAVE_DARWIN_EXPORTS_TRUE=
+  HAVE_DARWIN_EXPORTS_FALSE='#'
+else
+  HAVE_DARWIN_EXPORTS_TRUE='#'
+  HAVE_DARWIN_EXPORTS_FALSE=
 fi
 
 
@@ -17291,35 +17315,36 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
   # Try to guess by grepping values from an object file.
 	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-short int ascii_mm[] =
+unsigned short int ascii_mm[] =
 		  { 0x4249, 0x4765, 0x6E44, 0x6961, 0x6E53, 0x7953, 0 };
-		short int ascii_ii[] =
+		unsigned short int ascii_ii[] =
 		  { 0x694C, 0x5454, 0x656C, 0x6E45, 0x6944, 0x6E61, 0 };
 		int use_ascii (int i) {
 		  return ascii_mm[i] + ascii_ii[i];
 		}
-		short int ebcdic_ii[] =
+		unsigned short int ebcdic_ii[] =
 		  { 0x89D3, 0xE3E3, 0x8593, 0x95C5, 0x89C4, 0x9581, 0 };
-		short int ebcdic_mm[] =
+		unsigned short int ebcdic_mm[] =
 		  { 0xC2C9, 0xC785, 0x95C4, 0x8981, 0x95E2, 0xA8E2, 0 };
 		int use_ebcdic (int i) {
 		  return ebcdic_mm[i] + ebcdic_ii[i];
 		}
-		extern int foo;
-
-int
-main ()
-{
-return use_ascii (foo) == use_ebcdic (foo);
-  ;
-  return 0;
-}
+		int
+		main (int argc, char **argv)
+		{
+		  /* Intimidate the compiler so that it does not
+		     optimize the arrays away.  */
+		  char *p = argv[0];
+		  ascii_mm[1] = *p++; ebcdic_mm[1] = *p++;
+		  ascii_ii[1] = *p++; ebcdic_ii[1] = *p++;
+		  return use_ascii (argc) == use_ebcdic (*p);
+		}
 _ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  if grep BIGenDianSyS conftest.$ac_objext >/dev/null; then
+if ac_fn_c_try_link "$LINENO"; then :
+  if grep BIGenDianSyS conftest$ac_exeext >/dev/null; then
 	      ac_cv_c_bigendian=yes
 	    fi
-	    if grep LiTTleEnDian conftest.$ac_objext >/dev/null ; then
+	    if grep LiTTleEnDian conftest$ac_exeext >/dev/null ; then
 	      if test "$ac_cv_c_bigendian" = unknown; then
 		ac_cv_c_bigendian=no
 	      else
@@ -17328,7 +17353,8 @@ if ac_fn_c_try_compile "$LINENO"; then :
 	      fi
 	    fi
 fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -18328,7 +18354,7 @@ else
     We can't simply define LARGE_OFF_T to be 9223372036854775807,
     since some C++ compilers masquerading as C compilers
     incorrectly reject 9223372036854775807.  */
-#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+#define LARGE_OFF_T (((off_t) 1 << 31 << 31) - 1 + ((off_t) 1 << 31 << 31))
   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
 		       && LARGE_OFF_T % 2147483647 == 1)
 		      ? 1 : -1];
@@ -18374,7 +18400,7 @@ else
     We can't simply define LARGE_OFF_T to be 9223372036854775807,
     since some C++ compilers masquerading as C compilers
     incorrectly reject 9223372036854775807.  */
-#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+#define LARGE_OFF_T (((off_t) 1 << 31 << 31) - 1 + ((off_t) 1 << 31 << 31))
   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
 		       && LARGE_OFF_T % 2147483647 == 1)
 		      ? 1 : -1];
@@ -18398,7 +18424,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
     We can't simply define LARGE_OFF_T to be 9223372036854775807,
     since some C++ compilers masquerading as C compilers
     incorrectly reject 9223372036854775807.  */
-#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+#define LARGE_OFF_T (((off_t) 1 << 31 << 31) - 1 + ((off_t) 1 << 31 << 31))
   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
 		       && LARGE_OFF_T % 2147483647 == 1)
 		      ? 1 : -1];
@@ -18443,7 +18469,7 @@ else
     We can't simply define LARGE_OFF_T to be 9223372036854775807,
     since some C++ compilers masquerading as C compilers
     incorrectly reject 9223372036854775807.  */
-#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+#define LARGE_OFF_T (((off_t) 1 << 31 << 31) - 1 + ((off_t) 1 << 31 << 31))
   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
 		       && LARGE_OFF_T % 2147483647 == 1)
 		      ? 1 : -1];
@@ -18467,7 +18493,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
     We can't simply define LARGE_OFF_T to be 9223372036854775807,
     since some C++ compilers masquerading as C compilers
     incorrectly reject 9223372036854775807.  */
-#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+#define LARGE_OFF_T (((off_t) 1 << 31 << 31) - 1 + ((off_t) 1 << 31 << 31))
   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
 		       && LARGE_OFF_T % 2147483647 == 1)
 		      ? 1 : -1];
@@ -18499,8 +18525,6 @@ _ACEOF
 esac
 rm -rf conftest*
   fi
-
-
 fi
 
 
@@ -19562,8 +19586,34 @@ else
   $as_echo_n "(cached) " >&6
 else
   # One or both of the vars are not set, and there is no cached value.
-ac_x_includes=no ac_x_libraries=no
-rm -f -r conftest.dir
+ac_x_includes=no
+ac_x_libraries=no
+# Do we need to do anything special at all?
+ac_save_LIBS=$LIBS
+LIBS="-lX11 $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <X11/Xlib.h>
+int
+main ()
+{
+XrmInitialize ()
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  # We can compile and link X programs with no special options.
+  ac_x_includes=
+  ac_x_libraries=
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS="$ac_save_LIBS"
+# If that didn't work, only try xmkmf and filesystem searches
+# for native compilation.
+if test x"$ac_x_includes" = xno && test "$cross_compiling" = no; then :
+  rm -f -r conftest.dir
 if mkdir conftest.dir; then
   cd conftest.dir
   cat >Imakefile <<'_ACEOF'
@@ -19602,7 +19652,7 @@ _ACEOF
   rm -f -r conftest.dir
 fi
 
-# Standard set of common directories for X headers.
+  # Standard set of common directories for X headers.
 # Check X11 before X11Rn because it is often a symlink to the current release.
 ac_x_header_dirs='
 /usr/X11/include
@@ -19628,6 +19678,8 @@ ac_x_header_dirs='
 /usr/local/include/X11R6
 /usr/local/include/X11R5
 /usr/local/include/X11R4
+
+/opt/X11/include
 
 /usr/X386/include
 /usr/x386/include
@@ -19702,15 +19754,17 @@ rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 fi # $ac_x_libraries = no
 
+fi
+# Record the results.
 case $ac_x_includes,$ac_x_libraries in #(
-  no,* | *,no | *\'*)
+  no,* | *,no | *\'*) :
     # Didn't find X, or a directory has "'" in its name.
-    ac_cv_have_x="have_x=no";; #(
-  *)
+    ac_cv_have_x="have_x=no" ;; #(
+  *) :
     # Record where we found X for the cache.
     ac_cv_have_x="have_x=yes\
 	ac_x_includes='$ac_x_includes'\
-	ac_x_libraries='$ac_x_libraries'"
+	ac_x_libraries='$ac_x_libraries'" ;;
 esac
 fi
 ;; #(
@@ -21387,6 +21441,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_LD_VERSION_SCRIPT_TRUE}" && test -z "${HAVE_LD_VERSION_SCRIPT_FALSE}"; then
   as_fn_error $? "conditional \"HAVE_LD_VERSION_SCRIPT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_DARWIN_EXPORTS_TRUE}" && test -z "${HAVE_DARWIN_EXPORTS_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_DARWIN_EXPORTS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then

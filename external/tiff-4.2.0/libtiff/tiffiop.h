@@ -366,6 +366,7 @@ extern int TIFFSetDefaultCompressionState(TIFF* tif);
 extern uint32 _TIFFDefaultStripSize(TIFF* tif, uint32 s);
 extern void _TIFFDefaultTileSize(TIFF* tif, uint32* tw, uint32* th);
 extern int _TIFFDataSize(TIFFDataType type);
+extern int TIFFFieldIsAnonymous(const TIFFField*);
 
 /*--: Rational2Double: Return size of TIFFSetGetFieldType in bytes. */
 extern int _TIFFSetGetFieldSize(TIFFSetGetFieldType setgettype);
@@ -394,7 +395,6 @@ extern void* _TIFFCheckRealloc(TIFF*, void*, tmsize_t, tmsize_t, const char*);
 
 extern double _TIFFUInt64ToDouble(uint64);
 extern float _TIFFUInt64ToFloat(uint64);
-extern uint32 _TIFFClampDoubleToUInt32(double);
 
 extern float _TIFFClampDoubleToFloat(double);
 

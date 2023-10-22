@@ -124,10 +124,6 @@ static   char tiffcrop_rev_date[] = "03-03-2010";
 # include <unistd.h>
 #endif
 
-#ifdef HAVE_STDINT_H
-# include <inttypes.h>
-#endif
-
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
 #endif
@@ -1243,13 +1239,13 @@ writeBufferToSeparateStrips (TIFF* out, uint8* buf,
         {
           if (scanlinesize > 0x0ffffffffULL) {
               dump_info(dump->infile, dump->format, "loadImage",
-                  "Attention: scanlinesize %"PRIu64" is larger than UINT32_MAX.\nFollowing dump might be wrong.",
+                  "Attention: scanlinesize " TIFF_SSIZE_FORMAT " is larger than UINT32_MAX.\nFollowing dump might be wrong.",
                   scanlinesize);
           }
           dump_info(dump->outfile, dump->format,"",
-                  "Sample %2d, Strip: %2d, bytes: %4d, Row %4d, bytes: %4d, Input offset: %6d", 
-                  s + 1, strip + 1, stripsize, row + 1, (uint32_t)scanlinesize, src - buf);
-        dump_buffer(dump->outfile, dump->format, nrows, (uint32_t)scanlinesize, row, obuf);
+                  "Sample %2d, Strip: %2d, bytes: %4d, Row %4d, bytes: %4d, Input offset: %6d",
+                  s + 1, strip + 1, stripsize, row + 1, (uint32)scanlinesize, src - buf);
+        dump_buffer(dump->outfile, dump->format, nrows, (uint32)scanlinesize, row, obuf);
 	}
 
       if (TIFFWriteEncodedStrip(out, strip++, obuf, stripsize) < 0)
@@ -3219,13 +3215,13 @@ extractContigSamples32bits (uint8 *in, uint8 *out, uint32 cols,
       /* If we have a full buffer's worth, write it out */
       if (ready_bits >= 32)
         {
-        bytebuff1 = (uint8_t)(buff2 >> 56);
+        bytebuff1 = (uint8)(buff2 >> 56);
         *dst++ = bytebuff1;
-        bytebuff2 = (uint8_t)(buff2 >> 48);
+        bytebuff2 = (uint8)(buff2 >> 48);
         *dst++ = bytebuff2;
-        bytebuff3 = (uint8_t)(buff2 >> 40);
+        bytebuff3 = (uint8)(buff2 >> 40);
         *dst++ = bytebuff3;
-        bytebuff4 = (uint8_t)(buff2 >> 32);
+        bytebuff4 = (uint8)(buff2 >> 32);
         *dst++ = bytebuff4;
         ready_bits -= 32;
                     
@@ -3600,13 +3596,13 @@ extractContigSamplesShifted32bits (uint8 *in, uint8 *out, uint32 cols,
         }
       else  /* If we have a full buffer's worth, write it out */
         {
-        bytebuff1 = (uint8_t)(buff2 >> 56);
+        bytebuff1 = (uint8)(buff2 >> 56);
         *dst++ = bytebuff1;
-        bytebuff2 = (uint8_t)(buff2 >> 48);
+        bytebuff2 = (uint8)(buff2 >> 48);
         *dst++ = bytebuff2;
-        bytebuff3 = (uint8_t)(buff2 >> 40);
+        bytebuff3 = (uint8)(buff2 >> 40);
         *dst++ = bytebuff3;
-        bytebuff4 = (uint8_t)(buff2 >> 32);
+        bytebuff4 = (uint8)(buff2 >> 32);
         *dst++ = bytebuff4;
         ready_bits -= 32;
                     
@@ -3799,13 +3795,12 @@ static int readContigStripsIntoBuffer (TIFF* in, uint8* buf)
                 bytes_read = TIFFReadEncodedStrip (in, strip, bufp, -1);
                 rows = bytes_read / scanline_size;
                 if ((strip < (nstrips - 1)) && (bytes_read != (int32)stripsize))
-                        TIFFError("", "Strip %"PRIu32": read %"PRId64" bytes, strip size %"PRIu64,
-                                  (int)strip + 1, (unsigned long) bytes_read,
-                                  (unsigned long)stripsize);
+                        TIFFError("", "Strip %u: read " TIFF_SSIZE_FORMAT " bytes, strip size " TIFF_SSIZE_FORMAT,
+                                  strip + 1, bytes_read, stripsize);
 
                 if (bytes_read < 0 && !ignore) {
-                        TIFFError("", "Error reading strip %"PRIu32" after %"PRIu64" rows",
-                                  (unsigned long) strip, (unsigned long)rows);
+                        TIFFError("", "Error reading strip %u after " TIFF_SSIZE_FORMAT " rows",
+                                  strip, rows);
                         return 0;
                 }
                 bufp += stripsize;
@@ -4269,13 +4264,13 @@ combineSeparateSamples32bits (uint8 *in[], uint8 *out, uint32 cols,
 	/* If we have a full buffer's worth, write it out */
 	if (ready_bits >= 32)
 	  {
-	  bytebuff1 = (uint8_t)(buff2 >> 56);
+	  bytebuff1 = (uint8)(buff2 >> 56);
 	  *dst++ = bytebuff1;
-	  bytebuff2 = (uint8_t)(buff2 >> 48);
+	  bytebuff2 = (uint8)(buff2 >> 48);
 	  *dst++ = bytebuff2;
-	  bytebuff3 = (uint8_t)(buff2 >> 40);
+	  bytebuff3 = (uint8)(buff2 >> 40);
 	  *dst++ = bytebuff3;
-	  bytebuff4 = (uint8_t)(buff2 >> 32);
+	  bytebuff4 = (uint8)(buff2 >> 32);
 	  *dst++ = bytebuff4;
 	  ready_bits -= 32;
                     
@@ -4794,13 +4789,13 @@ combineSeparateTileSamples32bits (uint8 *in[], uint8 *out, uint32 cols,
 	/* If we have a full buffer's worth, write it out */
 	if (ready_bits >= 32)
 	  {
-	  bytebuff1 = (uint8_t)(buff2 >> 56);
+	  bytebuff1 = (uint8)(buff2 >> 56);
 	  *dst++ = bytebuff1;
-	  bytebuff2 = (uint8_t)(buff2 >> 48);
+	  bytebuff2 = (uint8)(buff2 >> 48);
 	  *dst++ = bytebuff2;
-	  bytebuff3 = (uint8_t)(buff2 >> 40);
+	  bytebuff3 = (uint8)(buff2 >> 40);
 	  *dst++ = bytebuff3;
-	  bytebuff4 = (uint8_t)(buff2 >> 32);
+	  bytebuff4 = (uint8)(buff2 >> 32);
 	  *dst++ = bytebuff4;
 	  ready_bits -= 32;
                     
@@ -4958,7 +4953,7 @@ static int readSeparateStripsIntoBuffer (TIFF *in, uint8 *obuf, uint32 length,
       buff = srcbuffs[s];
       strip = (s * strips_per_sample) + j; 
       bytes_read = TIFFReadEncodedStrip (in, strip, buff, stripsize);
-      rows_this_strip = (uint32_t)(bytes_read / src_rowsize);
+      rows_this_strip = (uint32)(bytes_read / src_rowsize);
       if (bytes_read < 0 && !ignore)
         {
         TIFFError(TIFFFileName(in),
@@ -5186,6 +5181,14 @@ static void initDumpOptions(struct dump_opts *dump)
   dump->outfile = NULL;
   }
 
+static uint32 _TIFFClampDoubleToUInt32(double val)
+{
+    if (val < 0)
+        return 0;
+    if (val > 0xFFFFFFFFU || val != val)
+        return 0xFFFFFFFFU;
+    return (uint32)val;
+}
 /* Compute pixel offsets into the image for margins and fixed regions */
 static int
 computeInputPixelOffsets(struct crop_mask *crop, struct image_data *image,
@@ -6385,11 +6388,11 @@ loadImage(TIFF* in, struct image_data *image, struct dump_opts *dump, unsigned c
 
     if (scanlinesize > 0x0ffffffffULL) {
         dump_info(dump->infile, dump->format, "loadImage",
-            "Attention: scanlinesize %"PRIu64" is larger than UINT32_MAX.\nFollowing dump might be wrong.",
+            "Attention: scanlinesize " TIFF_SSIZE_FORMAT " is larger than UINT32_MAX.\nFollowing dump might be wrong.",
             scanlinesize);
     }
     for (i = 0; i < length; i++)
-      dump_buffer(dump->infile, dump->format, 1, (uint32_t)scanlinesize, 
+      dump_buffer(dump->infile, dump->format, 1, (uint32)scanlinesize,
                   i, read_buff + (i * scanlinesize));
     }
   return (0);
@@ -6420,7 +6423,7 @@ static int  correct_orientation(struct image_data *image, unsigned char **work_b
 
   if (image->adjustments & ROTATE_ANY)
     {
-    uint32_t width, length;
+    uint32 width, length;
     if (image->adjustments & ROTATECW_90)
       rotation = (uint16) 90;
     else
@@ -6504,9 +6507,9 @@ extractCompositeRegions(struct image_data *image,  struct crop_mask *crop,
         case EDGE_BOTTOM:
             for (i = 1; i < crop->selections; i++)
             {
-                uint32_t crop_width0 =
+                uint32 crop_width0 =
                     crop->regionlist[i - 1].x2 - crop->regionlist[i - 1].x1 + 1;
-                uint32_t crop_width1 =
+                uint32 crop_width1 =
                     crop->regionlist[i].x2 - crop->regionlist[i].x1 + 1;
                 if (crop_width0 != crop_width1)
                 {
@@ -6521,9 +6524,9 @@ extractCompositeRegions(struct image_data *image,  struct crop_mask *crop,
         case EDGE_RIGHT:
             for (i = 1; i < crop->selections; i++)
             {
-                uint32_t crop_length0 =
+                uint32 crop_length0 =
                     crop->regionlist[i - 1].y2 - crop->regionlist[i - 1].y1 + 1;
-                uint32_t crop_length1 =
+                uint32 crop_length1 =
                     crop->regionlist[i].y2 - crop->regionlist[i].y1 + 1;
                 if (crop_length0 != crop_length1)
                 {
@@ -6980,7 +6983,7 @@ extractImageSection(struct image_data *image, struct pageseg *section,
         sprintf(&bitarray[j], (bitset) ? "1" : "0");
         }
       bitarray[18] = '\0';
-      TIFFError ("", "Row: %3d Offset1: %"PRIu32",  Shift1: %"PRIu32",    Offset2: %"PRIu32",  Trailing_bits:  %"PRIu32"\n", 
+      TIFFError ("", "Row: %3d Offset1: %u,  Shift1: %u,    Offset2: %u,  Trailing_bits:  %u\n",
                  row, offset1, shift1, offset1+full_bytes, trailing_bits); 
 #endif
 
@@ -7053,11 +7056,11 @@ extractImageSection(struct image_data *image, struct pageseg *section,
         if (trailing_bits != 0)
           {
 #ifdef DEVELMODE
-          TIFFError("", "        Trailing bits %4"PRIu32"   src offset: %8"PRIu32", Dst offset: %8"PRIu32"\n", trailing_bits, offset1 + full_bytes, dst_offset);
+          TIFFError("", "        Trailing bits %4u   src offset: %8u, Dst offset: %8u\n", trailing_bits, offset1 + full_bytes, dst_offset);
 #endif
           /* More than necessary bits are already copied into last destination buffer, 
            * only masking of last byte in destination buffer is necessary.*/ 
-          sect_buff[dst_offset] &= ((uint8_t)0xFF << (8 - trailing_bits));
+          sect_buff[dst_offset] &= ((uint8)0xFF << (8 - trailing_bits));
             }
 #ifdef DEVELMODE
 	  sprintf(&bitarray[28], " ");
@@ -8535,13 +8538,13 @@ rotateContigSamples32bits(uint16 rotation, uint16 spp, uint16 bps, uint32 width,
         }
       else /* If we have a full buffer's worth, write it out */
         {
-        bytebuff1 = (uint8_t)(buff2 >> 56);
+        bytebuff1 = (uint8)(buff2 >> 56);
         *dst++ = bytebuff1;
-        bytebuff2 = (uint8_t)(buff2 >> 48);
+        bytebuff2 = (uint8)(buff2 >> 48);
         *dst++ = bytebuff2;
-        bytebuff3 = (uint8_t)(buff2 >> 40);
+        bytebuff3 = (uint8)(buff2 >> 40);
         *dst++ = bytebuff3;
-        bytebuff4 = (uint8_t)(buff2 >> 32);
+        bytebuff4 = (uint8)(buff2 >> 32);
         *dst++ = bytebuff4;
         ready_bits -= 32;
                     
@@ -9152,13 +9155,13 @@ reverseSamples32bits (uint16 spp, uint16 bps, uint32 width,
         }
       else /* If we have a full buffer's worth, write it out */
         {
-        bytebuff1 = (uint8_t)(buff2 >> 56);
+        bytebuff1 = (uint8)(buff2 >> 56);
         *dst++ = bytebuff1;
-        bytebuff2 = (uint8_t)(buff2 >> 48);
+        bytebuff2 = (uint8)(buff2 >> 48);
         *dst++ = bytebuff2;
-        bytebuff3 = (uint8_t)(buff2 >> 40);
+        bytebuff3 = (uint8)(buff2 >> 40);
         *dst++ = bytebuff3;
-        bytebuff4 = (uint8_t)(buff2 >> 32);
+        bytebuff4 = (uint8)(buff2 >> 32);
         *dst++ = bytebuff4;
         ready_bits -= 32;
                     

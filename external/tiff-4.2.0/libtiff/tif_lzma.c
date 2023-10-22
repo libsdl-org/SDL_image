@@ -185,7 +185,7 @@ LZMADecode(TIFF* tif, uint8* op, tmsize_t occ, uint16 s)
 		 * Save the current stream state to properly recover from the
 		 * decoding errors later.
 		 */
-		const uint8_t *next_in = sp->stream.next_in;
+		const uint8 *next_in = sp->stream.next_in;
 		size_t avail_in = sp->stream.avail_in;
 
 		lzma_ret ret = lzma_code(&sp->stream, LZMA_RUN);

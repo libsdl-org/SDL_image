@@ -129,7 +129,12 @@ if(NOT CYGWIN)
     # seems to be the default.
     set_target_properties(tiff PROPERTIES VERSION ${SO_VERSION})
 endif()
-if(HAVE_LD_VERSION_SCRIPT)
+if(WIN32)
+# Windows links with libtiff.def, nothing else needed.
+elseif(APPLE)
+  set_target_properties(tiff PROPERTIES LINK_FLAGS
+                        "-Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/libtiff.exp")
+elseif(HAVE_LD_VERSION_SCRIPT)
   set_target_properties(tiff PROPERTIES LINK_FLAGS
                         "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libtiff.map")
 endif()

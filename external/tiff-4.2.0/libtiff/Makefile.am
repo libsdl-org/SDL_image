@@ -128,6 +128,9 @@ endif
 if HAVE_LD_VERSION_SCRIPT
 libtiff_la_LDFLAGS += -Wl,--version-script=$(srcdir)/libtiff.map
 endif
+if HAVE_DARWIN_EXPORTS
+libtiff_la_LDFLAGS += -Wl,-exported_symbols_list,$(srcdir)/libtiff.exp
+endif
 libtiff_la_LIBADD = $(LIBPORT)
 
 libtiffxx_la_LDFLAGS = \

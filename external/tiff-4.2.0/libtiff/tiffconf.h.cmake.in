@@ -92,7 +92,7 @@
 
 /* Support strip chopping (whether or not to convert single-strip uncompressed
    images to mutiple strips of ~8Kb to reduce memory usage) */
-#cmakedefine STRIPCHOP_DEFAULT 1
+#cmakedefine STRIPCHOP_DEFAULT TIFF_STRIPCHOP
 
 /* Enable SubIFD tag (330) support */
 #cmakedefine SUBIFD_SUPPORT 1

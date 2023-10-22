@@ -121,9 +121,9 @@ AC_PATH_PROG(CMAKE, cmake)
 # constrained to compilers using GNU ld on ELF systems or systems
 # which provide an adequate emulation thereof.
 AC_ARG_ENABLE([ld-version-script],
-  AS_HELP_STRING([--enable-ld-version-script],
-    [enable linker version script (default is disabled)]),
-    [have_ld_version_script=$enableval], [have_ld_version_script=no])
+  AS_HELP_STRING([--disable-ld-version-script],
+    [disable linker version script (default is enabled if supported)]),
+    [have_ld_version_script=$enableval], [have_ld_version_script=yes])
 if test "$have_ld_version_script" != no; then
   AC_MSG_CHECKING([if LD -Wl,--version-script works])
   save_LDFLAGS="$LDFLAGS"
@@ -143,7 +143,16 @@ EOF
   LDFLAGS="$save_LDFLAGS"
   AC_MSG_RESULT($have_ld_version_script)
 fi
+case "$host" in
+    *-*-darwin*)
+        have_darwin_exports=yes
+        have_ld_version_script=no
+        ;;
+   *)   have_darwin_exports=no
+        ;;
+esac
 AM_CONDITIONAL(HAVE_LD_VERSION_SCRIPT, test "$have_ld_version_script" = "yes")
+AM_CONDITIONAL(HAVE_DARWIN_EXPORTS, test "$have_darwin_exports" = "yes")
 
 
 dnl Tests for Windows

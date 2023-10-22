@@ -31,8 +31,6 @@
 #include "tiffiop.h"
 #include <float.h>	/*--: for Rational2Double */
 
-#include <inttypes.h>
-
 /*
  * These are used in the backwards compatibility code...
  */
@@ -162,7 +160,7 @@ countInkNamesString(TIFF *tif, uint32 slen, const char *s)
 	}
 bad:
 	TIFFErrorExt(tif->tif_clientdata, "TIFFSetField",
-	    "%s: Invalid InkNames value; no NUL at given buffer end location %"PRIu32", after %"PRIu16" ink",
+	    "%s: Invalid InkNames value; no NUL at given buffer end location %u, after %u ink",
             tif->tif_name, slen, i);
 	return (0);
 }
@@ -491,7 +489,7 @@ _TIFFVSetField(TIFF* tif, uint32 tag, va_list ap)
 				{
 					if (td->td_numberofinks != ninksinstring) {
 						TIFFErrorExt(tif->tif_clientdata, module,
-							"Warning %s; Tag %s:\n  Value %"PRIu16" of NumberOfInks is different from the number of inks %"PRIu16".\n  -> NumberOfInks value adapted to %"PRIu16"",
+							"Warning %s; Tag %s:\n  Value %u of NumberOfInks is different from the number of inks %u.\n  -> NumberOfInks value adapted to %u",
 							tif->tif_name, fip->field_name, td->td_numberofinks, ninksinstring, ninksinstring);
 						td->td_numberofinks = ninksinstring;
 					}
@@ -503,7 +501,7 @@ _TIFFVSetField(TIFF* tif, uint32 tag, va_list ap)
 				{
 					if (td->td_numberofinks != td->td_samplesperpixel) {
 						TIFFErrorExt(tif->tif_clientdata, module,
-							"Warning %s; Tag %s:\n  Value %"PRIu16" of NumberOfInks is different from the SamplesPerPixel value %"PRIu16"",
+							"Warning %s; Tag %s:\n  Value %u of NumberOfInks is different from the SamplesPerPixel value %u",
 							tif->tif_name, fip->field_name, td->td_numberofinks, td->td_samplesperpixel);
 					}
 				}
@@ -517,7 +515,7 @@ _TIFFVSetField(TIFF* tif, uint32 tag, va_list ap)
 		{
 			if (v != td->td_numberofinks) {
 				TIFFErrorExt(tif->tif_clientdata, module,
-					"Error %s; Tag %s:\n  It is not possible to set the value %"PRIu32" for NumberOfInks\n  which is different from the number of inks in the InkNames tag (%"PRIu16")",
+					"Error %s; Tag %s:\n  It is not possible to set the value %u for NumberOfInks\n  which is different from the number of inks in the InkNames tag (%u)",
 					tif->tif_name, fip->field_name, v, td->td_numberofinks);
 				/* Do not set / overwrite number of inks already set by InkNames case accordingly. */
 				status = 0;
@@ -528,7 +526,7 @@ _TIFFVSetField(TIFF* tif, uint32 tag, va_list ap)
 			{
 				if (td->td_numberofinks != td->td_samplesperpixel) {
 					TIFFErrorExt(tif->tif_clientdata, module,
-						"Warning %s; Tag %s:\n  Value %"PRIu32" of NumberOfInks is different from the SamplesPerPixel value %"PRIu16"",
+						"Warning %s; Tag %s:\n  Value %u of NumberOfInks is different from the SamplesPerPixel value %u",
 						tif->tif_name, fip->field_name, v, td->td_samplesperpixel);
 				}
 			}

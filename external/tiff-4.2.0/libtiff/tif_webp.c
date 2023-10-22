@@ -71,7 +71,7 @@ static int TWebPEncode(TIFF* tif, uint8* bp, tmsize_t cc, uint16 s);
 static int TWebPDecode(TIFF* tif, uint8* op, tmsize_t occ, uint16 s);
 
 static
-int TWebPDatasetWriter(const uint8_t* data, size_t data_size,
+int TWebPDatasetWriter(const uint8* data, size_t data_size,
                       const WebPPicture* const picture)
 {
   static const char module[] = "TWebPDatasetWriter";
@@ -153,7 +153,7 @@ TWebPDecode(TIFF* tif, uint8* op, tmsize_t occ, uint16 s)
     return 0;
   } else {
     int current_y, stride;
-    uint8_t* buf;
+    uint8* buf;
 
     /* Returns the RGB/A image decoded so far */
     buf = WebPIDecGetRGB(sp->psDecoder, &current_y, NULL, NULL, &stride);
