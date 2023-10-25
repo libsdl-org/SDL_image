@@ -170,9 +170,9 @@ jobs:
       with:
         name: "${{ matrix.platform.name }} artifacts"
         path: |
-          build/test/*.bmp
-          build/test/*.jpg
-          build/test/*.png
+          build/*.bmp
+          build/*.jpg
+          build/*.png
         if-no-files-found: ignore
 
     - name: Verify CMake configuration files
