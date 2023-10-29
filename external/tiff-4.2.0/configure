@@ -4937,6 +4937,14 @@ rm -f core conftest.err conftest.$ac_objext \
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $have_ld_version_script" >&5
 $as_echo "$have_ld_version_script" >&6; }
 fi
+case "$host" in
+    *-*-darwin*)
+        have_darwin_exports=yes
+        have_ld_version_script=no
+        ;;
+   *)   have_darwin_exports=no
+        ;;
+esac
  if test "$have_ld_version_script" = "yes"; then
   HAVE_LD_VERSION_SCRIPT_TRUE=
   HAVE_LD_VERSION_SCRIPT_FALSE='#'
@@ -4945,13 +4953,6 @@ else
   HAVE_LD_VERSION_SCRIPT_FALSE=
 fi
 
-case "$host" in
-    *-*-darwin*)
-        have_darwin_exports=yes
-        ;;
-   *)   have_darwin_exports=no
-        ;;
-esac
  if test "$have_darwin_exports" = "yes"; then
   HAVE_DARWIN_EXPORTS_TRUE=
   HAVE_DARWIN_EXPORTS_FALSE='#'
