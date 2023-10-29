@@ -65,9 +65,9 @@ typedef struct {
  * Internal format of a TIFF directory entry.
  */
 typedef struct {
-#define FIELD_SETLONGS 4
+#define FIELDSET_ITEMS 4
 	/* bit vector of fields that are set */
-	unsigned long td_fieldsset[FIELD_SETLONGS];
+	uint32  td_fieldsset[FIELDSET_ITEMS];
 
 	uint32  td_imagewidth, td_imagelength, td_imagedepth;
 	uint32  td_tilewidth, td_tilelength, td_tiledepth;
@@ -191,9 +191,9 @@ typedef struct {
  */
 #define FIELD_PSEUDO			0
 
-#define FIELD_LAST			(32*FIELD_SETLONGS-1)
+#define FIELD_LAST			(32*FIELDSET_ITEMS-1)
 
-#define BITn(n)				(((unsigned long)1L)<<((n)&0x1f))
+#define BITn(n)				(((uint32)1L)<<((n)&0x1f))
 #define BITFIELDn(tif, n)		((tif)->tif_dir.td_fieldsset[(n)/32])
 #define TIFFFieldSet(tif, field)	(BITFIELDn(tif, field) & BITn(field))
 #define TIFFSetFieldBit(tif, field)	(BITFIELDn(tif, field) |= BITn(field))

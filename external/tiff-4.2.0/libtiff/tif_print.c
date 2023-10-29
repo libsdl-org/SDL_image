@@ -200,13 +200,9 @@ _TIFFPrettyPrintField(TIFF* tif, const TIFFField *fip, FILE* fd, uint32 tag,
 			return 1;
 		}
 		case TIFFTAG_RICHTIFFIPTC:
-			/*
-			 * XXX: for some weird reason RichTIFFIPTC tag
-			 * defined as array of LONG values.
-			 */
 			fprintf(fd,
 			    "  RichTIFFIPTC Data: <present>, %lu bytes\n",
-			    (unsigned long) value_count * 4);
+			    (unsigned long) value_count );
 			return 1;
 
 		case TIFFTAG_PHOTOSHOP:

@@ -2561,7 +2561,10 @@ main(int argc, char* argv[])
       }
     }
 
-  TIFFClose(out);
+  if (out != NULL)
+    {
+      TIFFClose(out);
+    }
 
   return (0);
   } /* end main */
