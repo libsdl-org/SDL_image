@@ -95,7 +95,7 @@ SDL_Surface *IMG_LoadQOI_RW(SDL_RWops *src)
                                                  (image_info.width * 4),
                                                  SDL_PIXELFORMAT_RGBA32);
     if ( !surface ) {
-        SDL_free(pixel_data);
+        QOI_FREE(pixel_data);
         IMG_SetError("Couldn't create SDL_Surface");
         return NULL;
     }
