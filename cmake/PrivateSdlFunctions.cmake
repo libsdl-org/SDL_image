@@ -1,6 +1,8 @@
 # This file is shared amongst SDL_image/SDL_mixer/SDL_ttf
 
 include(CheckCCompilerFlag)
+include(CheckCSourceCompiles)
+include(CMakePushCheckState)
 
 macro(sdl_calculate_derived_version_variables MAJOR MINOR MICRO)
     set(SO_VERSION_MAJOR "0")
@@ -232,13 +234,23 @@ endfunction()
 
 macro(sdl_check_linker_flag flag var)
     # FIXME: Use CheckLinkerFlag module once cmake minimum version >= 3.18
-    include(CMakePushCheckState)
-    include(CheckCSourceCompiles)
     cmake_push_check_state(RESET)
     set(CMAKE_REQUIRED_LINK_OPTIONS "${flag}")
-    check_c_source_compiles("int main() { return 0; }" ${var})
+    check_c_source_compiles("int main() { return 0; }" ${var} FAIL_REGEX "(unsupported|syntax error|unrecognized option)")
     cmake_pop_check_state()
 endmacro()
+
+function(check_linker_support_version_script VAR)
+    cmake_push_check_state(RESET)
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/dummy.sym" "n_0 {\n global:\n  func;\n local: *;\n};\n")
+    list(APPEND CMAKE_REQUIRED_LINK_OPTIONS "-Wl,--version-script=${CMAKE_CURRENT_BINARY_DIR}/dummy.sym")
+    if(MSVC)
+        list(APPEND CMAKE_REQUIRED_LINK_OPTIONS "/WX")
+    endif()
+    check_c_source_compiles("int func(void) {return 0;} int main(int argc,char*argv[]){(void)argc;(void)argv;return func();}" LINKER_SUPPORTS_VERSION_SCRIPT FAIL_REGEX "(unsupported|syntax error|unrecognized option)")
+    cmake_pop_check_state()
+    set(${VAR} "${LINKER_SUPPORTS_VERSION_SCRIPT}" PARENT_SCOPE)
+endfunction()
 
 function(sdl_target_link_options_no_undefined TARGET)
     if(NOT MSVC)
@@ -254,7 +266,7 @@ function(sdl_target_link_options_no_undefined TARGET)
 endfunction()
 
 function(sdl_target_link_option_version_file TARGET VERSION_SCRIPT)
-    sdl_check_linker_flag("-Wl,--version-script=${VERSION_SCRIPT}" HAVE_WL_VERSION_SCRIPT)
+    check_linker_support_version_script(HAVE_WL_VERSION_SCRIPT)
     if(HAVE_WL_VERSION_SCRIPT)
         target_link_options(${TARGET} PRIVATE "-Wl,--version-script=${VERSION_SCRIPT}")
     else()
@@ -288,7 +300,6 @@ endif()
 endfunction()
 
 function(sdl_get_git_revision_hash VARNAME)
-
     set("${VARNAME}" "" CACHE STRING "${PROJECT_NAME} revision")
     set(revision "${${VARNAME}}")
     if(NOT revision)
