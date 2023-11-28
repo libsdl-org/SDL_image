@@ -1,3 +1,7 @@
+2.8.0:
+ * Added support for loading WEBP animations
+ * PNG images with a palette are loaded as SDL surfaces with a palette
+
 2.6.3:
  * Fixed loading of 4-bit .ico files
 
