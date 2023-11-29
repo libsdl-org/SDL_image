@@ -554,7 +554,10 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../$(PLATFORM)/SDL2.framework/Headers\"";
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../$(PLATFORM)/SDL2.framework/Headers\"",
+					"\"$(SRCROOT)/../../include\"",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				ONLY_ACTIVE_ARCH = YES;
@@ -572,7 +575,10 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/../$(PLATFORM)\"";
-				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../$(PLATFORM)/SDL2.framework/Headers\"";
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../$(PLATFORM)/SDL2.framework/Headers\"",
+					"\"$(SRCROOT)/../../include\"",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PLATFORM = "";
