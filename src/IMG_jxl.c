@@ -52,6 +52,10 @@ static struct {
 #endif
 
 int IMG_InitJXL()
+#ifdef __APPLE__
+    /* Need to turn off optimizations so weak framework load check works */
+    __attribute__ ((optnone))
+#endif
 {
     if ( lib.loaded == 0 ) {
 #ifdef LOAD_JXL_DYNAMIC
