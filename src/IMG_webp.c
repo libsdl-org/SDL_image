@@ -73,6 +73,10 @@ static struct {
 #endif
 
 int IMG_InitWEBP(void)
+#ifdef __APPLE__
+    /* Need to turn off optimizations so weak framework load check works */
+    __attribute__ ((optnone))
+#endif
 {
     if (lib.loaded == 0) {
 #if defined(LOAD_WEBP_DYNAMIC) && defined(LOAD_WEBPDEMUX_DYNAMIC)
