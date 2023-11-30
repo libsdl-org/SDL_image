@@ -103,7 +103,7 @@ rpm: $(PACKAGE)-$(VERSION).tar.gz
 	rpmbuild -ta $(PACKAGE)-$(VERSION).tar.gz
 
 dist-hook:
-	ls $(distdir)/external | $(FGREP) -v download.sh | while read dir; do rm -rf "$(distdir)/external/$$dir"; done
+	ls $(distdir)/external | $(FGREP) -v download.sh | $(FGREP) -v Get-GitModules.ps1 | while read dir; do rm -rf "$(distdir)/external/$$dir"; done
 
 install-data-local:
 	$(MKDIR_P) $(DESTDIR)$(libdir)/cmake/SDL2_image
