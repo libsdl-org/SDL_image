@@ -42,7 +42,7 @@ extern "C" {
  * Printable format: "%d.%d.%d", MAJOR, MINOR, PATCHLEVEL
  */
 #define SDL_IMAGE_MAJOR_VERSION 2
-#define SDL_IMAGE_MINOR_VERSION 8
+#define SDL_IMAGE_MINOR_VERSION 9
 #define SDL_IMAGE_PATCHLEVEL    0
 
 /**

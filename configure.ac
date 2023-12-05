@@ -3,7 +3,7 @@ dnl Process this file with autoconf to produce a configure script.
 dnl Set various version strings - taken gratefully from the GTk sources
 # See docs/release_checklist.md
 m4_define([MAJOR_VERSION_MACRO], [2])
-m4_define([MINOR_VERSION_MACRO], [8])
+m4_define([MINOR_VERSION_MACRO], [9])
 m4_define([MICRO_VERSION_MACRO], [0])
 
 AC_INIT([SDL2_image],
