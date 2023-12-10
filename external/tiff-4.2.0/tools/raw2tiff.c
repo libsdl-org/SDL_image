@@ -108,6 +108,7 @@ main(int argc, char* argv[])
 	int	fd;
 	char	*outfilename = NULL;
 	TIFF	*out;
+        uint32 temp_limit_check = 0;     /* temp for integer overflow checking*/
 
 	uint32 row, col, band;
 	int	c;
@@ -218,6 +219,33 @@ main(int argc, char* argv[])
 
 	if (guessSize(fd, dtype, hdr_size, nbands, swab, &width, &length) < 0)
 		return EXIT_FAILURE;
+
+        /* check for integer overflow in */
+        /* hdr_size + (*width) * (*length) * nbands * depth */
+
+        if ((width == 0) || (length == 0) ){
+            fprintf(stderr, "Too large nbands value specified.\n");
+            return (EXIT_FAILURE);
+        }
+
+        temp_limit_check = nbands * depth;
+
+        if ( !temp_limit_check || length > ( TIFF_UINT32_MAX / temp_limit_check ) )  {
+            fprintf(stderr, "Too large length size specified.\n");
+            return (EXIT_FAILURE);
+        }
+        temp_limit_check = temp_limit_check * length;
+
+        if ( !temp_limit_check || width > ( TIFF_UINT32_MAX / temp_limit_check ) )  {
+            fprintf(stderr, "Too large width size specified.\n");
+            return (EXIT_FAILURE);
+        }
+        temp_limit_check = temp_limit_check * width;
+
+        if ( !temp_limit_check || hdr_size > ( TIFF_UINT32_MAX - temp_limit_check ) )  {
+            fprintf(stderr, "Too large header size specified.\n");
+            return (EXIT_FAILURE);
+        }
 
 	if (outfilename == NULL)
 		outfilename = argv[optind+1];

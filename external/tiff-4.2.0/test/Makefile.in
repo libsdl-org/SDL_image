@@ -113,14 +113,13 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-TESTS = $(check_PROGRAMS) $(am__EXEEXT_3)
+TESTS = $(check_PROGRAMS) $(am__EXEEXT_4)
 XFAIL_TESTS =
 check_PROGRAMS = ascii_tag$(EXEEXT) long_tag$(EXEEXT) \
 	short_tag$(EXEEXT) strip_rw$(EXEEXT) rewrite$(EXEEXT) \
 	custom_dir$(EXEEXT) custom_dir_EXIF_231$(EXEEXT) \
-	rational_precision2double$(EXEEXT) \
 	defer_strile_loading$(EXEEXT) defer_strile_writing$(EXEEXT) \
-	testtypes$(EXEEXT) $(am__EXEEXT_1)
+	testtypes$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2)
 subdir = test
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/acinclude.m4 \
@@ -137,6 +136,7 @@ CONFIG_HEADER = $(top_builddir)/libtiff/tif_config.h \
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 @HAVE_JPEG_TRUE@am__EXEEXT_1 = raw_decode$(EXEEXT)
+@BUILD_STATIC_TRUE@am__EXEEXT_2 = rational_precision2double$(EXEEXT)
 am_ascii_tag_OBJECTS = ascii_tag.$(OBJEXT)
 ascii_tag_OBJECTS = $(am_ascii_tag_OBJECTS)
 ascii_tag_DEPENDENCIES = $(LIBTIFF)
@@ -159,11 +159,18 @@ defer_strile_writing_DEPENDENCIES = $(LIBTIFF)
 am_long_tag_OBJECTS = long_tag.$(OBJEXT) check_tag.$(OBJEXT)
 long_tag_OBJECTS = $(am_long_tag_OBJECTS)
 long_tag_DEPENDENCIES = $(LIBTIFF)
-am_rational_precision2double_OBJECTS =  \
-	rational_precision2double.$(OBJEXT)
+am__rational_precision2double_SOURCES_DIST =  \
+	rational_precision2double.c
+@BUILD_STATIC_TRUE@am_rational_precision2double_OBJECTS =  \
+@BUILD_STATIC_TRUE@	rational_precision2double.$(OBJEXT)
 rational_precision2double_OBJECTS =  \
 	$(am_rational_precision2double_OBJECTS)
-rational_precision2double_DEPENDENCIES = $(LIBTIFF)
+@BUILD_STATIC_TRUE@rational_precision2double_DEPENDENCIES =  \
+@BUILD_STATIC_TRUE@	$(LIBTIFF)
+rational_precision2double_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(AM_CFLAGS) $(CFLAGS) $(rational_precision2double_LDFLAGS) \
+	$(LDFLAGS) -o $@
 am_raw_decode_OBJECTS = raw_decode.$(OBJEXT)
 raw_decode_OBJECTS = $(am_raw_decode_OBJECTS)
 raw_decode_DEPENDENCIES = $(LIBTIFF)
@@ -233,9 +240,9 @@ SOURCES = $(ascii_tag_SOURCES) $(custom_dir_SOURCES) \
 DIST_SOURCES = $(ascii_tag_SOURCES) $(custom_dir_SOURCES) \
 	$(custom_dir_EXIF_231_SOURCES) $(defer_strile_loading_SOURCES) \
 	$(defer_strile_writing_SOURCES) $(long_tag_SOURCES) \
-	$(rational_precision2double_SOURCES) $(raw_decode_SOURCES) \
-	$(rewrite_SOURCES) $(short_tag_SOURCES) $(strip_rw_SOURCES) \
-	testtypes.c
+	$(am__rational_precision2double_SOURCES_DIST) \
+	$(raw_decode_SOURCES) $(rewrite_SOURCES) $(short_tag_SOURCES) \
+	$(strip_rw_SOURCES) testtypes.c
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -445,11 +452,11 @@ am__set_TESTS_bases = \
   bases=`echo $$bases`
 RECHECK_LOGS = $(TEST_LOGS)
 AM_RECURSIVE_TARGETS = check recheck
-@HAVE_JPEG_TRUE@am__EXEEXT_2 = tiff2rgba-quad-tile.jpg.sh \
+@HAVE_JPEG_TRUE@am__EXEEXT_3 = tiff2rgba-quad-tile.jpg.sh \
 @HAVE_JPEG_TRUE@	tiff2rgba-ojpeg_zackthecat_subsamp22_single_strip.sh \
 @HAVE_JPEG_TRUE@	tiff2rgba-ojpeg_chewey_subsamp21_multi_strip.sh \
 @HAVE_JPEG_TRUE@	tiff2rgba-ojpeg_single_strip_no_rowsperstrip.sh
-am__EXEEXT_3 = ppm2tiff_pbm.sh ppm2tiff_pgm.sh ppm2tiff_ppm.sh \
+am__EXEEXT_4 = ppm2tiff_pbm.sh ppm2tiff_pgm.sh ppm2tiff_ppm.sh \
 	fax2tiff.sh tiffcp-g3.sh tiffcp-g3-1d.sh tiffcp-g3-1d-fill.sh \
 	tiffcp-g3-2d.sh tiffcp-g3-2d-fill.sh tiffcp-g4.sh \
 	tiffcp-logluv.sh tiffcp-thumbnail.sh tiffcp-lzw-compat.sh \
@@ -498,7 +505,7 @@ am__EXEEXT_3 = ppm2tiff_pbm.sh ppm2tiff_pgm.sh ppm2tiff_ppm.sh \
 	tiff2rgba-miniswhite-1c-1b.sh tiff2rgba-palette-1c-1b.sh \
 	tiff2rgba-palette-1c-4b.sh tiff2rgba-palette-1c-8b.sh \
 	tiff2rgba-rgb-3c-16b.sh tiff2rgba-rgb-3c-8b.sh testfax4.sh \
-	testdeflatelaststripextradata.sh $(am__EXEEXT_2)
+	testdeflatelaststripextradata.sh $(am__EXEEXT_3)
 TEST_SUITE_LOG = test-suite.log
 TEST_EXTENSIONS = @EXEEXT@ .test
 LOG_DRIVER = $(SHELL) $(top_srcdir)/config/test-driver
@@ -701,6 +708,7 @@ CLEANFILES = test_packbits.tif o-*
 @HAVE_JPEG_TRUE@	tiff2rgba-ojpeg_chewey_subsamp21_multi_strip.sh \
 @HAVE_JPEG_TRUE@	tiff2rgba-ojpeg_single_strip_no_rowsperstrip.sh
 
+@BUILD_STATIC_TRUE@STATIC_CHECK_PROGS = rational_precision2double
 
 # Test scripts to execute
 TESTSCRIPTS = \
@@ -851,8 +859,9 @@ raw_decode_SOURCES = raw_decode.c
 raw_decode_LDADD = $(LIBTIFF)
 custom_dir_SOURCES = custom_dir.c
 custom_dir_LDADD = $(LIBTIFF)
-rational_precision2double_SOURCES = rational_precision2double.c
-rational_precision2double_LDADD = $(LIBTIFF)
+@BUILD_STATIC_TRUE@rational_precision2double_SOURCES = rational_precision2double.c
+@BUILD_STATIC_TRUE@rational_precision2double_LDADD = $(LIBTIFF)
+@BUILD_STATIC_TRUE@rational_precision2double_LDFLAGS = -static
 custom_dir_EXIF_231_SOURCES = custom_dir_EXIF_231.c
 custom_dir_EXIF_231_LDADD = $(LIBTIFF)
 defer_strile_loading_SOURCES = defer_strile_loading.c
@@ -929,7 +938,7 @@ long_tag$(EXEEXT): $(long_tag_OBJECTS) $(long_tag_DEPENDENCIES) $(EXTRA_long_tag
 
 rational_precision2double$(EXEEXT): $(rational_precision2double_OBJECTS) $(rational_precision2double_DEPENDENCIES) $(EXTRA_rational_precision2double_DEPENDENCIES) 
 	@rm -f rational_precision2double$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(rational_precision2double_OBJECTS) $(rational_precision2double_LDADD) $(LIBS)
+	$(AM_V_CCLD)$(rational_precision2double_LINK) $(rational_precision2double_OBJECTS) $(rational_precision2double_LDADD) $(LIBS)
 
 raw_decode$(EXEEXT): $(raw_decode_OBJECTS) $(raw_decode_DEPENDENCIES) $(EXTRA_raw_decode_DEPENDENCIES) 
 	@rm -f raw_decode$(EXEEXT)
@@ -1248,13 +1257,6 @@ custom_dir_EXIF_231.log: custom_dir_EXIF_231$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-rational_precision2double.log: rational_precision2double$(EXEEXT)
-	@p='rational_precision2double$(EXEEXT)'; \
-	b='rational_precision2double'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
 defer_strile_loading.log: defer_strile_loading$(EXEEXT)
 	@p='defer_strile_loading$(EXEEXT)'; \
 	b='defer_strile_loading'; \
@@ -1279,6 +1281,13 @@ testtypes.log: testtypes$(EXEEXT)
 raw_decode.log: raw_decode$(EXEEXT)
 	@p='raw_decode$(EXEEXT)'; \
 	b='raw_decode'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+rational_precision2double.log: rational_precision2double$(EXEEXT)
+	@p='rational_precision2double$(EXEEXT)'; \
+	b='rational_precision2double'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

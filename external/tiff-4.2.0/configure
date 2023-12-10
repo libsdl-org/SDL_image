@@ -670,6 +670,8 @@ LIBTIFF_DOCDIR
 HAVE_RPATH_FALSE
 HAVE_RPATH_TRUE
 LIBOBJS
+BUILD_STATIC_FALSE
+BUILD_STATIC_TRUE
 tiff_libs_private
 CXXCPP
 am__fastdepCXX_FALSE
@@ -16990,6 +16992,15 @@ AM_BACKSLASH='\'
 tiff_libs_private=
 
 
+ if test "$enable_static" = "yes"; then
+  BUILD_STATIC_TRUE=
+  BUILD_STATIC_FALSE='#'
+else
+  BUILD_STATIC_TRUE='#'
+  BUILD_STATIC_FALSE=
+fi
+
+
 case "${host_os}" in
     cygwin* | mingw32* | beos* | darwin*)
         ;;
@@ -21450,6 +21461,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCXX_TRUE}" && test -z "${am__fastdepCXX_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCXX\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BUILD_STATIC_TRUE}" && test -z "${BUILD_STATIC_FALSE}"; then
+  as_fn_error $? "conditional \"BUILD_STATIC\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 

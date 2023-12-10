@@ -65,11 +65,14 @@ JPEG_DEPENDENT_CHECK_PROG=
 JPEG_DEPENDENT_TESTSCRIPTS=
 endif
 
+if BUILD_STATIC
+STATIC_CHECK_PROGS=rational_precision2double
+endif
+
 # Executable programs which need to be built in order to support tests
 check_PROGRAMS = \
 	ascii_tag long_tag short_tag strip_rw rewrite custom_dir custom_dir_EXIF_231 \
-	rational_precision2double defer_strile_loading defer_strile_writing testtypes \
-	$(JPEG_DEPENDENT_CHECK_PROG)
+	defer_strile_loading defer_strile_writing testtypes $(JPEG_DEPENDENT_CHECK_PROG) $(STATIC_CHECK_PROGS)
 
 # Test scripts to execute
 TESTSCRIPTS = \
@@ -218,8 +221,13 @@ raw_decode_SOURCES = raw_decode.c
 raw_decode_LDADD = $(LIBTIFF)
 custom_dir_SOURCES = custom_dir.c
 custom_dir_LDADD = $(LIBTIFF)
+
+if BUILD_STATIC
 rational_precision2double_SOURCES = rational_precision2double.c
 rational_precision2double_LDADD = $(LIBTIFF)
+rational_precision2double_LDFLAGS = -static
+endif
+
 custom_dir_EXIF_231_SOURCES = custom_dir_EXIF_231.c
 custom_dir_EXIF_231_LDADD = $(LIBTIFF)
 defer_strile_loading_SOURCES = defer_strile_loading.c

@@ -7816,8 +7816,13 @@ createCroppedImage(struct image_data *image, struct crop_mask *crop,
 
   read_buff = *read_buff_ptr;
 
+  /* Memory is freed before crop_buff_ptr is overwritten */
+  if (*crop_buff_ptr != NULL)
+  {
+      _TIFFfree(*crop_buff_ptr);
+  }
+
   /* process full image, no crop buffer needed */
-  crop_buff = read_buff;
   *crop_buff_ptr = read_buff;
   crop->combined_width = image->width;
   crop->combined_length = image->length;
