@@ -150,6 +150,7 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
             SDL_PIXELFORMAT_INDEX8
         );
         if (surface) {
+            SDL_bool has_alpha = SDL_FALSE;
             SDL_Palette *palette = surface->format->palette;
             if (palette) {
                 int i;
@@ -160,7 +161,13 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
                     palette->colors[i].g = *palette_bytes++;
                     palette->colors[i].b = *palette_bytes++;
                     palette->colors[i].a = *palette_bytes++;
+                    if (palette->colors[i].a != SDL_ALPHA_OPAQUE) {
+                        has_alpha = SDL_TRUE;
+                    }
                 }
+            }
+            if (has_alpha) {
+                SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_BLEND);
             }
 
             /* FIXME: This sucks. It'd be better to allocate the surface first, then
