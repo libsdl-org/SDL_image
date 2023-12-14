@@ -17,9 +17,11 @@ project(SDL3_image
     VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}"
 )
 
-include("${SDL3_image_SOURCE_DIR}/cmake/GetGitRevisionDescription.cmake" )
-include("${SDL3_image_SOURCE_DIR}/cmake/PrivateSdlFunctions.cmake" )
-include("${SDL3_image_SOURCE_DIR}/cmake/sdlmanpages.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/CheckCPUArchitecture.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/GetGitRevisionDescription.cmake" )
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/PrivateSdlFunctions.cmake" )
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlplatform.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlmanpages.cmake")
 sdl_calculate_derived_version_variables(${MAJOR_VERSION} ${MINOR_VERSION} ${MICRO_VERSION})
 
 message(STATUS "Configuring ${PROJECT_NAME} ${PROJECT_VERSION}")
@@ -61,6 +63,7 @@ option(CMAKE_POSITION_INDEPENDENT_CODE "Build static libraries with -fPIC" ON)
 option(BUILD_SHARED_LIBS "Build the library as a shared library" ON)
 
 cmake_dependent_option(SDL3IMAGE_INSTALL "Enable SDL3_image install target" ${SDL3IMAGE_ROOTPROJECT} "${sdl3image_install_enableable}" OFF)
+cmake_dependent_option(SDL3IMAGE_INSTALL_CPACK "Create binary SDL3_image archive using CPack" ${SDL3IMAGE_ROOTPROJECT} "SDL3IMAGE_INSTALL" OFF)
 cmake_dependent_option(SDL3IMAGE_INSTALL_MAN "Install man pages for SDL3_image" ${SDL3IMAGE_ROOTPROJECT} "SDL3IMAGE_INSTALL" OFF)
 option(SDL3IMAGE_DEPS_SHARED "Load dependencies dynamically" ON)
 option(SDL3IMAGE_VENDORED "Use vendored third-party libraries" ${vendored_default})
@@ -194,6 +197,9 @@ endif()
 if(NOT TARGET SDL3::Headers OR NOT TARGET ${sdl3_target_name})
     find_package(SDL3 ${SDL_REQUIRED_VERSION} REQUIRED COMPONENTS ${sdl_required_components})
 endif()
+
+SDL_DetectCPUArchitecture()
+SDL_DetectCMakePlatform()
 
 # Set PROJECT_VERSION of subprojects to "" if it's project call does not set VERSION
 cmake_policy(SET CMP0048 NEW)
@@ -793,7 +799,7 @@ if(SDL3IMAGE_INSTALL)
         set(pdbdir "${CMAKE_INSTALL_LIBDIR}")
     endif()
     if(MSVC)
-        SDL_install_pdb("${sdl3_image_target_Name}" "${pdbdir}")
+        SDL_install_pdb("${sdl3_image_target_name}" "${pdbdir}")
     endif()
 
     if(INSTALL_EXTRA_TARGETS)
@@ -869,6 +875,22 @@ if(SDL3IMAGE_INSTALL)
         DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/licenses/${PROJECT_NAME}"
         COMPONENT library
     )
+
+    if(SDL3IMAGE_INSTALL_CPACK)
+        if(SDL2COMPAT_FRAMEWORK)
+            set(CPACK_GENERATOR "DragNDrop")
+        elseif(MSVC)
+            set(CPACK_GENERATOR "ZIP")
+        else()
+            set(CPACK_GENERATOR "TGZ")
+        endif()
+        configure_file(cmake/CPackProjectConfig.cmake.in CPackProjectConfig.cmake @ONLY)
+        set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/CPackProjectConfig.cmake")
+        # CPACK_SOURCE_PACKAGE_FILE_NAME must end with "-src" (so we can block creating a source archive)
+        set(CPACK_SOURCE_PACKAGE_FILE_NAME "SDL${PROJECT_VERSION_MAJOR}-${PROJECT_VERSION}-src")
+        set(CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}/dist")
+        include(CPack)
+    endif()
 
     if(SDL3IMAGE_INSTALL_MAN)
         sdl_get_git_revision_hash(SDL3IMAGE_REVISION)

@@ -15,13 +15,13 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows (MSVC),    os: windows-latest, shell: sh,  vendored: true, msvc: 1, shared: 1, static: 0,
+        - { name: Windows (MSVC),    os: windows-latest, shell: sh,  vendored: true, msvc: 1, shared: 1, static: 0, artifact: 'SDL3_image-VC-x64',
             cmake: '-DSDL3IMAGE_BACKEND_STB=OFF -DPerl_ROOT=C:/Strawberry/perl/bin/ -GNinja -DCMAKE_POLICY_DEFAULT_CMP0141=NEW -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=ProgramDatabase -DCMAKE_EXE_LINKER_FLAGS=-DEBUG -DCMAKE_SHARED_LINKER_FLAGS=-DEBUG' }
-        - { name: Windows (mingw64), os: windows-latest, shell: 'msys2 {0}', vendored: false, msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0,
+        - { name: Windows (mingw64), os: windows-latest, shell: 'msys2 {0}', vendored: false, msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0, artifact: 'SDL3_image-mingw64',
             cmake: '-DSDL3IMAGE_BACKEND_STB=OFF -DSDL3IMAGE_BACKEND_WIC=OFF  -DSDL3IMAGE_AVIF=ON -G "Ninja Multi-Config"' }
-        - { name: Linux,             os: ubuntu-latest,  shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0, nojxl: true }
-        - { name: 'Linux (static)',  os: ubuntu-latest,  shell: sh,  vendored: true, cmake: '-DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1 }
-        - { name: Macos,             os: macos-latest,   shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0 }
+        - { name: Linux,             os: ubuntu-latest,  shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0, nojxl: true, artifact: 'SDL3_image-linux-x64' }
+        - { name: 'Linux (static)',  os: ubuntu-latest,  shell: sh,  vendored: true, cmake: '-DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1, artifact: 'SDL3_image-static-linux-x64' }
+        - { name: Macos,             os: macos-latest,   shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0, artifact: 'SDL3_image-macos' }
 
     steps:
 
@@ -166,6 +166,10 @@ jobs:
         cmake --install build/ --config Release
         echo "SDL3_image_ROOT=$(pwd)/prefix_cmake" >> $GITHUB_ENV
         ( cd prefix_cmake; find . ) | LC_ALL=C sort -u
+    - name: Package (CPack)
+      if: ${{ always() && steps.build.outcome == 'success' }}
+      run: |
+        cmake --build build/ --target package
     - name: Upload artifacts
       if: ${{ failure() && runner.os == 'Linux' }}
       uses: actions/upload-artifact@v3
@@ -184,3 +188,9 @@ jobs:
           -DTEST_SHARED=${{ matrix.platform.shared }} \
           -DTEST_STATIC=${{ matrix.platform.static }}
         cmake --build cmake_config_build --verbose
+    - uses: actions/upload-artifact@v3
+      if: ${{ always() && steps.build.outcome == 'success' }}
+      with:
+        if-no-files-found: error
+        name: ${{ matrix.platform.artifact }}
+        path: build/dist/SDL3_image*
