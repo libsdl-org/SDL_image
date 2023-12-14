@@ -15,7 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows (MSVC),    os: windows-latest, shell: sh,  vendored: true, cmake: '-DPerl_ROOT=C:/Strawberry/perl/bin/ -GNinja', msvc: 1, shared: 1, static: 0 }
+        - { name: Windows (MSVC),    os: windows-latest, shell: sh,  vendored: true, msvc: 1, shared: 1, static: 0,
+            cmake: '-DSDL3IMAGE_BACKEND_STB=OFF -DPerl_ROOT=C:/Strawberry/perl/bin/ -GNinja' }
         - { name: Windows (mingw64), os: windows-latest, shell: 'msys2 {0}', vendored: false, msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0,
             cmake: '-DSDL3IMAGE_BACKEND_STB=OFF -DSDL3IMAGE_BACKEND_WIC=OFF  -DSDL3IMAGE_AVIF=ON -G "Ninja Multi-Config"' }
         - { name: Linux,             os: ubuntu-latest,  shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0, nojxl: true }
