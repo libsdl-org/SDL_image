@@ -16,7 +16,7 @@ jobs:
       matrix:
         platform:
         - { name: Windows (MSVC),    os: windows-latest, shell: sh,  vendored: true, msvc: 1, shared: 1, static: 0,
-            cmake: '-DSDL3IMAGE_BACKEND_STB=OFF -DPerl_ROOT=C:/Strawberry/perl/bin/ -GNinja' }
+            cmake: '-DSDL3IMAGE_BACKEND_STB=OFF -DPerl_ROOT=C:/Strawberry/perl/bin/ -GNinja -DCMAKE_POLICY_DEFAULT_CMP0141=NEW -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=ProgramDatabase -DCMAKE_EXE_LINKER_FLAGS=-DEBUG -DCMAKE_SHARED_LINKER_FLAGS=-DEBUG' }
         - { name: Windows (mingw64), os: windows-latest, shell: 'msys2 {0}', vendored: false, msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0,
             cmake: '-DSDL3IMAGE_BACKEND_STB=OFF -DSDL3IMAGE_BACKEND_WIC=OFF  -DSDL3IMAGE_AVIF=ON -G "Ninja Multi-Config"' }
         - { name: Linux,             os: ubuntu-latest,  shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0, nojxl: true }
@@ -121,6 +121,7 @@ jobs:
           -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=$PWD/build \
           ${{ matrix.platform.cmake }}
     - name: Build (CMake)
+      id: build
       run: cmake --build build/ --config Release --parallel --verbose
     - name: Run build-time tests
       run: |
@@ -158,7 +159,7 @@ jobs:
         cd build
         ctest --no-tests=error -VV -C Release
     - name: Install (CMake)
-      if: ${{ matrix.platform.shell == 'sh' || contains(matrix.platform.shell, 'msys2') }}
+      if: ${{ always() && steps.build.outcome == 'success' }}
       run: |
         set -eu
         rm -fr DESTDIR-cmake

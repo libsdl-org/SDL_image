@@ -787,6 +787,14 @@ if(SDL3IMAGE_INSTALL)
         FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/SDL3_image/SDL_image.h"
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SDL3_image" COMPONENT DEVEL
     )
+    if(BUILD_SHARED_LIBS)
+        set(pdbdir "${CMAKE_INSTALL_BINDIR}")
+    else()
+        set(pdbdir "${CMAKE_INSTALL_LIBDIR}")
+    endif()
+    if(MSVC)
+        SDL_install_pdb("${sdl3_image_target_Name}" "${pdbdir}")
+    endif()
 
     if(INSTALL_EXTRA_TARGETS)
         set_property(TARGET ${INSTALL_EXTRA_TARGETS} PROPERTY PUBLIC_HEADER "")
@@ -801,6 +809,11 @@ if(SDL3IMAGE_INSTALL)
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT library
             RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT library
         )
+        if(MSVC)
+            foreach(tgt IN LISTS INSTALL_EXTRA_TARGETS)
+                SDL_install_pdb("${tgt}" "${pdbdir}")
+            endforeach()
+        endif()
     endif()
 
     if(WIN32 AND NOT MINGW)
@@ -881,6 +894,9 @@ if(SDL3IMAGE_SAMPLES)
             install(TARGETS ${prog}
                 RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
             )
+            if(MSVC)
+                SDL_install_pdb("${prog}" "${pdbdir}")
+            endif()
         endif()
     endforeach()
 endif()
