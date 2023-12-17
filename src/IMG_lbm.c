@@ -260,11 +260,9 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
           format = SDL_PIXELFORMAT_BGR24;
 #endif
        }
-       if (nbplanes == 24 || flagHAM == 1) {
-          if ((Image = SDL_CreateSurface(width, bmhd.h, format)) == NULL ){
-             goto done;
-          }
-       }
+        if ((Image = SDL_CreateSurface(width, bmhd.h, format)) == NULL){
+            goto done;
+        }
     }
 
     if ( bmhd.mask & 2 )               /* There is a transparent color */
