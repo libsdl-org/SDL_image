@@ -173,13 +173,7 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
                 }
             }
             if (has_alpha) {
-#if 1 /* SDL doesn't support blitting with the palette alpha, so expand the palette */
-                SDL_Surface *converted = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32);
-                SDL_DestroySurface(surface);
-                surface = converted;
-#else
                 SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_BLEND);
-#endif
             } else if (has_colorkey) {
                 SDL_SetSurfaceColorKey(surface, SDL_TRUE, colorkey_index);
             }
@@ -189,9 +183,7 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
              * https://github.com/nothings/stb/issues/58
              * -flibit
              */
-            if (surface) {
-                surface->flags &= ~SDL_PREALLOC;
-            }
+            surface->flags &= ~SDL_PREALLOC;
         }
 
     } else if (format == STBI_grey || format == STBI_rgb || format == STBI_rgb_alpha) {
