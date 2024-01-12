@@ -59,18 +59,18 @@ include(CMakeDependentOption)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
-set(BUILD_SHARED_LIBS_DEFAULT ON)
+set(PLATFORM_SUPPORTS_SHARED ON)
 if(VITA OR PSP OR PS2 OR N3DS OR RISCOS)
-  set(BUILD_SHARED_LIBS_DEFAULT OFF)
+  set(PLATFORM_SUPPORTS_SHARED OFF)
 endif()
 
 option(CMAKE_POSITION_INDEPENDENT_CODE "Build static libraries with -fPIC" ON)
-option(BUILD_SHARED_LIBS "Build the library as a shared library" ${BUILD_SHARED_LIBS_DEFAULT})
+cmake_dependent_option(BUILD_SHARED_LIBS "Build the library as a shared library" ON PLATFORM_SUPPORTS_SHARED OFF)
 
 cmake_dependent_option(SDL3IMAGE_INSTALL "Enable SDL3_image install target" ${SDL3IMAGE_ROOTPROJECT} "${sdl3image_install_enableable}" OFF)
 cmake_dependent_option(SDL3IMAGE_INSTALL_CPACK "Create binary SDL3_image archive using CPack" ${SDL3IMAGE_ROOTPROJECT} "SDL3IMAGE_INSTALL" OFF)
 cmake_dependent_option(SDL3IMAGE_INSTALL_MAN "Install man pages for SDL3_image" ${SDL3IMAGE_ROOTPROJECT} "SDL3IMAGE_INSTALL" OFF)
-option(SDL3IMAGE_DEPS_SHARED "Load dependencies dynamically" ON)
+cmake_dependent_option(SDL3IMAGE_DEPS_SHARED "Load dependencies dynamically" ON PLATFORM_SUPPORTS_SHARED OFF)
 option(SDL3IMAGE_VENDORED "Use vendored third-party libraries" ${vendored_default})
 option(SDL3IMAGE_WERROR "Treat warnings as errors" OFF)
 
