@@ -59,8 +59,13 @@ include(CMakeDependentOption)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
+set(BUILD_SHARED_LIBS_DEFAULT ON)
+if(VITA OR PSP OR PS2 OR N3DS OR RISCOS)
+  set(BUILD_SHARED_LIBS_DEFAULT OFF)
+endif()
+
 option(CMAKE_POSITION_INDEPENDENT_CODE "Build static libraries with -fPIC" ON)
-option(BUILD_SHARED_LIBS "Build the library as a shared library" ON)
+option(BUILD_SHARED_LIBS "Build the library as a shared library" ${BUILD_SHARED_LIBS_DEFAULT})
 
 cmake_dependent_option(SDL3IMAGE_INSTALL "Enable SDL3_image install target" ${SDL3IMAGE_ROOTPROJECT} "${sdl3image_install_enableable}" OFF)
 cmake_dependent_option(SDL3IMAGE_INSTALL_CPACK "Create binary SDL3_image archive using CPack" ${SDL3IMAGE_ROOTPROJECT} "SDL3IMAGE_INSTALL" OFF)
