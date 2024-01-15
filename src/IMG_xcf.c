@@ -281,7 +281,7 @@ static int xcf_read_property(SDL_RWops *src, xcf_prop *prop)
     }
 
 #if DEBUG
-    SDL_Log("%.8" SDL_PRIu32 ": %s(%u): %u\n", SDL_RWtell (src), prop->id < 25 ? prop_names [prop->id] : "unknown", prop->id, prop->length);
+    SDL_Log("%.8" SDL_PRIu64 ": %s(%u): %u\n", SDL_RWtell (src), prop->id < 25 ? prop_names [prop->id] : "unknown", prop->id, prop->length);
 #endif
 
     switch (prop->id) {
