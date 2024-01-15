@@ -281,7 +281,7 @@ static int xcf_read_property(SDL_RWops *src, xcf_prop *prop)
     }
 
 #if DEBUG
-    SDL_Log("%.8" SDL_PRIs64 ": %s(%u): %u\n", SDL_RWtell (src), prop->id < 25 ? prop_names [prop->id] : "unknown", prop->id, prop->length);
+    SDL_Log("%.8" SDL_PRIu32 ": %s(%u): %u\n", SDL_RWtell (src), prop->id < 25 ? prop_names [prop->id] : "unknown", prop->id, prop->length);
 #endif
 
     switch (prop->id) {
@@ -367,8 +367,8 @@ static xcf_header *read_xcf_header(SDL_RWops *src)
     else
         h->file_version = 0;
 #ifdef DEBUG
-    SDL_Log("XCF signature : %.14s (version %u)\n", h->sign, h->file_version);
-    SDL_Log(" (%u,%u) type=%u\n", h->width, h->height, h->image_type);
+    SDL_Log("XCF signature : %.14s (version %" SDL_PRIu32 ")\n", h->sign, h->file_version);
+    SDL_Log(" (%" SDL_PRIu32 ",%" SDL_PRIu32 ") type=%" SDL_PRIu32 "\n", h->width, h->height, h->image_type);
 #endif
     if (h->file_version >= 4) {
         if (!SDL_ReadU32BE(src, &h->precision)) {
