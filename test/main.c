@@ -1031,7 +1031,7 @@ main(int argc, char *argv[])
             }
             else if (SDL_strcasecmp(argv[i], "--execKey") == 0) {
                 if (argv[i + 1]) {
-                    SDL_sscanf(argv[i + 1], "%"SDL_PRIu64, &userExecKey);
+                    SDL_sscanf(argv[i + 1], "%" SDL_PRIu64, &userExecKey);
                     consumed = 2;
                 }
             }
