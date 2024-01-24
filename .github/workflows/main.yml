@@ -135,7 +135,7 @@ jobs:
         export LD_LIBRARY_PATH="$PWD:$LD_LIBRARY_PATH"
         set -eu
 
-        export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=1
+        export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=${{ (matrix.platform.noavif && '0') || '1' }}
         export SDL_IMAGE_TEST_REQUIRE_LOAD_BMP=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_CUR=1
         export SDL_IMAGE_TEST_REQUIRE_LOAD_GIF=1
