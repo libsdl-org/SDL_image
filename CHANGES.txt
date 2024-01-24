@@ -1,2 +1,2 @@
 3.0.0:
- * Updated for SDL 3.0
+ * Added support for loading HDR AVIF images

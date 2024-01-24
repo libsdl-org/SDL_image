@@ -235,14 +235,87 @@ static void DestroyAVIFIO(struct avifIO * io)
     }
 }
 
+static int ConvertGBR444toXBGR2101010(avifImage *image, SDL_Surface *surface)
+{
+    const Uint16 *srcR, *srcG, *srcB;
+    int srcskipR, srcskipG, srcskipB;
+    int sR, sG, sB;
+    Uint32 *dst;
+    int dstskip;
+    int width, height;
+
+    srcR = (Uint16 *)image->yuvPlanes[2];
+    srcskipR = (image->yuvRowBytes[2] - image->width * sizeof(Uint16)) / sizeof(Uint16);
+    srcG = (Uint16 *)image->yuvPlanes[0];
+    srcskipG = (image->yuvRowBytes[0] - image->width * sizeof(Uint16)) / sizeof(Uint16);
+    srcB = (Uint16 *)image->yuvPlanes[1];
+    srcskipB = (image->yuvRowBytes[1] - image->width * sizeof(Uint16)) / sizeof(Uint16);
+    if (srcskipR < 0 || srcskipG < 0 || srcskipB < 0) {
+        return -1;
+    }
+
+    dst = (Uint32 *)surface->pixels;
+    dstskip = (surface->pitch - image->width * sizeof(Uint32)) / sizeof(Uint32);
+
+    height = image->height;
+    while (height--) {
+        width = image->width;
+        while (width--) {
+            sR = *srcR++;
+            sG = *srcG++;
+            sB = *srcB++;
+            sR = SDL_min(sR, 1023);
+            sG = SDL_min(sG, 1023);
+            sB = SDL_min(sB, 1023);
+            *dst = (0x03 << 30) | (sB << 20) | (sG << 10) | sR;
+            ++dst;
+        }
+        srcR += srcskipR;
+        srcG += srcskipG;
+        srcB += srcskipB;
+        dst += dstskip;
+    }
+    return 0;
+}
+
+static int ConvertRGB16toXBGR2101010(avifRGBImage *image, SDL_Surface *surface)
+{
+    const Uint16 *src;
+    Uint32 sR, sG, sB;
+    Uint32 *dst;
+    int dstskip;
+    int width, height;
+
+    src = (Uint16 *)image->pixels;
+    dst = (Uint32 *)surface->pixels;
+    dstskip = (surface->pitch - image->width * sizeof(Uint32)) / sizeof(Uint32);
+
+    height = image->height;
+    while (height--) {
+        width = image->width;
+        while (width--) {
+            sR = *src++;
+            sR >>= 6;
+            sG = *src++;
+            sG >>= 6;
+            sB = *src++;
+            sB >>= 6;
+            *dst = (0x03 << 30) | (sB << 20) | (sG << 10) | sR;
+            ++dst;
+        }
+        dst += dstskip;
+    }
+    return 0;
+}
+
 /* Load a AVIF type image from an SDL datasource */
 SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
 {
     Sint64 start;
     avifDecoder *decoder = NULL;
+    avifImage *image;
     avifIO io;
     avifIOContext context;
-    avifRGBImage rgb;
     avifResult result;
     SDL_Surface *surface = NULL;
 
@@ -258,7 +331,6 @@ SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
 
     SDL_zero(context);
     SDL_zero(io);
-    SDL_zero(rgb);
 
     decoder = lib.avifDecoderCreate();
     if (!decoder) {
@@ -288,28 +360,102 @@ SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
         goto done;
     }
 
-    surface = SDL_CreateSurface(decoder->image->width, decoder->image->height, SDL_PIXELFORMAT_ARGB8888);
-    if (!surface) {
-        goto done;
+    image = decoder->image;
+    if (image->transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_SMPTE2084) {
+        // This is an HDR PQ image
+
+        if (image->matrixCoefficients == AVIF_MATRIX_COEFFICIENTS_IDENTITY &&
+            image->yuvFormat == AVIF_PIXEL_FORMAT_YUV444) {
+            // This image uses identity GBR channel ordering
+            if (image->depth == 10) {
+                surface = SDL_CreateSurface(image->width, image->height, SDL_PIXELFORMAT_XBGR2101010);
+                if (surface) {
+                    if (ConvertGBR444toXBGR2101010(image, surface) < 0) {
+                        // Invalid image, let avif take care of it
+                        SDL_free(surface);
+                        surface = NULL;
+                    }
+                }
+            }
+        }
+
+        if (!surface) {
+            avifRGBImage rgb;
+
+            // Convert the YUV image to 10-bit RGB
+            SDL_zero(rgb);
+            rgb.width = image->width;
+            rgb.height = image->height;
+            rgb.depth = 16;
+            rgb.format = AVIF_RGB_FORMAT_RGB;
+            rgb.rowBytes = (uint32_t)image->width * 3 * sizeof(Uint16);
+            rgb.pixels = (uint8_t *)SDL_malloc(image->height * rgb.rowBytes);
+            if (!rgb.pixels) {
+                goto done;
+            }
+            result = lib.avifImageYUVToRGB(image, &rgb);
+            if (result != AVIF_RESULT_OK) {
+                IMG_SetError("Couldn't convert AVIF image to RGB: %s", lib.avifResultToString(result));
+                SDL_free(rgb.pixels);
+                goto done;
+            }
+
+            surface = SDL_CreateSurface(image->width, image->height, SDL_PIXELFORMAT_ARGB8888);
+            if (!surface) {
+                SDL_free(rgb.pixels);
+                goto done;
+            }
+
+            surface = SDL_CreateSurface(image->width, image->height, SDL_PIXELFORMAT_XBGR2101010);
+            if (surface) {
+                if (ConvertRGB16toXBGR2101010(&rgb, surface) == 0) {
+                } else {
+                    // Invalid image, let avif take care of it
+                    SDL_free(surface);
+                    surface = NULL;
+                }
+            }
+
+            SDL_free(rgb.pixels);
+        }
+
+        if (surface) {
+            // Set HDR properties
+            SDL_PropertiesID props = SDL_GetSurfaceProperties(surface);
+            SDL_SetNumberProperty(props, SDL_PROPERTY_SURFACE_COLOR_PRIMARIES_NUMBER, image->colorPrimaries);
+            SDL_SetNumberProperty(props, SDL_PROPERTY_SURFACE_TRANSFER_CHARACTERISTICS_NUMBER, image->transferCharacteristics);
+            SDL_SetNumberProperty(props, SDL_PROPERTY_SURFACE_MAXCLL_NUMBER, image->clli.maxCLL);
+            SDL_SetNumberProperty(props, SDL_PROPERTY_SURFACE_MAXFALL_NUMBER, image->clli.maxPALL);
+        }
     }
 
-    /* Convert the YUV image to RGB */
-    rgb.width = surface->w;
-    rgb.height = surface->h;
-    rgb.depth = 8;
+    if (!surface) {
+        avifRGBImage rgb;
+
+        surface = SDL_CreateSurface(image->width, image->height, SDL_PIXELFORMAT_ARGB8888);
+        if (!surface) {
+            goto done;
+        }
+
+        /* Convert the YUV image to RGB */
+        SDL_zero(rgb);
+        rgb.width = surface->w;
+        rgb.height = surface->h;
+        rgb.depth = 8;
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
-    rgb.format = AVIF_RGB_FORMAT_BGRA;
+        rgb.format = AVIF_RGB_FORMAT_BGRA;
 #else
-    rgb.format = AVIF_RGB_FORMAT_ARGB;
+        rgb.format = AVIF_RGB_FORMAT_ARGB;
 #endif
-    rgb.pixels = (uint8_t *)surface->pixels;
-    rgb.rowBytes = (uint32_t)surface->pitch;
-    result = lib.avifImageYUVToRGB(decoder->image, &rgb);
-    if (result != AVIF_RESULT_OK) {
-        IMG_SetError("Couldn't convert AVIF image to RGB: %s", lib.avifResultToString(result));
-        SDL_DestroySurface(surface);
-        surface = NULL;
-        goto done;
+        rgb.pixels = (uint8_t *)surface->pixels;
+        rgb.rowBytes = (uint32_t)surface->pitch;
+        result = lib.avifImageYUVToRGB(image, &rgb);
+        if (result != AVIF_RESULT_OK) {
+            IMG_SetError("Couldn't convert AVIF image to RGB: %s", lib.avifResultToString(result));
+            SDL_DestroySurface(surface);
+            surface = NULL;
+            goto done;
+        }
     }
 
 done:
