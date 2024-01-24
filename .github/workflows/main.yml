@@ -19,7 +19,7 @@ jobs:
             cmake: '-DSDL3IMAGE_BACKEND_STB=OFF -DPerl_ROOT=C:/Strawberry/perl/bin/ -GNinja -DCMAKE_POLICY_DEFAULT_CMP0141=NEW -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=ProgramDatabase -DCMAKE_EXE_LINKER_FLAGS=-DEBUG -DCMAKE_SHARED_LINKER_FLAGS=-DEBUG' }
         - { name: Windows (mingw64), os: windows-latest, shell: 'msys2 {0}', vendored: false, msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0, artifact: 'SDL3_image-mingw64',
             cmake: '-DSDL3IMAGE_BACKEND_STB=OFF -DSDL3IMAGE_BACKEND_WIC=OFF  -DSDL3IMAGE_AVIF=ON -G "Ninja Multi-Config"' }
-        - { name: Linux,             os: ubuntu-latest,  shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0, nojxl: true, artifact: 'SDL3_image-linux-x64' }
+        - { name: Linux,             os: ubuntu-latest,  shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0, noavif: true, nojxl: true, artifact: 'SDL3_image-linux-x64' }
         - { name: 'Linux (static)',  os: ubuntu-latest,  shell: sh,  vendored: true, cmake: '-DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1, artifact: 'SDL3_image-static-linux-x64' }
         - { name: Macos,             os: macos-latest,   shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0, artifact: 'SDL3_image-macos' }
 
@@ -111,7 +111,7 @@ jobs:
           -DSDL3IMAGE_SAMPLES=ON \
           -DSDL3IMAGE_TESTS=ON \
           -DSDL3IMAGE_TESTS_INSTALL=ON \
-          -DSDL3IMAGE_AVIF=ON \
+          -DSDL3IMAGE_AVIF=${{ !matrix.platform.noavif }} \
           -DSDL3IMAGE_JXL=${{ !matrix.platform.nojxl }} \
           -DSDL3IMAGE_TIF=ON \
           -DSDL3IMAGE_WEBP=ON \
