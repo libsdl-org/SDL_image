@@ -477,7 +477,7 @@ static void jpeg_SDL_RW_dest(j_compress_ptr cinfo, SDL_RWops *ctx)
     dest->pub.free_in_buffer = OUTPUT_BUFFER_SIZE;
 }
 
-static int IMG_SaveJPG_RW_jpeglib(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quality)
+static int IMG_SaveJPG_RW_jpeglib(SDL_Surface *surface, SDL_RWops *dst, int quality)
 {
     /* The JPEG library reads bytes in R,G,B order, so this is the right
      * encoding for either endianness */
@@ -486,22 +486,16 @@ static int IMG_SaveJPG_RW_jpeglib(SDL_Surface *surface, SDL_RWops *dst, int free
     struct my_error_mgr jerr;
     JSAMPROW row_pointer[1];
     SDL_Surface* jpeg_surface = surface;
-    int result = -1;
-
-    if (!dst) {
-        IMG_SetError("Passed NULL dst");
-        goto done;
-    }
 
     if (!IMG_Init(IMG_INIT_JPG)) {
-        goto done;
+        return -1;
     }
 
     /* Convert surface to format we can save */
     if (surface->format->format != jpg_format) {
         jpeg_surface = SDL_ConvertSurfaceFormat(surface, jpg_format, 0);
         if (!jpeg_surface) {
-            goto done;
+            return -1;
         }
     }
 
@@ -534,14 +528,7 @@ static int IMG_SaveJPG_RW_jpeglib(SDL_Surface *surface, SDL_RWops *dst, int free
     if (jpeg_surface != surface) {
         SDL_FreeSurface(jpeg_surface);
     }
-
-    result = 0;
-
-done:
-    if (freedst) {
-        SDL_RWclose(dst);
-    }
-    return result;
+    return 0;
 }
 
 #elif defined(USE_STBIMAGE)
@@ -687,7 +674,7 @@ static void IMG_SaveJPG_RW_tinyjpeg_callback(void* context, void* data, int size
     SDL_RWwrite((SDL_RWops*) context, data, 1, size);
 }
 
-static int IMG_SaveJPG_RW_tinyjpeg(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quality)
+static int IMG_SaveJPG_RW_tinyjpeg(SDL_Surface *surface, SDL_RWops *dst, int quality)
 {
     /* The JPEG library reads bytes in R,G,B order, so this is the right
      * encoding for either endianness */
@@ -695,16 +682,11 @@ static int IMG_SaveJPG_RW_tinyjpeg(SDL_Surface *surface, SDL_RWops *dst, int fre
     SDL_Surface* jpeg_surface = surface;
     int result = -1;
 
-    if (!dst) {
-        SDL_SetError("Passed NULL dst");
-        goto done;
-    }
-
     /* Convert surface to format we can save */
     if (surface->format->format != jpg_format) {
         jpeg_surface = SDL_ConvertSurfaceFormat(surface, jpg_format, 0);
         if (!jpeg_surface) {
-            goto done;
+            return -1;
         }
     }
 
@@ -735,11 +717,6 @@ static int IMG_SaveJPG_RW_tinyjpeg(SDL_Surface *surface, SDL_RWops *dst, int fre
     if (result < 0) {
         SDL_SetError("tinyjpeg error");
     }
-
-done:
-    if (freedst) {
-        SDL_RWclose(dst);
-    }
     return result;
 }
 
@@ -757,22 +734,31 @@ int IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality)
 
 int IMG_SaveJPG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quality)
 {
+    int result = -1;
+
+    if (!dst) {
+        return IMG_SetError("Passed NULL dst");
+    }
+
 #if SDL_IMAGE_SAVE_JPG
 #ifdef USE_JPEGLIB
-    if ((IMG_Init(IMG_INIT_JPG) & IMG_INIT_JPG) != 0) {
-        if (IMG_SaveJPG_RW_jpeglib(surface, dst, freedst, quality) == 0) {
-            return 0;
-        }
+    if (result < 0) {
+        result = IMG_SaveJPG_RW_jpeglib(surface, dst, quality);
     }
 #endif
 
 #if defined(LOAD_JPG_DYNAMIC) || !defined(WANT_JPEGLIB)
-    return IMG_SaveJPG_RW_tinyjpeg(surface, dst, freedst, quality);
-#else
-    return -1;
+    if (result < 0) {
+        result = IMG_SaveJPG_RW_tinyjpeg(surface, dst, quality);
+    }
 #endif
 
 #else
-    return IMG_SetError("SDL_image built without JPEG save support");
+    result = IMG_SetError("SDL_image built without JPEG save support");
 #endif
+
+    if (freedst) {
+        SDL_RWclose(dst);
+    }
+    return result;
 }
