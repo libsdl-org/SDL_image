@@ -27,7 +27,7 @@
 
 #ifdef LOAD_XCF
 
-#if DEBUG
+#ifdef DEBUG
 #include <SDL3/SDL_stdinc.h>
 #include <stdio.h>
 #endif
@@ -36,7 +36,7 @@
 #define SDL_SIZE_MAX ((size_t)-1)
 #endif
 
-#if DEBUG
+#ifdef DEBUG
 static char prop_names [][30] = {
     "end",
     "colormap",
@@ -280,7 +280,7 @@ static int xcf_read_property(SDL_RWops *src, xcf_prop *prop)
         return 0;
     }
 
-#if DEBUG
+#ifdef DEBUG
     SDL_Log("%.8" SDL_PRIu64 ": %s(%u): %u\n", SDL_RWtell (src), prop->id < 25 ? prop_names [prop->id] : "unknown", prop->id, prop->length);
 #endif
 
