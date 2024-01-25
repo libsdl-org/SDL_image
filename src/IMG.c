@@ -165,7 +165,7 @@ void IMG_Quit(void)
 /* Load an image from a file */
 SDL_Surface *IMG_Load(const char *file)
 {
-#if __EMSCRIPTEN__
+#ifdef __EMSCRIPTEN__
     int w, h;
     char *data;
     SDL_Surface *surf;
