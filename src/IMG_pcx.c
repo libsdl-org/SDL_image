@@ -167,6 +167,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
             }
         } else {
             for ( i = 0; i < bpl; i++ ) {
+
                 if ( !count ) {
                     if ( SDL_RWread(src, &ch, 1) != 1 ) {
                         error = "file truncated";
@@ -238,17 +239,17 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 
         surface->format->palette->ncolors = nc;
         if ( src_bits == 8 ) {
-            Uint8 ch;
+            Uint8 pch;
             Uint8 colormap[768];
 
             /* look for a 256-colour palette */
             do {
-                if ( SDL_RWread(src, &ch, 1) != 1 ) {
+                if ( SDL_RWread(src, &pch, 1) != 1 ) {
                     /* Couldn't find the palette, try the end of the file */
                     SDL_RWseek(src, -768, SDL_RW_SEEK_END);
                     break;
                 }
-            } while ( ch != 12 );
+            } while ( pch != 12 );
 
             if ( SDL_RWread(src, colormap, sizeof(colormap)) != sizeof(colormap) ) {
                 error = "file truncated";
