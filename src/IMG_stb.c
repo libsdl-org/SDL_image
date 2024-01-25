@@ -220,15 +220,15 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
     } else if (format == STBI_grey_alpha) {
         surface = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_RGBA32);
         if (surface) {
-            Uint8 *src = pixels;
+            Uint8 *src_ptr = pixels;
             Uint8 *dst = (Uint8 *)surface->pixels;
             int skip = surface->pitch - (surface->w * 4);
             int row, col;
 
             for (row = 0; row < h; ++row) {
                 for (col = 0; col < w; ++col) {
-                    Uint8 c = *src++;
-                    Uint8 a = *src++;
+                    Uint8 c = *src_ptr++;
+                    Uint8 a = *src_ptr++;
                     *dst++ = c;
                     *dst++ = c;
                     *dst++ = c;
