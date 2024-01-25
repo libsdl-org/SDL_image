@@ -18,9 +18,9 @@
 
 #include <stdlib.h>
 
-#if defined(SDL_FILESYSTEM_OS2) || defined(SDL_FILESYSTEM_WINDOWS)
+#if defined(SDL_PLATFORM_OS2) || defined(SDL_PLATFORM_WIN32)
 static const char pathsep[] = "\\";
-#elif defined(SDL_FILESYSTEM_RISCOS)
+#elif defined(SDL_PLATFORM_RISCOS)
 static const char pathsep[] = ".";
 #else
 static const char pathsep[] = "/";
