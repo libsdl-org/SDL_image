@@ -528,7 +528,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 #endif /* WANT_LIBPNG */
 
 #else
-#if _MSC_VER >= 1300
+#if defined(_MSC_VER) && _MSC_VER >= 1300
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
 #endif
 
