@@ -1,0 +1,17 @@
+//
+//  config.xcconfig
+//  avif
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+ENCODER_SRC_ARM64 = aom_convolve_copy_neon.c arm_cpudetect.c av1_error_neon.c av1_fwd_txfm2d_neon.c av1_highbd_quantize_neon.c av1_inv_txfm_neon.c av1_txfm_neon.c avg_neon.c blend_a64_hmask_neon.c blend_a64_mask_neon.c blend_a64_vmask_neon.c cdef_block_neon.c cfl_neon.c convolve_neon.c encodetxb_neon.c fwd_txfm_neon.c hadamard_neon.c hash_crc32.c highbd_fwd_txfm_neon.c highbd_intrapred_neon.c highbd_inv_txfm_neon.c highbd_loopfilter_neon.c highbd_quantize_neon.c highbd_variance_neon.c hybrid_fwd_txfm_neon.c intrapred_neon.c jnt_convolve_neon.c loopfilter_neon.c ml_neon.c picksrt_neon.c quantize_neon.c rdopt_neon.c reconinter_neon.c reconintra_neon.c resize_neon.c sad_neon.c sad4d_neon.c selfguided_neon.c sse_neon.c subpel_variance_neon.c subtract_neon.c sum_squares_neon.c temporal_filter_neon.c variance_neon.c warp_plane_neon.c wedge_utils_neon.c wiener_convolve_neon.c
+
+ENCODER_SRC_X64 = *_x86_64* *_sse2* *_sse3* *_ssse3*
+ENCODER_SRC_X64_DISABLED = *_sse4* *_avx*
+
+EXCLUDED_SOURCE_FILE_NAMES = $(ENCODER_SRC_ARM64) $(ENCODER_SRC_X64) $(ENCODER_SRC_X64_DISABLED)
+INCLUDED_SOURCE_FILE_NAMES =
+INCLUDED_SOURCE_FILE_NAMES[arch=arm64] = $(ENCODER_SRC_ARM64)
+INCLUDED_SOURCE_FILE_NAMES[arch=x86_64] = $(ENCODER_SRC_X64)
