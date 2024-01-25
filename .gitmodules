@@ -34,3 +34,7 @@
 	path = external/dav1d
 	url = https://github.com/libsdl-org/dav1d.git
 	branch = 1.2.1-SDL
+[submodule "external/aom"]
+	path = external/aom
+	url = https://github.com/libsdl-org/aom.git
+	branch = v3.6.1-SDL
