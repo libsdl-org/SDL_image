@@ -1,2 +1,4 @@
 3.0.0:
  * Added support for loading HDR AVIF images
+ * Added AVIF save support:
+    IMG_SaveAVIF() and IMG_SaveAVIF_RW()

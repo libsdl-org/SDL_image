@@ -1970,6 +1970,36 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArray(char **xpm);
 extern DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArrayToRGB888(char **xpm);
 
 /**
+ * Save an SDL_Surface into a AVIF image file.
+ *
+ * If the file already exists, it will be overwritten.
+ *
+ * \param surface the SDL surface to save
+ * \param file path on the filesystem to write new file to.
+ * \returns 0 if successful, -1 on error
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_SaveAVIF_RW
+ */
+extern DECLSPEC int SDLCALL IMG_SaveAVIF(SDL_Surface *surface, const char *file, int quality);
+
+/**
+ * Save an SDL_Surface into AVIF image data, via an SDL_RWops.
+ *
+ * If you just want to save to a filename, you can use IMG_SaveAVIF() instead.
+ *
+ * \param surface the SDL surface to save
+ * \param dst the SDL_RWops to save the image data to.
+ * \returns 0 if successful, -1 on error.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_SaveAVIF
+ */
+extern DECLSPEC int SDLCALL IMG_SaveAVIF_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quality);
+
+/**
  * Save an SDL_Surface into a PNG image file.
  *
  * If the file already exists, it will be overwritten.
@@ -1981,8 +2011,6 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArrayToRGB888(char **xpm);
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SavePNG_RW
- * \sa IMG_SaveJPG
- * \sa IMG_SaveJPG_RW
  */
 extern DECLSPEC int SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
 
@@ -1998,8 +2026,6 @@ extern DECLSPEC int SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SavePNG
- * \sa IMG_SaveJPG
- * \sa IMG_SaveJPG_RW
  */
 extern DECLSPEC int SDLCALL IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst);
 
@@ -2017,8 +2043,6 @@ extern DECLSPEC int SDLCALL IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst,
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SaveJPG_RW
- * \sa IMG_SavePNG
- * \sa IMG_SavePNG_RW
  */
 extern DECLSPEC int SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality);
 
@@ -2034,8 +2058,6 @@ extern DECLSPEC int SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *file, 
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SaveJPG
- * \sa IMG_SavePNG
- * \sa IMG_SavePNG_RW
  */
 extern DECLSPEC int SDLCALL IMG_SaveJPG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quality);
 

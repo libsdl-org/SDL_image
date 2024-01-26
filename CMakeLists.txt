@@ -110,6 +110,7 @@ option(SDL3IMAGE_XCF "Support loading XCF images" ON)
 option(SDL3IMAGE_XPM "Support loading XPM images" ON)
 option(SDL3IMAGE_XV "Support loading XV images" ON)
 
+cmake_dependent_option(SDL3IMAGE_AVIF_SAVE "Add AVIF save support" ON SDL3IMAGE_AVIF OFF)
 cmake_dependent_option(SDL3IMAGE_JPG_SAVE "Add JPEG save support" ON SDL3IMAGE_JPG OFF)
 cmake_dependent_option(SDL3IMAGE_PNG_SAVE "Add PNG save support" ON SDL3IMAGE_PNG OFF)
 
@@ -506,7 +507,10 @@ if(SDL3IMAGE_AVIF)
         endif()
     endif()
     if(SDL3IMAGE_AVIF_ENABLED)
-        target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_AVIF)
+        target_compile_definitions(${sdl3_image_target_name} PRIVATE
+            LOAD_AVIF
+            SDL_IMAGE_SAVE_AVIF=$<BOOL:${SDL3IMAGE_AVIF_SAVE}>
+        )
         if(SDL3IMAGE_AVIF_SHARED)
             target_include_directories(${sdl3_image_target_name} PRIVATE
                 $<TARGET_PROPERTY:avif,INCLUDE_DIRECTORIES>

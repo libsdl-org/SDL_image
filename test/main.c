@@ -150,7 +150,7 @@ static const Format formats[] =
 #else
         SDL_FALSE,
 #endif
-        SDL_FALSE,      /* can save */
+        SDL_IMAGE_SAVE_AVIF,
         IMG_isAVIF,
         IMG_LoadAVIF_RW,
     },
@@ -305,11 +305,7 @@ static const Format formats[] =
 #else
         SDL_FALSE,
 #endif
-#ifdef SDL_IMAGE_SAVE_PNG
-        SDL_IMAGE_SAVE_PNG ? SDL_TRUE : SDL_FALSE,
-#else
-        SDL_FALSE,
-#endif
+        SDL_IMAGE_SAVE_PNG,
         IMG_isPNG,
         IMG_LoadPNG_RW,
     },
@@ -838,13 +834,13 @@ FormatSaveTest(const Format *format,
                             format->initFlag, initResult);
     }
 
-    if (SDL_strcmp (format->name, "PNG") == 0) {
+    if (SDL_strcmp (format->name, "AVIF") == 0) {
         if (rw) {
             dest = SDL_RWFromFile(filename, "wb");
-            result = IMG_SavePNG_RW(reference, dest, SDL_FALSE);
+            result = IMG_SaveAVIF_RW(reference, dest, SDL_FALSE, 90);
             SDL_RWclose(dest);
         } else {
-            result = IMG_SavePNG(reference, filename);
+            result = IMG_SaveAVIF(reference, filename, 90);
         }
     } else if (SDL_strcmp(format->name, "JPG") == 0) {
         if (rw) {
@@ -853,6 +849,14 @@ FormatSaveTest(const Format *format,
             SDL_RWclose(dest);
         } else {
             result = IMG_SaveJPG(reference, filename, 90);
+        }
+    } else if (SDL_strcmp (format->name, "PNG") == 0) {
+        if (rw) {
+            dest = SDL_RWFromFile(filename, "wb");
+            result = IMG_SavePNG_RW(reference, dest, SDL_FALSE);
+            SDL_RWclose(dest);
+        } else {
+            result = IMG_SavePNG(reference, filename);
         }
     } else {
         SDLTest_AssertCheck(SDL_FALSE, "How do I save %s?", format->name);

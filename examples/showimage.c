@@ -118,12 +118,16 @@ int main(int argc, char *argv[])
             if (surface) {
                 int result;
                 const char *ext = SDL_strrchr(saveFile, '.');
-                if ( ext && SDL_strcasecmp(ext, ".bmp") == 0 ) {
+                if ( ext && SDL_strcasecmp(ext, ".avif") == 0 ) {
+                    result = IMG_SaveAVIF(surface, saveFile, 90);
+                } else if ( ext && SDL_strcasecmp(ext, ".bmp") == 0 ) {
                     result = SDL_SaveBMP(surface, saveFile);
                 } else if ( ext && SDL_strcasecmp(ext, ".jpg") == 0 ) {
                     result = IMG_SaveJPG(surface, saveFile, 90);
-                } else {
+                } else if ( ext && SDL_strcasecmp(ext, ".png") == 0 ) {
                     result = IMG_SavePNG(surface, saveFile);
+                } else {
+                    result = SDL_SetError("Unknown save file type");
                 }
                 if ( result < 0 ) {
                     SDL_Log("Couldn't save %s: %s\n", saveFile, SDL_GetError());
