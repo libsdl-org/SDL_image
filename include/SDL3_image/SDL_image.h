@@ -238,8 +238,8 @@ extern DECLSPEC void SDLCALL IMG_Quit(void);
  * call to SDL_DestroySurface().
  *
  * \param src an SDL_RWops that data will be read from.
- * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning, SDL_FALSE
- *                to leave it open.
+ * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning,
+ *                SDL_FALSE to leave it open.
  * \param type a filename extension that represent this data ("BMP", "GIF",
  *             "PNG", etc).
  * \returns a new SDL surface, or NULL on error.
@@ -337,8 +337,8 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_Load(const char *file);
  * call to SDL_DestroySurface().
  *
  * \param src an SDL_RWops that data will be read from.
- * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning, SDL_FALSE
- *                to leave it open.
+ * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning,
+ *                SDL_FALSE to leave it open.
  * \returns a new SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
@@ -421,8 +421,8 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *renderer, co
  *
  * \param renderer the SDL_Renderer to use to create the GPU texture.
  * \param src an SDL_RWops that data will be read from.
- * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning, SDL_FALSE
- *                to leave it open.
+ * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning,
+ *                SDL_FALSE to leave it open.
  * \returns a new texture, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
@@ -474,8 +474,8 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_RW(SDL_Renderer *renderer,
  *
  * \param renderer the SDL_Renderer to use to create the GPU texture.
  * \param src an SDL_RWops that data will be read from.
- * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning, SDL_FALSE
- *                to leave it open.
+ * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning,
+ *                SDL_FALSE to leave it open.
  * \param type a filename extension that represent this data ("BMP", "GIF",
  *             "PNG", etc).
  * \returns a new texture, or NULL on error.
@@ -1976,7 +1976,8 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArrayToRGB888(char **xpm);
  *
  * \param surface the SDL surface to save
  * \param file path on the filesystem to write new file to.
- * \param quality the desired quality, ranging between 0 (lowest) and 100 (highest)
+ * \param quality the desired quality, ranging between 0 (lowest) and 100
+ *                (highest)
  * \returns 0 if successful, -1 on error
  *
  * \since This function is available since SDL_image 3.0.0.
@@ -1995,9 +1996,10 @@ extern DECLSPEC int SDLCALL IMG_SaveAVIF(SDL_Surface *surface, const char *file,
  *
  * \param surface the SDL surface to save
  * \param dst the SDL_RWops to save the image data to.
- * \param freedst SDL_TRUE to close/free the SDL_RWops before returning, SDL_FALSE
- *                to leave it open.
- * \param quality the desired quality, ranging between 0 (lowest) and 100 (highest)
+ * \param freedst SDL_TRUE to close/free the SDL_RWops before returning,
+ *                SDL_FALSE to leave it open.
+ * \param quality the desired quality, ranging between 0 (lowest) and 100
+ *                (highest)
  * \returns 0 if successful, -1 on error.
  *
  * \since This function is available since SDL_image 3.0.0.
@@ -2031,8 +2033,8 @@ extern DECLSPEC int SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
  *
  * \param surface the SDL surface to save
  * \param dst the SDL_RWops to save the image data to.
- * \param freedst SDL_TRUE to close/free the SDL_RWops before returning, SDL_FALSE
- *                to leave it open.
+ * \param freedst SDL_TRUE to close/free the SDL_RWops before returning,
+ *                SDL_FALSE to leave it open.
  * \returns 0 if successful, -1 on error.
  *
  * \since This function is available since SDL_image 3.0.0.
@@ -2063,13 +2065,12 @@ extern DECLSPEC int SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *file, 
  *
  * If you just want to save to a filename, you can use IMG_SaveJPG() instead.
  *
- * \param freedst SDL_TRUE to close/free the SDL_RWops before returning, SDL_FALSE
- *                to leave it open.
- *
+ * \param freedst SDL_TRUE to close/free the SDL_RWops before returning,
+ *                SDL_FALSE to leave it open.
  * \param surface the SDL surface to save
  * \param dst the SDL_RWops to save the image data to.
- * \param freedst SDL_TRUE to close/free the SDL_RWops before returning, SDL_FALSE
- *                to leave it open.
+ * \param freedst SDL_TRUE to close/free the SDL_RWops before returning,
+ *                SDL_FALSE to leave it open.
  * \returns 0 if successful, -1 on error.
  *
  * \since This function is available since SDL_image 3.0.0.
@@ -2116,8 +2117,8 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation(const char *file);
  * call to IMG_FreeAnimation().
  *
  * \param src an SDL_RWops that data will be read from.
- * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning, SDL_FALSE
- *                to leave it open.
+ * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning,
+ *                SDL_FALSE to leave it open.
  * \returns a new IMG_Animation, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
@@ -2143,8 +2144,8 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation_RW(SDL_RWops *src, SDL
  * call to IMG_FreeAnimation().
  *
  * \param src an SDL_RWops that data will be read from.
- * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning, SDL_FALSE
- *                to leave it open.
+ * \param freesrc SDL_TRUE to close/free the SDL_RWops before returning,
+ *                SDL_FALSE to leave it open.
  * \param type a filename extension that represent this data ("GIF", etc).
  * \returns a new IMG_Animation, or NULL on error.
  *
