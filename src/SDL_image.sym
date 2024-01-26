@@ -41,6 +41,8 @@ SDL3_image_0.0.0 {
     IMG_SaveJPG_RW;
     IMG_SavePNG;
     IMG_SavePNG_RW;
+    IMG_SaveAVIF;
+    IMG_SaveAVIF_RW;
     IMG_isAVIF;
     IMG_isBMP;
     IMG_isCUR;
