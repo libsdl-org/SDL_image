@@ -656,6 +656,8 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst)
            format , so it should be converted to that */
         png_color_type = PNG_COLOR_TYPE_RGB_ALPHA;
         source = SDL_ConvertSurfaceFormat(surface, png_format);
+    } else {
+        png_color_type = PNG_COLOR_TYPE_RGB_ALPHA;
     }
 
     lib.png_set_write_fn(png_ptr, dst, png_write_data, png_flush_data);
