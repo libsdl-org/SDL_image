@@ -729,6 +729,8 @@ int IMG_SaveAVIF_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quali
     }
 
 #else
+    (void) surface;
+    (void) quality;
     result = IMG_SetError("SDL_image built without AVIF save support");
 #endif
 
