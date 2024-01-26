@@ -577,11 +577,13 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst)
 {
     png_structp png_ptr;
     png_infop info_ptr;
+    const char * volatile error = NULL;
     png_colorp volatile color_ptr = NULL;
     Uint8 transparent_table[256];
     SDL_Surface * volatile source = surface;
     SDL_Palette *palette;
     int png_color_type;
+    png_bytep * volatile row_pointers = NULL;
 
     if (!IMG_Init(IMG_INIT_PNG)) {
         return -1;
@@ -605,8 +607,8 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst)
 #endif
 #endif
     {
-        lib.png_destroy_write_struct(&png_ptr, &info_ptr);
-        return IMG_SetError("Error writing the PNG file.");
+        error = "Error writing the PNG file.";
+        goto done;
     }
 
     palette = surface->format->palette;
@@ -618,8 +620,8 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst)
         color_ptr = (png_colorp)SDL_malloc(sizeof(png_color) * ncolors);
         if (color_ptr == NULL)
         {
-            lib.png_destroy_write_struct(&png_ptr, &info_ptr);
-            return IMG_SetError("Couldn't create palette for PNG file");
+            error = "Couldn't create palette for PNG file";
+            goto done;
         }
         for (i = 0; i < ncolors; i++) {
             color_ptr[i].red = palette->colors[i].r;
@@ -663,14 +665,11 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst)
                      PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
     if (source) {
-        png_bytep *row_pointers;
         int row;
-
         row_pointers = (png_bytep *) SDL_malloc(sizeof(png_bytep) * source->h);
         if (!row_pointers) {
-            SDL_free(color_ptr);
-            lib.png_destroy_write_struct(&png_ptr, &info_ptr);
-            return IMG_SetError("Out of memory");
+            error = "Out of memory";
+            goto done;
         }
         for (row = 0; row < (int)source->h; row++) {
             row_pointers[row] = (png_bytep) (Uint8 *) source->pixels + row * source->pitch;
@@ -678,16 +677,31 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst)
 
         lib.png_set_rows(png_ptr, info_ptr, row_pointers);
         lib.png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
-
-        SDL_free(row_pointers);
-        if (source != surface) {
-            SDL_DestroySurface(source);
-        }
     }
-    lib.png_destroy_write_struct(&png_ptr, &info_ptr);
+
+done:/* Clean up and return */
+
+    if (png_ptr) {
+        lib.png_destroy_write_struct(&png_ptr, &info_ptr);
+    }
+
     if (color_ptr) {
         SDL_free(color_ptr);
     }
+
+    if (row_pointers) {
+        SDL_free(row_pointers);
+    }
+
+    if (source != surface) {
+        SDL_DestroySurface(source);
+    }
+
+    if (error) {
+        IMG_SetError("%s", error);
+        return -1;
+    }
+
     return 0;
 }
 
