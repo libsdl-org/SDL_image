@@ -34,6 +34,7 @@ function(add_sdl_image_test_executable TARGET)
     target_compile_definitions(${TARGET}
         PRIVATE
             $<TARGET_PROPERTY:${sdl3_image_target_name},COMPILE_DEFINITIONS>
+            "SDL_IMAGE_SAVE_AVIF=$<BOOL:${SDL3IMAGE_AVIF_SAVE}>"
             "SDL_IMAGE_SAVE_JPG=$<BOOL:${SDL3IMAGE_JPG_SAVE}>"
             "SDL_IMAGE_SAVE_PNG=$<BOOL:${SDL3IMAGE_PNG_SAVE}>"
     )
