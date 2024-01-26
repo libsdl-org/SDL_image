@@ -577,11 +577,11 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst)
 {
     png_structp png_ptr;
     png_infop info_ptr;
-    png_colorp color_ptr = NULL;
+    png_colorp volatile color_ptr = NULL;
     Uint8 transparent_table[256];
-    SDL_Surface *source = surface;
+    SDL_Surface * volatile source = surface;
     SDL_Palette *palette;
-    int png_color_type = PNG_COLOR_TYPE_RGB_ALPHA;
+    int png_color_type;
 
     if (!IMG_Init(IMG_INIT_PNG)) {
         return -1;
@@ -652,6 +652,7 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst)
     else if (surface->format->format != png_format) {
         /* Otherwise, (surface has alpha data), and it is not in the exact right
            format , so it should be converted to that */
+        png_color_type = PNG_COLOR_TYPE_RGB_ALPHA;
         source = SDL_ConvertSurfaceFormat(surface, png_format);
     }
 
