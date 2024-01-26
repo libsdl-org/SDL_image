@@ -492,7 +492,7 @@ static int IMG_SaveAVIF_RW_libavif(SDL_Surface *surface, SDL_RWops *dst, int qua
     avifRGBImage rgb;
     avifEncoder *encoder = NULL;
     avifRWData avifOutput = AVIF_DATA_EMPTY;
-    avifResult avifResult;
+    avifResult rc;
     const Uint32 surface_format = surface->format->format;
     SDL_ColorPrimaries colorPrimaries;
     SDL_TransferCharacteristics transferCharacteristics;
@@ -570,9 +570,9 @@ static int IMG_SaveAVIF_RW_libavif(SDL_Surface *surface, SDL_RWops *dst, int qua
             src = (Uint32 *)(((Uint8 *)src) + srcskip);
         }
 
-        avifResult = lib.avifImageRGBToYUV(image, &rgb);
-        if (avifResult != AVIF_RESULT_OK) {
-            IMG_SetError("Couldn't convert to YUV: %s", lib.avifResultToString(avifResult));
+        rc = lib.avifImageRGBToYUV(image, &rgb);
+        if (rc != AVIF_RESULT_OK) {
+            IMG_SetError("Couldn't convert to YUV: %s", lib.avifResultToString(rc));
             goto done;
         }
 
@@ -619,7 +619,7 @@ static int IMG_SaveAVIF_RW_libavif(SDL_Surface *surface, SDL_RWops *dst, int qua
         rgb.rowBytes = (uint32_t)temp->pitch;
 
         /* Convert to YUV */
-        avifResult = lib.avifImageRGBToYUV(image, &rgb);
+        rc = lib.avifImageRGBToYUV(image, &rgb);
 
         /* Do any cleanup */
         if (temp != surface) {
@@ -628,8 +628,8 @@ static int IMG_SaveAVIF_RW_libavif(SDL_Surface *surface, SDL_RWops *dst, int qua
         rgb.pixels = NULL;
 
         /* Check the result of the conversion */
-        if (avifResult != AVIF_RESULT_OK) {
-            IMG_SetError("Couldn't convert to YUV: %s", lib.avifResultToString(avifResult));
+        if (rc != AVIF_RESULT_OK) {
+            IMG_SetError("Couldn't convert to YUV: %s", lib.avifResultToString(rc));
             goto done;
         }
     }
@@ -639,15 +639,15 @@ static int IMG_SaveAVIF_RW_libavif(SDL_Surface *surface, SDL_RWops *dst, int qua
     encoder->qualityAlpha = AVIF_QUALITY_LOSSLESS;
     encoder->speed = AVIF_SPEED_FASTEST;
 
-    avifResult = lib.avifEncoderAddImage(encoder, image, 1, AVIF_ADD_IMAGE_FLAG_SINGLE);
-    if (avifResult != AVIF_RESULT_OK) {
-        IMG_SetError("Failed to add image to avif encoder: %s", lib.avifResultToString(avifResult));
+    rc = lib.avifEncoderAddImage(encoder, image, 1, AVIF_ADD_IMAGE_FLAG_SINGLE);
+    if (rc != AVIF_RESULT_OK) {
+        IMG_SetError("Failed to add image to avif encoder: %s", lib.avifResultToString(rc));
         goto done;
     }
 
-    avifResult = lib.avifEncoderFinish(encoder, &avifOutput);
-    if (avifResult != AVIF_RESULT_OK) {
-        IMG_SetError("Failed to finish encoder: %s", lib.avifResultToString(avifResult));
+    rc = lib.avifEncoderFinish(encoder, &avifOutput);
+    if (rc != AVIF_RESULT_OK) {
+        IMG_SetError("Failed to finish encoder: %s", lib.avifResultToString(rc));
         goto done;
     }
 
