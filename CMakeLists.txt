@@ -289,6 +289,21 @@ set_target_properties(${sdl3_image_target_name} PROPERTIES
     C_VISIBILITY_PRESET "hidden"
 )
 
+if (MSVC  AND CMAKE_BUILD_TYPE MATCHES "Release")
+   target_compile_options(${sdl3_image_target_name} PRIVATE /Zi)
+
+   # Tell linker to include symbol data
+    set_target_properties(${sdl3_image_target_name} PROPERTIES
+        LINK_FLAGS "/INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF"
+    )
+
+    # Set file name & location
+    set_target_properties(${sdl3_image_target_name} PROPERTIES
+        COMPILE_PDB_NAME ${sdl3_image_target_name}
+        COMPILE_PDB_OUTPUT_DIR ${CMAKE_BINARY_DIR}
+    )
+endif()
+
 sdl_target_link_option_version_file(${sdl3_image_target_name} "${CMAKE_CURRENT_SOURCE_DIR}/src/SDL_image.sym")
 
 if(NOT ANDROID)
