@@ -336,13 +336,17 @@ static void png_read_data(png_structp ctx, png_bytep area, png_size_t size)
 	src = (SDL_RWops *)lib.png_get_io_ptr(ctx);
 	SDL_RWread(src, area, size, 1);
 }
-SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
-{
-	int start;
+
+struct loadpng_vars {
 	const char *error;
-	SDL_Surface *volatile surface;
+	SDL_Surface *surface;
 	png_structp png_ptr;
 	png_infop info_ptr;
+	png_bytep *row_pointers;
+};
+
+static void LIBPNG_LoadPNG_RW(SDL_RWops *src, struct loadpng_vars *vars)
+{
 	png_uint_32 width, height;
 	int bit_depth, color_type, interlace_type, num_channels;
 	Uint32 Rmask;
@@ -350,38 +354,23 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	Uint32 Bmask;
 	Uint32 Amask;
 	SDL_Palette *palette;
-	png_bytep *volatile row_pointers;
 	int row, i;
-	volatile int ckey = -1;
+	int ckey = -1;
 	png_color_16 *transv;
 
-	if ( !src ) {
-		/* The error message has been set in SDL_RWFromFile */
-		return NULL;
-	}
-	start = SDL_RWtell(src);
-
-	if ( (IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) == 0 ) {
-		return NULL;
-	}
-
-	/* Initialize the data we will clean up when we're done */
-	error = NULL;
-	png_ptr = NULL; info_ptr = NULL; row_pointers = NULL; surface = NULL;
-
 	/* Create the PNG loading context structure */
-	png_ptr = lib.png_create_read_struct(PNG_LIBPNG_VER_STRING,
+	vars->png_ptr = lib.png_create_read_struct(PNG_LIBPNG_VER_STRING,
 					  NULL,NULL,NULL);
-	if (png_ptr == NULL){
-		error = "Couldn't allocate memory for PNG file or incompatible PNG dll";
-		goto done;
+	if (vars->png_ptr == NULL) {
+		vars->error = "Couldn't allocate memory for PNG file or incompatible PNG dll";
+		return;
 	}
 
 	 /* Allocate/initialize the memory for image information.  REQUIRED. */
-	info_ptr = lib.png_create_info_struct(png_ptr);
-	if (info_ptr == NULL) {
-		error = "Couldn't create image information for PNG file";
-		goto done;
+	vars->info_ptr = lib.png_create_info_struct(vars->png_ptr);
+	if (vars->info_ptr == NULL) {
+		vars->error = "Couldn't create image information for PNG file";
+		return;
 	}
 
 	/* Set error handling if you are using setjmp/longjmp method (this is
@@ -389,45 +378,45 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 	 * set up your own error handlers in png_create_read_struct() earlier.
 	 */
 #ifndef LIBPNG_VERSION_12
-	if ( setjmp(*lib.png_set_longjmp_fn(png_ptr, longjmp, sizeof (jmp_buf))) )
+	if (setjmp(*lib.png_set_longjmp_fn(vars->png_ptr, longjmp, sizeof(jmp_buf))))
 #else
-	if ( setjmp(png_ptr->jmpbuf) )
+	if (setjmp(vars->png_ptr->jmpbuf))
 #endif
 	{
-		error = "Error reading the PNG file.";
-		goto done;
+		vars->error = "Error reading the PNG file.";
+		return;
 	}
 
 	/* Set up the input control */
-	lib.png_set_read_fn(png_ptr, src, png_read_data);
+	lib.png_set_read_fn(vars->png_ptr, src, png_read_data);
 
 	/* Read PNG header info */
-	lib.png_read_info(png_ptr, info_ptr);
-	lib.png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth,
+	lib.png_read_info(vars->png_ptr, vars->info_ptr);
+	lib.png_get_IHDR(vars->png_ptr, vars->info_ptr, &width, &height, &bit_depth,
 			&color_type, &interlace_type, NULL, NULL);
 
 	/* tell libpng to strip 16 bit/color files down to 8 bits/color */
-	lib.png_set_strip_16(png_ptr) ;
+	lib.png_set_strip_16(vars->png_ptr) ;
 
 	/* tell libpng to de-interlace (if the image is interlaced) */
-	lib.png_set_interlace_handling(png_ptr) ;
+	lib.png_set_interlace_handling(vars->png_ptr) ;
 
 	/* Extract multiple pixels with bit depths of 1, 2, and 4 from a single
 	 * byte into separate bytes (useful for paletted and grayscale images).
 	 */
-	lib.png_set_packing(png_ptr);
+	lib.png_set_packing(vars->png_ptr);
 
 	/* scale greyscale values to the range 0..255 */
 	if(color_type == PNG_COLOR_TYPE_GRAY)
-		lib.png_set_expand(png_ptr);
+		lib.png_set_expand(vars->png_ptr);
 
 	/* For images with a single "transparent colour", set colour key;
 	   if more than one index has transparency, or if partially transparent
 	   entries exist, use full alpha channel */
-	if (lib.png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) {
+	if (lib.png_get_valid(vars->png_ptr, vars->info_ptr, PNG_INFO_tRNS)) {
 	        int num_trans;
 		Uint8 *trans;
-		lib.png_get_tRNS(png_ptr, info_ptr, &trans, &num_trans,
+		lib.png_get_tRNS(vars->png_ptr, vars->info_ptr, &trans, &num_trans,
 			     &transv);
 		if(color_type == PNG_COLOR_TYPE_PALETTE) {
 		    /* Check if all tRNS entries are opaque except one */
@@ -447,23 +436,23 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 			ckey = t;
 		    } else {
 			/* more than one transparent index, or translucency */
-			lib.png_set_expand(png_ptr);
+			lib.png_set_expand(vars->png_ptr);
 		    }
 		} else
 		    ckey = 0; /* actual value will be set later */
 	}
 
 	if ( color_type == PNG_COLOR_TYPE_GRAY_ALPHA )
-		lib.png_set_gray_to_rgb(png_ptr);
+		lib.png_set_gray_to_rgb(vars->png_ptr);
 
-	lib.png_read_update_info(png_ptr, info_ptr);
+	lib.png_read_update_info(vars->png_ptr, vars->info_ptr);
 
-	lib.png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth,
+	lib.png_get_IHDR(vars->png_ptr, vars->info_ptr, &width, &height, &bit_depth,
 			&color_type, &interlace_type, NULL, NULL);
 
 	/* Allocate the SDL surface to hold the image */
 	Rmask = Gmask = Bmask = Amask = 0 ;
-	num_channels = lib.png_get_channels(png_ptr, info_ptr);
+	num_channels = lib.png_get_channels(vars->png_ptr, vars->info_ptr);
 	if ( color_type != PNG_COLOR_TYPE_PALETTE ) {
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
 		Rmask = 0x000000FF;
@@ -478,51 +467,51 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 		Amask = 0x000000FF >> s;
 #endif
 	}
-	surface = SDL_AllocSurface(SDL_SWSURFACE, width, height,
-			bit_depth*num_channels, Rmask,Gmask,Bmask,Amask);
-	if ( surface == NULL ) {
-		error = "Out of memory";
-		goto done;
+	vars->surface = SDL_AllocSurface(SDL_SWSURFACE, width, height,
+				bit_depth*num_channels, Rmask,Gmask,Bmask,Amask);
+	if (vars->surface == NULL) {
+		vars->error = "Out of memory";
+		return;
 	}
 
-	if(ckey != -1) {
+	if (ckey != -1) {
 		if(color_type != PNG_COLOR_TYPE_PALETTE)
 			/* FIXME: Should these be truncated or shifted down? */
-			ckey = SDL_MapRGB(surface->format,
+			ckey = SDL_MapRGB(vars->surface->format,
 					  (Uint8)transv->red,
 					  (Uint8)transv->green,
 					  (Uint8)transv->blue);
-		SDL_SetColorKey(surface, SDL_SRCCOLORKEY, ckey);
+		SDL_SetColorKey(vars->surface, SDL_SRCCOLORKEY, ckey);
 	}
 
 	/* Create the array of pointers to image data */
-	row_pointers = (png_bytep*) malloc(sizeof(png_bytep)*height);
-	if (row_pointers == NULL) {
-		error = "Out of memory";
-		goto done;
+	vars->row_pointers = (png_bytep*) malloc(sizeof(png_bytep)*height);
+	if (vars->row_pointers == NULL) {
+		vars->error = "Out of memory";
+		return;
 	}
 	for (row = 0; row < (int)height; row++) {
-		row_pointers[row] = (png_bytep)
-				(Uint8 *)surface->pixels + row*surface->pitch;
+		vars->row_pointers[row] = (png_bytep)
+				(Uint8 *)vars->surface->pixels + row*vars->surface->pitch;
 	}
 
 	/* Read the entire image in one go */
-	lib.png_read_image(png_ptr, row_pointers);
+	lib.png_read_image(vars->png_ptr, vars->row_pointers);
 
 	/* and we're done!  (png_read_end() can be omitted if no processing of
 	 * post-IDAT text/time/etc. is desired)
 	 * In some cases it can't read PNG's created by some popular programs (ACDSEE),
 	 * we do not want to process comments, so we omit png_read_end
 
-	lib.png_read_end(png_ptr, info_ptr);
+	lib.png_read_end(vars->png_ptr, vars->info_ptr);
 	*/
 
 	/* Load the palette, if any */
-	palette = surface->format->palette;
+	palette = vars->surface->format->palette;
 	if ( palette ) {
 	    int png_num_palette;
 	    png_colorp png_palette;
-	    lib.png_get_PLTE(png_ptr, info_ptr, &png_palette, &png_num_palette);
+	    lib.png_get_PLTE(vars->png_ptr, vars->info_ptr, &png_palette, &png_num_palette);
 	    if(color_type == PNG_COLOR_TYPE_GRAY) {
 		palette->ncolors = 256;
 		for(i = 0; i < 256; i++) {
@@ -539,25 +528,44 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 		}
 	    }
 	}
+}
 
-done:	/* Clean up and return */
-	if ( png_ptr ) {
-		lib.png_destroy_read_struct(&png_ptr,
-					info_ptr ? &info_ptr : (png_infopp)0,
+SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
+{
+	int start;
+	struct loadpng_vars vars;
+
+	if ( !src ) {
+		/* The error message has been set in SDL_RWFromFile */
+		return NULL;
+	}
+
+	if ( (IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) == 0 ) {
+		return NULL;
+	}
+
+	start = SDL_RWtell(src);
+	memset(&vars, 0, sizeof(vars));
+
+	LIBPNG_LoadPNG_RW(src, &vars);
+
+	if (vars.png_ptr) {
+		lib.png_destroy_read_struct(&vars.png_ptr,
+					vars.info_ptr ? &vars.info_ptr : (png_infopp)0,
 					(png_infopp)0);
 	}
-	if ( row_pointers ) {
-		free(row_pointers);
+	if (vars.row_pointers) {
+		free(vars.row_pointers);
 	}
-	if ( error ) {
+	if (vars.error) {
 		SDL_RWseek(src, start, RW_SEEK_SET);
-		if ( surface ) {
-			SDL_FreeSurface(surface);
-			surface = NULL;
+		if (vars.surface) {
+			SDL_FreeSurface(vars.surface);
+			vars.surface = NULL;
 		}
-		IMG_SetError(error);
+		IMG_SetError(vars.error);
 	}
-	return(surface);
+	return vars.surface;
 }
 
 #else

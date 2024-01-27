@@ -189,7 +189,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
 {
 	int start;
 	const char *error = NULL;
-	SDL_Surface *volatile surface = NULL;
+	SDL_Surface *surface = NULL;
 	Uint32 Rmask;
 	Uint32 Gmask;
 	Uint32 Bmask;
