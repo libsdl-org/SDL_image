@@ -241,7 +241,7 @@ struct loadpng_vars {
     png_bytep *row_pointers;
 };
 
-static void IMG_LoadPNG_RW_impl(SDL_RWops *src, struct loadpng_vars *vars)
+static void LIBPNG_LoadPNG_RW(SDL_RWops *src, struct loadpng_vars *vars)
 {
     png_uint_32 width, height;
     int bit_depth, color_type, interlace_type, num_channels;
@@ -456,15 +456,15 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
         /* The error message has been set in SDL_RWFromFile */
         return NULL;
     }
-    start = SDL_RWtell(src);
 
     if ( (IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) == 0 ) {
         return NULL;
     }
 
+    start = SDL_RWtell(src);
     SDL_zero(vars);
 
-    IMG_LoadPNG_RW_impl(src, &vars);
+    LIBPNG_LoadPNG_RW(src, &vars);
 
     if (vars.png_ptr) {
         lib.png_destroy_read_struct(&vars.png_ptr,
@@ -590,17 +590,13 @@ struct savepng_vars {
     SDL_Surface *source;
 };
 
-static int IMG_SavePNG_RW_libpng_impl(struct savepng_vars *vars, SDL_Surface *surface, SDL_RWops *dst)
+static int LIBPNG_SavePNG_RW(struct savepng_vars *vars, SDL_Surface *surface, SDL_RWops *dst)
 {
     Uint8 transparent_table[256];
     SDL_Palette *palette;
     int png_color_type;
 
     vars->source = surface;
-
-    if (!IMG_Init(IMG_INIT_PNG)) {
-        return -1;
-    }
 
     vars->png_ptr = lib.png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (vars->png_ptr == NULL) {
@@ -701,8 +697,12 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst)
     struct savepng_vars vars;
     int ret;
 
+    if (!IMG_Init(IMG_INIT_PNG)) {
+        return -1;
+    }
+
     SDL_zero(vars);
-    ret = IMG_SavePNG_RW_libpng_impl(&vars, surface, dst);
+    ret = LIBPNG_SavePNG_RW(&vars, surface, dst);
 
     if (vars.png_ptr) {
         lib.png_destroy_write_struct(&vars.png_ptr, &vars.info_ptr);
