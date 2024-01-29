@@ -344,10 +344,10 @@ endif()
 if(SDL2IMAGE_ZLIB)
     if(SDL2IMAGE_ZLIB_VENDORED)
         message(STATUS "${PROJECT_NAME}: Using vendored zlib")
-        sdl_check_project_in_subfolder(external/zlib zlib SDL2IMAGE_VENDORED)
-        add_subdirectory(external/zlib EXCLUDE_FROM_ALL)
         # disable build of zlib example programs:
         set(ZLIB_BUILD_EXAMPLES OFF CACHE BOOL "zlib examples" FORCE)
+        sdl_check_project_in_subfolder(external/zlib zlib SDL2IMAGE_VENDORED)
+        add_subdirectory(external/zlib EXCLUDE_FROM_ALL)
         # PNG_BUILD_ZLIB variable is used by vendored libpng
         set(PNG_BUILD_ZLIB ON CACHE BOOL "libpng option to tell it should use 'our' vendored ZLIB library" FORCE)
         # ZLIB_INCLUDE_DIR variable is used by vendored libpng
@@ -357,6 +357,9 @@ if(SDL2IMAGE_ZLIB)
             set(ZLIB_LIBRARY zlib)
         else()
             set(ZLIB_LIBRARY zlibstatic)
+        endif()
+        if(NOT TARGET ZLIB::ZLIB)
+            add_library(ZLIB::ZLIB ALIAS ${ZLIB_LIBRARY})
         endif()
         # ZLIB_INCLUDE_DIRS variable is used by vendored libpng
         set(ZLIB_INCLUDE_DIRS "${ZLIB_INCLUDE_DIR}")
