@@ -440,10 +440,15 @@ SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
         if (surface) {
             // Set HDR properties
             SDL_PropertiesID props = SDL_GetSurfaceProperties(surface);
-            SDL_SetNumberProperty(props, SDL_PROPERTY_SURFACE_COLOR_PRIMARIES_NUMBER, image->colorPrimaries);
-            SDL_SetNumberProperty(props, SDL_PROPERTY_SURFACE_TRANSFER_CHARACTERISTICS_NUMBER, image->transferCharacteristics);
-            SDL_SetNumberProperty(props, SDL_PROPERTY_SURFACE_MAXCLL_NUMBER, image->clli.maxCLL);
-            SDL_SetNumberProperty(props, SDL_PROPERTY_SURFACE_MAXFALL_NUMBER, image->clli.maxPALL);
+            SDL_Colorspace colorspace = SDL_DEFINE_COLORSPACE(SDL_COLOR_TYPE_RGB,
+                                                              SDL_COLOR_RANGE_FULL,
+                                                              image->colorPrimaries,
+                                                              image->transferCharacteristics,
+                                                              SDL_MATRIX_COEFFICIENTS_UNSPECIFIED,
+                                                              SDL_CHROMA_LOCATION_NONE);
+            SDL_SetNumberProperty(props, SDL_PROP_SURFACE_COLORSPACE_NUMBER, colorspace);
+            SDL_SetNumberProperty(props, SDL_PROP_SURFACE_MAXCLL_NUMBER, image->clli.maxCLL);
+            SDL_SetNumberProperty(props, SDL_PROP_SURFACE_MAXFALL_NUMBER, image->clli.maxPALL);
         }
     }
 
@@ -494,8 +499,7 @@ static int IMG_SaveAVIF_RW_libavif(SDL_Surface *surface, SDL_RWops *dst, int qua
     avifRWData avifOutput = AVIF_DATA_EMPTY;
     avifResult rc;
     const Uint32 surface_format = surface->format->format;
-    SDL_ColorPrimaries colorPrimaries;
-    SDL_TransferCharacteristics transferCharacteristics;
+    SDL_Colorspace colorspace;
     Uint16 maxCLL, maxFALL;
     SDL_PropertiesID props;
     int result = -1;
@@ -506,10 +510,9 @@ static int IMG_SaveAVIF_RW_libavif(SDL_Surface *surface, SDL_RWops *dst, int qua
 
     /* Get the colorspace and light level properties, if any */
     props = SDL_GetSurfaceProperties(surface);
-    colorPrimaries = (SDL_ColorPrimaries)SDL_GetNumberProperty(props, SDL_PROPERTY_SURFACE_COLOR_PRIMARIES_NUMBER, SDL_COLOR_PRIMARIES_BT709);
-    transferCharacteristics = (SDL_TransferCharacteristics)SDL_GetNumberProperty(props, SDL_PROPERTY_SURFACE_TRANSFER_CHARACTERISTICS_NUMBER, SDL_TRANSFER_CHARACTERISTICS_SRGB);
-    maxCLL = (Uint16)SDL_GetNumberProperty(props, SDL_PROPERTY_SURFACE_MAXCLL_NUMBER, 0);
-    maxFALL = (Uint16)SDL_GetNumberProperty(props, SDL_PROPERTY_SURFACE_MAXFALL_NUMBER, 0);
+    colorspace = (SDL_Colorspace)SDL_GetNumberProperty(props, SDL_PROP_SURFACE_COLORSPACE_NUMBER, SDL_COLORSPACE_RGB_DEFAULT);
+    maxCLL = (Uint16)SDL_GetNumberProperty(props, SDL_PROP_SURFACE_MAXCLL_NUMBER, 0);
+    maxFALL = (Uint16)SDL_GetNumberProperty(props, SDL_PROP_SURFACE_MAXFALL_NUMBER, 0);
 
     image = lib.avifImageCreate(surface->w, surface->h, 10, AVIF_PIXEL_FORMAT_YUV444);
     if (!image) {
@@ -517,8 +520,8 @@ static int IMG_SaveAVIF_RW_libavif(SDL_Surface *surface, SDL_RWops *dst, int qua
         goto done;
     }
     image->yuvRange = AVIF_RANGE_FULL;
-    image->colorPrimaries = (avifColorPrimaries)colorPrimaries;
-    image->transferCharacteristics = (avifTransferCharacteristics)transferCharacteristics;
+    image->colorPrimaries = (avifColorPrimaries)SDL_COLORSPACEPRIMARIES(colorspace);
+    image->transferCharacteristics = (avifTransferCharacteristics)SDL_COLORSPACETRANSFER(colorspace);
     image->clli.maxCLL = maxCLL;
     image->clli.maxPALL = maxFALL;
 
