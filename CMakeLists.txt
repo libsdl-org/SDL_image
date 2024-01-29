@@ -397,10 +397,10 @@ endif()
 if(SDL3IMAGE_ZLIB)
     if(SDL3IMAGE_ZLIB_VENDORED)
         message(STATUS "${PROJECT_NAME}: Using vendored zlib")
+        # disable build of zlib example programs:
         set(ZLIB_BUILD_EXAMPLES OFF CACHE BOOL "zlib examples" FORCE)
         sdl_check_project_in_subfolder(external/zlib zlib SDL3IMAGE_VENDORED)
         add_subdirectory(external/zlib EXCLUDE_FROM_ALL)
-        # disable build of zlib example programs:
         # PNG_BUILD_ZLIB variable is used by vendored libpng
         set(PNG_BUILD_ZLIB ON CACHE BOOL "libpng option to tell it should use 'our' vendored ZLIB library" FORCE)
         # ZLIB_INCLUDE_DIR variable is used by vendored libpng
