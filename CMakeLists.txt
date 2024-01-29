@@ -411,6 +411,9 @@ if(SDL3IMAGE_ZLIB)
         else()
             set(ZLIB_LIBRARY zlibstatic)
         endif()
+        if(NOT TARGET ZLIB::ZLIB)
+            add_library(ZLIB::ZLIB ALIAS ${ZLIB_LIBRARY})
+        endif()
         # ZLIB_LIBRARIES variable is used by vendored libpng
         set(ZLIB_LIBRARIES "${ZLIB_LIBRARY}")
         # ZLIB_INCLUDE_DIRS variable is used by vendored libpng
