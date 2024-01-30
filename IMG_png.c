@@ -266,15 +266,15 @@ void IMG_QuitPNG()
 int IMG_InitPNG()
 {
 	if ( lib.loaded == 0 ) {
-		lib.png_create_info_struct = png_create_info_struct;
+		lib.png_create_info_struct = (png_info * (*)(png_struct *))png_create_info_struct;
 		lib.png_create_read_struct = png_create_read_struct;
 		lib.png_destroy_read_struct = png_destroy_read_struct;
-		lib.png_get_IHDR = png_get_IHDR;
-		lib.png_get_channels = png_get_channels;
-		lib.png_get_io_ptr = png_get_io_ptr;
-		lib.png_get_PLTE = png_get_PLTE;
-		lib.png_get_tRNS = png_get_tRNS;
-		lib.png_get_valid = png_get_valid;
+		lib.png_get_IHDR = (png_uint_32 (*)(png_struct *, png_info *, png_uint_32 *, png_uint_32 *, int *, int *, int *, int *, int *))png_get_IHDR;
+		lib.png_get_channels = (png_byte (*)(png_struct *, png_info *))png_get_channels;
+		lib.png_get_io_ptr = (void * (*)(png_struct *))png_get_io_ptr;
+		lib.png_get_PLTE = (png_uint_32 (*)(png_struct *, png_info *, png_color **, int *))png_get_PLTE;
+		lib.png_get_tRNS = (png_uint_32 (*)(png_struct *, png_info *, png_byte **, int *, png_color_16 **))png_get_tRNS;
+		lib.png_get_valid = (png_uint_32 (*)(png_struct *, png_info *, png_uint_32))png_get_valid;
 		lib.png_read_image = png_read_image;
 		lib.png_read_info = png_read_info;
 		lib.png_read_update_info = png_read_update_info;
@@ -284,7 +284,7 @@ int IMG_InitPNG()
 		lib.png_set_read_fn = png_set_read_fn;
 		lib.png_set_strip_16 = png_set_strip_16;
 		lib.png_set_interlace_handling = png_set_interlace_handling;
-		lib.png_sig_cmp = png_sig_cmp;
+		lib.png_sig_cmp = (int (*)(png_byte *, png_size_t,  png_size_t))png_sig_cmp;
 #ifndef LIBPNG_VERSION_12
 		lib.png_set_longjmp_fn = png_set_longjmp_fn;
 #endif
