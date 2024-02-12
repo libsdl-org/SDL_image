@@ -39,11 +39,11 @@ SDL_COMPILE_TIME_ASSERT(SDL_BUILD_MICRO_VERSION,
 
 #if defined(SDL_COMPILE_TIME_ASSERT)
 SDL_COMPILE_TIME_ASSERT(SDL_IMAGE_MAJOR_VERSION_min, SDL_IMAGE_MAJOR_VERSION >= 0);
-/* Limited only by the need to fit in SDL_version */
+/* Limited only by the need to fit in SDL_Version */
 SDL_COMPILE_TIME_ASSERT(SDL_IMAGE_MAJOR_VERSION_max, SDL_IMAGE_MAJOR_VERSION <= 255);
 
 SDL_COMPILE_TIME_ASSERT(SDL_IMAGE_MINOR_VERSION_min, SDL_IMAGE_MINOR_VERSION >= 0);
-/* Limited only by the need to fit in SDL_version */
+/* Limited only by the need to fit in SDL_Version */
 SDL_COMPILE_TIME_ASSERT(SDL_IMAGE_MINOR_VERSION_max, SDL_IMAGE_MINOR_VERSION <= 255);
 
 SDL_COMPILE_TIME_ASSERT(SDL_IMAGE_PATCHLEVEL_min, SDL_IMAGE_PATCHLEVEL >= 0);
@@ -90,10 +90,10 @@ static struct {
     { "WEBP", IMG_isWEBP, IMG_LoadWEBPAnimation_RW },
 };
 
-const SDL_version *IMG_Linked_Version(void)
+const SDL_Version *IMG_Linked_Version(void)
 {
-    static SDL_version linked_version;
-    SDL_IMAGE_VERSION(&linked_version);
+    static SDL_Version linked_version;
+    SDL_IMAGE_VERSION(&linked_version)
     return(&linked_version);
 }
 

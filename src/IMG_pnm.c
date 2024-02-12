@@ -162,7 +162,7 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
     }
     if ( surface == NULL )
         ERROR("Out of memory");
-    bpl = width * surface->format->BytesPerPixel;
+    bpl = width * surface->format->bytes_per_pixel;
     if(kind == PGM) {
         SDL_Color *c = surface->format->palette->colors;
         int i;

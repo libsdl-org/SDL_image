@@ -30,7 +30,6 @@
 #define SDL_IMAGE_H_
 
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_version.h>
 #include <SDL3/SDL_begin_code.h>
 
 /* Set up for C function definitions, even when using C++ */
@@ -86,7 +85,7 @@ extern "C" {
  *
  * \returns SDL_image version
  */
-extern DECLSPEC const SDL_version * SDLCALL IMG_Linked_Version(void);
+extern DECLSPEC const SDL_Version * SDLCALL IMG_Linked_Version(void);
 
 /**
  * Initialization flags

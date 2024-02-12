@@ -760,11 +760,11 @@ static int IMG_SavePNG_RW_miniz(SDL_Surface *surface, SDL_RWops *dst)
     }
 
     if (surface->format->format == png_format) {
-        png = tdefl_write_image_to_png_file_in_memory(surface->pixels, surface->w, surface->h, surface->format->BytesPerPixel, surface->pitch, &size);
+        png = tdefl_write_image_to_png_file_in_memory(surface->pixels, surface->w, surface->h, surface->format->bytes_per_pixel, surface->pitch, &size);
     } else {
         SDL_Surface *cvt = SDL_ConvertSurfaceFormat(surface, png_format);
         if (cvt) {
-            png = tdefl_write_image_to_png_file_in_memory(cvt->pixels, cvt->w, cvt->h, cvt->format->BytesPerPixel, cvt->pitch, &size);
+            png = tdefl_write_image_to_png_file_in_memory(cvt->pixels, cvt->w, cvt->h, cvt->format->bytes_per_pixel, cvt->pitch, &size);
             SDL_DestroySurface(cvt);
         }
     }
