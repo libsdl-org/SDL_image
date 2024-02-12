@@ -592,7 +592,7 @@ DumpPixels(const char *filename, SDL_Surface *surface)
         SDL_Log("    ");
 
         for (i = 0; i < w; i++) {
-            p = pixels + (j * pitch) + (i * surface->format->BytesPerPixel);
+            p = pixels + (j * pitch) + (i * surface->format->bytes_per_pixel);
 
             switch (surface->format->BitsPerPixel) {
                 case 1:
@@ -1056,13 +1056,8 @@ main(int argc, char *argv[])
             }
         }
         if (consumed < 0) {
-
-#if SDL_VERSION_ATLEAST(2, 0, 10)
             static const char *options[] = { "[--iterations #]", "[--execKey #]", "[--seed string]", "[--filter suite_name|test_name]", NULL };
             SDLTest_CommonLogUsage(state, argv[0], options);
-#else
-            SDLTest_CommonUsage(state);
-#endif
             quit(1);
         }
 
