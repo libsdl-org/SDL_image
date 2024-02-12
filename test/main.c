@@ -594,7 +594,7 @@ DumpPixels(const char *filename, SDL_Surface *surface)
         for (i = 0; i < w; i++) {
             p = pixels + (j * pitch) + (i * surface->format->bytes_per_pixel);
 
-            switch (surface->format->BitsPerPixel) {
+            switch (surface->format->bits_per_pixel) {
                 case 1:
                 case 4:
                 case 8:
