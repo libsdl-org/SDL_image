@@ -753,23 +753,25 @@ if(SDL3IMAGE_PNG)
                     list(APPEND PC_REQUIRES libpng)
                 endif()
             else()
-                message(${FATAL_ERROR} "libpnb NOT found")
+                message(${FATAL_ERROR} "libpng NOT found")
             endif()
         endif()
-        if(SDL3IMAGE_PNG_SHARED)
-            target_include_directories(${sdl3_image_target_name} PRIVATE
-                $<TARGET_PROPERTY:PNG::PNG,INCLUDE_DIRECTORIES>
-                $<TARGET_PROPERTY:PNG::PNG,INTERFACE_INCLUDE_DIRECTORIES>
-                $<TARGET_PROPERTY:PNG::PNG,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
-            )
-            target_get_dynamic_library(dynamic_png PNG::PNG)
-            message(STATUS "Dynamic libpng: ${dynamic_png}")
-            target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_PNG_DYNAMIC=\"${dynamic_png}\"")
-            if(SDL3IMAGE_PNG_VENDORED)
-                add_dependencies(${sdl3_image_target_name} PNG::PNG)
+        if(SDL3IMAGE_PNG_ENABLED)
+            if(SDL3IMAGE_PNG_SHARED)
+                target_include_directories(${sdl3_image_target_name} PRIVATE
+                    $<TARGET_PROPERTY:PNG::PNG,INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:PNG::PNG,INTERFACE_INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:PNG::PNG,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
+                )
+                target_get_dynamic_library(dynamic_png PNG::PNG)
+                message(STATUS "Dynamic libpng: ${dynamic_png}")
+                target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_PNG_DYNAMIC=\"${dynamic_png}\"")
+                if(SDL3IMAGE_PNG_VENDORED)
+                    add_dependencies(${sdl3_image_target_name} PNG::PNG)
+                endif()
+            else()
+                target_link_libraries(${sdl3_image_target_name} PRIVATE PNG::PNG)
             endif()
-        else()
-            target_link_libraries(${sdl3_image_target_name} PRIVATE PNG::PNG)
         endif()
     endif()
     if(SDL3IMAGE_PNG_ENABLED)
