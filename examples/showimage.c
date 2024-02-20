@@ -52,22 +52,24 @@ static void draw_background(SDL_Renderer *renderer, int w, int h)
 
 int main(int argc, char *argv[])
 {
-    SDL_Window *window;
-    SDL_Renderer *renderer;
-    SDL_Texture *texture;
+    SDL_Window *window = NULL;
+    SDL_Renderer *renderer = NULL;
+    SDL_Texture *texture = NULL;
     Uint32 flags;
     int i, w, h;
     int done = 0;
     int quit = 0;
     SDL_Event event;
     const char *saveFile = NULL;
+    int result = 0;
 
     (void)argc;
 
     /* Check command line usage */
     if ( ! argv[1] ) {
         SDL_Log("Usage: %s [-fullscreen] [-save file.png] <image_file> ...\n", argv[0]);
-        return(1);
+        result = 1;
+        goto done;
     }
 
     flags = SDL_WINDOW_HIDDEN;
@@ -80,25 +82,45 @@ int main(int argc, char *argv[])
 
     if (SDL_Init(SDL_INIT_VIDEO) == -1) {
         SDL_Log("SDL_Init(SDL_INIT_VIDEO) failed: %s\n", SDL_GetError());
-        return(2);
+        result = 2;
+        goto done;
     }
 
-    if (SDL_CreateWindowAndRenderer(0, 0, flags, &window, &renderer) < 0) {
-        SDL_Log("SDL_CreateWindowAndRenderer() failed: %s\n", SDL_GetError());
-        return(2);
+    window = SDL_CreateWindow("", 0, 0, flags);
+    if (!window) {
+        SDL_Log("SDL_CreateWindow() failed: %s\n", SDL_GetError());
+        result = 2;
+        goto done;
     }
 
-    for ( i=1; argv[i]; ++i ) {
-        if ( SDL_strcmp(argv[i], "-fullscreen") == 0 ) {
+    if (SDL_GetBooleanProperty(SDL_GetDisplayProperties(SDL_GetPrimaryDisplay()), SDL_PROP_DISPLAY_HDR_ENABLED_BOOLEAN, SDL_FALSE)) {
+        SDL_PropertiesID props = SDL_CreateProperties();
+
+        SDL_SetProperty(props, SDL_PROP_RENDERER_CREATE_WINDOW_POINTER, window);
+        SDL_SetNumberProperty(props, SDL_PROP_RENDERER_CREATE_OUTPUT_COLORSPACE_NUMBER, SDL_COLORSPACE_SRGB_LINEAR);
+        renderer = SDL_CreateRendererWithProperties(props);
+        SDL_DestroyProperties(props);
+    }
+    if (!renderer) {
+        renderer = SDL_CreateRenderer(window, NULL, 0);
+    }
+    if (!renderer) {
+        SDL_Log("SDL_CreateRenderer() failed: %s\n", SDL_GetError());
+        result = 2;
+        goto done;
+    }
+
+    for (i=1; argv[i]; ++i) {
+        if (SDL_strcmp(argv[i], "-fullscreen") == 0) {
             continue;
         }
 
-        if ( SDL_strcmp(argv[i], "-quit") == 0 ) {
+        if (SDL_strcmp(argv[i], "-quit") == 0) {
             quit = 1;
             continue;
         }
 
-        if ( SDL_strcmp(argv[i], "-save") == 0 && argv[i+1] ) {
+        if (SDL_strcmp(argv[i], "-save") == 0 && argv[i+1]) {
             ++i;
             saveFile = argv[i];
             continue;
@@ -113,23 +135,23 @@ int main(int argc, char *argv[])
         SDL_QueryTexture(texture, NULL, NULL, &w, &h);
 
         /* Save the image file, if desired */
-        if ( saveFile ) {
+        if (saveFile) {
             SDL_Surface *surface = IMG_Load(argv[i]);
             if (surface) {
                 int result;
                 const char *ext = SDL_strrchr(saveFile, '.');
-                if ( ext && SDL_strcasecmp(ext, ".avif") == 0 ) {
+                if (ext && SDL_strcasecmp(ext, ".avif") == 0) {
                     result = IMG_SaveAVIF(surface, saveFile, 90);
-                } else if ( ext && SDL_strcasecmp(ext, ".bmp") == 0 ) {
+                } else if (ext && SDL_strcasecmp(ext, ".bmp") == 0) {
                     result = SDL_SaveBMP(surface, saveFile);
-                } else if ( ext && SDL_strcasecmp(ext, ".jpg") == 0 ) {
+                } else if (ext && SDL_strcasecmp(ext, ".jpg") == 0) {
                     result = IMG_SaveJPG(surface, saveFile, 90);
-                } else if ( ext && SDL_strcasecmp(ext, ".png") == 0 ) {
+                } else if (ext && SDL_strcasecmp(ext, ".png") == 0) {
                     result = IMG_SavePNG(surface, saveFile);
                 } else {
                     result = SDL_SetError("Unknown save file type");
                 }
-                if ( result < 0 ) {
+                if (result < 0) {
                     SDL_Log("Couldn't save %s: %s\n", saveFile, SDL_GetError());
                 }
             } else {
@@ -194,11 +216,10 @@ int main(int argc, char *argv[])
         SDL_DestroyTexture(texture);
     }
 
-
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-
     /* We're done! */
+    result = 0;
+
+done:
     SDL_Quit();
-    return(0);
+    return result;
 }
