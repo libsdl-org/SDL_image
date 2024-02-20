@@ -302,7 +302,7 @@ static int ConvertGBR444toXBGR2101010(avifImage *image, SDL_Surface *surface)
     return 0;
 }
 
-static int ConvertRGB16toXBGR2101010(avifRGBImage *image, SDL_Surface *surface)
+static void ConvertRGB16toXBGR2101010(avifRGBImage *image, SDL_Surface *surface)
 {
     const Uint16 *src;
     Uint32 sR, sG, sB;
@@ -329,7 +329,6 @@ static int ConvertRGB16toXBGR2101010(avifRGBImage *image, SDL_Surface *surface)
         }
         dst += dstskip;
     }
-    return 0;
 }
 
 /* Load a AVIF type image from an SDL datasource */
@@ -426,12 +425,7 @@ SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
 
             surface = SDL_CreateSurface(image->width, image->height, SDL_PIXELFORMAT_XBGR2101010);
             if (surface) {
-                if (ConvertRGB16toXBGR2101010(&rgb, surface) == 0) {
-                } else {
-                    // Invalid image, let avif take care of it
-                    SDL_free(surface);
-                    surface = NULL;
-                }
+                ConvertRGB16toXBGR2101010(&rgb, surface);
             }
 
             SDL_free(rgb.pixels);
@@ -444,7 +438,7 @@ SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
                                                               SDL_COLOR_RANGE_FULL,
                                                               image->colorPrimaries,
                                                               image->transferCharacteristics,
-                                                              SDL_MATRIX_COEFFICIENTS_UNSPECIFIED,
+                                                              SDL_MATRIX_COEFFICIENTS_IDENTITY,
                                                               SDL_CHROMA_LOCATION_NONE);
             SDL_SetNumberProperty(props, SDL_PROP_SURFACE_COLORSPACE_NUMBER, colorspace);
             SDL_SetNumberProperty(props, SDL_PROP_SURFACE_MAXCLL_NUMBER, image->clli.maxCLL);
