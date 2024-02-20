@@ -1271,20 +1271,6 @@ extern DECLSPEC int SDLCALL IMG_isWEBP(SDL_RWops *src);
  * better to use the abstract interfaces; also, there is only an SDL_RWops
  * interface available here.
  *
- * For HDR images, the returned surface may have light information properties:
- *
- * - `SDL_PROP_SURFACE_MAXCLL_NUMBER`: MaxCLL (Maximum Content Light Level)
- *   indicates the maximum light level of any single pixel (in cd/m2 or nits)
- *   of the entire playback sequence. MaxCLL is usually measured off the final
- *   delivered content after mastering. If one uses the full light level of
- *   the HDR mastering display and adds a hard clip at its maximum value,
- *   MaxCLL would be equal to the peak luminance of the mastering monitor.
- * - `SDL_PROP_SURFACE_MAXFALL_NUMBER`: MaxFALL (Maximum Frame Average Light
- *   Level) indicates the maximum value of the frame average light level (in
- *   cd/m2 or nits) of the entire playback sequence. MaxFALL is calculated by
- *   averaging the decoded luminance values of all the pixels within a frame.
- *   MaxFALL is usually much lower than MaxCLL.
- *
  * \param src an SDL_RWops to load image data from.
  * \returns SDL surface, or NULL on error
  *
@@ -1310,9 +1296,6 @@ extern DECLSPEC int SDLCALL IMG_isWEBP(SDL_RWops *src);
  * \sa IMG_LoadWEBP_RW
  */
 extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadAVIF_RW(SDL_RWops *src);
-
-#define SDL_PROP_SURFACE_MAXCLL_NUMBER                      "SDL.surface.maxCLL"
-#define SDL_PROP_SURFACE_MAXFALL_NUMBER                     "SDL.surface.maxFALL"
 
 /**
  * Load a ICO image directly.
