@@ -60,6 +60,7 @@ int main(int argc, char *argv[])
     int done = 0;
     int quit = 0;
     SDL_Event event;
+    const char *tonemap = NULL;
     const char *saveFile = NULL;
     int result = 0;
 
@@ -67,7 +68,7 @@ int main(int argc, char *argv[])
 
     /* Check command line usage */
     if ( ! argv[1] ) {
-        SDL_Log("Usage: %s [-fullscreen] [-save file.png] <image_file> ...\n", argv[0]);
+        SDL_Log("Usage: %s [-fullscreen] [-tonemap X] [-save file.png] <image_file> ...\n", argv[0]);
         result = 1;
         goto done;
     }
@@ -120,6 +121,12 @@ int main(int argc, char *argv[])
             continue;
         }
 
+        if (SDL_strcmp(argv[i], "-tonemap") == 0 && argv[i+1]) {
+            ++i;
+            tonemap = argv[i];
+            continue;
+        }
+
         if (SDL_strcmp(argv[i], "-save") == 0 && argv[i+1]) {
             ++i;
             saveFile = argv[i];
@@ -127,10 +134,36 @@ int main(int argc, char *argv[])
         }
 
         /* Open the image file */
-        texture = IMG_LoadTexture(renderer, argv[i]);
-        if (!texture) {
-            SDL_Log("Couldn't load %s: %s\n", argv[i], SDL_GetError());
-            continue;
+        if (tonemap) {
+            SDL_Surface *surface, *temp;
+
+            surface = IMG_Load(argv[i]);
+            if (!surface) {
+                SDL_Log("Couldn't load %s: %s\n", argv[i], SDL_GetError());
+                continue;
+            }
+
+            /* Use the tonemap operator to convert to SDR output */
+            SDL_SetStringProperty(SDL_GetSurfaceProperties(surface), SDL_PROP_SURFACE_TONEMAP_OPERATOR_STRING, tonemap);
+            temp = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32);
+            SDL_DestroySurface(surface);
+            if (!temp) {
+                SDL_Log("Couldn't convert surface: %s\n", SDL_GetError());
+                continue;
+            }
+
+            texture = SDL_CreateTextureFromSurface(renderer, temp);
+            SDL_DestroySurface(temp);
+            if (!texture) {
+                SDL_Log("Couldn't create texture: %s\n", SDL_GetError());
+                continue;
+            }
+        } else {
+            texture = IMG_LoadTexture(renderer, argv[i]);
+            if (!texture) {
+                SDL_Log("Couldn't load %s: %s\n", argv[i], SDL_GetError());
+                continue;
+            }
         }
         SDL_QueryTexture(texture, NULL, NULL, &w, &h);
 
