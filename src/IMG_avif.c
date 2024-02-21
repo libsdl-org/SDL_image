@@ -441,8 +441,10 @@ SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
                                                               SDL_MATRIX_COEFFICIENTS_IDENTITY,
                                                               SDL_CHROMA_LOCATION_NONE);
             SDL_SetNumberProperty(props, SDL_PROP_SURFACE_COLORSPACE_NUMBER, colorspace);
-            if (image->clli.maxCLL > 0 || image->clli.maxPALL > 0) {
+            if (image->clli.maxCLL > 0) {
                 SDL_SetNumberProperty(props, SDL_PROP_SURFACE_MAXCLL_NUMBER, image->clli.maxCLL);
+            }
+            if (image->clli.maxPALL > 0) {
                 SDL_SetNumberProperty(props, SDL_PROP_SURFACE_MAXFALL_NUMBER, image->clli.maxPALL);
             }
         }
