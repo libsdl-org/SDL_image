@@ -445,10 +445,6 @@ SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
                 SDL_SetNumberProperty(props, SDL_PROP_SURFACE_MAXCLL_NUMBER, image->clli.maxCLL);
                 SDL_SetNumberProperty(props, SDL_PROP_SURFACE_MAXFALL_NUMBER, image->clli.maxPALL);
             }
-
-            // A good approximation to compress HDR content to SDR
-            // More complex tone mapping algorithms can be added and set by the caller in the future.
-            SDL_SetStringProperty(props, SDL_PROP_SURFACE_TONEMAP_OPERATOR_STRING, "*=0.2");
         }
     }
 
