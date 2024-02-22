@@ -171,7 +171,6 @@ int main(int argc, char *argv[])
         if (saveFile) {
             SDL_Surface *surface = IMG_Load(argv[i]);
             if (surface) {
-                int result;
                 const char *ext = SDL_strrchr(saveFile, '.');
                 if (ext && SDL_strcasecmp(ext, ".avif") == 0) {
                     result = IMG_SaveAVIF(surface, saveFile, 90);
@@ -188,6 +187,7 @@ int main(int argc, char *argv[])
                     SDL_Log("Couldn't save %s: %s\n", saveFile, SDL_GetError());
                 }
             } else {
+                result = 3;
                 SDL_Log("Couldn't load %s: %s\n", argv[i], SDL_GetError());
             }
         }
@@ -250,8 +250,6 @@ int main(int argc, char *argv[])
     }
 
     /* We're done! */
-    result = 0;
-
 done:
     SDL_Quit();
     return result;
