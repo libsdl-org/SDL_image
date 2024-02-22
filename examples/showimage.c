@@ -185,10 +185,11 @@ int main(int argc, char *argv[])
                 }
                 if (result < 0) {
                     SDL_Log("Couldn't save %s: %s\n", saveFile, SDL_GetError());
+                    result = 3;
                 }
             } else {
-                result = 3;
                 SDL_Log("Couldn't load %s: %s\n", argv[i], SDL_GetError());
+                result = 3;
             }
         }
 
