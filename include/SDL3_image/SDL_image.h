@@ -2064,12 +2064,12 @@ extern DECLSPEC int SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *file, 
  *
  * If you just want to save to a filename, you can use IMG_SaveJPG() instead.
  *
- * \param freedst SDL_TRUE to close/free the SDL_RWops before returning,
- *                SDL_FALSE to leave it open.
  * \param surface the SDL surface to save
  * \param dst the SDL_RWops to save the image data to.
  * \param freedst SDL_TRUE to close/free the SDL_RWops before returning,
  *                SDL_FALSE to leave it open.
+ * \param quality [0; 33] is Lowest quality, [34; 66] is Middle quality, [67;
+ *                100] is Highest quality
  * \returns 0 if successful, -1 on error.
  *
  * \since This function is available since SDL_image 3.0.0.
