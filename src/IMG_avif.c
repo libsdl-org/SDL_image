@@ -35,6 +35,23 @@
 #include <limits.h> /* for INT_MAX */
 
 
+/*
+ * - `SDL_PROP_SURFACE_MAXCLL_NUMBER`: MaxCLL (Maximum Content Light Level)
+ *   indicates the maximum light level of any single pixel (in cd/m2 or nits)
+ *   of the content. MaxCLL is usually measured off the final delivered
+ *   content after mastering. If one uses the full light level of the HDR
+ *   mastering display and adds a hard clip at its maximum value, MaxCLL would
+ *   be equal to the peak luminance of the mastering monitor.
+ * - `SDL_PROP_SURFACE_MAXFALL_NUMBER`: MaxFALL (Maximum Frame Average Light
+ *   Level) indicates the maximum value of the frame average light level (in
+ *   cd/m2 or nits) of the content. MaxFALL is calculated by averaging the
+ *   decoded luminance values of all the pixels within a frame. MaxFALL is
+ *   usually much lower than MaxCLL.
+ */
+#define SDL_PROP_SURFACE_MAXCLL_NUMBER                      "SDL.surface.maxCLL"
+#define SDL_PROP_SURFACE_MAXFALL_NUMBER                     "SDL.surface.maxFALL"
+
+
 static struct {
     int loaded;
     void *handle;
@@ -433,6 +450,17 @@ SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
 
         if (surface) {
             // Set HDR properties
+
+            // The older standards use an SDR white point of 100 nits.
+            // ITU-R BT.2408-6 recommends using an SDR white point of 203 nits.
+            // This is the default Chrome uses, and what a lot of game content
+            // assumes, so we'll go with that.
+            const float DEFAULT_PQ_SDR_WHITE_POINT = 203.0f;
+
+            // The official definition is 10000, but PQ game content is often mastered for 400 or 1000 nits
+            const uint16_t DEFAULT_PQ_MAXCLL = 1000;
+            uint16_t maxCLL = DEFAULT_PQ_MAXCLL;
+
             SDL_PropertiesID props = SDL_GetSurfaceProperties(surface);
             SDL_Colorspace colorspace = SDL_DEFINE_COLORSPACE(SDL_COLOR_TYPE_RGB,
                                                               SDL_COLOR_RANGE_FULL,
@@ -442,11 +470,14 @@ SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
                                                               SDL_CHROMA_LOCATION_NONE);
             SDL_SetNumberProperty(props, SDL_PROP_SURFACE_COLORSPACE_NUMBER, colorspace);
             if (image->clli.maxCLL > 0) {
+                maxCLL = image->clli.maxCLL;
                 SDL_SetNumberProperty(props, SDL_PROP_SURFACE_MAXCLL_NUMBER, image->clli.maxCLL);
             }
             if (image->clli.maxPALL > 0) {
                 SDL_SetNumberProperty(props, SDL_PROP_SURFACE_MAXFALL_NUMBER, image->clli.maxPALL);
             }
+            SDL_SetFloatProperty(props, SDL_PROP_SURFACE_SDR_WHITE_POINT_FLOAT, DEFAULT_PQ_SDR_WHITE_POINT);
+            SDL_SetFloatProperty(props, SDL_PROP_SURFACE_HDR_HEADROOM_FLOAT, (float)maxCLL / DEFAULT_PQ_SDR_WHITE_POINT);
         }
     }
 
