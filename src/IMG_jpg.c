@@ -482,6 +482,7 @@ struct savejpeg_vars
 {
     struct jpeg_compress_struct cinfo;
     struct my_error_mgr jerr;
+    Sint64 original_offset;
 };
 
 static int JPEG_SaveJPEG_RW(struct savejpeg_vars *vars, SDL_Surface *jpeg_surface, SDL_RWops *dst, int quality)
@@ -490,6 +491,14 @@ static int JPEG_SaveJPEG_RW(struct savejpeg_vars *vars, SDL_Surface *jpeg_surfac
     vars->cinfo.err = lib.jpeg_std_error(&vars->jerr.errmgr);
     vars->jerr.errmgr.error_exit = my_error_exit;
     vars->jerr.errmgr.output_message = output_no_message;
+    vars->original_offset = SDL_RWtell(dst);
+
+    if(setjmp(vars->jerr.escape)) {
+        /* If we get here, libjpeg found an error */
+        lib.jpeg_destroy_compress(&vars->cinfo);
+        SDL_RWseek(dst, vars->original_offset, SDL_RW_SEEK_SET);
+        return IMG_SetError("Error saving JPEG with libjpeg");
+    }
 
     lib.jpeg_create_compress(&vars->cinfo);
     jpeg_SDL_RW_dest(&vars->cinfo, dst);
