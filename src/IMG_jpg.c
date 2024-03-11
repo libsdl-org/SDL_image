@@ -478,15 +478,52 @@ static void jpeg_SDL_RW_dest(j_compress_ptr cinfo, SDL_RWops *ctx)
     dest->pub.free_in_buffer = OUTPUT_BUFFER_SIZE;
 }
 
+struct savejpeg_vars
+{
+    struct jpeg_compress_struct cinfo;
+    struct my_error_mgr jerr;
+};
+
+static int JPEG_SaveJPEG_RW(struct savejpeg_vars *vars, SDL_Surface *jpeg_surface, SDL_RWops *dst, int quality)
+{
+    /* Create a compression structure and load the JPEG header */
+    vars->cinfo.err = lib.jpeg_std_error(&vars->jerr.errmgr);
+    vars->jerr.errmgr.error_exit = my_error_exit;
+    vars->jerr.errmgr.output_message = output_no_message;
+
+    lib.jpeg_create_compress(&vars->cinfo);
+    jpeg_SDL_RW_dest(&vars->cinfo, dst);
+
+    vars->cinfo.image_width = jpeg_surface->w;
+    vars->cinfo.image_height = jpeg_surface->h;
+    vars->cinfo.in_color_space = JCS_RGB;
+    vars->cinfo.input_components = 3;
+
+    lib.jpeg_set_defaults(&vars->cinfo);
+    lib.jpeg_set_quality(&vars->cinfo, quality, TRUE);
+    lib.jpeg_start_compress(&vars->cinfo, TRUE);
+
+    while (vars->cinfo.next_scanline < vars->cinfo.image_height) {
+        JSAMPROW row_pointer[1];
+        int offset = vars->cinfo.next_scanline * jpeg_surface->pitch;
+
+        row_pointer[0] = ((Uint8*)jpeg_surface->pixels) + offset;
+        lib.jpeg_write_scanlines(&vars->cinfo, row_pointer, 1);
+    }
+
+    lib.jpeg_finish_compress(&vars->cinfo);
+    lib.jpeg_destroy_compress(&vars->cinfo);
+    return 0;
+}
+
 static int IMG_SaveJPG_RW_jpeglib(SDL_Surface *surface, SDL_RWops *dst, int quality)
 {
     /* The JPEG library reads bytes in R,G,B order, so this is the right
      * encoding for either endianness */
+    struct savejpeg_vars vars;
     static const Uint32 jpg_format = SDL_PIXELFORMAT_RGB24;
-    struct jpeg_compress_struct cinfo;
-    struct my_error_mgr jerr;
-    JSAMPROW row_pointer[1];
     SDL_Surface* jpeg_surface = surface;
+    int ret;
 
     if (!IMG_Init(IMG_INIT_JPG)) {
         return -1;
@@ -500,36 +537,13 @@ static int IMG_SaveJPG_RW_jpeglib(SDL_Surface *surface, SDL_RWops *dst, int qual
         }
     }
 
-    /* Create a decompression structure and load the JPEG header */
-    cinfo.err = lib.jpeg_std_error(&jerr.errmgr);
-    jerr.errmgr.error_exit = my_error_exit;
-    jerr.errmgr.output_message = output_no_message;
-
-    lib.jpeg_create_compress(&cinfo);
-    jpeg_SDL_RW_dest(&cinfo, dst);
-
-    cinfo.image_width = jpeg_surface->w;
-    cinfo.image_height = jpeg_surface->h;
-    cinfo.in_color_space = JCS_RGB;
-    cinfo.input_components = 3;
-
-    lib.jpeg_set_defaults(&cinfo);
-    lib.jpeg_set_quality(&cinfo, quality, TRUE);
-    lib.jpeg_start_compress(&cinfo, TRUE);
-
-    while (cinfo.next_scanline < cinfo.image_height) {
-        int offset = cinfo.next_scanline * jpeg_surface->pitch;
-        row_pointer[0] = ((Uint8*)jpeg_surface->pixels) + offset;
-        lib.jpeg_write_scanlines(&cinfo, row_pointer, 1);
-    }
-
-    lib.jpeg_finish_compress(&cinfo);
-    lib.jpeg_destroy_compress(&cinfo);
+    SDL_zero(vars);
+    ret = JPEG_SaveJPEG_RW(&vars, jpeg_surface, dst, quality);
 
     if (jpeg_surface != surface) {
         SDL_DestroySurface(jpeg_surface);
     }
-    return 0;
+    return ret;
 }
 
 #elif defined(USE_STBIMAGE)
