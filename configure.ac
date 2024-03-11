@@ -239,7 +239,7 @@ AC_ARG_ENABLE([gif], [AS_HELP_STRING([--enable-gif], [support loading GIF images
  [], [enable_gif=yes])
 AC_ARG_ENABLE([jpg], [AS_HELP_STRING([--enable-jpg], [support loading JPG images [default=yes]])],
  [], [enable_jpg=yes])
-AC_ARG_ENABLE([jpg-shared], [AS_HELP_STRING([--enable-jpg-shared], [dynamically load JPG support [default=yes]])],
+AC_ARG_ENABLE([jpg-shared], [AS_HELP_STRING([--enable-jpg-shared@<:@=SONAME@:>@], [dynamically load JPG support [default=yes]])],
  [], [enable_jpg_shared=yes])
 AC_ARG_ENABLE([save-jpg], [AS_HELP_STRING([--enable-save-jpg], [support saving JPG images [default=yes]])],
  [], [enable_save_jpg=yes])
@@ -413,6 +413,10 @@ if test x$enable_jpg = xyes; then
                     fi
                     ;;
             esac
+
+            AS_CASE(["$enable_jpg_shared"],
+                [yes | no], [],
+                [*], [jpg_lib="$enable_jpg_shared"])
         else
             AC_MSG_WARN([*** Unable to find JPEG library (http://www.ijg.org/)])
             AC_MSG_WARN([JPG image loading disabled])
@@ -757,7 +761,7 @@ if test x$enable_tif = xyes -a x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; t
 fi
 if test x$enable_jpg = xyes -a x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; then
     CFLAGS="$LIBJPEG_CFLAGS $CFLAGS"
-    if test x$enable_jpg_shared = xyes && test x$jpg_lib != x; then
+    if test x$enable_jpg_shared != xno && test x$jpg_lib != x; then
         echo "-- dynamic libjpeg -> $jpg_lib"
         AC_DEFINE_UNQUOTED(LOAD_JPG_DYNAMIC, "$jpg_lib")
     else
