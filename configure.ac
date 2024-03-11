@@ -231,7 +231,7 @@ AC_ARG_ENABLE([stb_image], [AS_HELP_STRING([--enable-stb-image], [use stb_image 
  [], [enable_stb_image=yes])
 AC_ARG_ENABLE([avif], [AS_HELP_STRING([--enable-avif], [support loading AVIF images [default=yes]])],
  [], [enable_avif=yes])
-AC_ARG_ENABLE([avif-shared], [AS_HELP_STRING([--enable-avif-shared], [dynamically load AVIF support [default=yes]])],
+AC_ARG_ENABLE([avif-shared], [AS_HELP_STRING([--enable-avif-shared@<:@=SONAME@:>@], [dynamically load AVIF support [default=yes]])],
  [], [enable_avif_shared=yes])
 AC_ARG_ENABLE([bmp], [AS_HELP_STRING([--enable-bmp], [support loading BMP/ICO/CUR images [default=yes]])],
  [], [enable_bmp=yes])
@@ -245,7 +245,7 @@ AC_ARG_ENABLE([save-jpg], [AS_HELP_STRING([--enable-save-jpg], [support saving J
  [], [enable_save_jpg=yes])
 AC_ARG_ENABLE([jxl], [AS_HELP_STRING([--enable-jxl], [support loading JXL images [default=yes]])],
  [], [enable_jxl=yes])
-AC_ARG_ENABLE([jxl-shared], [AS_HELP_STRING([--enable-jxl-shared], [dynamically load JXL support [default=yes]])],
+AC_ARG_ENABLE([jxl-shared], [AS_HELP_STRING([--enable-jxl-shared@<:@=SONAME@:>@], [dynamically load JXL support [default=yes]])],
  [], [enable_jxl_shared=yes])
 AC_ARG_ENABLE([lbm], [AS_HELP_STRING([--enable-lbm], [support loading LBM images [default=yes]])],
  [], [enable_lbm=yes])
@@ -253,7 +253,7 @@ AC_ARG_ENABLE([pcx], [AS_HELP_STRING([--enable-pcx], [support loading PCX images
  [], [enable_pcx=yes])
 AC_ARG_ENABLE([png], [AS_HELP_STRING([--enable-png], [support loading PNG images [default=yes]])],
  [], [enable_png=yes])
-AC_ARG_ENABLE([png-shared], [AS_HELP_STRING([--enable-png-shared], [dynamically load PNG support [default=yes]])],
+AC_ARG_ENABLE([png-shared], [AS_HELP_STRING([--enable-png-shared@<:@=SONAME@:>@], [dynamically load PNG support [default=yes]])],
  [], [enable_png_shared=yes])
 AC_ARG_ENABLE([save-png], [AS_HELP_STRING([--enable-save-png], [support saving PNG images [default=yes]])],
  [], [enable_save_png=yes])
@@ -265,7 +265,7 @@ AC_ARG_ENABLE([tga], [AS_HELP_STRING([--enable-tga], [support loading TGA images
  [], [enable_tga=yes])
 AC_ARG_ENABLE([tif], [AS_HELP_STRING([--enable-tif], [support loading TIFF images [default=yes]])],
  [], [enable_tif=yes])
-AC_ARG_ENABLE([tif-shared], [AS_HELP_STRING([--enable-tif-shared], [dynamically load TIFF support [default=yes]])],
+AC_ARG_ENABLE([tif-shared], [AS_HELP_STRING([--enable-tif-shared@<:@=SONAME@:>@], [dynamically load TIFF support [default=yes]])],
  [], [enable_tif_shared=yes])
 AC_ARG_ENABLE([xcf], [AS_HELP_STRING([--enable-xcf], [support loading XCF images [default=yes]])],
  [], [enable_xcf=yes])
@@ -359,6 +359,10 @@ if test x$enable_avif = xyes; then
                 ;;
         esac
         load_avif=1
+
+        AS_CASE(["$enable_avif_shared"],
+            [yes | no], [],
+            [*], [avif_lib="$enable_avif_shared"])
     elif test x$enable_avif = xyes; then
         AC_MSG_WARN([*** Unable to find AVIF library (https://github.com/AOMediaCodec/libavif)])
         AC_MSG_WARN([AVIF image loading disabled])
@@ -467,6 +471,10 @@ if test x$enable_jxl = xyes; then
                 fi
                 ;;
         esac
+
+        AS_CASE(["$enable_jxl_shared"],
+            [yes | no], [],
+            [*], [jxl_lib="$enable_jxl_shared"])
     elif test x$enable_jxl = xyes; then
         AC_MSG_WARN([*** Unable to find JXL library (https://jpegxl.info/)])
         AC_MSG_WARN([JXL image loading disabled])
@@ -519,6 +527,10 @@ if test x$enable_png = xyes; then
                     fi
                     ;;
             esac
+
+            AS_CASE(["$enable_png_shared"],
+                [yes | no], [],
+                [*], [png_lib="$enable_png_shared"])
         else
             AC_MSG_WARN([*** Unable to find PNG library (http://www.libpng.org/pub/png/)])
             AC_MSG_WARN([PNG image loading disabled])
@@ -564,6 +576,10 @@ if test x$enable_tif = xyes -a x$enable_imageio != xyes; then
                 fi
                 ;;
         esac
+
+        AS_CASE(["$enable_tif_shared"],
+            [yes | no], [],
+            [*], [tif_lib="$enable_tif_shared"])
     else
         AC_MSG_WARN([*** Unable to find Tiff library (http://www.simplesystems.org/libtiff/)])
         AC_MSG_WARN([TIF image loading disabled])
@@ -712,7 +728,7 @@ AC_SUBST([LOAD_QOI], $load_qoi)
 
 if test x$enable_webp = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib -a x$have_webpdemux_hdr = xyes -a x$have_webpdemux_lib = xyes; then
     CFLAGS="$LIBWEBP_CFLAGS $CFLAGS"
-    if test x$enable_webp_shared = xyes && test x$webp_lib != x; then
+    if test x$enable_webp_shared != xno && test x$webp_lib != x; then
         echo "-- dynamic libwebp -> $webp_lib"
         AC_DEFINE_UNQUOTED(LOAD_WEBP_DYNAMIC, "$webp_lib")
         echo "-- dynamic libwebpdemux -> $webpdemux_lib"
@@ -729,7 +745,7 @@ fi
 
 if test x$enable_avif = xyes -a x$have_avif_hdr = xyes -a x$have_avif_lib = xyes; then
     CFLAGS="$LIBAVIF_CFLAGS $CFLAGS"
-    if test x$enable_avif_shared = xyes && test x$avif_lib != x; then
+    if test x$enable_avif_shared != xno && test x$avif_lib != x; then
         echo "-- dynamic libavif -> $avif_lib"
         AC_DEFINE_UNQUOTED(LOAD_AVIF_DYNAMIC, "$avif_lib")
     else
@@ -743,7 +759,7 @@ if test x$enable_avif = xyes -a x$have_avif_hdr = xyes -a x$have_avif_lib = xyes
 fi
 if test x$enable_tif = xyes -a x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; then
     CFLAGS="$LIBTIFF_CFLAGS $CFLAGS"
-    if test x$enable_tif_shared = xyes && test x$tif_lib != x; then
+    if test x$enable_tif_shared != xno && test x$tif_lib != x; then
         echo "-- dynamic libtiff -> $tif_lib"
         AC_DEFINE_UNQUOTED(LOAD_TIF_DYNAMIC, "$tif_lib")
     else
@@ -775,7 +791,7 @@ if test x$enable_jpg = xyes -a x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; t
 fi
 if test x$enable_jxl = xyes -a x$have_jxl_hdr = xyes -a x$have_jxl_lib = xyes; then
     CFLAGS="$LIBJXL_CFLAGS $CFLAGS"
-    if test x$enable_jxl_shared = xyes && test x$jxl_lib != x; then
+    if test x$enable_jxl_shared != xno && test x$jxl_lib != x; then
         echo "-- dynamic libjxl -> $jxl_lib"
         AC_DEFINE_UNQUOTED(LOAD_JXL_DYNAMIC, "$jxl_lib")
     else
@@ -789,7 +805,7 @@ if test x$enable_jxl = xyes -a x$have_jxl_hdr = xyes -a x$have_jxl_lib = xyes; t
 fi
 if test x$enable_png = xyes -a x$have_png_hdr = xyes -a x$have_png_lib = xyes; then
     CFLAGS="$LIBPNG_CFLAGS $CFLAGS"
-    if test x$enable_png_shared = xyes && test x$png_lib != x; then
+    if test x$enable_png_shared != xno && test x$png_lib != x; then
         echo "-- dynamic libpng -> $png_lib"
         AC_DEFINE_UNQUOTED(LOAD_PNG_DYNAMIC, "$png_lib")
     else
