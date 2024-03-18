@@ -209,40 +209,40 @@ typedef struct {
 
 typedef unsigned char *xcf_tile;
 
-typedef unsigned char *(*load_tile_type)(SDL_RWops *, size_t, int, int, int);
+typedef unsigned char *(*load_tile_type)(SDL_IOStream *, size_t, int, int, int);
 
 
 /* See if an image is contained in a data source */
-int IMG_isXCF(SDL_RWops *src)
+int IMG_isXCF(SDL_IOStream *src)
 {
     Sint64 start;
     int is_XCF = 0;
     char magic[14];
 
     if (src) {
-        start = SDL_RWtell(src);
-        if (SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic)) {
+        start = SDL_TellIO(src);
+        if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic)) {
             if (SDL_strncmp(magic, "gimp xcf ", 9) == 0) {
                 is_XCF = 1;
             }
         }
-        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+        SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     }
     return is_XCF;
 }
 
-static char *read_string(SDL_RWops *src)
+static char *read_string(SDL_IOStream *src)
 {
     Sint64 remaining;
     Uint32 tmp;
     char *data = NULL;
 
     if (SDL_ReadU32BE(src, &tmp)) {
-        remaining = SDL_RWsize(src) - SDL_RWtell(src);
+        remaining = SDL_GetIOSize(src) - SDL_TellIO(src);
         if (tmp <= remaining) {
             data = (char *)SDL_malloc(tmp);
             if (data) {
-                if (SDL_RWread(src, data, tmp) == tmp) {
+                if (SDL_ReadIO(src, data, tmp) == tmp) {
                     data[tmp - 1] = '\0';
                 } else {
                     SDL_free(data);
@@ -254,7 +254,7 @@ static char *read_string(SDL_RWops *src)
     return data;
 }
 
-static Uint64 read_offset(SDL_RWops *src, const xcf_header *h)
+static Uint64 read_offset(SDL_IOStream *src, const xcf_header *h)
 {
     Uint64 offset = 0;  /* starting with version 11, offsets are 64 bits */
     Uint32 offset32;
@@ -271,7 +271,7 @@ static Uint64 read_offset(SDL_RWops *src, const xcf_header *h)
     return offset;
 }
 
-static int xcf_read_property(SDL_RWops *src, xcf_prop *prop)
+static int xcf_read_property(SDL_IOStream *src, xcf_prop *prop)
 {
     Uint32 len;
 
@@ -281,7 +281,7 @@ static int xcf_read_property(SDL_RWops *src, xcf_prop *prop)
     }
 
 #ifdef DEBUG
-    SDL_Log("%.8" SDL_PRIu64 ": %s(%u): %u\n", SDL_RWtell (src), prop->id < 25 ? prop_names [prop->id] : "unknown", prop->id, prop->length);
+    SDL_Log("%.8" SDL_PRIu64 ": %s(%u): %u\n", SDL_TellIO (src), prop->id < 25 ? prop_names [prop->id] : "unknown", prop->id, prop->length);
 #endif
 
     switch (prop->id) {
@@ -293,7 +293,7 @@ static int xcf_read_property(SDL_RWops *src, xcf_prop *prop)
         if (!prop->data.colormap.cmap) {
             return 0;
         }
-        if (SDL_RWread(src, prop->data.colormap.cmap, prop->data.colormap.num * 3) != prop->data.colormap.num * 3) {
+        if (SDL_ReadIO(src, prop->data.colormap.cmap, prop->data.colormap.num * 3) != prop->data.colormap.num * 3) {
                 SDL_free(prop->data.colormap.cmap);
                 return 0;
         }
@@ -317,7 +317,7 @@ static int xcf_read_property(SDL_RWops *src, xcf_prop *prop)
         } else {
                 len = prop->length;
         }
-        if (SDL_RWread(src, &prop->data, len) != len) {
+        if (SDL_ReadIO(src, &prop->data, len) != len) {
                 return 0;
         }
         break;
@@ -327,7 +327,7 @@ static int xcf_read_property(SDL_RWops *src, xcf_prop *prop)
         }
         break;
     default:
-        if (SDL_RWseek(src, prop->length, SDL_RW_SEEK_CUR) < 0)
+        if (SDL_SeekIO(src, prop->length, SDL_IO_SEEK_CUR) < 0)
             return 0;    /* ERROR */
     }
     return 1;    /* OK */
@@ -342,7 +342,7 @@ static void free_xcf_header(xcf_header *h)
     }
 }
 
-static xcf_header *read_xcf_header(SDL_RWops *src)
+static xcf_header *read_xcf_header(SDL_IOStream *src)
 {
     xcf_header *h;
     xcf_prop prop;
@@ -352,7 +352,7 @@ static xcf_header *read_xcf_header(SDL_RWops *src)
         return NULL;
     }
 
-    if (SDL_RWread(src, h->sign, 14) != 14) {
+    if (SDL_ReadIO(src, h->sign, 14) != 14) {
         SDL_free(h);
         return NULL;
     }
@@ -424,7 +424,7 @@ static void free_xcf_layer(xcf_layer *l)
     }
 }
 
-static xcf_layer *read_xcf_layer(SDL_RWops *src, const xcf_header *h)
+static xcf_layer *read_xcf_layer(SDL_IOStream *src, const xcf_header *h)
 {
     xcf_layer *l;
     xcf_prop prop;
@@ -474,7 +474,7 @@ static void free_xcf_channel(xcf_channel *c)
     }
 }
 
-static xcf_channel *read_xcf_channel(SDL_RWops *src, const xcf_header *h)
+static xcf_channel *read_xcf_channel(SDL_IOStream *src, const xcf_header *h)
 {
     xcf_channel *l;
     xcf_prop prop;
@@ -533,7 +533,7 @@ static void free_xcf_hierarchy(xcf_hierarchy *h)
     }
 }
 
-static xcf_hierarchy *read_xcf_hierarchy(SDL_RWops *src, const xcf_header *head)
+static xcf_hierarchy *read_xcf_hierarchy(SDL_IOStream *src, const xcf_header *head)
 {
     xcf_hierarchy *h;
     int i;
@@ -566,7 +566,7 @@ static void free_xcf_level(xcf_level *l)
     }
 }
 
-static xcf_level *read_xcf_level(SDL_RWops *src, const xcf_header *h)
+static xcf_level *read_xcf_level(SDL_IOStream *src, const xcf_header *h)
 {
     xcf_level *l;
     int i;
@@ -594,7 +594,7 @@ static void free_xcf_tile(unsigned char *t)
     SDL_free(t);
 }
 
-static unsigned char *load_xcf_tile_none (SDL_RWops *src, size_t len, int bpp, int x, int y)
+static unsigned char *load_xcf_tile_none (SDL_IOStream *src, size_t len, int bpp, int x, int y)
 {
     unsigned char *load = NULL;
     (void)bpp;
@@ -603,7 +603,7 @@ static unsigned char *load_xcf_tile_none (SDL_RWops *src, size_t len, int bpp, i
 
     load = (unsigned char *)SDL_malloc(len);
     if (load != NULL) {
-        if (SDL_RWread(src, load, len) != len) {
+        if (SDL_ReadIO(src, load, len) != len) {
             SDL_free(load);
             load = NULL;
         }
@@ -611,7 +611,7 @@ static unsigned char *load_xcf_tile_none (SDL_RWops *src, size_t len, int bpp, i
     return load;
 }
 
-static unsigned char *load_xcf_tile_rle(SDL_RWops *src, size_t len, int bpp, int x, int y)
+static unsigned char *load_xcf_tile_rle(SDL_IOStream *src, size_t len, int bpp, int x, int y)
 {
     unsigned char *load, *t, *data, *d;
     int i, size, j, length;
@@ -627,7 +627,7 @@ static unsigned char *load_xcf_tile_rle(SDL_RWops *src, size_t len, int bpp, int
         return NULL;
     }
 
-    amount_read = SDL_RWread(src, load, len);
+    amount_read = SDL_ReadIO(src, load, len);
     if (amount_read == 0) {
         SDL_free(load);
         return NULL;
@@ -720,7 +720,7 @@ static void create_channel_surface(SDL_Surface *surf, xcf_image_type itype, Uint
 }
 
 static int
-do_layer_surface(SDL_Surface *surface, SDL_RWops *src, xcf_header *head, xcf_layer *layer, load_tile_type load_tile)
+do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_layer *layer, load_tile_type load_tile)
 {
     xcf_hierarchy  *hierarchy;
     xcf_level      *level;
@@ -732,7 +732,7 @@ do_layer_surface(SDL_Surface *surface, SDL_RWops *src, xcf_header *head, xcf_lay
     Uint32         *row;
     Uint64         length;
 
-    if (SDL_RWseek(src, layer->hierarchy_file_offset, SDL_RW_SEEK_SET) < 0) {
+    if (SDL_SeekIO(src, layer->hierarchy_file_offset, SDL_IO_SEEK_SET) < 0) {
         return 1;
     }
     hierarchy = read_xcf_hierarchy(src, head);
@@ -751,7 +751,7 @@ do_layer_surface(SDL_Surface *surface, SDL_RWops *src, xcf_header *head, xcf_lay
 
     level = NULL;
     for (i = 0; hierarchy->level_file_offsets[i]; i++) {
-        if (SDL_RWseek(src, hierarchy->level_file_offsets[i], SDL_RW_SEEK_SET) < 0)
+        if (SDL_SeekIO(src, hierarchy->level_file_offsets[i], SDL_IO_SEEK_SET) < 0)
             break;
         if (i > 0) /* skip level except the 1st one, just like GIMP does */
             continue;
@@ -759,7 +759,7 @@ do_layer_surface(SDL_Surface *surface, SDL_RWops *src, xcf_header *head, xcf_lay
 
         ty = tx = 0;
         for (j = 0; level->tile_file_offsets[j]; j++) {
-            SDL_RWseek(src, level->tile_file_offsets[j], SDL_RW_SEEK_SET);
+            SDL_SeekIO(src, level->tile_file_offsets[j], SDL_IO_SEEK_SET);
             ox = tx + 64 > level->width ? level->width % 64 : 64;
             oy = ty + 64 > level->height ? level->height % 64 : 64;
             length = ox*oy*6;
@@ -888,7 +888,7 @@ do_layer_surface(SDL_Surface *surface, SDL_RWops *src, xcf_header *head, xcf_lay
     return 0;
 }
 
-SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadXCF_IO(SDL_IOStream *src)
 {
     Sint64 start;
     const char *error = NULL;
@@ -902,10 +902,10 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
     load_tile_type load_tile;
 
     if (!src) {
-        /* The error message has been set in SDL_RWFromFile */
+        /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
 
     /* Initialize the data we will clean up when we're done */
     surface = NULL;
@@ -942,7 +942,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
         head->layer_file_offsets[offsets] = offset;
         offsets++;
     }
-    fp = SDL_RWtell (src);
+    fp = SDL_TellIO (src);
 
     lays = SDL_CreateSurface(head->width, head->height, SDL_PIXELFORMAT_ARGB8888);
     if (lays == NULL) {
@@ -953,7 +953,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
     /* Blit layers backwards, because Gimp saves them highest first */
     for (i = offsets; i > 0; i--) {
         SDL_Rect rs, rd;
-        SDL_RWseek(src, head->layer_file_offsets[i-1], SDL_RW_SEEK_SET);
+        SDL_SeekIO(src, head->layer_file_offsets[i-1], SDL_IO_SEEK_SET);
 
         layer = read_xcf_layer(src, head);
         if (layer != NULL) {
@@ -975,13 +975,13 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
     }
     SDL_DestroySurface(lays);
 
-    SDL_RWseek(src, fp, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, fp, SDL_IO_SEEK_SET);
 
     /* read channels */
     while ((offset = read_offset (src, head)) != 0) {
         channel = (xcf_channel **)SDL_realloc(channel, sizeof(xcf_channel *) * (chnls + 1));
-        fp = SDL_RWtell(src);
-        if (SDL_RWseek(src, offset, SDL_RW_SEEK_SET) < 0) {
+        fp = SDL_TellIO(src);
+        if (SDL_SeekIO(src, offset, SDL_IO_SEEK_SET) < 0) {
             error = "invalid channel offset";
             goto done;
         }
@@ -989,7 +989,7 @@ SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
         if (channel[chnls] != NULL) {
             chnls++;
         }
-        SDL_RWseek(src, fp, SDL_RW_SEEK_SET);
+        SDL_SeekIO(src, fp, SDL_IO_SEEK_SET);
     }
 
     if (chnls) {
@@ -1019,7 +1019,7 @@ done:
     free_xcf_header(head);
 
     if (error) {
-        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+        SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
         if (surface) {
             SDL_DestroySurface(surface);
             surface = NULL;
@@ -1035,13 +1035,13 @@ done:
 #endif
 
 /* See if an image is contained in a data source */
-int IMG_isXCF(SDL_RWops *src)
+int IMG_isXCF(SDL_IOStream *src)
 {
     return 0;
 }
 
 /* Load a XCF type image from an SDL datasource */
-SDL_Surface *IMG_LoadXCF_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadXCF_IO(SDL_IOStream *src)
 {
     return NULL;
 }

@@ -33,7 +33,7 @@
 #ifdef LOAD_PNM
 
 /* See if an image is contained in a data source */
-int IMG_isPNM(SDL_RWops *src)
+int IMG_isPNM(SDL_IOStream *src)
 {
     Sint64 start;
     int is_PNM;
@@ -41,9 +41,9 @@ int IMG_isPNM(SDL_RWops *src)
 
     if ( !src )
         return 0;
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_PNM = 0;
-    if ( SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic) ) {
+    if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
         /*
          * PNM magic signatures:
          * P1   PBM, ascii format
@@ -58,12 +58,12 @@ int IMG_isPNM(SDL_RWops *src)
             is_PNM = 1;
         }
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return(is_PNM);
 }
 
 /* read a non-negative integer from the source. return -1 upon error */
-static int ReadNumber(SDL_RWops *src)
+static int ReadNumber(SDL_IOStream *src)
 {
     int number;
     unsigned char ch;
@@ -73,13 +73,13 @@ static int ReadNumber(SDL_RWops *src)
 
     /* Skip leading whitespace */
     do {
-        if ( SDL_RWread(src, &ch, 1) != 1 ) {
+        if (SDL_ReadIO(src, &ch, 1) != 1 ) {
             return(-1);
         }
         /* Eat comments as whitespace */
         if ( ch == '#' ) {  /* Comment is '#' to end of line */
             do {
-                if ( SDL_RWread(src, &ch, 1) != 1 ) {
+                if (SDL_ReadIO(src, &ch, 1) != 1 ) {
                     return -1;
                 }
             } while ( (ch != '\r') && (ch != '\n') );
@@ -98,7 +98,7 @@ static int ReadNumber(SDL_RWops *src)
         number *= 10;
         number += ch-'0';
 
-        if ( SDL_RWread(src, &ch, 1) != 1 ) {
+        if (SDL_ReadIO(src, &ch, 1) != 1 ) {
             return -1;
         }
     } while ( SDL_isdigit(ch) );
@@ -106,7 +106,7 @@ static int ReadNumber(SDL_RWops *src)
     return(number);
 }
 
-SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadPNM_IO(SDL_IOStream *src)
 {
     Sint64 start;
     SDL_Surface *surface = NULL;
@@ -123,12 +123,12 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 #define ERROR(s) do { error = (s); goto done; } while(0)
 
     if ( !src ) {
-        /* The error message has been set in SDL_RWFromFile */
+        /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
 
-    if ( SDL_RWread(src, magic, 2) != 2 ) {
+    if (SDL_ReadIO(src, magic, 2) != 2 ) {
         return NULL;
     }
     kind = magic[1] - '1';
@@ -190,7 +190,7 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
                 for(i = 0; i < width; i++) {
                     Uint8 ch;
                     do {
-                        if(SDL_RWread(src, &ch, 1) != 1)
+                        if(SDL_ReadIO(src, &ch, 1) != 1)
                                ERROR("file truncated");
                         ch -= '0';
                     } while(ch > 1);
@@ -208,7 +208,7 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
             }
         } else {
             Uint8 *dst = (kind == PBM) ? buf : row;
-            if(SDL_RWread(src, dst, bpl) != bpl)
+            if(SDL_ReadIO(src, dst, bpl) != bpl)
                 ERROR("file truncated");
             if(kind == PBM) {
                 /* expand bitmap to 8bpp */
@@ -230,7 +230,7 @@ SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
 done:
     SDL_free(buf);
     if(error) {
-        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+        SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
         if ( surface ) {
             SDL_DestroySurface(surface);
             surface = NULL;
@@ -246,13 +246,13 @@ done:
 #endif
 
 /* See if an image is contained in a data source */
-int IMG_isPNM(SDL_RWops *src)
+int IMG_isPNM(SDL_IOStream *src)
 {
     return(0);
 }
 
 /* Load a PNM type image from an SDL datasource */
-SDL_Surface *IMG_LoadPNM_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadPNM_IO(SDL_IOStream *src)
 {
     return(NULL);
 }

@@ -92,7 +92,7 @@ void IMG_QuitJXL(void)
 }
 
 /* See if an image is contained in a data source */
-int IMG_isJXL(SDL_RWops *src)
+int IMG_isJXL(SDL_IOStream *src)
 {
     Sint64 start;
     int is_JXL;
@@ -100,14 +100,14 @@ int IMG_isJXL(SDL_RWops *src)
 
     if ( !src )
         return 0;
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_JXL = 0;
-    if ( SDL_RWread(src, magic, 2) == 2 ) {
+    if (SDL_ReadIO(src, magic, 2) == 2 ) {
         if ( magic[0] == 0xFF && magic[1] == 0x0A ) {
             /* This is a JXL codestream */
             is_JXL = 1;
         } else {
-            if ( SDL_RWread(src, &magic[2], sizeof(magic) - 2) == (sizeof(magic) - 2) ) {
+            if (SDL_ReadIO(src, &magic[2], sizeof(magic) - 2) == (sizeof(magic) - 2) ) {
                 if ( magic[0] == 0x00 && magic[1] == 0x00 &&
                      magic[2] == 0x00 && magic[3] == 0x0C &&
                      magic[4] == 'J' && magic[5] == 'X' &&
@@ -120,12 +120,12 @@ int IMG_isJXL(SDL_RWops *src)
             }
         }
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return(is_JXL);
 }
 
 /* Load a JXL type image from an SDL datasource */
-SDL_Surface *IMG_LoadJXL_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadJXL_IO(SDL_IOStream *src)
 {
     Sint64 start;
     unsigned char *data;
@@ -139,16 +139,16 @@ SDL_Surface *IMG_LoadJXL_RW(SDL_RWops *src)
     SDL_Surface *surface = NULL;
 
     if (!src) {
-        /* The error message has been set in SDL_RWFromFile */
+        /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
 
     if ((IMG_Init(IMG_INIT_JXL) & IMG_INIT_JXL) == 0) {
         return NULL;
     }
 
-    data = (unsigned char *)SDL_LoadFile_RW(src, &datasize, SDL_FALSE);
+    data = (unsigned char *)SDL_LoadFile_IO(src, &datasize, SDL_FALSE);
     if (!data) {
         return NULL;
     }
@@ -243,7 +243,7 @@ done:
         SDL_free(pixels);
     }
     if (!surface) {
-        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+        SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     }
     return surface;
 }
@@ -264,14 +264,14 @@ void IMG_QuitJXL(void)
 }
 
 /* See if an image is contained in a data source */
-int IMG_isJXL(SDL_RWops *src)
+int IMG_isJXL(SDL_IOStream *src)
 {
     (void)src;
     return(0);
 }
 
 /* Load a JXL type image from an SDL datasource */
-SDL_Surface *IMG_LoadJXL_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadJXL_IO(SDL_IOStream *src)
 {
     (void)src;
     return(NULL);

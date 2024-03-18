@@ -85,7 +85,7 @@ static float SDLCALL SDL_roundf(float x)
 #include "nanosvgrast.h"
 
 /* See if an image is contained in a data source */
-int IMG_isSVG(SDL_RWops *src)
+int IMG_isSVG(SDL_IOStream *src)
 {
     Sint64 start;
     int is_SVG;
@@ -94,21 +94,21 @@ int IMG_isSVG(SDL_RWops *src)
 
     if (!src)
         return 0;
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_SVG = 0;
-    magic_len = SDL_RWread(src, magic, sizeof(magic) - 1);
+    magic_len = SDL_ReadIO(src, magic, sizeof(magic) - 1);
     if (magic_len > 0) {
         magic[magic_len] = '\0';
         if (SDL_strstr(magic, "<svg")) {
             is_SVG = 1;
         }
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return(is_SVG);
 }
 
 /* Load a SVG type image from an SDL datasource */
-SDL_Surface *IMG_LoadSizedSVG_RW(SDL_RWops *src, int width, int height)
+SDL_Surface *IMG_LoadSizedSVG_IO(SDL_IOStream *src, int width, int height)
 {
     char *data;
     struct NSVGimage *image;
@@ -116,7 +116,7 @@ SDL_Surface *IMG_LoadSizedSVG_RW(SDL_RWops *src, int width, int height)
     SDL_Surface *surface = NULL;
     float scale = 1.0f;
 
-    data = (char *)SDL_LoadFile_RW(src, NULL, SDL_FALSE);
+    data = (char *)SDL_LoadFile_IO(src, NULL, SDL_FALSE);
     if (!data) {
         return NULL;
     }
@@ -172,13 +172,13 @@ SDL_Surface *IMG_LoadSizedSVG_RW(SDL_RWops *src, int width, int height)
 #endif
 
 /* See if an image is contained in a data source */
-int IMG_isSVG(SDL_RWops *src)
+int IMG_isSVG(SDL_IOStream *src)
 {
     return(0);
 }
 
 /* Load a SVG type image from an SDL datasource */
-SDL_Surface *IMG_LoadSizedSVG_RW(SDL_RWops *src, int width, int height)
+SDL_Surface *IMG_LoadSizedSVG_IO(SDL_IOStream *src, int width, int height)
 {
     return(NULL);
 }
@@ -186,8 +186,8 @@ SDL_Surface *IMG_LoadSizedSVG_RW(SDL_RWops *src, int width, int height)
 #endif /* LOAD_SVG */
 
 /* Load a SVG type image from an SDL datasource */
-SDL_Surface *IMG_LoadSVG_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadSVG_IO(SDL_IOStream *src)
 {
-    return IMG_LoadSizedSVG_RW(src, 0, 0);
+    return IMG_LoadSizedSVG_IO(src, 0, 0);
 }
 

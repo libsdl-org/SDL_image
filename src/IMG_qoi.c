@@ -43,7 +43,7 @@
 #include "qoi.h"
 
 /* See if an image is contained in a data source */
-int IMG_isQOI(SDL_RWops *src)
+int IMG_isQOI(SDL_IOStream *src)
 {
     Sint64 start;
     int is_QOI;
@@ -51,19 +51,19 @@ int IMG_isQOI(SDL_RWops *src)
 
     if ( !src )
         return 0;
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_QOI = 0;
-    if ( SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic) ) {
+    if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if ( SDL_strncmp(magic, "qoif", 4) == 0 ) {
             is_QOI = 1;
         }
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return(is_QOI);
 }
 
 /* Load a QOI type image from an SDL datasource */
-SDL_Surface *IMG_LoadQOI_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadQOI_IO(SDL_IOStream *src)
 {
     void *data;
     size_t size;
@@ -71,7 +71,7 @@ SDL_Surface *IMG_LoadQOI_RW(SDL_RWops *src)
     qoi_desc image_info;
     SDL_Surface *surface = NULL;
 
-    data = (void *)SDL_LoadFile_RW(src, &size, SDL_FALSE);
+    data = (void *)SDL_LoadFile_IO(src, &size, SDL_FALSE);
     if ( !data ) {
         return NULL;
     }
@@ -112,13 +112,13 @@ SDL_Surface *IMG_LoadQOI_RW(SDL_RWops *src)
 #endif
 
 /* See if an image is contained in a data source */
-int IMG_isQOI(SDL_RWops *src)
+int IMG_isQOI(SDL_IOStream *src)
 {
     return(0);
 }
 
 /* Load a QOI type image from an SDL datasource */
-SDL_Surface *IMG_LoadQOI_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadQOI_IO(SDL_IOStream *src)
 {
     return(NULL);
 }

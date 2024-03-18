@@ -58,7 +58,7 @@ struct PCXheader {
 };
 
 /* See if an image is contained in a data source */
-int IMG_isPCX(SDL_RWops *src)
+int IMG_isPCX(SDL_IOStream *src)
 {
     Sint64 start;
     int is_PCX;
@@ -70,9 +70,9 @@ int IMG_isPCX(SDL_RWops *src)
 
     if ( !src )
         return 0;
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_PCX = 0;
-    if ( SDL_RWread(src, &pcxh, sizeof(pcxh)) == sizeof(pcxh) ) {
+    if (SDL_ReadIO(src, &pcxh, sizeof(pcxh)) == sizeof(pcxh) ) {
         if ( (pcxh.Manufacturer == ZSoft_Manufacturer) &&
              (pcxh.Version == PC_Paintbrush_Version) &&
              (pcxh.Encoding == PCX_RunLength_Encoding ||
@@ -80,12 +80,12 @@ int IMG_isPCX(SDL_RWops *src)
             is_PCX = 1;
         }
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return(is_PCX);
 }
 
 /* Load a PCX type image from an SDL datasource */
-SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadPCX_IO(SDL_IOStream *src)
 {
     Sint64 start;
     struct PCXheader pcxh;
@@ -101,12 +101,12 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
     Uint32 format;
 
     if ( !src ) {
-        /* The error message has been set in SDL_RWFromFile */
+        /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
 
-    if ( SDL_RWread(src, &pcxh, sizeof(pcxh)) != sizeof(pcxh) ) {
+    if (SDL_ReadIO(src, &pcxh, sizeof(pcxh)) != sizeof(pcxh) ) {
         error = "file truncated";
         goto done;
     }
@@ -161,7 +161,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
         /* decode a scan line to a temporary buffer first */
         size_t i;
         if ( pcxh.Encoding == 0 ) {
-            if ( SDL_RWread(src, buf, bpl) != bpl ) {
+            if (SDL_ReadIO(src, buf, bpl) != bpl ) {
                 error = "file truncated";
                 goto done;
             }
@@ -169,7 +169,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
             for ( i = 0; i < bpl; i++ ) {
 
                 if ( !count ) {
-                    if ( SDL_RWread(src, &ch, 1) != 1 ) {
+                    if (SDL_ReadIO(src, &ch, 1) != 1 ) {
                         error = "file truncated";
                         goto done;
                     }
@@ -177,7 +177,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
                         count = 1;
                     } else {
                         count = ch - 0xc0;
-                        if ( SDL_RWread(src, &ch, 1) != 1 ) {
+                        if (SDL_ReadIO(src, &ch, 1) != 1 ) {
                             error = "file truncated";
                             goto done;
                         }
@@ -244,14 +244,14 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 
             /* look for a 256-colour palette */
             do {
-                if ( SDL_RWread(src, &pch, 1) != 1 ) {
+                if (SDL_ReadIO(src, &pch, 1) != 1 ) {
                     /* Couldn't find the palette, try the end of the file */
-                    SDL_RWseek(src, -768, SDL_RW_SEEK_END);
+                    SDL_SeekIO(src, -768, SDL_IO_SEEK_END);
                     break;
                 }
             } while ( pch != 12 );
 
-            if ( SDL_RWread(src, colormap, sizeof(colormap)) != sizeof(colormap) ) {
+            if (SDL_ReadIO(src, colormap, sizeof(colormap)) != sizeof(colormap) ) {
                 error = "file truncated";
                 goto done;
             }
@@ -272,7 +272,7 @@ SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
 done:
     SDL_free(buf);
     if ( error ) {
-        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+        SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
         if ( surface ) {
             SDL_DestroySurface(surface);
             surface = NULL;
@@ -288,13 +288,13 @@ done:
 #endif
 
 /* See if an image is contained in a data source */
-int IMG_isPCX(SDL_RWops *src)
+int IMG_isPCX(SDL_IOStream *src)
 {
     return(0);
 }
 
 /* Load a PCX type image from an SDL datasource */
-SDL_Surface *IMG_LoadPCX_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadPCX_IO(SDL_IOStream *src)
 {
     return(NULL);
 }

@@ -131,8 +131,8 @@ typedef struct
     int initFlag;
     SDL_bool canLoad;
     SDL_bool canSave;
-    int (SDLCALL * checkFunction)(SDL_RWops *src);
-    SDL_Surface *(SDLCALL * loadFunction)(SDL_RWops *src);
+    int (SDLCALL * checkFunction)(SDL_IOStream *src);
+    SDL_Surface *(SDLCALL * loadFunction)(SDL_IOStream *src);
 } Format;
 
 static const Format formats[] =
@@ -152,7 +152,7 @@ static const Format formats[] =
 #endif
         SDL_IMAGE_SAVE_AVIF,
         IMG_isAVIF,
-        IMG_LoadAVIF_RW,
+        IMG_LoadAVIF_IO,
     },
     {
         "BMP",
@@ -169,7 +169,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         IMG_isBMP,
-        IMG_LoadBMP_RW,
+        IMG_LoadBMP_IO,
     },
     {
         "CUR",
@@ -186,7 +186,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         IMG_isCUR,
-        IMG_LoadCUR_RW,
+        IMG_LoadCUR_IO,
     },
     {
         "GIF",
@@ -203,7 +203,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         IMG_isGIF,
-        IMG_LoadGIF_RW,
+        IMG_LoadGIF_IO,
     },
     {
         "ICO",
@@ -220,7 +220,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         IMG_isICO,
-        IMG_LoadICO_RW,
+        IMG_LoadICO_IO,
     },
     {
         "JPG",
@@ -237,7 +237,7 @@ static const Format formats[] =
 #endif
         SDL_IMAGE_SAVE_JPG,
         IMG_isJPG,
-        IMG_LoadJPG_RW,
+        IMG_LoadJPG_IO,
     },
     {
         "JXL",
@@ -254,7 +254,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         IMG_isJXL,
-        IMG_LoadJXL_RW,
+        IMG_LoadJXL_IO,
     },
 #if 0
     {
@@ -272,7 +272,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         IMG_isLBM,
-        IMG_LoadLBM_RW,
+        IMG_LoadLBM_IO,
     },
 #endif
     {
@@ -290,7 +290,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         IMG_isPCX,
-        IMG_LoadPCX_RW,
+        IMG_LoadPCX_IO,
     },
     {
         "PNG",
@@ -307,7 +307,7 @@ static const Format formats[] =
 #endif
         SDL_IMAGE_SAVE_PNG,
         IMG_isPNG,
-        IMG_LoadPNG_RW,
+        IMG_LoadPNG_IO,
     },
     {
         "PNM",
@@ -324,7 +324,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         IMG_isPNM,
-        IMG_LoadPNM_RW,
+        IMG_LoadPNM_IO,
     },
     {
         "QOI",
@@ -341,7 +341,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         IMG_isQOI,
-        IMG_LoadQOI_RW,
+        IMG_LoadQOI_IO,
     },
     {
         "SVG",
@@ -358,7 +358,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         IMG_isSVG,
-        IMG_LoadSVG_RW,
+        IMG_LoadSVG_IO,
     },
     {
         "SVG-sized",
@@ -375,7 +375,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         IMG_isSVG,
-        IMG_LoadSVG_RW,
+        IMG_LoadSVG_IO,
     },
     {
         "SVG-class",
@@ -392,7 +392,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         IMG_isSVG,
-        IMG_LoadSVG_RW,
+        IMG_LoadSVG_IO,
     },
     {
         "TGA",
@@ -409,7 +409,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         NULL,
-        IMG_LoadTGA_RW,
+        IMG_LoadTGA_IO,
     },
     {
         "TIF",
@@ -426,7 +426,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         IMG_isTIF,
-        IMG_LoadTIF_RW,
+        IMG_LoadTIF_IO,
     },
     {
         "WEBP",
@@ -443,7 +443,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         IMG_isWEBP,
-        IMG_LoadWEBP_RW,
+        IMG_LoadWEBP_IO,
     },
     {
         "XCF",
@@ -460,7 +460,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         IMG_isXCF,
-        IMG_LoadXCF_RW,
+        IMG_LoadXCF_IO,
     },
     {
         "XPM",
@@ -477,7 +477,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         IMG_isXPM,
-        IMG_LoadXPM_RW,
+        IMG_LoadXPM_IO,
     },
 #if 0
     {
@@ -495,7 +495,7 @@ static const Format formats[] =
 #endif
         SDL_FALSE,      /* can save */
         IMG_isXV,
-        IMG_LoadXV_RW,
+        IMG_LoadXV_IO,
     },
 #endif
 };
@@ -513,8 +513,8 @@ StrHasSuffix(const char *str, const char *suffix)
 typedef enum
 {
     LOAD_CONVENIENCE = 0,
-    LOAD_RW,
-    LOAD_TYPED_RW,
+    LOAD_IO,
+    LOAD_TYPED_IO,
     LOAD_FORMAT_SPECIFIC,
     LOAD_SIZED
 } LoadMode;
@@ -633,7 +633,7 @@ FormatLoadTest(const Format *format,
 {
     SDL_Surface *reference = NULL;
     SDL_Surface *surface = NULL;
-    SDL_RWops *src = NULL;
+    SDL_IOStream *src = NULL;
     char *filename = GetTestFilename(TEST_FILE_DIST, format->sample);
     char *refFilename = GetTestFilename(TEST_FILE_DIST, format->reference);
     int initResult = 0;
@@ -682,7 +682,7 @@ FormatLoadTest(const Format *format,
     }
 
     if (mode != LOAD_CONVENIENCE) {
-        src = SDL_RWFromFile(filename, "rb");
+        src = SDL_IOFromFile(filename, "rb");
         SDLTest_AssertCheck(src != NULL,
                             "Opening %s should succeed (%s)",
                             filename, SDL_GetError());
@@ -695,12 +695,12 @@ FormatLoadTest(const Format *format,
             surface = IMG_Load(filename);
             break;
 
-        case LOAD_RW:
+        case LOAD_IO:
             if (format->checkFunction != NULL) {
-                SDL_RWops *ref_src;
+                SDL_IOStream *ref_src;
                 int check;
 
-                ref_src = SDL_RWFromFile(refFilename, "rb");
+                ref_src = SDL_IOFromFile(refFilename, "rb");
                 SDLTest_AssertCheck(ref_src != NULL,
                                     "Opening %s should succeed (%s)",
                                     refFilename, SDL_GetError());
@@ -709,7 +709,7 @@ FormatLoadTest(const Format *format,
                     SDLTest_AssertCheck(!check,
                                         "Should not detect %s as %s -> %d",
                                         refFilename, format->name, check);
-                    SDL_RWclose(ref_src);
+                    SDL_CloseIO(ref_src);
                 }
             }
 
@@ -721,12 +721,12 @@ FormatLoadTest(const Format *format,
                                     filename, format->name, check);
             }
 
-            surface = IMG_Load_RW(src, SDL_TRUE);
+            surface = IMG_Load_IO(src, SDL_TRUE);
             src = NULL;      /* ownership taken */
             break;
 
-        case LOAD_TYPED_RW:
-            surface = IMG_LoadTyped_RW(src, SDL_TRUE, format->name);
+        case LOAD_TYPED_IO:
+            surface = IMG_LoadTyped_IO(src, SDL_TRUE, format->name);
             src = NULL;      /* ownership taken */
             break;
 
@@ -736,7 +736,7 @@ FormatLoadTest(const Format *format,
 
         case LOAD_SIZED:
             if (SDL_strcmp(format->name, "SVG-sized") == 0) {
-                surface = IMG_LoadSizedSVG_RW(src, 64, 64);
+                surface = IMG_LoadSizedSVG_IO(src, 64, 64);
             }
             break;
     }
@@ -778,7 +778,7 @@ out:
         SDL_DestroySurface(reference);
     }
     if (src != NULL) {
-        SDL_RWclose(src);
+        SDL_CloseIO(src);
     }
     if (refFilename != NULL) {
         SDL_free(refFilename);
@@ -799,7 +799,7 @@ FormatSaveTest(const Format *format,
     char filename[64] = { 0 };
     SDL_Surface *reference = NULL;
     SDL_Surface *surface = NULL;
-    SDL_RWops *dest = NULL;
+    SDL_IOStream *dest = NULL;
     int initResult = 0;
     int diff;
     int result;
@@ -836,25 +836,25 @@ FormatSaveTest(const Format *format,
 
     if (SDL_strcmp (format->name, "AVIF") == 0) {
         if (rw) {
-            dest = SDL_RWFromFile(filename, "wb");
-            result = IMG_SaveAVIF_RW(reference, dest, SDL_FALSE, 90);
-            SDL_RWclose(dest);
+            dest = SDL_IOFromFile(filename, "wb");
+            result = IMG_SaveAVIF_IO(reference, dest, SDL_FALSE, 90);
+            SDL_CloseIO(dest);
         } else {
             result = IMG_SaveAVIF(reference, filename, 90);
         }
     } else if (SDL_strcmp(format->name, "JPG") == 0) {
         if (rw) {
-            dest = SDL_RWFromFile(filename, "wb");
-            result = IMG_SaveJPG_RW(reference, dest, SDL_FALSE, 90);
-            SDL_RWclose(dest);
+            dest = SDL_IOFromFile(filename, "wb");
+            result = IMG_SaveJPG_IO(reference, dest, SDL_FALSE, 90);
+            SDL_CloseIO(dest);
         } else {
             result = IMG_SaveJPG(reference, filename, 90);
         }
     } else if (SDL_strcmp (format->name, "PNG") == 0) {
         if (rw) {
-            dest = SDL_RWFromFile(filename, "wb");
-            result = IMG_SavePNG_RW(reference, dest, SDL_FALSE);
-            SDL_RWclose(dest);
+            dest = SDL_IOFromFile(filename, "wb");
+            result = IMG_SavePNG_IO(reference, dest, SDL_FALSE);
+            SDL_CloseIO(dest);
         } else {
             result = IMG_SavePNG(reference, filename);
         }
@@ -934,10 +934,10 @@ FormatTest(const Format *format)
             if (SDL_strcmp(format->name, "TGA") == 0) {
                 SDLTest_Log("SKIP: Recognising %s by magic number is not supported", format->name);
             } else {
-                FormatLoadTest(format, LOAD_RW);
+                FormatLoadTest(format, LOAD_IO);
             }
 
-            FormatLoadTest(format, LOAD_TYPED_RW);
+            FormatLoadTest(format, LOAD_TYPED_IO);
 
             if (format->loadFunction != NULL) {
                 FormatLoadTest(format, LOAD_FORMAT_SPECIFIC);

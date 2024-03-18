@@ -57,24 +57,24 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-static int IMG_LoadSTB_RW_read(void *user, char *data, int size)
+static int IMG_LoadSTB_IO_read(void *user, char *data, int size)
 {
-    size_t amount = SDL_RWread((SDL_RWops*)user, data, size);
+    size_t amount = SDL_ReadIO((SDL_IOStream*)user, data, size);
     return (int)amount;
 }
 
-static void IMG_LoadSTB_RW_skip(void *user, int n)
+static void IMG_LoadSTB_IO_skip(void *user, int n)
 {
-    SDL_RWseek((SDL_RWops*)user, n, SDL_RW_SEEK_CUR);
+    SDL_SeekIO((SDL_IOStream*)user, n, SDL_IO_SEEK_CUR);
 }
 
-static int IMG_LoadSTB_RW_eof(void *user)
+static int IMG_LoadSTB_IO_eof(void *user)
 {
-    SDL_RWops *src = (SDL_RWops*)user;
-    return (src->status == SDL_RWOPS_STATUS_EOF);
+    SDL_IOStream *src = (SDL_IOStream*)user;
+    return (SDL_GetIOStatus(src) == SDL_IO_STATUS_EOF);
 }
 
-SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src)
 {
     Sint64 start;
     Uint8 magic[26];
@@ -86,12 +86,12 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
     unsigned int palette_colors[256];
 
     if (!src) {
-        /* The error message has been set in SDL_RWFromFile */
+        /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
 
-    if (SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic)) {
+    if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic)) {
         const Uint8 PNG_COLOR_INDEXED = 3;
         if (magic[0] == 0x89 &&
             magic[1] == 'P' &&
@@ -105,12 +105,12 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
             use_palette = SDL_TRUE;
         }
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
 
     /* Load the image data */
-    rw_callbacks.read = IMG_LoadSTB_RW_read;
-    rw_callbacks.skip = IMG_LoadSTB_RW_skip;
-    rw_callbacks.eof = IMG_LoadSTB_RW_eof;
+    rw_callbacks.read = IMG_LoadSTB_IO_read;
+    rw_callbacks.skip = IMG_LoadSTB_IO_skip;
+    rw_callbacks.eof = IMG_LoadSTB_IO_eof;
     w = h = format = 0; /* silence warning */
     if (use_palette) {
         /* Unused palette entries will be opaque white */
@@ -135,7 +135,7 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
         );
     }
     if (!pixels) {
-        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+        SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
         return NULL;
     }
 
@@ -245,7 +245,7 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
     if (!surface) {
         /* The error message should already be set */
         stbi_image_free(pixels); /* calls SDL_free() */
-        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+        SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     }
     return surface;
 }

@@ -115,7 +115,7 @@ void IMG_QuitWEBP(void)
     --lib.loaded;
 }
 
-static int webp_getinfo(SDL_RWops *src, size_t *datasize) {
+static int webp_getinfo(SDL_IOStream *src, size_t *datasize) {
     Sint64 start, size;
     int is_WEBP;
     Uint8 magic[20];
@@ -123,9 +123,9 @@ static int webp_getinfo(SDL_RWops *src, size_t *datasize) {
     if (!src) {
         return 0;
     }
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_WEBP = 0;
-    if (SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic)) {
+    if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic)) {
         if (magic[ 0] == 'R' &&
             magic[ 1] == 'I' &&
             magic[ 2] == 'F' &&
@@ -140,7 +140,7 @@ static int webp_getinfo(SDL_RWops *src, size_t *datasize) {
            (magic[15] == ' ' || magic[15] == 'X' || magic[15] == 'L')) {
             is_WEBP = 1;
             if (datasize) {
-                size = SDL_RWsize(src);
+                size = SDL_GetIOSize(src);
                 if (size > 0) {
                     *datasize = (size_t)(size - start);
                 } else {
@@ -149,17 +149,17 @@ static int webp_getinfo(SDL_RWops *src, size_t *datasize) {
             }
         }
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return(is_WEBP);
 }
 
 /* See if an image is contained in a data source */
-int IMG_isWEBP(SDL_RWops *src)
+int IMG_isWEBP(SDL_IOStream *src)
 {
     return webp_getinfo(src, NULL);
 }
 
-SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
 {
     Sint64 start;
     const char *error = NULL;
@@ -171,11 +171,11 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
     uint8_t *ret;
 
     if (!src) {
-        /* The error message has been set in SDL_RWFromFile */
+        /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
 
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
 
     if ((IMG_Init(IMG_INIT_WEBP) & IMG_INIT_WEBP) == 0) {
         goto error;
@@ -193,7 +193,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
         goto error;
     }
 
-    if (SDL_RWread(src, raw_data, raw_data_size) != raw_data_size) {
+    if (SDL_ReadIO(src, raw_data, raw_data_size) != raw_data_size) {
         error = "Failed to read WEBP";
         goto error;
     }
@@ -255,11 +255,11 @@ error:
         IMG_SetError("%s", error);
     }
 
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return NULL;
 }
 
-IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
+IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
 {
     Sint64 start;
     const char *error = NULL;
@@ -275,11 +275,11 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
     WebPData wd;
 
     if (!src) {
-        /* The error message has been set in SDL_RWFromFile */
+        /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
 
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
 
     if ((IMG_Init(IMG_INIT_WEBP) & IMG_INIT_WEBP) == 0) {
         goto error;
@@ -297,7 +297,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
         goto error;
     }
 
-    if (SDL_RWread(src, raw_data, raw_data_size) != raw_data_size) {
+    if (SDL_ReadIO(src, raw_data, raw_data_size) != raw_data_size) {
         error = "Failed to read WEBP Animation";
         goto error;
     }
@@ -374,7 +374,7 @@ error:
     if (error) {
         IMG_SetError("%s", error);
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return NULL;
 }
 
@@ -394,7 +394,7 @@ void IMG_QuitWEBP(void)
 }
 
 /* See if an image is contained in a data source */
-int IMG_isWEBP(SDL_RWops *src)
+int IMG_isWEBP(SDL_IOStream *src)
 {
     (void)src;
 
@@ -402,14 +402,14 @@ int IMG_isWEBP(SDL_RWops *src)
 }
 
 /* Load a WEBP type image from an SDL datasource */
-SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
 {
     (void)src;
 
     return NULL;
 }
 
-IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
+IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
 {
     (void)src;
 

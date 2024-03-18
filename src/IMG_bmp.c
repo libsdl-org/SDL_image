@@ -36,7 +36,7 @@
 #ifdef LOAD_BMP
 
 /* See if an image is contained in a data source */
-int IMG_isBMP(SDL_RWops *src)
+int IMG_isBMP(SDL_IOStream *src)
 {
     Sint64 start;
     int is_BMP;
@@ -44,18 +44,18 @@ int IMG_isBMP(SDL_RWops *src)
 
     if ( !src )
         return 0;
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_BMP = 0;
-    if (SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic)) {
+    if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic)) {
         if (SDL_strncmp(magic, "BM", 2) == 0) {
             is_BMP = 1;
         }
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return(is_BMP);
 }
 
-static int IMG_isICOCUR(SDL_RWops *src, int type)
+static int IMG_isICOCUR(SDL_IOStream *src, int type)
 {
     Sint64 start;
     int is_ICOCUR;
@@ -68,7 +68,7 @@ static int IMG_isICOCUR(SDL_RWops *src, int type)
     if (!src) {
         return 0;
     }
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_ICOCUR = 0;
     if (SDL_ReadU16LE(src, &bfReserved) &&
         SDL_ReadU16LE(src, &bfType) &&
@@ -76,17 +76,17 @@ static int IMG_isICOCUR(SDL_RWops *src, int type)
         (bfReserved == 0) && (bfType == type) && (bfCount != 0)) {
         is_ICOCUR = 1;
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
 
     return (is_ICOCUR);
 }
 
-int IMG_isICO(SDL_RWops *src)
+int IMG_isICO(SDL_IOStream *src)
 {
     return IMG_isICOCUR(src, 1);
 }
 
-int IMG_isCUR(SDL_RWops *src)
+int IMG_isCUR(SDL_IOStream *src)
 {
     return IMG_isICOCUR(src, 2);
 }
@@ -103,13 +103,13 @@ int IMG_isCUR(SDL_RWops *src)
 #define BI_BITFIELDS    3
 #endif
 
-static SDL_Surface *LoadBMP_RW (SDL_RWops *src, SDL_bool freesrc)
+static SDL_Surface *LoadBMP_IO (SDL_IOStream *src, SDL_bool closeio)
 {
-    return SDL_LoadBMP_RW(src, freesrc);
+    return SDL_LoadBMP_IO(src, closeio);
 }
 
 static SDL_Surface *
-LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
+LoadICOCUR_IO(SDL_IOStream * src, int type, SDL_bool closeio)
 {
     SDL_bool was_error = SDL_TRUE;
     Sint64 fp_offset = 0;
@@ -153,7 +153,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
     }
 
     /* Read in the ICO file header */
-    fp_offset = SDL_RWtell(src);
+    fp_offset = SDL_TellIO(src);
 
     if (!SDL_ReadU16LE(src, &bfReserved) ||
         !SDL_ReadU16LE(src, &bfType) ||
@@ -216,7 +216,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
     }
 
     /* Advance to the DIB Data */
-    if (SDL_RWseek(src, icoOfs, SDL_RW_SEEK_SET) < 0) {
+    if (SDL_SeekIO(src, icoOfs, SDL_IO_SEEK_SET) < 0) {
         goto done;
     }
 
@@ -301,7 +301,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
             goto done;
         }
         for (i = 0; i < (int) biClrUsed; ++i) {
-            if (SDL_RWread(src, &palette[i], 4) != 4) {
+            if (SDL_ReadIO(src, &palette[i], 4) != 4) {
                 goto done;
             }
         }
@@ -342,7 +342,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
                 int shift = (8 - ExpandBMP);
                 for (i = 0; i < surface->w; ++i) {
                     if (i % (8 / ExpandBMP) == 0) {
-                        if (SDL_RWread(src, &pixel, 1) != 1) {
+                        if (SDL_ReadIO(src, &pixel, 1) != 1) {
                             goto done;
                         }
                     }
@@ -359,7 +359,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
                     pixel = 0;
                     for (j = 0; j < 3; ++j) {
                         /* Load each color channel into pixel */
-                        if (SDL_RWread(src, &channel, 1) != 1) {
+                        if (SDL_ReadIO(src, &channel, 1) != 1) {
                             goto done;
                         }
                         pixel |= (channel << (j * 8));
@@ -370,7 +370,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
             break;
 
         default:
-            if (SDL_RWread(src, bits, surface->pitch) != (size_t)surface->pitch) {
+            if (SDL_ReadIO(src, bits, surface->pitch) != (size_t)surface->pitch) {
                 goto done;
             }
             break;
@@ -379,7 +379,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
         if (pad) {
             Uint8 padbyte;
             for (i = 0; i < pad; ++i) {
-                if (SDL_RWread(src, &padbyte, 1) != 1) {
+                if (SDL_ReadIO(src, &padbyte, 1) != 1) {
                     goto done;
                 }
             }
@@ -397,7 +397,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
         bits -= surface->pitch;
         for (i = 0; i < surface->w; ++i) {
             if (i % (8 / ExpandBMP) == 0) {
-                if (SDL_RWread(src, &pixel, 1) != 1) {
+                if (SDL_ReadIO(src, &pixel, 1) != 1) {
                     goto done;
                 }
             }
@@ -408,7 +408,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
         if (pad) {
             Uint8 padbyte;
             for (i = 0; i < pad; ++i) {
-                if (SDL_RWread(src, &padbyte, 1) != 1) {
+                if (SDL_ReadIO(src, &padbyte, 1) != 1) {
                     goto done;
                 }
             }
@@ -418,12 +418,12 @@ LoadICOCUR_RW(SDL_RWops * src, int type, SDL_bool freesrc)
     was_error = SDL_FALSE;
 
 done:
-    if (freesrc && src) {
-        SDL_RWclose(src);
+    if (closeio && src) {
+        SDL_CloseIO(src);
     }
     if (was_error) {
-        if (src && !freesrc) {
-            SDL_RWseek(src, fp_offset, SDL_RW_SEEK_SET);
+        if (src && !closeio) {
+            SDL_SeekIO(src, fp_offset, SDL_IO_SEEK_SET);
         }
         if (surface) {
             SDL_DestroySurface(surface);
@@ -434,21 +434,21 @@ done:
 }
 
 /* Load a BMP type image from an SDL datasource */
-SDL_Surface *IMG_LoadBMP_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadBMP_IO(SDL_IOStream *src)
 {
-    return(LoadBMP_RW(src, SDL_FALSE));
+    return(LoadBMP_IO(src, SDL_FALSE));
 }
 
 /* Load a ICO type image from an SDL datasource */
-SDL_Surface *IMG_LoadICO_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadICO_IO(SDL_IOStream *src)
 {
-    return(LoadICOCUR_RW(src, 1, SDL_FALSE));
+    return(LoadICOCUR_IO(src, 1, SDL_FALSE));
 }
 
 /* Load a CUR type image from an SDL datasource */
-SDL_Surface *IMG_LoadCUR_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadCUR_IO(SDL_IOStream *src)
 {
-    return(LoadICOCUR_RW(src, 2, SDL_FALSE));
+    return(LoadICOCUR_IO(src, 2, SDL_FALSE));
 }
 
 #else
@@ -458,35 +458,35 @@ SDL_Surface *IMG_LoadCUR_RW(SDL_RWops *src)
 #endif
 
 /* See if an image is contained in a data source */
-int IMG_isBMP(SDL_RWops *src)
+int IMG_isBMP(SDL_IOStream *src)
 {
     return(0);
 }
 
-int IMG_isICO(SDL_RWops *src)
+int IMG_isICO(SDL_IOStream *src)
 {
     return(0);
 }
 
-int IMG_isCUR(SDL_RWops *src)
+int IMG_isCUR(SDL_IOStream *src)
 {
     return(0);
 }
 
 /* Load a BMP type image from an SDL datasource */
-SDL_Surface *IMG_LoadBMP_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadBMP_IO(SDL_IOStream *src)
 {
     return(NULL);
 }
 
 /* Load a BMP type image from an SDL datasource */
-SDL_Surface *IMG_LoadCUR_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadCUR_IO(SDL_IOStream *src)
 {
     return(NULL);
 }
 
 /* Load a BMP type image from an SDL datasource */
-SDL_Surface *IMG_LoadICO_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadICO_IO(SDL_IOStream *src)
 {
     return(NULL);
 }
