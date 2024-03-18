@@ -132,7 +132,7 @@ void IMG_QuitAVIF(void)
     --lib.loaded;
 }
 
-static SDL_bool ReadAVIFHeader(SDL_RWops *src, Uint8 **header_data, size_t *header_size)
+static SDL_bool ReadAVIFHeader(SDL_IOStream *src, Uint8 **header_data, size_t *header_size)
 {
     Uint8 magic[16];
     Uint64 size;
@@ -142,7 +142,7 @@ static SDL_bool ReadAVIFHeader(SDL_RWops *src, Uint8 **header_data, size_t *head
     *header_data = NULL;
     *header_size = 0;
 
-    if (SDL_RWread(src, magic, 8) != 8) {
+    if (SDL_ReadIO(src, magic, 8) != 8) {
         return SDL_FALSE;
     }
     read += 8;
@@ -157,7 +157,7 @@ static SDL_bool ReadAVIFHeader(SDL_RWops *src, Uint8 **header_data, size_t *head
             ((Uint64)magic[3] << 0));
     if (size == 1) {
         /* 64-bit header size */
-        if (SDL_RWread(src, &magic[8], 8) != 8) {
+        if (SDL_ReadIO(src, &magic[8], 8) != 8) {
             return SDL_FALSE;
         }
         read += 8;
@@ -186,7 +186,7 @@ static SDL_bool ReadAVIFHeader(SDL_RWops *src, Uint8 **header_data, size_t *head
     }
     SDL_memcpy(data, magic, (size_t)read);
 
-    if (SDL_RWread(src, &data[read], (size_t)(size - read)) != (size_t)(size - read)) {
+    if (SDL_ReadIO(src, &data[read], (size_t)(size - read)) != (size_t)(size - read)) {
         SDL_free(data);
         return SDL_FALSE;
     }
@@ -196,7 +196,7 @@ static SDL_bool ReadAVIFHeader(SDL_RWops *src, Uint8 **header_data, size_t *head
 }
 
 /* See if an image is contained in a data source */
-int IMG_isAVIF(SDL_RWops *src)
+int IMG_isAVIF(SDL_IOStream *src)
 {
     Sint64 start;
     int is_AVIF;
@@ -207,7 +207,7 @@ int IMG_isAVIF(SDL_RWops *src)
         return 0;
     }
 
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_AVIF = 0;
     if (ReadAVIFHeader(src, &data, &size)) {
         /* This might be AVIF, do more thorough checks */
@@ -220,14 +220,14 @@ int IMG_isAVIF(SDL_RWops *src)
         }
         SDL_free(data);
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return(is_AVIF);
 }
 
 /* Context for AFIF I/O operations */
 typedef struct
 {
-    SDL_RWops *src;
+    SDL_IOStream *src;
     Uint64 start;
     uint8_t *data;
     Sint64 size;
@@ -240,7 +240,7 @@ static avifResult ReadAVIFIO(struct avifIO * io, uint32_t readFlags, uint64_t of
     (void) readFlags;   /* not used */
 
     /* The AVIF reader bounces all over, so always seek to the correct offset */
-    if (SDL_RWseek(context->src, context->start + offset, SDL_RW_SEEK_SET) < 0) {
+    if (SDL_SeekIO(context->src, context->start + offset, SDL_IO_SEEK_SET) < 0) {
         return AVIF_RESULT_IO_ERROR;
     }
 
@@ -254,9 +254,9 @@ static avifResult ReadAVIFIO(struct avifIO * io, uint32_t readFlags, uint64_t of
     }
 
     out->data = context->data;
-    out->size = SDL_RWread(context->src, context->data, size);
+    out->size = SDL_ReadIO(context->src, context->data, size);
     if (out->size == 0) {
-        if (context->src->status == SDL_RWOPS_STATUS_NOT_READY) {
+        if (SDL_GetIOStatus(context->src) == SDL_IO_STATUS_NOT_READY) {
             return AVIF_RESULT_WAITING_ON_IO;
         } else {
             return AVIF_RESULT_IO_ERROR;
@@ -349,7 +349,7 @@ static void ConvertRGB16toXBGR2101010(avifRGBImage *image, SDL_Surface *surface)
 }
 
 /* Load a AVIF type image from an SDL datasource */
-SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadAVIF_IO(SDL_IOStream *src)
 {
     Sint64 start;
     avifDecoder *decoder = NULL;
@@ -360,10 +360,10 @@ SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
     SDL_Surface *surface = NULL;
 
     if (!src) {
-        /* The error message has been set in SDL_RWFromFile */
+        /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
 
     if ((IMG_Init(IMG_INIT_AVIF) & IMG_INIT_AVIF) == 0) {
         return NULL;
@@ -515,12 +515,12 @@ done:
         lib.avifDecoderDestroy(decoder);
     }
     if (!surface) {
-        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+        SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     }
     return surface;
 }
 
-static int IMG_SaveAVIF_RW_libavif(SDL_Surface *surface, SDL_RWops *dst, int quality)
+static int IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int quality)
 {
     avifImage *image = NULL;
     avifRGBImage rgb;
@@ -683,7 +683,7 @@ static int IMG_SaveAVIF_RW_libavif(SDL_Surface *surface, SDL_RWops *dst, int qua
         goto done;
     }
 
-    if (SDL_RWwrite(dst, avifOutput.data, avifOutput.size) == avifOutput.size) {
+    if (SDL_WriteIO(dst, avifOutput.data, avifOutput.size) == avifOutput.size) {
         result = 0;
     }
 
@@ -722,14 +722,14 @@ void IMG_QuitAVIF(void)
 }
 
 /* See if an image is contained in a data source */
-int IMG_isAVIF(SDL_RWops *src)
+int IMG_isAVIF(SDL_IOStream *src)
 {
     (void)src;
     return(0);
 }
 
 /* Load a AVIF type image from an SDL datasource */
-SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadAVIF_IO(SDL_IOStream *src)
 {
     (void)src;
     return(NULL);
@@ -739,15 +739,15 @@ SDL_Surface *IMG_LoadAVIF_RW(SDL_RWops *src)
 
 int IMG_SaveAVIF(SDL_Surface *surface, const char *file, int quality)
 {
-    SDL_RWops *dst = SDL_RWFromFile(file, "wb");
+    SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
     if (dst) {
-        return IMG_SaveAVIF_RW(surface, dst, 1, quality);
+        return IMG_SaveAVIF_IO(surface, dst, 1, quality);
     } else {
         return -1;
     }
 }
 
-int IMG_SaveAVIF_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quality)
+int IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int quality)
 {
     int result = -1;
 
@@ -757,7 +757,7 @@ int IMG_SaveAVIF_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quali
 
 #if SDL_IMAGE_SAVE_AVIF
     if (result < 0) {
-        result = IMG_SaveAVIF_RW_libavif(surface, dst, quality);
+        result = IMG_SaveAVIF_IO_libavif(surface, dst, quality);
     }
 
 #else
@@ -766,8 +766,8 @@ int IMG_SaveAVIF_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst, int quali
     result = IMG_SetError("SDL_image built without AVIF save support");
 #endif
 
-    if (freedst) {
-        SDL_RWclose(dst);
+    if (closeio) {
+        SDL_CloseIO(dst);
     }
     return result;
 }

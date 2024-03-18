@@ -32,9 +32,9 @@
 
 // This callback reads some bytes from an SDL_rwops and copies it
 // to a Quartz buffer (supplied by Apple framework).
-static size_t MyProviderGetBytesCallback(void* rwops_userdata, void* quartz_buffer, size_t the_count)
+static size_t MyProviderGetBytesCallback(void* userdata, void* quartz_buffer, size_t the_count)
 {
-    Sint64 size = SDL_RWread((struct SDL_RWops *)rwops_userdata, quartz_buffer, the_count);
+    Sint64 size = SDL_ReadIO((SDL_IOStream *)userdata, quartz_buffer, the_count);
     if (size <= 0) {
         return 0;
     }
@@ -43,30 +43,30 @@ static size_t MyProviderGetBytesCallback(void* rwops_userdata, void* quartz_buff
 
 // This callback is triggered when the data provider is released
 // so you can clean up any resources.
-static void MyProviderReleaseInfoCallback(void* rwops_userdata)
+static void MyProviderReleaseInfoCallback(void* userdata)
 {
-    (void)rwops_userdata;
+    (void)userdata;
     // What should I put here?
-    // I think the user and SDL_RWops controls closing, so I don't do anything.
+    // I think the user and SDL_IOStream controls closing, so I don't do anything.
 }
 
-static void MyProviderRewindCallback(void* rwops_userdata)
+static void MyProviderRewindCallback(void* userdata)
 {
-    SDL_RWseek((struct SDL_RWops *)rwops_userdata, 0, SDL_RW_SEEK_SET);
+    SDL_SeekIO((SDL_IOStream *)userdata, 0, SDL_IO_SEEK_SET);
 }
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1050 // CGDataProviderCreateSequential was introduced in 10.5; CGDataProviderCreate is deprecated
-off_t MyProviderSkipForwardBytesCallback(void* rwops_userdata, off_t the_count)
+off_t MyProviderSkipForwardBytesCallback(void* userdata, off_t the_count)
 {
-    off_t start_position = SDL_RWtell((struct SDL_RWops *)rwops_userdata);
-    SDL_RWseek((struct SDL_RWops *)rwops_userdata, the_count, SDL_RW_SEEK_CUR);
-    off_t end_position = SDL_RWtell((struct SDL_RWops *)rwops_userdata);
+    off_t start_position = SDL_TellIO((SDL_IOStream *)userdata);
+    SDL_SeekIO((SDL_IOStream *)userdata, the_count, SDL_IO_SEEK_CUR);
+    off_t end_position = SDL_TellIO((SDL_IOStream *)userdata);
     return (end_position - start_position);
 }
 #else // CGDataProviderCreate was deprecated in 10.5
-static void MyProviderSkipBytesCallback(void* rwops_userdata, size_t the_count)
+static void MyProviderSkipBytesCallback(void* userdata, size_t the_count)
 {
-    SDL_RWseek((struct SDL_RWops *)rwops_userdata, the_count, SDL_RW_SEEK_CUR);
+    SDL_SeekIO((SDL_IOStream *)userdata, the_count, SDL_IO_SEEK_CUR);
 }
 #endif
 
@@ -76,11 +76,11 @@ static void MyProviderSkipBytesCallback(void* rwops_userdata, size_t the_count)
 
 // This creates a CGImageSourceRef which is a handle to an image that can be used to examine information
 // about the image or load the actual image data.
-static CGImageSourceRef CreateCGImageSourceFromRWops(SDL_RWops* rw_ops, CFDictionaryRef hints_and_options)
+static CGImageSourceRef CreateCGImageSourceFromIOStream(SDL_IOStream * rw_ops, CFDictionaryRef hints_and_options)
 {
     CGImageSourceRef source_ref;
 
-    // Similar to SDL_RWops, Apple has their own callbacks for dealing with data streams.
+    // Similar to SDL_IOStream, Apple has their own callbacks for dealing with data streams.
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= 1050 // CGDataProviderCreateSequential was introduced in 10.5; CGDataProviderCreate is deprecated
     CGDataProviderSequentialCallbacks provider_callbacks =
@@ -384,16 +384,16 @@ void IMG_QuitTIF(void)
 {
 }
 
-static int Internal_isType (SDL_RWops *rw_ops, CFStringRef uti_string_to_test)
+static int Internal_isType (SDL_IOStream *rw_ops, CFStringRef uti_string_to_test)
 {
     int is_type = 0;
 
     if (rw_ops == NULL)
         return 0;
 
-    Sint64 start = SDL_RWtell(rw_ops);
+    Sint64 start = SDL_TellIO(rw_ops);
     CFDictionaryRef hint_dictionary = CreateHintDictionary(uti_string_to_test);
-    CGImageSourceRef image_source = CreateCGImageSourceFromRWops(rw_ops, hint_dictionary);
+    CGImageSourceRef image_source = CreateCGImageSourceFromIOStream(rw_ops, hint_dictionary);
 
     if (hint_dictionary != NULL) {
         CFRelease(hint_dictionary);
@@ -401,7 +401,7 @@ static int Internal_isType (SDL_RWops *rw_ops, CFStringRef uti_string_to_test)
 
     if (NULL == image_source) {
         // reset the file pointer
-        SDL_RWseek(rw_ops, start, SEEK_SET);
+        SDL_SeekIO(rw_ops, start, SEEK_SET);
         return 0;
     }
 
@@ -419,31 +419,31 @@ static int Internal_isType (SDL_RWops *rw_ops, CFStringRef uti_string_to_test)
     CFRelease(image_source);
 
     // reset the file pointer
-    SDL_RWseek(rw_ops, start, SEEK_SET);
+    SDL_SeekIO(rw_ops, start, SEEK_SET);
     return is_type;
 }
 
 #ifdef BMP_USES_IMAGEIO
 
-int IMG_isCUR(SDL_RWops *src)
+int IMG_isCUR(SDL_IOStream *src)
 {
     /* FIXME: Is this a supported type? */
     return Internal_isType(src, CFSTR("com.microsoft.cur"));
 }
 
-int IMG_isICO(SDL_RWops *src)
+int IMG_isICO(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypeICO);
 }
 
-int IMG_isBMP(SDL_RWops *src)
+int IMG_isBMP(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypeBMP);
 }
 
 #endif /* BMP_USES_IMAGEIO */
 
-int IMG_isGIF(SDL_RWops *src)
+int IMG_isGIF(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypeGIF);
 }
@@ -451,7 +451,7 @@ int IMG_isGIF(SDL_RWops *src)
 #ifdef JPG_USES_IMAGEIO
 
 // Note: JPEG 2000 is kUTTypeJPEG2000
-int IMG_isJPG(SDL_RWops *src)
+int IMG_isJPG(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypeJPEG);
 }
@@ -460,7 +460,7 @@ int IMG_isJPG(SDL_RWops *src)
 
 #ifdef PNG_USES_IMAGEIO
 
-int IMG_isPNG(SDL_RWops *src)
+int IMG_isPNG(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypePNG);
 }
@@ -468,20 +468,20 @@ int IMG_isPNG(SDL_RWops *src)
 #endif /* PNG_USES_IMAGEIO */
 
 // This isn't a public API function. Apple seems to be able to identify tga's.
-int IMG_isTGA(SDL_RWops *src)
+int IMG_isTGA(SDL_IOStream *src)
 {
     return Internal_isType(src, CFSTR("com.truevision.tga-image"));
 }
 
-int IMG_isTIF(SDL_RWops *src)
+int IMG_isTIF(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypeTIFF);
 }
 
-static SDL_Surface *LoadImageFromRWops (SDL_RWops *rw_ops, CFStringRef uti_string_hint)
+static SDL_Surface *LoadImageFromIOStream (SDL_IOStream *rw_ops, CFStringRef uti_string_hint)
 {
     CFDictionaryRef hint_dictionary = CreateHintDictionary(uti_string_hint);
-    CGImageSourceRef image_source = CreateCGImageSourceFromRWops(rw_ops, hint_dictionary);
+    CGImageSourceRef image_source = CreateCGImageSourceFromIOStream(rw_ops, hint_dictionary);
 
     if (hint_dictionary != NULL)
         CFRelease(hint_dictionary);
@@ -521,55 +521,55 @@ static SDL_Surface* LoadImageFromFile (const char *file)
 
 #ifdef BMP_USES_IMAGEIO
 
-SDL_Surface* IMG_LoadCUR_RW (SDL_RWops *src)
+SDL_Surface* IMG_LoadCUR_IO (SDL_IOStream *src)
 {
     /* FIXME: Is this a supported type? */
-    return LoadImageFromRWops(src, CFSTR("com.microsoft.cur"));
+    return LoadImageFromIOStream(src, CFSTR("com.microsoft.cur"));
 }
 
-SDL_Surface* IMG_LoadICO_RW (SDL_RWops *src)
+SDL_Surface* IMG_LoadICO_IO (SDL_IOStream *src)
 {
-    return LoadImageFromRWops(src, kUTTypeICO);
+    return LoadImageFromIOStream(src, kUTTypeICO);
 }
 
-SDL_Surface* IMG_LoadBMP_RW (SDL_RWops *src)
+SDL_Surface* IMG_LoadBMP_IO (SDL_IOStream *src)
 {
-    return LoadImageFromRWops(src, kUTTypeBMP);
+    return LoadImageFromIOStream(src, kUTTypeBMP);
 }
 
 #endif /* BMP_USES_IMAGEIO */
 
-SDL_Surface* IMG_LoadGIF_RW (SDL_RWops *src)
+SDL_Surface* IMG_LoadGIF_IO (SDL_IOStream *src)
 {
-    return LoadImageFromRWops (src, kUTTypeGIF);
+    return LoadImageFromIOStream (src, kUTTypeGIF);
 }
 
 #ifdef JPG_USES_IMAGEIO
 
-SDL_Surface* IMG_LoadJPG_RW (SDL_RWops *src)
+SDL_Surface* IMG_LoadJPG_IO (SDL_IOStream *src)
 {
-    return LoadImageFromRWops (src, kUTTypeJPEG);
+    return LoadImageFromIOStream (src, kUTTypeJPEG);
 }
 
 #endif /* JPG_USES_IMAGEIO */
 
 #ifdef PNG_USES_IMAGEIO
 
-SDL_Surface* IMG_LoadPNG_RW (SDL_RWops *src)
+SDL_Surface* IMG_LoadPNG_IO (SDL_IOStream *src)
 {
-    return LoadImageFromRWops (src, kUTTypePNG);
+    return LoadImageFromIOStream (src, kUTTypePNG);
 }
 
 #endif /* PNG_USES_IMAGEIO */
 
-SDL_Surface* IMG_LoadTGA_RW (SDL_RWops *src)
+SDL_Surface* IMG_LoadTGA_IO (SDL_IOStream *src)
 {
-    return LoadImageFromRWops(src, CFSTR("com.truevision.tga-image"));
+    return LoadImageFromIOStream(src, CFSTR("com.truevision.tga-image"));
 }
 
-SDL_Surface* IMG_LoadTIF_RW (SDL_RWops *src)
+SDL_Surface* IMG_LoadTIF_IO (SDL_IOStream *src)
 {
-    return LoadImageFromRWops(src, kUTTypeTIFF);
+    return LoadImageFromIOStream(src, kUTTypeTIFF);
 }
 
 // Since UIImage doesn't really support streams well, we should optimize for the file case.
@@ -591,12 +591,12 @@ SDL_Surface* IMG_Load (const char *file)
     if (!surface) {
         // Either the file doesn't exist or ImageIO doesn't understand the format.
         // For the latter case, fallback to the native SDL_image handlers.
-        SDL_RWops *src = SDL_RWFromFile(file, "rb");
+        SDL_IOStream *src = SDL_IOFromFile(file, "rb");
         if (!src) {
-            /* The error message has been set in SDL_RWFromFile */
+            /* The error message has been set in SDL_IOFromFile */
             return NULL;
         }
-        surface = IMG_LoadTyped_RW(src, 1, ext);
+        surface = IMG_LoadTyped_IO(src, 1, ext);
     }
     return surface;
 }

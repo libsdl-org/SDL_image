@@ -54,40 +54,40 @@ SDL_COMPILE_TIME_ASSERT(SDL_IMAGE_PATCHLEVEL_max, SDL_IMAGE_PATCHLEVEL <= 99);
 /* Table of image detection and loading functions */
 static struct {
     const char *type;
-    int (SDLCALL *is)(SDL_RWops *src);
-    SDL_Surface *(SDLCALL *load)(SDL_RWops *src);
+    int (SDLCALL *is)(SDL_IOStream *src);
+    SDL_Surface *(SDLCALL *load)(SDL_IOStream *src);
 } supported[] = {
     /* keep magicless formats first */
-    { "TGA", NULL,      IMG_LoadTGA_RW },
-    { "AVIF",IMG_isAVIF,IMG_LoadAVIF_RW },
-    { "CUR", IMG_isCUR, IMG_LoadCUR_RW },
-    { "ICO", IMG_isICO, IMG_LoadICO_RW },
-    { "BMP", IMG_isBMP, IMG_LoadBMP_RW },
-    { "GIF", IMG_isGIF, IMG_LoadGIF_RW },
-    { "JPG", IMG_isJPG, IMG_LoadJPG_RW },
-    { "JXL", IMG_isJXL, IMG_LoadJXL_RW },
-    { "LBM", IMG_isLBM, IMG_LoadLBM_RW },
-    { "PCX", IMG_isPCX, IMG_LoadPCX_RW },
-    { "PNG", IMG_isPNG, IMG_LoadPNG_RW },
-    { "PNM", IMG_isPNM, IMG_LoadPNM_RW }, /* P[BGP]M share code */
-    { "SVG", IMG_isSVG, IMG_LoadSVG_RW },
-    { "TIF", IMG_isTIF, IMG_LoadTIF_RW },
-    { "XCF", IMG_isXCF, IMG_LoadXCF_RW },
-    { "XPM", IMG_isXPM, IMG_LoadXPM_RW },
-    { "XV",  IMG_isXV,  IMG_LoadXV_RW  },
-    { "WEBP", IMG_isWEBP, IMG_LoadWEBP_RW },
-    { "QOI", IMG_isQOI, IMG_LoadQOI_RW },
+    { "TGA", NULL,      IMG_LoadTGA_IO },
+    { "AVIF",IMG_isAVIF,IMG_LoadAVIF_IO },
+    { "CUR", IMG_isCUR, IMG_LoadCUR_IO },
+    { "ICO", IMG_isICO, IMG_LoadICO_IO },
+    { "BMP", IMG_isBMP, IMG_LoadBMP_IO },
+    { "GIF", IMG_isGIF, IMG_LoadGIF_IO },
+    { "JPG", IMG_isJPG, IMG_LoadJPG_IO },
+    { "JXL", IMG_isJXL, IMG_LoadJXL_IO },
+    { "LBM", IMG_isLBM, IMG_LoadLBM_IO },
+    { "PCX", IMG_isPCX, IMG_LoadPCX_IO },
+    { "PNG", IMG_isPNG, IMG_LoadPNG_IO },
+    { "PNM", IMG_isPNM, IMG_LoadPNM_IO }, /* P[BGP]M share code */
+    { "SVG", IMG_isSVG, IMG_LoadSVG_IO },
+    { "TIF", IMG_isTIF, IMG_LoadTIF_IO },
+    { "XCF", IMG_isXCF, IMG_LoadXCF_IO },
+    { "XPM", IMG_isXPM, IMG_LoadXPM_IO },
+    { "XV",  IMG_isXV,  IMG_LoadXV_IO  },
+    { "WEBP", IMG_isWEBP, IMG_LoadWEBP_IO },
+    { "QOI", IMG_isQOI, IMG_LoadQOI_IO },
 };
 
 /* Table of animation detection and loading functions */
 static struct {
     const char *type;
-    int (SDLCALL *is)(SDL_RWops *src);
-    IMG_Animation *(SDLCALL *load)(SDL_RWops *src);
+    int (SDLCALL *is)(SDL_IOStream *src);
+    IMG_Animation *(SDLCALL *load)(SDL_IOStream *src);
 } supported_anims[] = {
     /* keep magicless formats first */
-    { "GIF", IMG_isGIF, IMG_LoadGIFAnimation_RW },
-    { "WEBP", IMG_isWEBP, IMG_LoadWEBPAnimation_RW },
+    { "GIF", IMG_isGIF, IMG_LoadGIFAnimation_IO },
+    { "WEBP", IMG_isWEBP, IMG_LoadWEBPAnimation_IO },
 };
 
 const SDL_Version *IMG_Linked_Version(void)
@@ -181,23 +181,23 @@ SDL_Surface *IMG_Load(const char *file)
     }
 #endif
 
-    SDL_RWops *src = SDL_RWFromFile(file, "rb");
+    SDL_IOStream *src = SDL_IOFromFile(file, "rb");
     const char *ext = SDL_strrchr(file, '.');
     if (ext) {
         ext++;
     }
     if (!src) {
-        /* The error message has been set in SDL_RWFromFile */
+        /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
-    return IMG_LoadTyped_RW(src, SDL_TRUE, ext);
+    return IMG_LoadTyped_IO(src, SDL_TRUE, ext);
 }
 #endif
 
 /* Load an image from an SDL datasource (for compatibility) */
-SDL_Surface *IMG_Load_RW(SDL_RWops *src, SDL_bool freesrc)
+SDL_Surface *IMG_Load_IO(SDL_IOStream *src, SDL_bool closeio)
 {
-    return IMG_LoadTyped_RW(src, freesrc, NULL);
+    return IMG_LoadTyped_IO(src, closeio, NULL);
 }
 
 /* Portable case-insensitive string compare function */
@@ -214,7 +214,7 @@ static int IMG_string_equals(const char *str1, const char *str2)
 }
 
 /* Load an image from an SDL datasource, optionally specifying the type */
-SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, SDL_bool freesrc, const char *type)
+SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, SDL_bool closeio, const char *type)
 {
     size_t i;
     SDL_Surface *image;
@@ -226,33 +226,31 @@ SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, SDL_bool freesrc, const char *type
     }
 
     /* See whether or not this data source can handle seeking */
-    if ( SDL_RWseek(src, 0, SDL_RW_SEEK_CUR) < 0 ) {
+    if (SDL_SeekIO(src, 0, SDL_IO_SEEK_CUR) < 0 ) {
         IMG_SetError("Can't seek in this data source");
-        if (freesrc)
-            SDL_RWclose(src);
+        if (closeio)
+            SDL_CloseIO(src);
         return(NULL);
     }
 
 #ifdef __EMSCRIPTEN__
     /*load through preloadedImages*/
-
-    if ( src->type == SDL_RWOPS_STDFILE ) {
+    FILE *fp = (FILE *)SDL_GetProperty(SDL_GetIOProperties(src), SDL_PROP_IOSTREAM_STDIO_HANDLE_POINTER, NULL);
+    if (fp) {
         int w, h, success;
         char *data;
         SDL_Surface *surf;
 
-        data = emscripten_get_preloaded_image_data_from_FILE(src->hidden.stdio.fp, &w, &h);
-
-        if (data)
-        {
+        data = emscripten_get_preloaded_image_data_from_FILE(fp, &w, &h);
+        if (data) {
             surf = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_ABGR8888);
             if (surf != NULL) {
                 SDL_memcpy(surf->pixels, data, w * h * 4);
             }
             free(data); /* This should NOT be SDL_free() */
 
-            if (freesrc)
-                SDL_RWclose(src);
+            if (closeio)
+                SDL_CloseIO(src);
 
             /* If SDL_CreateSurface returns NULL, it has set the error message for us */
             return surf;
@@ -275,13 +273,13 @@ SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, SDL_bool freesrc, const char *type
             supported[i].type);
 #endif
         image = supported[i].load(src);
-        if (freesrc)
-            SDL_RWclose(src);
+        if (closeio)
+            SDL_CloseIO(src);
         return image;
     }
 
-    if ( freesrc ) {
-        SDL_RWclose(src);
+    if ( closeio ) {
+        SDL_CloseIO(src);
     }
     IMG_SetError("Unsupported image format");
     return NULL;
@@ -299,10 +297,10 @@ SDL_Texture *IMG_LoadTexture(SDL_Renderer *renderer, const char *file)
     return texture;
 }
 
-SDL_Texture *IMG_LoadTexture_RW(SDL_Renderer *renderer, SDL_RWops *src, SDL_bool freesrc)
+SDL_Texture *IMG_LoadTexture_IO(SDL_Renderer *renderer, SDL_IOStream *src, SDL_bool closeio)
 {
     SDL_Texture *texture = NULL;
-    SDL_Surface *surface = IMG_Load_RW(src, freesrc);
+    SDL_Surface *surface = IMG_Load_IO(src, closeio);
     if (surface) {
         texture = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_DestroySurface(surface);
@@ -310,10 +308,10 @@ SDL_Texture *IMG_LoadTexture_RW(SDL_Renderer *renderer, SDL_RWops *src, SDL_bool
     return texture;
 }
 
-SDL_Texture *IMG_LoadTextureTyped_RW(SDL_Renderer *renderer, SDL_RWops *src, SDL_bool freesrc, const char *type)
+SDL_Texture *IMG_LoadTextureTyped_IO(SDL_Renderer *renderer, SDL_IOStream *src, SDL_bool closeio, const char *type)
 {
     SDL_Texture *texture = NULL;
-    SDL_Surface *surface = IMG_LoadTyped_RW(src, freesrc, type);
+    SDL_Surface *surface = IMG_LoadTyped_IO(src, closeio, type);
     if (surface) {
         texture = SDL_CreateTextureFromSurface(renderer, surface);
         SDL_DestroySurface(surface);
@@ -325,26 +323,26 @@ SDL_Texture *IMG_LoadTextureTyped_RW(SDL_Renderer *renderer, SDL_RWops *src, SDL
 /* Load an animation from a file */
 IMG_Animation *IMG_LoadAnimation(const char *file)
 {
-    SDL_RWops *src = SDL_RWFromFile(file, "rb");
+    SDL_IOStream *src = SDL_IOFromFile(file, "rb");
     const char *ext = SDL_strrchr(file, '.');
     if (ext) {
         ext++;
     }
     if (!src) {
-        /* The error message has been set in SDL_RWFromFile */
+        /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
-    return IMG_LoadAnimationTyped_RW(src, SDL_TRUE, ext);
+    return IMG_LoadAnimationTyped_IO(src, SDL_TRUE, ext);
 }
 
 /* Load an animation from an SDL datasource (for compatibility) */
-IMG_Animation *IMG_LoadAnimation_RW(SDL_RWops *src, SDL_bool freesrc)
+IMG_Animation *IMG_LoadAnimation_IO(SDL_IOStream *src, SDL_bool closeio)
 {
-    return IMG_LoadAnimationTyped_RW(src, freesrc, NULL);
+    return IMG_LoadAnimationTyped_IO(src, closeio, NULL);
 }
 
 /* Load an animation from an SDL datasource, optionally specifying the type */
-IMG_Animation *IMG_LoadAnimationTyped_RW(SDL_RWops *src, SDL_bool freesrc, const char *type)
+IMG_Animation *IMG_LoadAnimationTyped_IO(SDL_IOStream *src, SDL_bool closeio, const char *type)
 {
     size_t i;
     IMG_Animation *anim;
@@ -357,10 +355,10 @@ IMG_Animation *IMG_LoadAnimationTyped_RW(SDL_RWops *src, SDL_bool freesrc, const
     }
 
     /* See whether or not this data source can handle seeking */
-    if ( SDL_RWseek(src, 0, SDL_RW_SEEK_CUR) < 0 ) {
+    if (SDL_SeekIO(src, 0, SDL_IO_SEEK_CUR) < 0 ) {
         IMG_SetError("Can't seek in this data source");
-        if (freesrc)
-            SDL_RWclose(src);
+        if (closeio)
+            SDL_CloseIO(src);
         return(NULL);
     }
 
@@ -379,13 +377,13 @@ IMG_Animation *IMG_LoadAnimationTyped_RW(SDL_RWops *src, SDL_bool freesrc, const
             supported_anims[i].type);
 #endif
         anim = supported_anims[i].load(src);
-        if (freesrc)
-            SDL_RWclose(src);
+        if (closeio)
+            SDL_CloseIO(src);
         return anim;
     }
 
     /* Create a single frame animation from an image */
-    image = IMG_LoadTyped_RW(src, freesrc, type);
+    image = IMG_LoadTyped_IO(src, closeio, type);
     if (image) {
         anim = (IMG_Animation *)SDL_malloc(sizeof(*anim));
         if (anim) {

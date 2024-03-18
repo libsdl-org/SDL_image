@@ -28,7 +28,7 @@
 
 /* See if an image is contained in a data source */
 /* Remember to declare this procedure in IMG.h . */
-int IMG_isXXX(SDL_RWops *src)
+int IMG_isXXX(SDL_IOStream *src)
 {
     int start;
     int is_XXX;
@@ -37,34 +37,34 @@ int IMG_isXXX(SDL_RWops *src)
         return 0;
     }
 
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_XXX = 0;
 
     /* Detect the image here */
 
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return is_XXX;
 }
 
 /* Load an XXX type image from an SDL datasource */
 /* Remember to declare this procedure in IMG.h . */
-SDL_Surface *IMG_LoadXXX_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadXXX_IO(SDL_IOStream *src)
 {
     int start;
     const char *error = NULL;
     SDL_Surface *surface = NULL;
 
     if (!src) {
-        /* The error message has been set in SDL_RWFromFile */
+        /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
 
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
 
     /* Load the image here */
 
     if (error) {
-        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+        SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
         if (surface) {
             SDL_DestroySurface(surface);
             surface = NULL;
@@ -81,13 +81,13 @@ SDL_Surface *IMG_LoadXXX_RW(SDL_RWops *src)
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
 #endif
 
-int IMG_isXXX(SDL_RWops *src)
+int IMG_isXXX(SDL_IOStream *src)
 {
     (void) src;
     return 0;
 }
 
-SDL_Surface *IMG_LoadXXX_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadXXX_IO(SDL_IOStream *src)
 {
     (void) src;
     return NULL;

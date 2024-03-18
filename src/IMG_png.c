@@ -201,7 +201,7 @@ void IMG_QuitPNG(void)
 }
 
 /* See if an image is contained in a data source */
-int IMG_isPNG(SDL_RWops *src)
+int IMG_isPNG(SDL_IOStream *src)
 {
     Sint64 start;
     int is_PNG;
@@ -211,9 +211,9 @@ int IMG_isPNG(SDL_RWops *src)
         return 0;
     }
 
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_PNG = 0;
-    if ( SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic) ) {
+    if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if ( magic[0] == 0x89 &&
              magic[1] == 'P' &&
              magic[2] == 'N' &&
@@ -221,17 +221,17 @@ int IMG_isPNG(SDL_RWops *src)
             is_PNG = 1;
         }
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return(is_PNG);
 }
 
 /* Load a PNG type image from an SDL datasource */
 static void png_read_data(png_structp ctx, png_bytep area, png_size_t size)
 {
-    SDL_RWops *src;
+    SDL_IOStream *src;
 
-    src = (SDL_RWops *)lib.png_get_io_ptr(ctx);
-    SDL_RWread(src, area, size);
+    src = (SDL_IOStream *)lib.png_get_io_ptr(ctx);
+    SDL_ReadIO(src, area, size);
 }
 
 struct loadpng_vars {
@@ -242,7 +242,7 @@ struct loadpng_vars {
     png_bytep *row_pointers;
 };
 
-static void LIBPNG_LoadPNG_RW(SDL_RWops *src, struct loadpng_vars *vars)
+static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
 {
     png_uint_32 width, height;
     int bit_depth, color_type, interlace_type, num_channels;
@@ -448,13 +448,13 @@ static void LIBPNG_LoadPNG_RW(SDL_RWops *src, struct loadpng_vars *vars)
     }
 }
 
-SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 {
     Sint64 start;
     struct loadpng_vars vars;
 
     if ( !src ) {
-        /* The error message has been set in SDL_RWFromFile */
+        /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
 
@@ -462,10 +462,10 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
         return NULL;
     }
 
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     SDL_zero(vars);
 
-    LIBPNG_LoadPNG_RW(src, &vars);
+    LIBPNG_LoadPNG_IO(src, &vars);
 
     if (vars.png_ptr) {
         lib.png_destroy_read_struct(&vars.png_ptr,
@@ -476,7 +476,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
         SDL_free(vars.row_pointers);
     }
     if (vars.error) {
-        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+        SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
         if (vars.surface) {
             SDL_DestroySurface(vars.surface);
             vars.surface = NULL;
@@ -489,7 +489,7 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 
 #elif defined(USE_STBIMAGE)
 
-extern SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src);
+extern SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src);
 
 int IMG_InitPNG(void)
 {
@@ -504,7 +504,7 @@ void IMG_QuitPNG(void)
 
 /* FIXME: This is a copypaste from LIBPNG! Pull that out of the ifdefs */
 /* See if an image is contained in a data source */
-int IMG_isPNG(SDL_RWops *src)
+int IMG_isPNG(SDL_IOStream *src)
 {
     Sint64 start;
     int is_PNG;
@@ -514,9 +514,9 @@ int IMG_isPNG(SDL_RWops *src)
         return 0;
     }
 
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_PNG = 0;
-    if ( SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic) ) {
+    if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if ( magic[0] == 0x89 &&
              magic[1] == 'P' &&
              magic[2] == 'N' &&
@@ -524,14 +524,14 @@ int IMG_isPNG(SDL_RWops *src)
             is_PNG = 1;
         }
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return(is_PNG);
 }
 
 /* Load a PNG type image from an SDL datasource */
-SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 {
-    return IMG_LoadSTB_RW(src);
+    return IMG_LoadSTB_IO(src);
 }
 
 #endif /* WANT_LIBPNG */
@@ -552,13 +552,13 @@ void IMG_QuitPNG(void)
 }
 
 /* See if an image is contained in a data source */
-int IMG_isPNG(SDL_RWops *src)
+int IMG_isPNG(SDL_IOStream *src)
 {
     return(0);
 }
 
 /* Load a PNG type image from an SDL datasource */
-SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 {
     return(NULL);
 }
@@ -573,8 +573,8 @@ static const Uint32 png_format = SDL_PIXELFORMAT_RGBA32;
 
 static void png_write_data(png_structp png_ptr, png_bytep src, png_size_t size)
 {
-    SDL_RWops *dst = (SDL_RWops *)lib.png_get_io_ptr(png_ptr);
-    SDL_RWwrite(dst, src, size);
+    SDL_IOStream *dst = (SDL_IOStream *)lib.png_get_io_ptr(png_ptr);
+    SDL_WriteIO(dst, src, size);
 }
 
 static void png_flush_data(png_structp png_ptr)
@@ -591,7 +591,7 @@ struct savepng_vars {
     SDL_Surface *source;
 };
 
-static int LIBPNG_SavePNG_RW(struct savepng_vars *vars, SDL_Surface *surface, SDL_RWops *dst)
+static int LIBPNG_SavePNG_IO(struct savepng_vars *vars, SDL_Surface *surface, SDL_IOStream *dst)
 {
     Uint8 transparent_table[256];
     SDL_Palette *palette;
@@ -693,7 +693,7 @@ static int LIBPNG_SavePNG_RW(struct savepng_vars *vars, SDL_Surface *surface, SD
     return 0;
 }
 
-static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst)
+static int IMG_SavePNG_IO_libpng(SDL_Surface *surface, SDL_IOStream *dst)
 {
     struct savepng_vars vars;
     int ret;
@@ -703,7 +703,7 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst)
     }
 
     SDL_zero(vars);
-    ret = LIBPNG_SavePNG_RW(&vars, surface, dst);
+    ret = LIBPNG_SavePNG_IO(&vars, surface, dst);
 
     if (vars.png_ptr) {
         lib.png_destroy_write_struct(&vars.png_ptr, &vars.info_ptr);
@@ -749,7 +749,7 @@ static int IMG_SavePNG_RW_libpng(SDL_Surface *surface, SDL_RWops *dst)
 #define MINIZ_SDL_NOUNUSED
 #include "miniz.h"
 
-static int IMG_SavePNG_RW_miniz(SDL_Surface *surface, SDL_RWops *dst)
+static int IMG_SavePNG_IO_miniz(SDL_Surface *surface, SDL_IOStream *dst)
 {
     size_t size = 0;
     void *png = NULL;
@@ -769,7 +769,7 @@ static int IMG_SavePNG_RW_miniz(SDL_Surface *surface, SDL_RWops *dst)
         }
     }
     if (png) {
-        if (SDL_RWwrite(dst, png, size)) {
+        if (SDL_WriteIO(dst, png, size)) {
             result = 0;
         }
         mz_free(png); /* calls SDL_free() */
@@ -784,15 +784,15 @@ static int IMG_SavePNG_RW_miniz(SDL_Surface *surface, SDL_RWops *dst)
 
 int IMG_SavePNG(SDL_Surface *surface, const char *file)
 {
-    SDL_RWops *dst = SDL_RWFromFile(file, "wb");
+    SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
     if (dst) {
-        return IMG_SavePNG_RW(surface, dst, 1);
+        return IMG_SavePNG_IO(surface, dst, 1);
     } else {
         return -1;
     }
 }
 
-int IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
+int IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio)
 {
     int result = -1;
 
@@ -803,13 +803,13 @@ int IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
 #if SDL_IMAGE_SAVE_PNG
 #ifdef USE_LIBPNG
     if (result < 0) {
-        result = IMG_SavePNG_RW_libpng(surface, dst);
+        result = IMG_SavePNG_IO_libpng(surface, dst);
     }
 #endif
 
 #if defined(LOAD_PNG_DYNAMIC) || !defined(WANT_LIBPNG)
     if (result < 0) {
-        result = IMG_SavePNG_RW_miniz(surface, dst);
+        result = IMG_SavePNG_IO_miniz(surface, dst);
     }
 #endif
 
@@ -817,8 +817,8 @@ int IMG_SavePNG_RW(SDL_Surface *surface, SDL_RWops *dst, int freedst)
     result = IMG_SetError("SDL_image built without PNG save support");
 #endif
 
-    if (freedst) {
-        SDL_RWclose(dst);
+    if (closeio) {
+        SDL_CloseIO(dst);
     }
     return result;
 }

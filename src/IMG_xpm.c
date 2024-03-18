@@ -51,7 +51,7 @@
 #ifdef LOAD_XPM
 
 /* See if an image is contained in a data source */
-int IMG_isXPM(SDL_RWops *src)
+int IMG_isXPM(SDL_IOStream *src)
 {
     Sint64 start;
     int is_XPM;
@@ -59,14 +59,14 @@ int IMG_isXPM(SDL_RWops *src)
 
     if ( !src )
         return 0;
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_XPM = 0;
-    if ( SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic) ) {
+    if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if ( SDL_memcmp(magic, "/* XPM */", sizeof(magic)) == 0 ) {
             is_XPM = 1;
         }
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return(is_XPM);
 }
 
@@ -923,7 +923,7 @@ static char *error;
  * If len > 0, it's assumed to be at least len chars (for efficiency).
  * Return NULL and set error upon EOF or parse error.
  */
-static char *get_next_line(char ***lines, SDL_RWops *src, size_t len)
+static char *get_next_line(char ***lines, SDL_IOStream *src, size_t len)
 {
     char *linebufnew;
 
@@ -933,7 +933,7 @@ static char *get_next_line(char ***lines, SDL_RWops *src, size_t len)
         char c;
         size_t n;
         do {
-            if (SDL_RWread(src, &c, 1) != 1) {
+            if (SDL_ReadIO(src, &c, 1) != 1) {
                 error = "Premature end of data";
                 return NULL;
             }
@@ -950,7 +950,7 @@ static char *get_next_line(char ***lines, SDL_RWops *src, size_t len)
                 }
                 linebuf = linebufnew;
             }
-            if (SDL_RWread(src, linebuf, len) != len) {
+            if (SDL_ReadIO(src, linebuf, len) != len) {
                 error = "Premature end of data";
                 return NULL;
             }
@@ -970,7 +970,7 @@ static char *get_next_line(char ***lines, SDL_RWops *src, size_t len)
                     }
                     linebuf = linebufnew;
                 }
-                if (SDL_RWread(src, linebuf + n, 1) != 1) {
+                if (SDL_ReadIO(src, linebuf + n, 1) != 1) {
                     error = "Premature end of data";
                     return NULL;
                 }
@@ -994,8 +994,8 @@ do {                            \
           ++(p);                    \
 } while (0)
 
-/* read XPM from either array or RWops */
-static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src, SDL_bool force_32bit)
+/* read XPM from either array or IOStream */
+static SDL_Surface *load_xpm(char **xpm, SDL_IOStream *src, SDL_bool force_32bit)
 {
     Sint64 start = 0;
     SDL_Surface *image = NULL;
@@ -1016,7 +1016,7 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src, SDL_bool force_32bit)
     buflen = 0;
 
     if (src)
-        start = SDL_RWtell(src);
+        start = SDL_TellIO(src);
 
     if (xpm)
         xpmlines = &xpm;
@@ -1153,7 +1153,7 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src, SDL_bool force_32bit)
 done:
     if (error) {
         if ( src )
-            SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+            SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
         if ( image ) {
             SDL_DestroySurface(image);
             image = NULL;
@@ -1168,11 +1168,11 @@ done:
     return(image);
 }
 
-/* Load a XPM type image from an RWops datasource */
-SDL_Surface *IMG_LoadXPM_RW(SDL_RWops *src)
+/* Load a XPM type image from an IOStream datasource */
+SDL_Surface *IMG_LoadXPM_IO(SDL_IOStream *src)
 {
     if ( !src ) {
-        /* The error message has been set in SDL_RWFromFile */
+        /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
     return load_xpm(NULL, src, 0);
@@ -1202,14 +1202,14 @@ SDL_Surface *IMG_ReadXPMFromArrayToRGB888(char **xpm)
 #endif
 
 /* See if an image is contained in a data source */
-int IMG_isXPM(SDL_RWops *src)
+int IMG_isXPM(SDL_IOStream *src)
 {
     return(0);
 }
 
 
 /* Load a XPM type image from an SDL datasource */
-SDL_Surface *IMG_LoadXPM_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadXPM_IO(SDL_IOStream *src)
 {
     return(NULL);
 }

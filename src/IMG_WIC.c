@@ -84,7 +84,7 @@ void IMG_QuitTIF(void)
     WIC_Quit();
 }
 
-int IMG_isPNG(SDL_RWops *src)
+int IMG_isPNG(SDL_IOStream *src)
 {
     Sint64 start;
     int is_PNG;
@@ -94,9 +94,9 @@ int IMG_isPNG(SDL_RWops *src)
         return 0;
     }
 
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_PNG = 0;
-    if ( SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic) ) {
+    if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if ( magic[0] == 0x89 &&
              magic[1] == 'P' &&
              magic[2] == 'N' &&
@@ -104,11 +104,11 @@ int IMG_isPNG(SDL_RWops *src)
             is_PNG = 1;
         }
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return(is_PNG);
 }
 
-int IMG_isJPG(SDL_RWops *src)
+int IMG_isJPG(SDL_IOStream *src)
 {
     Sint64 start;
     int is_JPG;
@@ -121,14 +121,14 @@ int IMG_isJPG(SDL_RWops *src)
 
     if (!src)
         return 0;
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_JPG = 0;
     in_scan = 0;
-    if (SDL_RWread(src, magic, 2) == 2) {
+    if (SDL_ReadIO(src, magic, 2) == 2) {
         if ((magic[0] == 0xFF) && (magic[1] == 0xD8)) {
             is_JPG = 1;
             while (is_JPG == 1) {
-                if (SDL_RWread(src, magic, 2) != 2) {
+                if (SDL_ReadIO(src, magic, 2) != 2) {
                     is_JPG = 0;
                 }
                 else if ((magic[0] != 0xFF) && (in_scan == 0)) {
@@ -137,7 +137,7 @@ int IMG_isJPG(SDL_RWops *src)
                 else if ((magic[0] != 0xFF) || (magic[1] == 0xFF)) {
                     /* Extra padding in JPEG (legal) */
                     /* or this is data and we are scanning */
-                    SDL_RWseek(src, -1, SDL_RW_SEEK_CUR);
+                    SDL_SeekIO(src, -1, SDL_IO_SEEK_CUR);
                 }
                 else if (magic[1] == 0xD9) {
                     /* Got to end of good JPEG */
@@ -149,7 +149,7 @@ int IMG_isJPG(SDL_RWops *src)
                 else if ((magic[1] >= 0xD0) && (magic[1] < 0xD9)) {
                     /* These have nothing else */
                 }
-                else if (SDL_RWread(src, magic + 2, 2) != 2) {
+                else if (SDL_ReadIO(src, magic + 2, 2) != 2) {
                     is_JPG = 0;
                 }
                 else {
@@ -157,9 +157,9 @@ int IMG_isJPG(SDL_RWops *src)
                     Sint64 innerStart;
                     Uint32 size;
                     Sint64 end;
-                    innerStart = SDL_RWtell(src);
+                    innerStart = SDL_TellIO(src);
                     size = (magic[2] << 8) + magic[3];
-                    end = SDL_RWseek(src, size - 2, SDL_RW_SEEK_CUR);
+                    end = SDL_SeekIO(src, size - 2, SDL_IO_SEEK_CUR);
                     if (end != innerStart + size - 2) is_JPG = 0;
                     if (magic[1] == 0xDA) {
                         /* Now comes the actual JPEG meat */
@@ -175,11 +175,11 @@ int IMG_isJPG(SDL_RWops *src)
             }
         }
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return(is_JPG);
 }
 
-int IMG_isTIF(SDL_RWops* src)
+int IMG_isTIF(SDL_IOStream * src)
 {
     Sint64 start;
     int is_TIF;
@@ -187,9 +187,9 @@ int IMG_isTIF(SDL_RWops* src)
 
     if (!src)
         return 0;
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_TIF = 0;
-    if (SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic)) {
+    if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic)) {
         if ((magic[0] == 'I' &&
             magic[1] == 'I' &&
             magic[2] == 0x2a &&
@@ -201,11 +201,11 @@ int IMG_isTIF(SDL_RWops* src)
             is_TIF = 1;
         }
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return(is_TIF);
 }
 
-static SDL_Surface* WIC_LoadImage(SDL_RWops *src)
+static SDL_Surface* WIC_LoadImage(SDL_IOStream *src)
 {
     SDL_Surface* surface = NULL;
 
@@ -221,7 +221,7 @@ static SDL_Surface* WIC_LoadImage(SDL_RWops *src)
     }
 
     size_t fileSize;
-    Uint8 *memoryBuffer = (Uint8 *)SDL_LoadFile_RW(src, &fileSize, SDL_FALSE);
+    Uint8 *memoryBuffer = (Uint8 *)SDL_LoadFile_IO(src, &fileSize, SDL_FALSE);
     if (!memoryBuffer) {
         return NULL;  
     }
@@ -278,17 +278,17 @@ done:
  return surface;
 }
 
-SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 {
     return WIC_LoadImage(src);
 }
 
-SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadJPG_IO(SDL_IOStream *src)
 {
     return WIC_LoadImage(src);
 }
 
-SDL_Surface *IMG_LoadTIF_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadTIF_IO(SDL_IOStream *src)
 {
     return WIC_LoadImage(src);
 }

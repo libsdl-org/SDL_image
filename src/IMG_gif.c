@@ -77,7 +77,7 @@
 #define LOCALCOLORMAP   0x80
 #define BitSet(byte, bit)   (((byte) & (bit)) == (bit))
 
-#define ReadOK(file,buffer,len) (SDL_RWread(file, buffer, len) == len)
+#define ReadOK(file,buffer,len) (SDL_ReadIO(file, buffer, len) == len)
 
 #define LM_to_uint(a,b)         (((b)<<8)|(a))
 
@@ -128,15 +128,15 @@ typedef struct
     Frame_t *frames;
 } Anim_t;
 
-static int ReadColorMap(SDL_RWops * src, int number,
-            unsigned char buffer[3][MAXCOLORMAPSIZE], int *flag);
-static int DoExtension(SDL_RWops * src, int label, State_t * state);
-static int GetDataBlock(SDL_RWops * src, unsigned char *buf, State_t * state);
-static int GetCode(SDL_RWops * src, int code_size, int flag, State_t * state);
-static int LWZReadByte(SDL_RWops * src, int flag, int input_code_size, State_t * state);
-static Image *ReadImage(SDL_RWops * src, int len, int height, int,
-            unsigned char cmap[3][MAXCOLORMAPSIZE],
-            int gray, int interlace, int ignore, State_t * state);
+static int ReadColorMap(SDL_IOStream * src, int number,
+			unsigned char buffer[3][MAXCOLORMAPSIZE], int *flag);
+static int DoExtension(SDL_IOStream * src, int label, State_t * state);
+static int GetDataBlock(SDL_IOStream * src, unsigned char *buf, State_t * state);
+static int GetCode(SDL_IOStream * src, int code_size, int flag, State_t * state);
+static int LWZReadByte(SDL_IOStream * src, int flag, int input_code_size, State_t * state);
+static Image *ReadImage(SDL_IOStream * src, int len, int height, int,
+			unsigned char cmap[3][MAXCOLORMAPSIZE],
+			int gray, int interlace, int ignore, State_t * state);
 
 static SDL_bool NormalizeFrames(Frame_t *frames, int count)
 {
@@ -201,7 +201,7 @@ static SDL_bool NormalizeFrames(Frame_t *frames, int count)
 }
 
 static Anim_t *
-IMG_LoadGIF_RW_Internal(SDL_RWops *src, SDL_bool load_anim)
+IMG_LoadGIF_IO_Internal(SDL_IOStream *src, SDL_bool load_anim)
 {
     unsigned char buf[16];
     unsigned char c;
@@ -366,7 +366,7 @@ done:
 }
 
 static int
-ReadColorMap(SDL_RWops *src, int number,
+ReadColorMap(SDL_IOStream *src, int number,
              unsigned char buffer[3][MAXCOLORMAPSIZE], int *gray)
 {
     int i;
@@ -400,7 +400,7 @@ ReadColorMap(SDL_RWops *src, int number,
 }
 
 static int
-DoExtension(SDL_RWops *src, int label, State_t * state)
+DoExtension(SDL_IOStream *src, int label, State_t * state)
 {
     unsigned char buf[256];
 
@@ -435,7 +435,7 @@ DoExtension(SDL_RWops *src, int label, State_t * state)
 }
 
 static int
-GetDataBlock(SDL_RWops *src, unsigned char *buf, State_t * state)
+GetDataBlock(SDL_IOStream *src, unsigned char *buf, State_t * state)
 {
     unsigned char count;
 
@@ -453,7 +453,7 @@ GetDataBlock(SDL_RWops *src, unsigned char *buf, State_t * state)
 }
 
 static int
-GetCode(SDL_RWops *src, int code_size, int flag, State_t * state)
+GetCode(SDL_IOStream *src, int code_size, int flag, State_t * state)
 {
     int i, j, ret;
     unsigned char count;
@@ -494,7 +494,7 @@ GetCode(SDL_RWops *src, int code_size, int flag, State_t * state)
 }
 
 static int
-LWZReadByte(SDL_RWops *src, int flag, int input_code_size, State_t * state)
+LWZReadByte(SDL_IOStream *src, int flag, int input_code_size, State_t * state)
 {
     int i, code, incode;
 
@@ -612,7 +612,7 @@ LWZReadByte(SDL_RWops *src, int flag, int input_code_size, State_t * state)
 }
 
 static Image *
-ReadImage(SDL_RWops * src, int len, int height, int cmapSize,
+ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
           unsigned char cmap[3][MAXCOLORMAPSIZE],
           int gray, int interlace, int ignore, State_t * state)
 {
@@ -704,9 +704,9 @@ ReadImage(SDL_RWops * src, int len, int height, int cmapSize,
 }
 
 /* Load a GIF type animation from an SDL datasource */
-IMG_Animation *IMG_LoadGIFAnimation_RW(SDL_RWops *src)
+IMG_Animation *IMG_LoadGIFAnimation_IO(SDL_IOStream *src)
 {
-    Anim_t *internal = IMG_LoadGIF_RW_Internal(src, SDL_TRUE);
+    Anim_t *internal = IMG_LoadGIF_IO_Internal(src, SDL_TRUE);
     if (internal) {
         IMG_Animation *anim = (IMG_Animation *)SDL_malloc(sizeof(*anim));
         if (anim) {
@@ -742,7 +742,7 @@ IMG_Animation *IMG_LoadGIFAnimation_RW(SDL_RWops *src)
 #else
 
 /* Load a GIF type animation from an SDL datasource */
-IMG_Animation *IMG_LoadGIFAnimation_RW(SDL_RWops *src)
+IMG_Animation *IMG_LoadGIFAnimation_IO(SDL_IOStream *src)
 {
     return NULL;
 }
@@ -754,7 +754,7 @@ IMG_Animation *IMG_LoadGIFAnimation_RW(SDL_RWops *src)
 #ifdef LOAD_GIF
 
 /* See if an image is contained in a data source */
-int IMG_isGIF(SDL_RWops *src)
+int IMG_isGIF(SDL_IOStream *src)
 {
     Sint64 start;
     int is_GIF;
@@ -762,24 +762,24 @@ int IMG_isGIF(SDL_RWops *src)
 
     if ( !src )
         return 0;
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_GIF = 0;
-    if ( SDL_RWread(src, magic, sizeof(magic)) == sizeof(magic) ) {
+    if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if ( (SDL_strncmp(magic, "GIF", 3) == 0) &&
              ((SDL_memcmp(magic + 3, "87a", 3) == 0) ||
               (SDL_memcmp(magic + 3, "89a", 3) == 0)) ) {
             is_GIF = 1;
         }
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return(is_GIF);
 }
 
 /* Load a GIF type image from an SDL datasource */
-SDL_Surface *IMG_LoadGIF_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
 {
     SDL_Surface *image = NULL;
-    Anim_t *internal = IMG_LoadGIF_RW_Internal(src, SDL_FALSE);
+    Anim_t *internal = IMG_LoadGIF_IO_Internal(src, SDL_FALSE);
     if (internal) {
         image = internal->frames[0].image;
         SDL_free(internal->frames);
@@ -794,13 +794,13 @@ SDL_Surface *IMG_LoadGIF_RW(SDL_RWops *src)
 #endif
 
 /* See if an image is contained in a data source */
-int IMG_isGIF(SDL_RWops *src)
+int IMG_isGIF(SDL_IOStream *src)
 {
     return(0);
 }
 
 /* Load a GIF type image from an SDL datasource */
-SDL_Surface *IMG_LoadGIF_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
 {
     return(NULL);
 }

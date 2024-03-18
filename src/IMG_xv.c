@@ -26,10 +26,10 @@
 
 #ifdef LOAD_XV
 
-static int get_line(SDL_RWops *src, char *line, int size)
+static int get_line(SDL_IOStream *src, char *line, int size)
 {
     while ( size > 0 ) {
-        if ( SDL_RWread(src, line, 1) != 1 ) {
+        if (SDL_ReadIO(src, line, 1) != 1 ) {
             return -1;
         }
         if ( *line == '\r' ) {
@@ -46,7 +46,7 @@ static int get_line(SDL_RWops *src, char *line, int size)
     return -1;
 }
 
-static int get_header(SDL_RWops *src, int *w, int *h)
+static int get_header(SDL_IOStream *src, int *w, int *h)
 {
     char line[1024];
 
@@ -80,7 +80,7 @@ static int get_header(SDL_RWops *src, int *w, int *h)
 }
 
 /* See if an image is contained in a data source */
-int IMG_isXV(SDL_RWops *src)
+int IMG_isXV(SDL_IOStream *src)
 {
     Sint64 start;
     int is_XV;
@@ -88,17 +88,17 @@ int IMG_isXV(SDL_RWops *src)
 
     if ( !src )
         return 0;
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_XV = 0;
     if ( get_header(src, &w, &h) == 0 ) {
         is_XV = 1;
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return(is_XV);
 }
 
 /* Load a XV thumbnail image from an SDL datasource */
-SDL_Surface *IMG_LoadXV_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadXV_IO(SDL_IOStream *src)
 {
     Sint64 start;
     const char *error = NULL;
@@ -107,10 +107,10 @@ SDL_Surface *IMG_LoadXV_RW(SDL_RWops *src)
     Uint8 *pixels;
 
     if ( !src ) {
-        /* The error message has been set in SDL_RWFromFile */
+        /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
 
     /* Read the header */
     if ( get_header(src, &w, &h) < 0 ) {
@@ -127,7 +127,7 @@ SDL_Surface *IMG_LoadXV_RW(SDL_RWops *src)
 
     /* Load the image data */
     for ( pixels = (Uint8 *)surface->pixels; h > 0; --h ) {
-        if ( SDL_RWread(src, pixels, w) != (size_t)w ) {
+        if (SDL_ReadIO(src, pixels, w) != (size_t)w ) {
             error = "Couldn't read image data";
             goto done;
         }
@@ -136,7 +136,7 @@ SDL_Surface *IMG_LoadXV_RW(SDL_RWops *src)
 
 done:
     if ( error ) {
-        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+        SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
         if ( surface ) {
             SDL_DestroySurface(surface);
             surface = NULL;
@@ -152,13 +152,13 @@ done:
 #endif
 
 /* See if an image is contained in a data source */
-int IMG_isXV(SDL_RWops *src)
+int IMG_isXV(SDL_IOStream *src)
 {
     return(0);
 }
 
 /* Load a XXX type image from an SDL datasource */
-SDL_Surface *IMG_LoadXV_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadXV_IO(SDL_IOStream *src)
 {
     return(NULL);
 }

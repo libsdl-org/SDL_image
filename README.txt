@@ -12,12 +12,12 @@ API:
 
 	SDL_Surface *IMG_Load(const char *file);
 or
-	SDL_Surface *IMG_Load_RW(SDL_RWops *src, SDL_bool freesrc);
+	SDL_Surface *IMG_Load_IO(SDL_IOStream *src, SDL_bool closeio);
 or
-	SDL_Surface *IMG_LoadTyped_RW(SDL_RWops *src, SDL_bool freesrc, char *type);
+	SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, SDL_bool closeio, char *type);
 
 where type is a string specifying the format (i.e. "PNG" or "pcx").
-Note that IMG_Load_RW cannot load TGA images.
+Note that IMG_Load_IO cannot load TGA images.
 
 To create a surface from an XPM image included in C source, use:
 

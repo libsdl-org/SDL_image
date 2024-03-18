@@ -56,7 +56,7 @@ typedef struct
     Sint16  Hpage;      /* height of the screen in pixels */
 } BMHD;
 
-int IMG_isLBM( SDL_RWops *src )
+int IMG_isLBM(SDL_IOStream *src )
 {
     Sint64 start;
     int   is_LBM;
@@ -64,9 +64,9 @@ int IMG_isLBM( SDL_RWops *src )
 
     if ( !src )
         return 0;
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
     is_LBM = 0;
-    if ( SDL_RWread( src, magic, sizeof(magic) ) == sizeof(magic) )
+    if (SDL_ReadIO( src, magic, sizeof(magic) ) == sizeof(magic) )
     {
         if ( !SDL_memcmp( magic, "FORM", 4 ) &&
             ( !SDL_memcmp( magic + 8, "PBM ", 4 ) ||
@@ -75,11 +75,11 @@ int IMG_isLBM( SDL_RWops *src )
             is_LBM = 1;
         }
     }
-    SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return( is_LBM );
 }
 
-SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
+SDL_Surface *IMG_LoadLBM_IO(SDL_IOStream *src )
 {
     Sint64 start;
     SDL_Surface *Image;
@@ -97,19 +97,19 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
     MiniBuf = NULL;
 
     if ( !src ) {
-        /* The error message has been set in SDL_RWFromFile */
+        /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
-    start = SDL_RWtell(src);
+    start = SDL_TellIO(src);
 
-    if ( SDL_RWread( src, id, 4 ) != 4 )
+    if (SDL_ReadIO( src, id, 4 ) != 4 )
     {
         error="error reading IFF chunk";
         goto done;
     }
 
     /* Should be the size of the file minus 4+4 ( 'FORM'+size ) */
-    if ( SDL_RWread( src, &size, 4 ) != 4 )
+    if (SDL_ReadIO( src, &size, 4 ) != 4 )
     {
         error="error reading IFF chunk size";
         goto done;
@@ -123,7 +123,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
         goto done;
     }
 
-    if ( SDL_RWread( src, id, 4 ) != 4 )
+    if (SDL_ReadIO( src, id, 4 ) != 4 )
     {
         error="error reading IFF chunk";
         goto done;
@@ -147,13 +147,13 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
     while ( SDL_memcmp( id, "BODY", 4 ) != 0 )
     {
-        if ( SDL_RWread( src, id, 4 ) != 4 )
+        if (SDL_ReadIO( src, id, 4 ) != 4 )
         {
             error="error reading IFF chunk";
             goto done;
         }
 
-        if ( SDL_RWread( src, &size, 4 ) != 4 )
+        if (SDL_ReadIO( src, &size, 4 ) != 4 )
         {
             error="error reading IFF chunk size";
             goto done;
@@ -165,7 +165,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
         if ( !SDL_memcmp( id, "BMHD", 4 ) ) /* Bitmap header */
         {
-            if ( SDL_RWread( src, &bmhd, sizeof( BMHD ) ) != sizeof( BMHD ) )
+            if (SDL_ReadIO( src, &bmhd, sizeof( BMHD ) ) != sizeof( BMHD ) )
             {
                 error="error reading BMHD chunk";
                 goto done;
@@ -189,7 +189,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
                 goto done;
             }
 
-            if ( SDL_RWread( src, colormap, size ) != size )
+            if (SDL_ReadIO( src, colormap, size ) != size )
             {
                 error="error reading CMAP chunk";
                 goto done;
@@ -202,7 +202,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
         if ( !SDL_memcmp( id, "CAMG", 4 ) ) /* Amiga ViewMode  */
         {
             Uint32 viewmodes;
-            if ( SDL_RWread( src, &viewmodes, sizeof(viewmodes) ) != sizeof(viewmodes) )
+            if (SDL_ReadIO( src, &viewmodes, sizeof(viewmodes) ) != sizeof(viewmodes) )
             {
                 error="error reading CAMG chunk";
                 goto done;
@@ -221,7 +221,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
             if ( size & 1 ) ++size;     /* padding ! */
             size -= bytesloaded;
             /* skip the remaining bytes of this chunk */
-            if ( size ) SDL_RWseek( src, size, SDL_RW_SEEK_CUR );
+            if ( size ) SDL_SeekIO( src, size, SDL_IO_SEEK_CUR );
         }
     }
 
@@ -332,7 +332,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
             {
                 do
                 {
-                    if ( SDL_RWread( src, &count, 1 ) != 1 )
+                    if (SDL_ReadIO( src, &count, 1 ) != 1 )
                     {
                         error="error reading BODY chunk";
                         goto done;
@@ -343,7 +343,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
                         count ^= 0xFF;
                         count += 2; /* now it */
 
-                        if ( ( count > remainingbytes ) || SDL_RWread( src, &color, 1 ) != 1 )
+                        if ( ( count > remainingbytes ) || SDL_ReadIO( src, &color, 1 ) != 1 )
                         {
                             error="error reading BODY chunk";
                             goto done;
@@ -354,7 +354,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
                     {
                         ++count;
 
-                        if ( ( count > remainingbytes ) || SDL_RWread( src, ptr, count ) != count )
+                        if ( ( count > remainingbytes ) || SDL_ReadIO( src, ptr, count ) != count )
                         {
                            error="error reading BODY chunk";
                             goto done;
@@ -368,7 +368,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
             }
             else
             {
-                if ( SDL_RWread( src, ptr, bytesperline ) != bytesperline )
+                if (SDL_ReadIO( src, ptr, bytesperline ) != bytesperline )
                 {
                     error="error reading BODY chunk";
                     goto done;
@@ -484,7 +484,7 @@ done:
 
     if ( error )
     {
-        SDL_RWseek(src, start, SDL_RW_SEEK_SET);
+        SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
         if ( Image ) {
             SDL_DestroySurface( Image );
             Image = NULL;
@@ -501,13 +501,13 @@ done:
 #endif
 
 /* See if an image is contained in a data source */
-int IMG_isLBM(SDL_RWops *src)
+int IMG_isLBM(SDL_IOStream *src)
 {
     return(0);
 }
 
 /* Load an IFF type image from an SDL datasource */
-SDL_Surface *IMG_LoadLBM_RW(SDL_RWops *src)
+SDL_Surface *IMG_LoadLBM_IO(SDL_IOStream *src)
 {
     return(NULL);
 }
