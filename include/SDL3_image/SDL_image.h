@@ -210,9 +210,9 @@ extern DECLSPEC void SDLCALL IMG_Quit(void);
  * by calling: SDL_SetSurfaceColorKey(image, SDL_RLEACCEL,
  * image->format->colorkey);
  *
- * If `closeio` is SDL_TRUE, `src` will be closed before returning,
- * whether this function succeeds or not. SDL_image reads everything it needs
- * from `src` during this call in any case.
+ * If `closeio` is SDL_TRUE, `src` will be closed before returning, whether
+ * this function succeeds or not. SDL_image reads everything it needs from
+ * `src` during this call in any case.
  *
  * Even though this function accepts a file type, SDL_image may still try
  * other decoders that are capable of detecting file type from the contents of
@@ -272,8 +272,8 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_LoadTyped_IO(SDL_IOStream *src, SDL_bo
  * by calling: SDL_SetSurfaceColorKey(image, SDL_RLEACCEL,
  * image->format->colorkey);
  *
- * There is a separate function to read files from an SDL_IOStream, if you need
- * an i/o abstraction to provide data from anywhere instead of a simple
+ * There is a separate function to read files from an SDL_IOStream, if you
+ * need an i/o abstraction to provide data from anywhere instead of a simple
  * filesystem read; that function is IMG_Load_IO().
  *
  * If you are using SDL's 2D rendering API, there is an equivalent call to
@@ -315,9 +315,9 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_Load(const char *file);
  * by calling: SDL_SetSurfaceColorKey(image, SDL_RLEACCEL,
  * image->format->colorkey);
  *
- * If `closeio` is SDL_TRUE, `src` will be closed before returning,
- * whether this function succeeds or not. SDL_image reads everything it needs
- * from `src` during this call in any case.
+ * If `closeio` is SDL_TRUE, `src` will be closed before returning, whether
+ * this function succeeds or not. SDL_image reads everything it needs from
+ * `src` during this call in any case.
  *
  * There is a separate function to read files from disk without having to deal
  * with SDL_IOStream: `IMG_Load("filename.jpg")` will call this function and
@@ -364,8 +364,8 @@ extern DECLSPEC SDL_Surface * SDLCALL IMG_Load_IO(SDL_IOStream *src, SDL_bool cl
  * data (but in many cases, this will just end up being 32-bit RGB or 32-bit
  * RGBA).
  *
- * There is a separate function to read files from an SDL_IOStream, if you need
- * an i/o abstraction to provide data from anywhere instead of a simple
+ * There is a separate function to read files from an SDL_IOStream, if you
+ * need an i/o abstraction to provide data from anywhere instead of a simple
  * filesystem read; that function is IMG_LoadTexture_IO().
  *
  * If you would rather decode an image to an SDL_Surface (a buffer of pixels
@@ -399,14 +399,14 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *renderer, co
  * data (but in many cases, this will just end up being 32-bit RGB or 32-bit
  * RGBA).
  *
- * If `closeio` is SDL_TRUE, `src` will be closed before returning,
- * whether this function succeeds or not. SDL_image reads everything it needs
- * from `src` during this call in any case.
+ * If `closeio` is SDL_TRUE, `src` will be closed before returning, whether
+ * this function succeeds or not. SDL_image reads everything it needs from
+ * `src` during this call in any case.
  *
  * There is a separate function to read files from disk without having to deal
- * with SDL_IOStream: `IMG_LoadTexture(renderer, "filename.jpg")` will call this
- * function and manage those details for you, determining the file type from
- * the filename's extension.
+ * with SDL_IOStream: `IMG_LoadTexture(renderer, "filename.jpg")` will call
+ * this function and manage those details for you, determining the file type
+ * from the filename's extension.
  *
  * There is also IMG_LoadTextureTyped_IO(), which is equivalent to this
  * function except a file extension (like "BMP", "JPG", etc) can be specified,
@@ -446,9 +446,9 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_IO(SDL_Renderer *renderer,
  * data (but in many cases, this will just end up being 32-bit RGB or 32-bit
  * RGBA).
  *
- * If `closeio` is SDL_TRUE, `src` will be closed before returning,
- * whether this function succeeds or not. SDL_image reads everything it needs
- * from `src` during this call in any case.
+ * If `closeio` is SDL_TRUE, `src` will be closed before returning, whether
+ * this function succeeds or not. SDL_image reads everything it needs from
+ * `src` during this call in any case.
  *
  * Even though this function accepts a file type, SDL_image may still try
  * other decoders that are capable of detecting file type from the contents of
@@ -457,9 +457,9 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_IO(SDL_Renderer *renderer,
  * its ability to guess the format.
  *
  * There is a separate function to read files from disk without having to deal
- * with SDL_IOStream: `IMG_LoadTexture("filename.jpg")` will call this function
- * and manage those details for you, determining the file type from the
- * filename's extension.
+ * with SDL_IOStream: `IMG_LoadTexture("filename.jpg")` will call this
+ * function and manage those details for you, determining the file type from
+ * the filename's extension.
  *
  * There is also IMG_LoadTexture_IO(), which is equivalent to this function
  * except that it will rely on SDL_image to determine what type of data it is
@@ -497,11 +497,11 @@ extern DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_IO(SDL_Renderer *rend
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -541,11 +541,11 @@ extern DECLSPEC int SDLCALL IMG_isAVIF(SDL_IOStream *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -584,11 +584,11 @@ extern DECLSPEC int SDLCALL IMG_isICO(SDL_IOStream *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -627,11 +627,11 @@ extern DECLSPEC int SDLCALL IMG_isCUR(SDL_IOStream *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -670,11 +670,11 @@ extern DECLSPEC int SDLCALL IMG_isBMP(SDL_IOStream *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -713,11 +713,11 @@ extern DECLSPEC int SDLCALL IMG_isGIF(SDL_IOStream *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -756,11 +756,11 @@ extern DECLSPEC int SDLCALL IMG_isJPG(SDL_IOStream *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -799,11 +799,11 @@ extern DECLSPEC int SDLCALL IMG_isJXL(SDL_IOStream *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -842,11 +842,11 @@ extern DECLSPEC int SDLCALL IMG_isLBM(SDL_IOStream *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -885,11 +885,11 @@ extern DECLSPEC int SDLCALL IMG_isPCX(SDL_IOStream *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -928,11 +928,11 @@ extern DECLSPEC int SDLCALL IMG_isPNG(SDL_IOStream *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -971,11 +971,11 @@ extern DECLSPEC int SDLCALL IMG_isPNM(SDL_IOStream *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -1014,11 +1014,11 @@ extern DECLSPEC int SDLCALL IMG_isSVG(SDL_IOStream *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -1057,11 +1057,11 @@ extern DECLSPEC int SDLCALL IMG_isQOI(SDL_IOStream *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -1100,11 +1100,11 @@ extern DECLSPEC int SDLCALL IMG_isTIF(SDL_IOStream *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -1143,11 +1143,11 @@ extern DECLSPEC int SDLCALL IMG_isXCF(SDL_IOStream *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -1186,11 +1186,11 @@ extern DECLSPEC int SDLCALL IMG_isXPM(SDL_IOStream *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -1229,11 +1229,11 @@ extern DECLSPEC int SDLCALL IMG_isXV(SDL_IOStream *src);
  * There is no distinction made between "not the filetype in question" and
  * basic i/o errors.
  *
- * This function will always attempt to seek `src` back to where it
- * started when this function was called, but it will not report any errors in
- * doing so, but assuming seeking works, this means you can immediately use
- * this with a different IMG_isTYPE function, or load the image without
- * further seeking.
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
  *
  * You do not need to call this function to load data; SDL_image can work to
  * determine file type in many cases in its standard load functions.
@@ -1990,8 +1990,8 @@ extern DECLSPEC int SDLCALL IMG_SaveAVIF(SDL_Surface *surface, const char *file,
  *
  * If you just want to save to a filename, you can use IMG_SaveAVIF() instead.
  *
- * If `closeio` is SDL_TRUE, `dst` will be closed before returning,
- * whether this function succeeds or not.
+ * If `closeio` is SDL_TRUE, `dst` will be closed before returning, whether
+ * this function succeeds or not.
  *
  * \param surface the SDL surface to save
  * \param dst the SDL_IOStream to save the image data to.
@@ -2027,8 +2027,8 @@ extern DECLSPEC int SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
  *
  * If you just want to save to a filename, you can use IMG_SavePNG() instead.
  *
- * If `closeio` is SDL_TRUE, `dst` will be closed before returning,
- * whether this function succeeds or not.
+ * If `closeio` is SDL_TRUE, `dst` will be closed before returning, whether
+ * this function succeeds or not.
  *
  * \param surface the SDL surface to save
  * \param dst the SDL_IOStream to save the image data to.
@@ -2064,8 +2064,8 @@ extern DECLSPEC int SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *file, 
  *
  * If you just want to save to a filename, you can use IMG_SaveJPG() instead.
  *
- * If `closeio` is SDL_TRUE, `dst` will be closed before returning,
- * whether this function succeeds or not.
+ * If `closeio` is SDL_TRUE, `dst` will be closed before returning, whether
+ * this function succeeds or not.
  *
  * \param surface the SDL surface to save
  * \param dst the SDL_IOStream to save the image data to.
@@ -2111,9 +2111,9 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation(const char *file);
 /**
  * Load an animation from an SDL_IOStream.
  *
- * If `closeio` is SDL_TRUE, `src` will be closed before returning,
- * whether this function succeeds or not. SDL_image reads everything it needs
- * from `src` during this call in any case.
+ * If `closeio` is SDL_TRUE, `src` will be closed before returning, whether
+ * this function succeeds or not. SDL_image reads everything it needs from
+ * `src` during this call in any case.
  *
  * When done with the returned animation, the app should dispose of it with a
  * call to IMG_FreeAnimation().
@@ -2138,9 +2138,9 @@ extern DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation_IO(SDL_IOStream *src, 
  * that it cannot autodetect. If `type` is NULL, SDL_image will rely solely on
  * its ability to guess the format.
  *
- * If `closeio` is SDL_TRUE, `src` will be closed before returning,
- * whether this function succeeds or not. SDL_image reads everything it needs
- * from `src` during this call in any case.
+ * If `closeio` is SDL_TRUE, `src` will be closed before returning, whether
+ * this function succeeds or not. SDL_image reads everything it needs from
+ * `src` during this call in any case.
  *
  * When done with the returned animation, the app should dispose of it with a
  * call to IMG_FreeAnimation().
