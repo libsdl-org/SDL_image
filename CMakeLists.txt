@@ -767,12 +767,19 @@ if(SDL2IMAGE_TIF)
     if(SDL2IMAGE_TIF_ENABLED)
         target_compile_definitions(SDL2_image PRIVATE LOAD_TIF)
         if(SDL2IMAGE_TIF_SHARED)
+            # If TIFF::tiff exists, use that one, otherwise
+            # fallback to TIFF:TIFF
+            if(TARGET TIFF::tiff)
+                set(SDL2IMAGE_TIF_IMPORTED_TARGET "TIFF::tiff")
+            else()
+                set(SDL2IMAGE_TIF_IMPORTED_TARGET "TIFF::TIFF")
+            endif()
             target_include_directories(SDL2_image PRIVATE
-                $<TARGET_PROPERTY:TIFF::TIFF,INCLUDE_DIRECTORIES>
-                $<TARGET_PROPERTY:TIFF::TIFF,INTERFACE_INCLUDE_DIRECTORIES>
-                $<TARGET_PROPERTY:TIFF::TIFF,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
+                $<TARGET_PROPERTY:${SDL2IMAGE_TIF_IMPORTED_TARGET},INCLUDE_DIRECTORIES>
+                $<TARGET_PROPERTY:${SDL2IMAGE_TIF_IMPORTED_TARGET},INTERFACE_INCLUDE_DIRECTORIES>
+                $<TARGET_PROPERTY:${SDL2IMAGE_TIF_IMPORTED_TARGET},INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
             )
-            target_get_dynamic_library(dynamic_tif TIFF::TIFF)
+            target_get_dynamic_library(dynamic_tif ${SDL2IMAGE_TIF_IMPORTED_TARGET})
             message(STATUS "Dynamic libtiff: ${dynamic_tif}")
             target_compile_definitions(SDL2_image PRIVATE "LOAD_TIF_DYNAMIC=\"${dynamic_tif}\"")
             if(SDL2IMAGE_TIF_VENDORED)
