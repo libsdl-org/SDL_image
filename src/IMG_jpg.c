@@ -664,12 +664,14 @@ void IMG_QuitJPG(void)
 /* See if an image is contained in a data source */
 int IMG_isJPG(SDL_IOStream *src)
 {
+    (void)src;
     return(0);
 }
 
 /* Load a JPEG type image from an SDL datasource */
 SDL_Surface *IMG_LoadJPG_IO(SDL_IOStream *src)
 {
+    (void)src;
     return(NULL);
 }
 
@@ -765,6 +767,8 @@ int IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality)
 int IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int quality)
 {
     int result = -1;
+    (void)surface;
+    (void)quality;
 
     if (!dst) {
         return IMG_SetError("Passed NULL dst");
