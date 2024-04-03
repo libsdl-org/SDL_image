@@ -308,11 +308,11 @@ sdl_target_link_option_version_file(${sdl3_image_target_name} "${CMAKE_CURRENT_S
 
 if(NOT ANDROID)
     if(APPLE)
-        # the SOVERSION property corresponds to the compatibility version and VERSION corresponds to the current version
-        # https://cmake.org/cmake/help/latest/prop_tgt/SOVERSION.html#mach-o-versions
+        cmake_minimum_required(VERSION 3.17)
         set_target_properties(${sdl3_image_target_name} PROPERTIES
-            SOVERSION "${DYLIB_COMPAT_VERSION}"
-            VERSION "${DYLIB_CURRENT_VERSION}"
+            SOVERSION "${SO_VERSION_MAJOR}"
+            MACHO_COMPATIBILITY_VERSION "${DYLIB_COMPATIBILITY_VERSION}"
+            MACHO_CURRENT_VERSION "${MACHO_CURRENT_VERSION}"
         )
         sdl_no_deprecated_errors(${sdl3_image_target_name})
     else()
