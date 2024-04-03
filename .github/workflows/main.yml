@@ -69,6 +69,7 @@ jobs:
           autoconf \
           automake \
           jpeg \
+          jpeg-xl \
           libavif \
           libpng \
           libtiff \
