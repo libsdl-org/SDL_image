@@ -96,11 +96,6 @@ jobs:
       if: ${{ runner.os == 'Linux' }}
       run: ./build-scripts/test-versioning.sh
 
-    - name: Set up CMake 3.16
-      if: ${{ !matrix.platform.msystem && !matrix.platform.msvc }}
-      uses: jwlawson/actions-setup-cmake@v1.14
-      with:
-        cmake-version: '3.16'
     - name: Configure (CMake)
       run: |
         export CMAKE_CONFIGURATION_TYPES=Release
