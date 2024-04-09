@@ -90,7 +90,7 @@ extern DECLSPEC const SDL_Version * SDLCALL IMG_Linked_Version(void);
 /**
  * Initialization flags
  */
-typedef enum
+typedef enum IMG_InitFlags
 {
     IMG_INIT_JPG    = 0x00000001,
     IMG_INIT_PNG    = 0x00000002,
@@ -2085,7 +2085,7 @@ extern DECLSPEC int SDLCALL IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *d
  * Animated image support
  * Currently only animated GIFs are supported.
  */
-typedef struct
+typedef struct IMG_Animation
 {
 	int w, h;
 	int count;
