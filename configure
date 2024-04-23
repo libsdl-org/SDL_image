@@ -12661,7 +12661,7 @@ fi
 
   if test "x$sdl_pc" = xyes ; then
     no_sdl=""
-    SDL_CONFIG="pkg-config sdl"
+    SDL_CONFIG="$PKG_CONFIG sdl"
   else
     as_save_PATH="$PATH"
     if test "x$prefix" != xNONE && test "$cross_compiling" != yes; then
