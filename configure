@@ -1708,7 +1708,8 @@ Optional Features:
   --enable-bmp            support loading BMP/ICO/CUR images [default=yes]
   --enable-gif            support loading GIF images [default=yes]
   --enable-jpg            support loading JPG images [default=yes]
-  --enable-jpg-shared     dynamically load JPG support [default=yes]
+  --enable-jpg-shared[=SONAME]
+                          dynamically load JPG support [default=yes]
   --enable-save-jpg       support saving JPG images [default=yes]
   --enable-jxl            support loading JXL images [default=yes]
   --enable-jxl-shared     dynamically load JXL support [default=yes]
@@ -4713,13 +4714,13 @@ then :
 else $as_nop
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:4716: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:4717: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4719: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:4720: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4722: output\"" >&5)
+  (eval echo "\"\$as_me:4723: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -5978,7 +5979,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5981 "configure"' > conftest.$ac_ext
+  echo '#line 5982 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7651,11 +7652,11 @@ else $as_nop
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7654: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7655: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7658: \$? = $ac_status" >&5
+   echo "$as_me:7659: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8001,11 +8002,11 @@ else $as_nop
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8004: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8005: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8008: \$? = $ac_status" >&5
+   echo "$as_me:8009: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8108,11 +8109,11 @@ else $as_nop
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8111: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8112: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8115: \$? = $ac_status" >&5
+   echo "$as_me:8116: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -8164,11 +8165,11 @@ else $as_nop
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8167: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8168: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8171: \$? = $ac_status" >&5
+   echo "$as_me:8172: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10607,7 +10608,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10610 "configure"
+#line 10611 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10704,7 +10705,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10707 "configure"
+#line 10708 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14748,6 +14749,15 @@ fi
                     fi
                     ;;
             esac
+
+            case "$enable_jpg_shared" in #(
+  yes | no) :
+     ;; #(
+  *) :
+    jpg_lib="$enable_jpg_shared" ;; #(
+  *) :
+     ;;
+esac
         else
             { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find JPEG library (http://www.ijg.org/)" >&5
 printf "%s\n" "$as_me: WARNING: *** Unable to find JPEG library (http://www.ijg.org/)" >&2;}
@@ -15960,7 +15970,7 @@ if test x$enable_tif = xyes -a x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; t
 fi
 if test x$enable_jpg = xyes -a x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; then
     CFLAGS="$LIBJPEG_CFLAGS $CFLAGS"
-    if test x$enable_jpg_shared = xyes && test x$jpg_lib != x; then
+    if test x$enable_jpg_shared != xno && test x$jpg_lib != x; then
         echo "-- dynamic libjpeg -> $jpg_lib"
         printf "%s\n" "#define LOAD_JPG_DYNAMIC \"$jpg_lib\"" >>confdefs.h
 
