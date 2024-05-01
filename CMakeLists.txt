@@ -307,19 +307,18 @@ endif()
 sdl_target_link_option_version_file(${sdl3_image_target_name} "${CMAKE_CURRENT_SOURCE_DIR}/src/SDL_image.sym")
 
 if(NOT ANDROID)
+    set_target_properties(${sdl3_image_target_name} PROPERTIES
+        SOVERSION "${SO_VERSION_MAJOR}"
+        VERSION "${SO_VERSION}"
+    )
     if(APPLE)
         cmake_minimum_required(VERSION 3.17)
         set_target_properties(${sdl3_image_target_name} PROPERTIES
-            SOVERSION "${SO_VERSION_MAJOR}"
-            MACHO_COMPATIBILITY_VERSION "${DYLIB_COMPATIBILITY_VERSION}"
-            MACHO_CURRENT_VERSION "${MACHO_CURRENT_VERSION}"
+            MACHO_COMPATIBILITY_VERSION "${DYLIB_COMPAT_VERSION}"
+            MACHO_CURRENT_VERSION "${DYLIB_CURRENT_VERSION}"
         )
         sdl_no_deprecated_errors(${sdl3_image_target_name})
     else()
-        set_target_properties(${sdl3_image_target_name} PROPERTIES
-            SOVERSION "${SO_VERSION_MAJOR}"
-            VERSION "${SO_VERSION}"
-        )
     endif()
 endif()
 if(SDL3IMAGE_BUILD_SHARED_LIBS)
