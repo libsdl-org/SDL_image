@@ -526,6 +526,7 @@ ConvertToRgba32(SDL_Surface **surface_p)
     if ((*surface_p)->format->format != SDL_PIXELFORMAT_RGBA32) {
         SDL_Surface *temp;
 
+        SDL_ClearError();
         temp = SDL_ConvertSurfaceFormat(*surface_p, SDL_PIXELFORMAT_RGBA32);
         SDLTest_AssertCheck(temp != NULL,
                             "Converting to RGBA should succeed (%s)",
@@ -634,16 +635,21 @@ FormatLoadTest(const Format *format,
     SDL_Surface *reference = NULL;
     SDL_Surface *surface = NULL;
     SDL_IOStream *src = NULL;
-    char *filename = GetTestFilename(TEST_FILE_DIST, format->sample);
-    char *refFilename = GetTestFilename(TEST_FILE_DIST, format->reference);
+    char *filename = NULL;
+    char *refFilename = NULL;
     int initResult = 0;
     int diff;
 
+    SDL_ClearError();
+    filename = GetTestFilename(TEST_FILE_DIST, format->sample);
     if (!SDLTest_AssertCheck(filename != NULL,
                              "Building filename should succeed (%s)",
                              SDL_GetError())) {
         goto out;
     }
+
+    SDL_ClearError();
+    refFilename = GetTestFilename(TEST_FILE_DIST, format->reference);
     if (!SDLTest_AssertCheck(refFilename != NULL,
                              "Building ref filename should succeed (%s)",
                              SDL_GetError())) {
@@ -651,6 +657,7 @@ FormatLoadTest(const Format *format,
     }
 
     if (StrHasSuffix(format->reference, ".bmp")) {
+        SDL_ClearError();
         reference = SDL_LoadBMP(refFilename);
         if (!SDLTest_AssertCheck(reference != NULL,
                                  "Loading reference should succeed (%s)",
@@ -660,6 +667,7 @@ FormatLoadTest(const Format *format,
     }
     else if (StrHasSuffix (format->reference, ".png")) {
 #ifdef LOAD_PNG
+        SDL_ClearError();
         reference = IMG_Load(refFilename);
         if (!SDLTest_AssertCheck(reference != NULL,
                                  "Loading reference should succeed (%s)",
@@ -670,6 +678,7 @@ FormatLoadTest(const Format *format,
     }
 
     if (format->initFlag) {
+        SDL_ClearError();
         initResult = IMG_Init(format->initFlag);
         if (!SDLTest_AssertCheck(initResult != 0,
                                  "Initialization should succeed (%s)",
@@ -682,6 +691,7 @@ FormatLoadTest(const Format *format,
     }
 
     if (mode != LOAD_CONVENIENCE) {
+        SDL_ClearError();
         src = SDL_IOFromFile(filename, "rb");
         SDLTest_AssertCheck(src != NULL,
                             "Opening %s should succeed (%s)",
@@ -690,6 +700,7 @@ FormatLoadTest(const Format *format,
             goto out;
     }
 
+    SDL_ClearError();
     switch (mode) {
         case LOAD_CONVENIENCE:
             surface = IMG_Load(filename);
@@ -721,6 +732,7 @@ FormatLoadTest(const Format *format,
                                     filename, format->name, check);
             }
 
+            SDL_ClearError();
             surface = IMG_Load_IO(src, SDL_TRUE);
             src = NULL;      /* ownership taken */
             break;
@@ -795,7 +807,7 @@ static void
 FormatSaveTest(const Format *format,
                SDL_bool rw)
 {
-    char *refFilename = GetTestFilename(TEST_FILE_DIST, "sample.bmp");
+    char *refFilename = NULL;
     char filename[64] = { 0 };
     SDL_Surface *reference = NULL;
     SDL_Surface *surface = NULL;
@@ -809,12 +821,15 @@ FormatSaveTest(const Format *format,
                  rw ? "Rwops" : "",
                  format->name);
 
+    SDL_ClearError();
+    refFilename = GetTestFilename(TEST_FILE_DIST, "sample.bmp");
     if (!SDLTest_AssertCheck(refFilename != NULL,
                              "Building ref filename should succeed (%s)",
                              SDL_GetError())) {
         goto out;
     }
 
+    SDL_ClearError();
     reference = SDL_LoadBMP(refFilename);
     if (!SDLTest_AssertCheck(reference != NULL,
                              "Loading reference should succeed (%s)",
@@ -823,6 +838,7 @@ FormatSaveTest(const Format *format,
     }
 
     if (format->initFlag) {
+        SDL_ClearError();
         initResult = IMG_Init(format->initFlag);
         if (!SDLTest_AssertCheck(initResult != 0,
                                  "Initialization should succeed (%s)",
@@ -834,6 +850,7 @@ FormatSaveTest(const Format *format,
                             format->initFlag, initResult);
     }
 
+    SDL_ClearError();
     if (SDL_strcmp (format->name, "AVIF") == 0) {
         if (rw) {
             dest = SDL_IOFromFile(filename, "wb");
@@ -866,6 +883,7 @@ FormatSaveTest(const Format *format,
     SDLTest_AssertCheck(result == 0, "Save %s (%s)", filename, SDL_GetError());
 
     if (format->canLoad) {
+        SDL_ClearError();
         surface = IMG_Load(filename);
 
         if (!SDLTest_AssertCheck(surface != NULL,
