@@ -168,15 +168,17 @@ jobs:
       run: |
         cmake --build build/ --target package
     - name: Upload artifacts
-      if: ${{ failure() && runner.os == 'Linux' }}
+      if: ${{ failure() }}
       uses: actions/upload-artifact@v3
       with:
-        name: "${{ matrix.platform.name }} artifacts"
+        if-no-files-found: ignore
+        name: "${{ matrix.platform.artifact }}-failure-artifacts"
         path: |
           build/*.bmp
           build/*.jpg
           build/*.png
-        if-no-files-found: ignore
+          build/CMakeCache.txt
+          build/CMakeFiles/*yaml
 
     - name: Verify CMake configuration files
       run: |
