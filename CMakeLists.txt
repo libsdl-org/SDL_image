@@ -318,7 +318,6 @@ if(NOT ANDROID)
             MACHO_CURRENT_VERSION "${DYLIB_CURRENT_VERSION}"
         )
         sdl_no_deprecated_errors(${sdl3_image_target_name})
-    else()
     endif()
 endif()
 if(SDL3IMAGE_BUILD_SHARED_LIBS)
