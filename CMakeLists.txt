@@ -166,7 +166,7 @@ endif()
 cmake_dependent_option(SDL3IMAGE_PNG_SHARED "Dynamically load PNG support (requires shared libpng)"
     ${SDL3IMAGE_DEPS_SHARED} "SDL3IMAGE_PNG;NOT SDL3IMAGE_BACKEND_WIC;NOT SDL3IMAGE_BACKEND_STB;NOT SDL3IMAGE_BACKEND_IMAGEIO" OFF)
 
-if(SDL3IMAGE_VENDORED AND SDL3IMAGE_TIF)
+if(SDL3IMAGE_VENDORED AND SDL3IMAGE_TIF AND NOT (SDL3IMAGE_BACKEND_IMAGEIO OR SDL3IMAGE_BACKEND_WIC))
     set(SDL3IMAGE_TIF_VENDORED ON)
 else()
     set(SDL3IMAGE_TIF_VENDORED OFF)
@@ -813,79 +813,83 @@ endif()
 list(APPEND SDL3IMAGE_BACKENDS TIF)
 set(SDL3IMAGE_TIF_ENABLED FALSE)
 if(SDL3IMAGE_TIF)
-    if(SDL3IMAGE_TIF_VENDORED)
-        set(SDL3IMAGE_TIF_ENABLED TRUE)
-        message(STATUS "${PROJECT_NAME}: Using vendored libtiff")
-        # tiff-tests variable is used by vendored libtiff
-        set(tiff-tests OFF CACHE BOOL "libtiff: tests" FORCE)
-        # jpeg variable is used by vendored libtiff
-        set(jpeg OFF CACHE BOOL "libtiff: jpeg option" FORCE)
-        # libdeflate variable is used by vendored libtiff
-        set(libdeflate OFF CACHE BOOL "libtiff: libdeflate option" FORCE)
-        # DEFLATE_FOUND variable is used by vendored libtiff
-        set(DEFLATE_FOUND OFF CACHE BOOL "libtiff: libdeflate option" FORCE)
-        # zlib variable is used by vendored libtiff (controls use of `find_package`)
-        set(zlib OFF CACHE BOOL "libtiff: find zlib using find_package" FORCE)
-        # ZLIB_FOUND is used by vendored libtiff
-        set(ZLIB_FOUND "")
-        # lzma variable is used by vendored libtiff
-        set(lzma OFF CACHE BOOL "libtiff: lzma option" FORCE)
-        # webp variable is used by vendored libtiff
-        set(webp OFF CACHE BOOL "libtiff: webp option" FORCE)
-        # zstd variable is used by vendored libtiff
-        set(zstd OFF CACHE BOOL "libtiff: zstd option" FORCE)
-        # ZSTD_FOUND variable is used by vendored libtiff
-        set(ZSTD_FOUND OFF)
-        # WEBP_LIBRARY variable is used by vendored libtiff
-        set(WEBP_LIBRARY "")
-        sdl_check_project_in_subfolder(external/libtiff libtiff SDL3IMAGE_VENDORED)
-        set(BUILD_SHARED_LIBS ${SDL3IMAGE_TIF_SHARED})
-        add_subdirectory(external/libtiff EXCLUDE_FROM_ALL)
-        add_library(TIFF::TIFF ALIAS tiff)
-        set(SDL2IMAGE_TIF_TARGET "TIFF::tiff")
-        if(SDL3IMAGE_TIF_SHARED OR NOT SDL3IMAGE_BUILD_SHARED_LIBS)
-          list(APPEND INSTALL_EXTRA_TARGETS tiff)
-        endif()
-        set_target_properties(tiff PROPERTIES EXPORT_NAME external_libtiff)
-        add_library(SDL3_image::external_libtiff ALIAS tiff)
-        if(NOT SDL3IMAGE_TIF_SHARED)
-            list(APPEND PC_LIBS -l$<TARGET_FILE_BASE_NAME:tiff>)
-        endif()
+    if(SDL3IMAGE_BACKEND_IMAGEIO OR SDL3IMAGE_BACKEND_WIC)
+        set(SDL3IMAGE_PNG_ENABLED TRUE)
     else()
-        find_package(TIFF ${required})
-        if(TIFF_FOUND)
-            message(STATUS "${PROJECT_NAME}: Using system libtiff")
+        if(SDL3IMAGE_TIF_VENDORED)
             set(SDL3IMAGE_TIF_ENABLED TRUE)
+            message(STATUS "${PROJECT_NAME}: Using vendored libtiff")
+            # tiff-tests variable is used by vendored libtiff
+            set(tiff-tests OFF CACHE BOOL "libtiff: tests" FORCE)
+            # jpeg variable is used by vendored libtiff
+            set(jpeg OFF CACHE BOOL "libtiff: jpeg option" FORCE)
+            # libdeflate variable is used by vendored libtiff
+            set(libdeflate OFF CACHE BOOL "libtiff: libdeflate option" FORCE)
+            # DEFLATE_FOUND variable is used by vendored libtiff
+            set(DEFLATE_FOUND OFF CACHE BOOL "libtiff: libdeflate option" FORCE)
+            # zlib variable is used by vendored libtiff (controls use of `find_package`)
+            set(zlib OFF CACHE BOOL "libtiff: find zlib using find_package" FORCE)
+            # ZLIB_FOUND is used by vendored libtiff
+            set(ZLIB_FOUND "")
+            # lzma variable is used by vendored libtiff
+            set(lzma OFF CACHE BOOL "libtiff: lzma option" FORCE)
+            # webp variable is used by vendored libtiff
+            set(webp OFF CACHE BOOL "libtiff: webp option" FORCE)
+            # zstd variable is used by vendored libtiff
+            set(zstd OFF CACHE BOOL "libtiff: zstd option" FORCE)
+            # ZSTD_FOUND variable is used by vendored libtiff
+            set(ZSTD_FOUND OFF)
+            # WEBP_LIBRARY variable is used by vendored libtiff
+            set(WEBP_LIBRARY "")
+            sdl_check_project_in_subfolder(external/libtiff libtiff SDL3IMAGE_VENDORED)
+            set(BUILD_SHARED_LIBS ${SDL3IMAGE_TIF_SHARED})
+            add_subdirectory(external/libtiff EXCLUDE_FROM_ALL)
+            add_library(TIFF::TIFF ALIAS tiff)
+            set(SDL2IMAGE_TIF_TARGET "TIFF::tiff")
+            if(SDL3IMAGE_TIF_SHARED OR NOT SDL3IMAGE_BUILD_SHARED_LIBS)
+              list(APPEND INSTALL_EXTRA_TARGETS tiff)
+            endif()
+            set_target_properties(tiff PROPERTIES EXPORT_NAME external_libtiff)
+            add_library(SDL3_image::external_libtiff ALIAS tiff)
             if(NOT SDL3IMAGE_TIF_SHARED)
-                list(APPEND PC_REQUIRES libtiff-4)
+                list(APPEND PC_LIBS -l$<TARGET_FILE_BASE_NAME:tiff>)
             endif()
-            if(TARGET TIFF::tiff)
-                # introduced in CMake 3.28
-                # TIFF::TIFF still exists, but it is an INTERFACE library linking to TIFF::tiff (no ALIAS library)
-                set(SDL2IMAGE_TIF_TARGET "TIFF::tiff")
+        else()
+            find_package(TIFF ${required})
+            if(TIFF_FOUND)
+                message(STATUS "${PROJECT_NAME}: Using system libtiff")
+                set(SDL3IMAGE_TIF_ENABLED TRUE)
+                if(NOT SDL3IMAGE_TIF_SHARED)
+                    list(APPEND PC_REQUIRES libtiff-4)
+                endif()
+                if(TARGET TIFF::tiff)
+                    # introduced in CMake 3.28
+                    # TIFF::TIFF still exists, but it is an INTERFACE library linking to TIFF::tiff (no ALIAS library)
+                    set(SDL2IMAGE_TIF_TARGET "TIFF::tiff")
+                else()
+                    set(SDL2IMAGE_TIF_TARGET "TIFF::TIFF")
+                endif()
             else()
-                set(SDL2IMAGE_TIF_TARGET "TIFF::TIFF")
+                message(${fatal_error} "libtiff NOT found")
             endif()
-        else()
-            message(${fatal_error} "libtiff NOT found")
         endif()
-    endif()
-    if(SDL3IMAGE_TIF_ENABLED)
-        target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_TIF)
-        if(SDL3IMAGE_TIF_SHARED)
-            target_include_directories(${sdl3_image_target_name} PRIVATE
-                $<TARGET_PROPERTY:${SDL2IMAGE_TIF_TARGET},INCLUDE_DIRECTORIES>
-                $<TARGET_PROPERTY:${SDL2IMAGE_TIF_TARGET},INTERFACE_INCLUDE_DIRECTORIES>
-                $<TARGET_PROPERTY:${SDL2IMAGE_TIF_TARGET},INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
-            )
-            target_get_dynamic_library(dynamic_tif ${SDL2IMAGE_TIF_TARGET})
-            message(STATUS "Dynamic libtiff: ${dynamic_tif}")
-            target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_TIF_DYNAMIC=\"${dynamic_tif}\"")
-            if(SDL3IMAGE_TIF_VENDORED)
-                add_dependencies(${sdl3_image_target_name} ${SDL2IMAGE_TIF_TARGET})
+        if(SDL3IMAGE_TIF_ENABLED)
+            target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_TIF)
+            if(SDL3IMAGE_TIF_SHARED)
+                target_include_directories(${sdl3_image_target_name} PRIVATE
+                    $<TARGET_PROPERTY:${SDL2IMAGE_TIF_TARGET},INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:${SDL2IMAGE_TIF_TARGET},INTERFACE_INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:${SDL2IMAGE_TIF_TARGET},INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
+                )
+                target_get_dynamic_library(dynamic_tif ${SDL2IMAGE_TIF_TARGET})
+                message(STATUS "Dynamic libtiff: ${dynamic_tif}")
+                target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_TIF_DYNAMIC=\"${dynamic_tif}\"")
+                if(SDL3IMAGE_TIF_VENDORED)
+                    add_dependencies(${sdl3_image_target_name} ${SDL2IMAGE_TIF_TARGET})
+                endif()
+            else()
+                target_link_libraries(${sdl3_image_target_name} PRIVATE ${SDL2IMAGE_TIF_TARGET})
             endif()
-        else()
-            target_link_libraries(${sdl3_image_target_name} PRIVATE ${SDL2IMAGE_TIF_TARGET})
         endif()
     endif()
 endif()

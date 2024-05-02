@@ -68,7 +68,6 @@ jobs:
           jpeg-xl \
           libavif \
           libpng \
-          libtiff \
           webp \
           zlib \
           ${NULL+}
