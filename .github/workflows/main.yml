@@ -87,7 +87,7 @@ jobs:
       uses: ilammy/setup-nasm@v1
       if: ${{ matrix.platform.vendored && !contains(matrix.platform.shell, 'msys2') }}
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: ${{ matrix.platform.vendored && 'recursive' }}
 
@@ -168,7 +168,7 @@ jobs:
         cmake --build build/ --target package
     - name: Upload artifacts
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         if-no-files-found: ignore
         name: "${{ matrix.platform.artifact }}-failure-artifacts"
@@ -186,7 +186,7 @@ jobs:
           -DTEST_SHARED=${{ matrix.platform.shared }} \
           -DTEST_STATIC=${{ matrix.platform.static }}
         cmake --build cmake_config_build --verbose
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: ${{ always() && steps.build.outcome == 'success' }}
       with:
         if-no-files-found: error
