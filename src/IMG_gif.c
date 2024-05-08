@@ -221,7 +221,6 @@ IMG_LoadGIF_IO_Internal(SDL_IOStream *src, SDL_bool load_anim)
 
     anim = (Anim_t *)SDL_calloc(1, sizeof(*anim));
     if (!anim) {
-        SDL_OutOfMemory();
         return NULL;
     }
 
@@ -242,7 +241,6 @@ IMG_LoadGIF_IO_Internal(SDL_IOStream *src, SDL_bool load_anim)
     }
     state = (State_t *)SDL_calloc(1, sizeof(State_t));
     if (state == NULL) {
-        SDL_OutOfMemory();
         goto done;
     }
     state->Gif89.transparent = -1;
@@ -321,7 +319,6 @@ IMG_LoadGIF_IO_Internal(SDL_IOStream *src, SDL_bool load_anim)
 
             frames = (Frame_t *)SDL_realloc(anim->frames, (anim->count + 1) * sizeof(*anim->frames));
             if (!frames) {
-                SDL_OutOfMemory();
                 goto done;
             }
             ++anim->count;
@@ -728,9 +725,6 @@ IMG_Animation *IMG_LoadGIFAnimation_IO(SDL_IOStream *src)
                 IMG_FreeAnimation(anim);
                 anim = NULL;
             }
-        }
-        if (!anim) {
-            SDL_OutOfMemory();
         }
         SDL_free(internal->frames);
         SDL_free(internal);

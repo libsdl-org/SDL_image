@@ -401,7 +401,6 @@ IMG_Animation *IMG_LoadAnimationTyped_IO(SDL_IOStream *src, SDL_bool closeio, co
             IMG_FreeAnimation(anim);
         }
         SDL_DestroySurface(image);
-        SDL_OutOfMemory();
     }
     return NULL;
 }

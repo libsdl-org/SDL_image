@@ -79,7 +79,6 @@ GetTestFilename(TestFileType type, const char *file)
     if (env != NULL) {
         base = SDL_strdup(env);
         if (base == NULL) {
-            SDL_OutOfMemory();
             return NULL;
         }
     }
@@ -94,9 +93,7 @@ GetTestFilename(TestFileType type, const char *file)
         size_t len = SDL_strlen(base) + SDL_strlen(pathsep) + SDL_strlen(file) + 1;
 
         path = SDL_malloc(len);
-
         if (path == NULL) {
-            SDL_OutOfMemory();
             return NULL;
         }
 
@@ -110,7 +107,6 @@ GetTestFilename(TestFileType type, const char *file)
     } else {
         path = SDL_strdup(file);
         if (path == NULL) {
-            SDL_OutOfMemory();
             return NULL;
         }
     }

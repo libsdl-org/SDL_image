@@ -98,8 +98,9 @@ int IMG_isJXL(SDL_IOStream *src)
     int is_JXL;
     Uint8 magic[12];
 
-    if ( !src )
+    if (!src) {
         return 0;
+    }
     start = SDL_TellIO(src);
     is_JXL = 0;
     if (SDL_ReadIO(src, magic, 2) == 2 ) {
@@ -174,7 +175,7 @@ SDL_Surface *IMG_LoadJXL_IO(SDL_IOStream *src)
     for ( ; ; ) {
         JxlDecoderStatus status = lib.JxlDecoderProcessInput(decoder);
 
-        switch (status ) {
+        switch (status) {
         case JXL_DEC_ERROR:
             IMG_SetError("JXL decoder error");
             goto done;
@@ -201,7 +202,6 @@ SDL_Surface *IMG_LoadJXL_IO(SDL_IOStream *src)
             }
             pixels = SDL_malloc(outputsize);
             if (!pixels) {
-                SDL_OutOfMemory();
                 goto done;
             }
             if ((outputsize / info.ysize) > SDL_MAX_SINT32) {
