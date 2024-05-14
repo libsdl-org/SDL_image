@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
         SDL_DestroyProperties(props);
     }
     if (!renderer) {
-        renderer = SDL_CreateRenderer(window, NULL, 0);
+        renderer = SDL_CreateRenderer(window, NULL);
     }
     if (!renderer) {
         SDL_Log("SDL_CreateRenderer() failed: %s\n", SDL_GetError());
