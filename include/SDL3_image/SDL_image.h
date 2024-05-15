@@ -62,6 +62,8 @@ extern "C" {
  * This function gets the version of the dynamically linked SDL_image library.
  *
  * \returns SDL_image version
+ *
+ * \since This function is available since SDL_image 3.0.0.
  */
 extern DECLSPEC int SDLCALL IMG_Version(void);
 
