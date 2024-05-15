@@ -2,7 +2,7 @@ SDL3_image_0.0.0 {
   global:
     IMG_FreeAnimation;
     IMG_Init;
-    IMG_Linked_Version;
+    IMG_Version;
     IMG_Load;
     IMG_LoadAVIF_IO;
     IMG_LoadAnimation;
