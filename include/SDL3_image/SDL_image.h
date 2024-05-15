@@ -38,37 +38,17 @@ extern "C" {
 #endif
 
 /**
- * Printable format: "%d.%d.%d", MAJOR, MINOR, PATCHLEVEL
+ * Printable format: "%d.%d.%d", MAJOR, MINOR, MICRO
  */
 #define SDL_IMAGE_MAJOR_VERSION 3
 #define SDL_IMAGE_MINOR_VERSION 0
-#define SDL_IMAGE_PATCHLEVEL    0
-
-/**
- * This macro can be used to fill a version structure with the compile-time
- * version of the SDL_image library.
- */
-#define SDL_IMAGE_VERSION(X)                        \
-{                                                   \
-    (X)->major = SDL_IMAGE_MAJOR_VERSION;           \
-    (X)->minor = SDL_IMAGE_MINOR_VERSION;           \
-    (X)->patch = SDL_IMAGE_PATCHLEVEL;              \
-}
-
-#if SDL_IMAGE_MAJOR_VERSION < 3 && SDL_MAJOR_VERSION < 3
+#define SDL_IMAGE_MICRO_VERSION 0
 
 /**
  * This is the version number macro for the current SDL_image version.
- *
- * In versions higher than 2.9.0, the minor version overflows into the
- * thousands digit: for example, 2.23.0 is encoded as 4300. This macro will
- * not be available in SDL 3.x or SDL_image 3.x.
- *
- * Deprecated, use SDL_IMAGE_VERSION_ATLEAST or SDL_IMAGE_VERSION instead.
  */
-#define SDL_IMAGE_COMPILEDVERSION \
-    SDL_VERSIONNUM(SDL_IMAGE_MAJOR_VERSION, SDL_IMAGE_MINOR_VERSION, SDL_IMAGE_PATCHLEVEL)
-#endif /* SDL_IMAGE_MAJOR_VERSION < 3 && SDL_MAJOR_VERSION < 3 */
+#define SDL_IMAGE_VERSION \
+    SDL_VERSIONNUM(SDL_IMAGE_MAJOR_VERSION, SDL_IMAGE_MINOR_VERSION, SDL_IMAGE_MICRO_VERSION)
 
 /**
  * This macro will evaluate to true if compiled with SDL_image at least X.Y.Z.
@@ -76,17 +56,14 @@ extern "C" {
 #define SDL_IMAGE_VERSION_ATLEAST(X, Y, Z) \
     ((SDL_IMAGE_MAJOR_VERSION >= X) && \
      (SDL_IMAGE_MAJOR_VERSION > X || SDL_IMAGE_MINOR_VERSION >= Y) && \
-     (SDL_IMAGE_MAJOR_VERSION > X || SDL_IMAGE_MINOR_VERSION > Y || SDL_IMAGE_PATCHLEVEL >= Z))
+     (SDL_IMAGE_MAJOR_VERSION > X || SDL_IMAGE_MINOR_VERSION > Y || SDL_IMAGE_MICRO_VERSION >= Z))
 
 /**
  * This function gets the version of the dynamically linked SDL_image library.
  *
- * it should NOT be used to fill a version structure, instead you should use
- * the SDL_IMAGE_VERSION() macro.
- *
  * \returns SDL_image version
  */
-extern DECLSPEC const SDL_Version * SDLCALL IMG_Linked_Version(void);
+extern DECLSPEC int SDLCALL IMG_Version(void);
 
 /**
  * Initialization flags

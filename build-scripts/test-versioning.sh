@@ -12,7 +12,7 @@ export LC_CTYPE=C
 header=include/SDL3_image/SDL_image.h
 ref_major=$(sed -ne 's/^#define SDL_IMAGE_MAJOR_VERSION  *//p' $header)
 ref_minor=$(sed -ne 's/^#define SDL_IMAGE_MINOR_VERSION  *//p' $header)
-ref_micro=$(sed -ne 's/^#define SDL_IMAGE_PATCHLEVEL  *//p' $header)
+ref_micro=$(sed -ne 's/^#define SDL_IMAGE_MICRO_VERSION  *//p' $header)
 ref_version="${ref_major}.${ref_minor}.${ref_micro}"
 
 tests=0

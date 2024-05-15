@@ -16,7 +16,7 @@ my $apiprefixregex = undef;
 my $versionfname = 'include/SDL_version.h';
 my $versionmajorregex = '\A\#define\s+SDL_MAJOR_VERSION\s+(\d+)\Z';
 my $versionminorregex = '\A\#define\s+SDL_MINOR_VERSION\s+(\d+)\Z';
-my $versionpatchregex = '\A\#define\s+SDL_PATCHLEVEL\s+(\d+)\Z';
+my $versionmicroregex = '\A\#define\s+SDL_MICRO_VERSION\s+(\d+)\Z';
 my $mainincludefname = 'SDL.h';
 my $selectheaderregex = '\ASDL.*?\.h\Z';
 my $projecturl = 'https://libsdl.org/';
@@ -92,7 +92,7 @@ if (defined $optionsfname) {
             $readmesubdir = $val, next if $key eq 'readmesubdir';
             $versionmajorregex = $val, next if $key eq 'versionmajorregex';
             $versionminorregex = $val, next if $key eq 'versionminorregex';
-            $versionpatchregex = $val, next if $key eq 'versionpatchregex';
+            $versionmicroregex = $val, next if $key eq 'versionmicroregex';
             $versionfname = $val, next if $key eq 'versionfname';
             $mainincludefname = $val, next if $key eq 'mainincludefname';
             $selectheaderregex = $val, next if $key eq 'selectheaderregex';
@@ -2036,19 +2036,19 @@ if ($copy_direction == 1) {  # --copy-to-headers
     open(FH, '<', "$srcpath/$versionfname") or die("Can't open '$srcpath/$versionfname': $!\n");
     my $majorver = 0;
     my $minorver = 0;
-    my $patchver = 0;
+    my $microver = 0;
     while (<FH>) {
         chomp;
         if (/$versionmajorregex/) {
             $majorver = int($1);
         } elsif (/$versionminorregex/) {
             $minorver = int($1);
-        } elsif (/$versionpatchregex/) {
-            $patchver = int($1);
+        } elsif (/$versionmicroregex/) {
+            $microver = int($1);
         }
     }
     close(FH);
-    my $fullversion = "$majorver.$minorver.$patchver";
+    my $fullversion = "$majorver.$minorver.$microver";
 
     foreach (keys %headersyms) {
         my $sym = $_;

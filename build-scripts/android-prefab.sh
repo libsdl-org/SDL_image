@@ -42,8 +42,8 @@ android_stl="c++_shared"
 
 sdlimage_major=$(sed -ne 's/^#define SDL_IMAGE_MAJOR_VERSION  *//p' "${sdlimage_root}/include/SDL3_image/SDL_image.h")
 sdlimage_minor=$(sed -ne 's/^#define SDL_IMAGE_MINOR_VERSION  *//p' "${sdlimage_root}/include/SDL3_image/SDL_image.h")
-sdlimage_patch=$(sed -ne 's/^#define SDL_IMAGE_PATCHLEVEL  *//p' "${sdlimage_root}/include/SDL3_image/SDL_image.h")
-sdlimage_version="${sdlimage_major}.${sdlimage_minor}.${sdlimage_patch}"
+sdlimage_micro=$(sed -ne 's/^#define SDL_IMAGE_MICRO_VERSION  *//p' "${sdlimage_root}/include/SDL3_image/SDL_image.h")
+sdlimage_version="${sdlimage_major}.${sdlimage_minor}.${sdlimage_micro}"
 echo "Building Android prefab package for SDL_image version $sdlimage_version"
 
 if test ! -d "${sdl_build_root}"; then
