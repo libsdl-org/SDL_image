@@ -145,6 +145,13 @@
 			remoteGlobalIDString = BECDF66C0761BA81005FE872;
 			remoteInfo = SDL3;
 		};
+		F3F76C512BF6A84800214E05 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F35475D42829BA80007E9EDA /* avif.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F314F1AE2B62C8AA0006624D;
+			remoteInfo = aom;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -310,6 +317,7 @@
 			isa = PBXGroup;
 			children = (
 				F35475DC2829BA80007E9EDA /* avif.framework */,
+				F3F76C522BF6A84800214E05 /* libaom.a */,
 				F35475DE2829BA80007E9EDA /* libdav1d.a */,
 				F35475E02829BA80007E9EDA /* libdav1d-8bit.a */,
 				F35475E22829BA80007E9EDA /* libdav1d-16bit.a */,
@@ -491,6 +499,13 @@
 			fileType = wrapper.framework;
 			path = SDL3.framework;
 			remoteRef = F3E1F8942A794A3D00AC76D3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F3F76C522BF6A84800214E05 /* libaom.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libaom.a;
+			remoteRef = F3F76C512BF6A84800214E05 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
