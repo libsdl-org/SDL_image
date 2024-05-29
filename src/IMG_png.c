@@ -371,13 +371,13 @@ static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
              format = SDL_PIXELFORMAT_INDEX8;
              break;
           case 12:
-             format = SDL_PIXELFORMAT_RGB444;
+             format = SDL_PIXELFORMAT_XRGB4444;
              break;
           case 15:
-             format = SDL_PIXELFORMAT_RGB555;
+             format = SDL_PIXELFORMAT_XRGB1555;
              break;
           case 16:
-             format = SDL_PIXELFORMAT_RGB565;
+             format = SDL_PIXELFORMAT_XRGB8888;
              break;
 
           default:
