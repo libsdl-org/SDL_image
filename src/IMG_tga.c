@@ -156,7 +156,7 @@ SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
     case 16:
         /* 15 and 16bpp both seem to use 5 bits/plane. The extra alpha bit
            is ignored for now. */
-        format = SDL_PIXELFORMAT_RGB555;
+        format = SDL_PIXELFORMAT_XRGB1555;
         break;
 
     case 32:
