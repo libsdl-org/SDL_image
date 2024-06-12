@@ -110,11 +110,11 @@ SDL_Surface *IMG_LoadPCX_IO(SDL_IOStream *src)
         error = "file truncated";
         goto done;
     }
-    pcxh.Xmin = SDL_SwapLE16(pcxh.Xmin);
-    pcxh.Ymin = SDL_SwapLE16(pcxh.Ymin);
-    pcxh.Xmax = SDL_SwapLE16(pcxh.Xmax);
-    pcxh.Ymax = SDL_SwapLE16(pcxh.Ymax);
-    pcxh.BytesPerLine = SDL_SwapLE16(pcxh.BytesPerLine);
+    pcxh.Xmin = SDL_Swap16LE(pcxh.Xmin);
+    pcxh.Ymin = SDL_Swap16LE(pcxh.Ymin);
+    pcxh.Xmax = SDL_Swap16LE(pcxh.Xmax);
+    pcxh.Ymax = SDL_Swap16LE(pcxh.Ymax);
+    pcxh.BytesPerLine = SDL_Swap16LE(pcxh.BytesPerLine);
 
 #if 0
     printf("Manufacturer = %d\n", pcxh.Manufacturer);

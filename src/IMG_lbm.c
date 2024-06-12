@@ -161,7 +161,7 @@ SDL_Surface *IMG_LoadLBM_IO(SDL_IOStream *src )
 
         bytesloaded = 0;
 
-        size = SDL_SwapBE32( size );
+        size = SDL_Swap32BE( size );
 
         if ( !SDL_memcmp( id, "BMHD", 4 ) ) /* Bitmap header */
         {
@@ -173,13 +173,13 @@ SDL_Surface *IMG_LoadLBM_IO(SDL_IOStream *src )
 
             bytesloaded = sizeof( BMHD );
 
-            bmhd.w      = SDL_SwapBE16( bmhd.w );
-            bmhd.h      = SDL_SwapBE16( bmhd.h );
-            bmhd.x      = SDL_SwapBE16( bmhd.x );
-            bmhd.y      = SDL_SwapBE16( bmhd.y );
-            bmhd.tcolor = SDL_SwapBE16( bmhd.tcolor );
-            bmhd.Lpage  = SDL_SwapBE16( bmhd.Lpage );
-            bmhd.Hpage  = SDL_SwapBE16( bmhd.Hpage );
+            bmhd.w      = SDL_Swap16BE( bmhd.w );
+            bmhd.h      = SDL_Swap16BE( bmhd.h );
+            bmhd.x      = SDL_Swap16BE( bmhd.x );
+            bmhd.y      = SDL_Swap16BE( bmhd.y );
+            bmhd.tcolor = SDL_Swap16BE( bmhd.tcolor );
+            bmhd.Lpage  = SDL_Swap16BE( bmhd.Lpage );
+            bmhd.Hpage  = SDL_Swap16BE( bmhd.Hpage );
         }
 
         if ( !SDL_memcmp( id, "CMAP", 4 ) ) /* palette ( Color Map ) */
@@ -209,7 +209,7 @@ SDL_Surface *IMG_LoadLBM_IO(SDL_IOStream *src )
             }
 
             bytesloaded = size;
-            viewmodes = SDL_SwapBE32( viewmodes );
+            viewmodes = SDL_Swap32BE( viewmodes );
             if ( viewmodes & 0x0800 )
                 flagHAM = 1;
             if ( viewmodes & 0x0080 )
