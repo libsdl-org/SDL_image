@@ -1,6 +1,6 @@
 projectfullname = SDL_image
 projectshortname = SDL_image
-incsubdir =
+incsubdir = include
 wikisubdir = SDL_image
 apiprefixregex = IMG_
 mainincludefname = SDL_image.h
@@ -14,3 +14,6 @@ wikiurl = https://wiki.libsdl.org/SDL_image
 bugreporturl = https://github.com/libsdl-org/sdlwiki/issues/new
 warn_about_missing = 0
 wikipreamble = (This function is part of SDL_image, a separate library from SDL.)
+wikiheaderfiletext = Defined in [<%fname%>](https://github.com/libsdl-org/SDL_image/blob/SDL2/include/%fname%)
+manpageheaderfiletext = Defined in %fname%
+
