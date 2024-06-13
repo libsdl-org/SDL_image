@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
                 }
             }
             /* Draw a background pattern in case the image has transparency */
-            draw_background(renderer, w, h);
+            draw_background(renderer, (int)w, (int)h);
 
             /* Display the image */
             SDL_RenderTexture(renderer, texture, NULL, NULL);
