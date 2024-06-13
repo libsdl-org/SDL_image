@@ -261,7 +261,9 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadTyped_IO(SDL_IOStream *src, SD
  * software surface: call IMG_LoadTexture() instead.
  *
  * When done with the returned surface, the app should dispose of it with a
- * call to SDL_DestroySurface().
+ * call to
+ * [SDL_DestroySurface](https://wiki.libsdl.org/SDL3/SDL_DestroySurface)
+ * ().
  *
  * \param file a path on the filesystem to load an image from.
  * \returns a new SDL surface, or NULL on error.
