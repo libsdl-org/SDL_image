@@ -56,7 +56,8 @@ int main(int argc, char *argv[])
     SDL_Renderer *renderer = NULL;
     SDL_Texture *texture = NULL;
     Uint32 flags;
-    int i, w, h;
+    float w, h;
+    int i;
     int done = 0;
     int quit = 0;
     SDL_Event event;
@@ -165,7 +166,7 @@ int main(int argc, char *argv[])
                 continue;
             }
         }
-        SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+        SDL_GetTextureSize(texture, &w, &h);
 
         /* Save the image file, if desired */
         if (saveFile) {
@@ -195,7 +196,7 @@ int main(int argc, char *argv[])
 
         /* Show the window */
         SDL_SetWindowTitle(window, argv[i]);
-        SDL_SetWindowSize(window, w, h);
+        SDL_SetWindowSize(window, (int)w, (int)h);
         SDL_ShowWindow(window);
 
         done = quit;
