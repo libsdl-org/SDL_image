@@ -61,7 +61,7 @@ extern "C" {
 /**
  * This function gets the version of the dynamically linked SDL_image library.
  *
- * \returns SDL_image version
+ * \returns SDL_image version.
  *
  * \since This function is available since SDL_image 3.0.0.
  */
@@ -1254,7 +1254,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isWEBP(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1288,7 +1288,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadAVIF_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1322,7 +1322,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadICO_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1356,7 +1356,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadCUR_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1390,7 +1390,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadBMP_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1424,7 +1424,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadGIF_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1458,7 +1458,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadJPG_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1492,7 +1492,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadJXL_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1526,7 +1526,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadLBM_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1560,7 +1560,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadPCX_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1594,7 +1594,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadPNG_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1628,7 +1628,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadPNM_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1662,7 +1662,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadSVG_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1696,7 +1696,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadQOI_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1730,7 +1730,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadTGA_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1764,7 +1764,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadTIF_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1798,7 +1798,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadXCF_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1832,7 +1832,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadXPM_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1866,7 +1866,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadXV_IO(SDL_IOStream *src);
  * interface available here.
  *
  * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error
+ * \returns SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1955,11 +1955,11 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArrayToRGB888(char **xp
  *
  * If the file already exists, it will be overwritten.
  *
- * \param surface the SDL surface to save
+ * \param surface the SDL surface to save.
  * \param file path on the filesystem to write new file to.
  * \param quality the desired quality, ranging between 0 (lowest) and 100
- *                (highest)
- * \returns 0 if successful, -1 on error
+ *                (highest).
+ * \returns 0 if successful, -1 on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1975,12 +1975,12 @@ extern SDL_DECLSPEC int SDLCALL IMG_SaveAVIF(SDL_Surface *surface, const char *f
  * If `closeio` is SDL_TRUE, `dst` will be closed before returning, whether
  * this function succeeds or not.
  *
- * \param surface the SDL surface to save
+ * \param surface the SDL surface to save.
  * \param dst the SDL_IOStream to save the image data to.
  * \param closeio SDL_TRUE to close/free the SDL_IOStream before returning,
  *                SDL_FALSE to leave it open.
  * \param quality the desired quality, ranging between 0 (lowest) and 100
- *                (highest)
+ *                (highest).
  * \returns 0 if successful, -1 on error.
  *
  * \since This function is available since SDL_image 3.0.0.
@@ -1994,9 +1994,9 @@ extern SDL_DECLSPEC int SDLCALL IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStre
  *
  * If the file already exists, it will be overwritten.
  *
- * \param surface the SDL surface to save
+ * \param surface the SDL surface to save.
  * \param file path on the filesystem to write new file to.
- * \returns 0 if successful, -1 on error
+ * \returns 0 if successful, -1 on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -2012,7 +2012,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *fi
  * If `closeio` is SDL_TRUE, `dst` will be closed before returning, whether
  * this function succeeds or not.
  *
- * \param surface the SDL surface to save
+ * \param surface the SDL surface to save.
  * \param dst the SDL_IOStream to save the image data to.
  * \param closeio SDL_TRUE to close/free the SDL_IOStream before returning,
  *                SDL_FALSE to leave it open.
@@ -2029,11 +2029,11 @@ extern SDL_DECLSPEC int SDLCALL IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStrea
  *
  * If the file already exists, it will be overwritten.
  *
- * \param surface the SDL surface to save
+ * \param surface the SDL surface to save.
  * \param file path on the filesystem to write new file to.
  * \param quality [0; 33] is Lowest quality, [34; 66] is Middle quality, [67;
- *                100] is Highest quality
- * \returns 0 if successful, -1 on error
+ *                100] is Highest quality.
+ * \returns 0 if successful, -1 on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -2049,12 +2049,12 @@ extern SDL_DECLSPEC int SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *fi
  * If `closeio` is SDL_TRUE, `dst` will be closed before returning, whether
  * this function succeeds or not.
  *
- * \param surface the SDL surface to save
+ * \param surface the SDL surface to save.
  * \param dst the SDL_IOStream to save the image data to.
  * \param closeio SDL_TRUE to close/free the SDL_IOStream before returning,
  *                SDL_FALSE to leave it open.
  * \param quality [0; 33] is Lowest quality, [34; 66] is Middle quality, [67;
- *                100] is Highest quality
+ *                100] is Highest quality.
  * \returns 0 if successful, -1 on error.
  *
  * \since This function is available since SDL_image 3.0.0.
