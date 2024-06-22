@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
             while ( SDL_PollEvent(&event) ) {
                 switch (event.type) {
                     case SDL_EVENT_KEY_UP:
-                        switch (event.key.keysym.sym) {
+                        switch (event.key.key) {
                             case SDLK_LEFT:
                                 if ( i > 1 ) {
                                     i -= 2;
