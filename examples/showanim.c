@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
                                 }
                                 break;
                             case SDLK_ESCAPE:
-                            case SDLK_q:
+                            case SDLK_Q:
                                 argv[i+1] = NULL;
                                 SDL_FALLTHROUGH;
                             case SDLK_SPACE:
