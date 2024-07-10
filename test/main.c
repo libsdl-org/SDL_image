@@ -519,11 +519,11 @@ typedef enum
 static SDL_bool
 ConvertToRgba32(SDL_Surface **surface_p)
 {
-    if ((*surface_p)->format->format != SDL_PIXELFORMAT_RGBA32) {
+    if ((*surface_p)->format != SDL_PIXELFORMAT_RGBA32) {
         SDL_Surface *temp;
 
         SDL_ClearError();
-        temp = SDL_ConvertSurfaceFormat(*surface_p, SDL_PIXELFORMAT_RGBA32);
+        temp = SDL_ConvertSurface(*surface_p, SDL_PIXELFORMAT_RGBA32);
         SDLTest_AssertCheck(temp != NULL,
                             "Converting to RGBA should succeed (%s)",
                             SDL_GetError());
@@ -539,6 +539,7 @@ ConvertToRgba32(SDL_Surface **surface_p)
 static void
 DumpPixels(const char *filename, SDL_Surface *surface)
 {
+    const SDL_Palette *palette = SDL_GetSurfacePalette(surface);
     const unsigned char *pixels = surface->pixels;
     const unsigned char *p;
     size_t w, h, pitch;
@@ -546,21 +547,21 @@ DumpPixels(const char *filename, SDL_Surface *surface)
 
     SDL_Log("%s:\n", filename);
 
-    if (surface->format->palette) {
+    if (palette) {
         size_t n = 0;
 
-        if (surface->format->palette->ncolors >= 0) {
-            n = (size_t) surface->format->palette->ncolors;
+        if (palette->ncolors >= 0) {
+            n = (size_t) palette->ncolors;
         }
 
         SDL_Log("  Palette:\n");
         for (i = 0; i < n; i++) {
             SDL_Log("    RGBA[0x%02x] = %02x%02x%02x%02x\n",
                     (unsigned) i,
-                    surface->format->palette->colors[i].r,
-                    surface->format->palette->colors[i].g,
-                    surface->format->palette->colors[i].b,
-                    surface->format->palette->colors[i].a);
+                    palette->colors[i].r,
+                    palette->colors[i].g,
+                    palette->colors[i].b,
+                    palette->colors[i].a);
         }
     }
 
@@ -589,9 +590,9 @@ DumpPixels(const char *filename, SDL_Surface *surface)
         SDL_Log("    ");
 
         for (i = 0; i < w; i++) {
-            p = pixels + (j * pitch) + (i * surface->format->bytes_per_pixel);
+            p = pixels + (j * pitch) + (i * SDL_BYTESPERPIXEL(surface->format));
 
-            switch (surface->format->bits_per_pixel) {
+            switch (SDL_BITSPERPIXEL(surface->format)) {
                 case 1:
                 case 4:
                 case 8:
