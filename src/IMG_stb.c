@@ -141,17 +141,17 @@ SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src)
 
     if (use_palette) {
         surface = SDL_CreateSurfaceFrom(
-            pixels,
             w,
             h,
-            w,
-            SDL_PIXELFORMAT_INDEX8
+            SDL_PIXELFORMAT_INDEX8,
+            pixels,
+            w
         );
         if (surface) {
             SDL_bool has_colorkey = SDL_FALSE;
             int colorkey_index = -1;
             SDL_bool has_alpha = SDL_FALSE;
-            SDL_Palette *palette = surface->format->palette;
+            SDL_Palette *palette = SDL_GetSurfacePalette(surface);
             if (palette) {
                 int i;
                 Uint8 *palette_bytes = (Uint8 *)palette_colors;
@@ -183,22 +183,22 @@ SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src)
              * https://github.com/nothings/stb/issues/58
              * -flibit
              */
-            surface->flags &= ~SDL_PREALLOC;
+            surface->flags &= ~SDL_SURFACE_PREALLOCATED;
         }
 
     } else if (format == STBI_grey || format == STBI_rgb || format == STBI_rgb_alpha) {
         surface = SDL_CreateSurfaceFrom(
-            pixels,
             w,
             h,
-            w * format,
             (format == STBI_rgb_alpha) ? SDL_PIXELFORMAT_RGBA32 :
             (format == STBI_rgb) ? SDL_PIXELFORMAT_RGB24 :
-            SDL_PIXELFORMAT_INDEX8
+            SDL_PIXELFORMAT_INDEX8,
+            pixels,
+            w * format
         );
         if (surface) {
             /* Set a grayscale palette for gray images */
-            SDL_Palette *palette = surface->format->palette;
+            SDL_Palette *palette = SDL_GetSurfacePalette(surface);
             if (palette) {
                 int i;
 
@@ -214,7 +214,7 @@ SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src)
              * https://github.com/nothings/stb/issues/58
              * -flibit
              */
-            surface->flags &= ~SDL_PREALLOC;
+            surface->flags &= ~SDL_SURFACE_PREALLOCATED;
         }
 
     } else if (format == STBI_grey_alpha) {

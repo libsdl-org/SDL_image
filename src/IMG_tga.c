@@ -189,8 +189,9 @@ SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
         size_t palsiz = ncols * ((hdr.cmap_bits + 7) >> 3);
         if (indexed && !grey) {
             Uint8 *pal = (Uint8 *)SDL_malloc(palsiz), *p = pal;
-            SDL_Color *colors = img->format->palette->colors;
-            img->format->palette->ncolors = ncols;
+            SDL_Palette *palette = SDL_GetSurfacePalette(img);
+            SDL_Color *colors = palette->colors;
+            palette->ncolors = ncols;
             if (SDL_ReadIO(src, pal, palsiz) != palsiz) {
                 error = "Error reading TGA data";
                 goto error;
@@ -227,10 +228,11 @@ SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
     }
 
     if (grey) {
-        SDL_Color *colors = img->format->palette->colors;
+        SDL_Palette *palette = SDL_GetSurfacePalette(img);
+        SDL_Color *colors = palette->colors;
         for(i = 0; i < 256; i++)
             colors[i].r = colors[i].g = colors[i].b = i;
-        img->format->palette->ncolors = 256;
+        palette->ncolors = 256;
     }
 
     if (hdr.flags & TGA_ORIGIN_UPPER) {

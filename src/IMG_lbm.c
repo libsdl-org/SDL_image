@@ -273,15 +273,16 @@ SDL_Surface *IMG_LoadLBM_IO(SDL_IOStream *src )
     /* There is no palette in 24 bits ILBM file */
     if ( nbcolors>0 && flagHAM==0 )
     {
+        SDL_Palette *palette = SDL_GetSurfacePalette(Image);
         /* FIXME: Should this include the stencil? See comment below */
         int nbrcolorsfinal = 1 << (nbplanes + stencil);
         ptr = &colormap[0];
 
         for ( i=0; i<nbcolors; i++ )
         {
-            Image->format->palette->colors[i].r = *ptr++;
-            Image->format->palette->colors[i].g = *ptr++;
-            Image->format->palette->colors[i].b = *ptr++;
+            palette->colors[i].r = *ptr++;
+            palette->colors[i].g = *ptr++;
+            palette->colors[i].b = *ptr++;
         }
 
         /* Amiga EHB mode (Extra-Half-Bright) */
@@ -295,9 +296,9 @@ SDL_Surface *IMG_LoadLBM_IO(SDL_IOStream *src )
             ptr = &colormap[0];
             for ( i=32; i<64; i++ )
             {
-                Image->format->palette->colors[i].r = (*ptr++)/2;
-                Image->format->palette->colors[i].g = (*ptr++)/2;
-                Image->format->palette->colors[i].b = (*ptr++)/2;
+                palette->colors[i].r = (*ptr++)/2;
+                palette->colors[i].g = (*ptr++)/2;
+                palette->colors[i].b = (*ptr++)/2;
             }
         }
 
@@ -308,12 +309,12 @@ SDL_Surface *IMG_LoadLBM_IO(SDL_IOStream *src )
         }
         for ( i=nbcolors; i < (Uint32)nbrcolorsfinal; i++ )
         {
-            Image->format->palette->colors[i].r = Image->format->palette->colors[i%nbcolors].r;
-            Image->format->palette->colors[i].g = Image->format->palette->colors[i%nbcolors].g;
-            Image->format->palette->colors[i].b = Image->format->palette->colors[i%nbcolors].b;
+            palette->colors[i].r = palette->colors[i%nbcolors].r;
+            palette->colors[i].g = palette->colors[i%nbcolors].g;
+            palette->colors[i].b = palette->colors[i%nbcolors].b;
         }
         if ( !pbm )
-            Image->format->palette->ncolors = nbrcolorsfinal;
+            palette->ncolors = nbrcolorsfinal;
     }
 
     /* Get the bitmap */

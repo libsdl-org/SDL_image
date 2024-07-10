@@ -89,11 +89,11 @@ SDL_Surface *IMG_LoadQOI_IO(SDL_IOStream *src)
         return NULL;
     }
 
-    surface = SDL_CreateSurfaceFrom(pixel_data,
-                                    image_info.width,
+    surface = SDL_CreateSurfaceFrom(image_info.width,
                                     image_info.height,
-                                    (image_info.width * 4),
-                                    SDL_PIXELFORMAT_RGBA32);
+                                    SDL_PIXELFORMAT_RGBA32,
+                                    pixel_data,
+                                    (image_info.width * 4));
     if ( !surface ) {
         QOI_FREE(pixel_data);
         IMG_SetError("Couldn't create SDL_Surface");
@@ -101,7 +101,7 @@ SDL_Surface *IMG_LoadQOI_IO(SDL_IOStream *src)
     }
 
     /* Let SDL manage the memory now */
-    surface->flags &= ~SDL_PREALLOC;
+    surface->flags &= ~SDL_SURFACE_PREALLOCATED;
 
     return surface;
 }

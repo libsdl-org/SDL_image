@@ -51,9 +51,9 @@
 #define RWSetMsg        IMG_SetError
 #define ImageNewCmap(w, h, s)   SDL_CreateSurface(w, h, SDL_PIXELFORMAT_INDEX8)
 #define ImageSetCmap(s, i, R, G, B) do { \
-                s->format->palette->colors[i].r = R; \
-                s->format->palette->colors[i].g = G; \
-                s->format->palette->colors[i].b = B; \
+                palette->colors[i].r = R; \
+                palette->colors[i].g = G; \
+                palette->colors[i].b = B; \
             } while (0)
 /* * * * * */
 
@@ -149,15 +149,15 @@ static SDL_bool NormalizeFrames(Frame_t *frames, int count)
 
 
     if (SDL_SurfaceHasColorKey(frames[0].image)) {
-        image = SDL_ConvertSurfaceFormat(frames[0].image, SDL_PIXELFORMAT_ARGB8888);
+        image = SDL_ConvertSurface(frames[0].image, SDL_PIXELFORMAT_ARGB8888);
     } else {
-        image = SDL_ConvertSurfaceFormat(frames[0].image, SDL_PIXELFORMAT_XRGB8888);
+        image = SDL_ConvertSurface(frames[0].image, SDL_PIXELFORMAT_XRGB8888);
     }
     if (!image) {
         return SDL_FALSE;
     }
 
-    fill = SDL_MapRGBA(image->format, 0, 0, 0, SDL_ALPHA_TRANSPARENT);
+    fill = SDL_MapSurfaceRGBA(image, 0, 0, 0, SDL_ALPHA_TRANSPARENT);
 
     rect.x = 0;
     rect.y = 0;
@@ -614,6 +614,7 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
           int gray, int interlace, int ignore, State_t * state)
 {
     Image *image;
+    SDL_Palette *palette;
     unsigned char c;
     int i, v;
     int xpos = 0, ypos = 0, pass = 0;
@@ -647,6 +648,7 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
         SDL_DestroySurface(image);
         return NULL;
     }
+    palette = SDL_GetSurfacePalette(image);
 
     for (i = 0; i < cmapSize; i++)
         ImageSetCmap(image, i, cmap[CM_RED][i],

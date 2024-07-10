@@ -233,11 +233,12 @@ SDL_Surface *IMG_LoadPCX_IO(SDL_IOStream *src)
     }
 
     if ( bits == 8 ) {
-        SDL_Color *colors = surface->format->palette->colors;
+        SDL_Palette *palette = SDL_GetSurfacePalette(surface);
+        SDL_Color *colors = palette->colors;
         int nc = 1 << src_bits;
         int i;
 
-        surface->format->palette->ncolors = nc;
+        palette->ncolors = nc;
         if ( src_bits == 8 ) {
             Uint8 pch;
             Uint8 colormap[768];

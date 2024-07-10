@@ -394,7 +394,7 @@ static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
     if (ckey != -1) {
         if (color_type != PNG_COLOR_TYPE_PALETTE) {
             /* FIXME: Should these be truncated or shifted down? */
-            ckey = SDL_MapRGB(vars->surface->format,
+            ckey = SDL_MapSurfaceRGB(vars->surface,
                          (Uint8)transv->red,
                          (Uint8)transv->green,
                          (Uint8)transv->blue);
@@ -425,7 +425,7 @@ static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
     */
 
     /* Load the palette, if any */
-    palette = vars->surface->format->palette;
+    palette = SDL_GetSurfacePalette(vars->surface);
     if ( palette ) {
         int png_num_palette;
         png_colorp png_palette;
@@ -621,7 +621,7 @@ static int LIBPNG_SavePNG_IO(struct savepng_vars *vars, SDL_Surface *surface, SD
         return -1;
     }
 
-    palette = surface->format->palette;
+    palette = SDL_GetSurfacePalette(surface);
     if (palette) {
         const int ncolors = palette->ncolors;
         int i;
@@ -650,21 +650,21 @@ static int LIBPNG_SavePNG_IO(struct savepng_vars *vars, SDL_Surface *surface, SD
             lib.png_set_tRNS(vars->png_ptr, vars->info_ptr, transparent_table, last_transparent + 1, NULL);
         }
     }
-    else if (surface->format->format == SDL_PIXELFORMAT_RGB24) {
+    else if (surface->format == SDL_PIXELFORMAT_RGB24) {
         /* If the surface is exactly the right RGB format it is just passed through */
         png_color_type = PNG_COLOR_TYPE_RGB;
     }
-    else if (!SDL_ISPIXELFORMAT_ALPHA(surface->format->format)) {
+    else if (!SDL_ISPIXELFORMAT_ALPHA(surface->format)) {
         /* If the surface is not exactly the right RGB format but does not have alpha
            information, it should be converted to RGB24 before being passed through */
         png_color_type = PNG_COLOR_TYPE_RGB;
-        vars->source = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGB24);
+        vars->source = SDL_ConvertSurface(surface, SDL_PIXELFORMAT_RGB24);
     }
-    else if (surface->format->format != png_format) {
+    else if (surface->format != png_format) {
         /* Otherwise, (surface has alpha data), and it is not in the exact right
            format , so it should be converted to that */
         png_color_type = PNG_COLOR_TYPE_RGB_ALPHA;
-        vars->source = SDL_ConvertSurfaceFormat(surface, png_format);
+        vars->source = SDL_ConvertSurface(surface, png_format);
     } else {
         png_color_type = PNG_COLOR_TYPE_RGB_ALPHA;
     }
@@ -759,12 +759,12 @@ static int IMG_SavePNG_IO_miniz(SDL_Surface *surface, SDL_IOStream *dst)
         return IMG_SetError("Passed NULL dst");
     }
 
-    if (surface->format->format == png_format) {
-        png = tdefl_write_image_to_png_file_in_memory(surface->pixels, surface->w, surface->h, surface->format->bytes_per_pixel, surface->pitch, &size);
+    if (surface->format == png_format) {
+        png = tdefl_write_image_to_png_file_in_memory(surface->pixels, surface->w, surface->h, SDL_BYTESPERPIXEL(surface->format), surface->pitch, &size);
     } else {
-        SDL_Surface *cvt = SDL_ConvertSurfaceFormat(surface, png_format);
+        SDL_Surface *cvt = SDL_ConvertSurface(surface, png_format);
         if (cvt) {
-            png = tdefl_write_image_to_png_file_in_memory(cvt->pixels, cvt->w, cvt->h, cvt->format->bytes_per_pixel, cvt->pitch, &size);
+            png = tdefl_write_image_to_png_file_in_memory(cvt->pixels, cvt->w, cvt->h, SDL_BYTESPERPIXEL(cvt->format), cvt->pitch, &size);
             SDL_DestroySurface(cvt);
         }
     }

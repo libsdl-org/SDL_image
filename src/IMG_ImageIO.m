@@ -319,7 +319,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_Index(CGImageRef image_ref)
         const uint8_t* bytes = [data bytes];
         size_t i;
 
-        palette = surface->format->palette;
+        palette = SDL_GetSurfacePalette(surface);
         for (i = 0, entry = entries; i < num_entries; ++i) {
             palette->colors[i].r = entry[0];
             palette->colors[i].g = entry[1];

@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
 
             /* Use the tonemap operator to convert to SDR output */
             SDL_SetStringProperty(SDL_GetSurfaceProperties(surface), SDL_PROP_SURFACE_TONEMAP_OPERATOR_STRING, tonemap);
-            temp = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32);
+            temp = SDL_ConvertSurface(surface, SDL_PIXELFORMAT_RGBA32);
             SDL_DestroySurface(surface);
             if (!temp) {
                 SDL_Log("Couldn't convert surface: %s\n", SDL_GetError());

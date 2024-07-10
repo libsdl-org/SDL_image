@@ -219,11 +219,11 @@ SDL_Surface *IMG_LoadJXL_IO(SDL_IOStream *src)
             break;
         case JXL_DEC_SUCCESS:
             /* All done! */
-            surface = SDL_CreateSurfaceFrom(pixels, info.xsize, info.ysize, pitch, SDL_PIXELFORMAT_RGBA32);
+            surface = SDL_CreateSurfaceFrom(info.xsize, info.ysize, SDL_PIXELFORMAT_RGBA32, pixels, pitch);
             if (surface) {
                 /* Let SDL manage the memory now */
                 pixels = NULL;
-                surface->flags &= ~SDL_PREALLOC;
+                surface->flags &= ~SDL_SURFACE_PREALLOCATED;
             }
             goto done;
         default:

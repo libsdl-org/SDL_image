@@ -527,7 +527,6 @@ static int IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int 
     avifEncoder *encoder = NULL;
     avifRWData avifOutput = AVIF_DATA_EMPTY;
     avifResult rc;
-    const Uint32 surface_format = surface->format->format;
     SDL_Colorspace colorspace;
     Uint16 maxCLL, maxFALL;
     SDL_PropertiesID props;
@@ -557,7 +556,7 @@ static int IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int 
     SDL_zero(rgb);
     lib.avifRGBImageSetDefaults(&rgb, image);
 
-    if (SDL_ISPIXELFORMAT_10BIT(surface_format)) {
+    if (SDL_ISPIXELFORMAT_10BIT(surface->format)) {
         const Uint16 expand_alpha[] = {
             0, 0x155, 0x2aa, 0x3ff
         };
@@ -571,13 +570,13 @@ static int IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int 
         image->depth = 10;
         image->matrixCoefficients = AVIF_MATRIX_COEFFICIENTS_IDENTITY;
 
-        if (SDL_PIXELORDER(surface_format) == SDL_PACKEDORDER_XRGB ||
-            SDL_PIXELORDER(surface_format) == SDL_PACKEDORDER_ARGB) {
+        if (SDL_PIXELORDER(surface->format) == SDL_PACKEDORDER_XRGB ||
+            SDL_PIXELORDER(surface->format) == SDL_PACKEDORDER_ARGB) {
             rgb.format = AVIF_RGB_FORMAT_RGBA;
         } else {
             rgb.format = AVIF_RGB_FORMAT_BGRA;
         }
-        rgb.ignoreAlpha = SDL_ISPIXELFORMAT_ALPHA(surface_format) ? SDL_FALSE : SDL_TRUE;
+        rgb.ignoreAlpha = SDL_ISPIXELFORMAT_ALPHA(surface->format) ? SDL_FALSE : SDL_TRUE;
         rgb.depth = 10;
         rgb.rowBytes = (uint32_t)image->width * 4 * sizeof(Uint16);
         rgb.pixels = (uint8_t *)SDL_malloc(image->height * rgb.rowBytes);
@@ -612,7 +611,7 @@ static int IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int 
         SDL_Surface *temp = NULL;
 
         rgb.depth = 8;
-        switch (surface_format) {
+        switch (surface->format) {
         case SDL_PIXELFORMAT_RGBX32:
         case SDL_PIXELFORMAT_RGBA32:
             rgb.format = AVIF_RGB_FORMAT_RGBA;
@@ -636,17 +635,17 @@ static int IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int 
         default:
             /* Need to convert to a format libavif understands */
             rgb.format = AVIF_RGB_FORMAT_RGBA;
-            if (SDL_ISPIXELFORMAT_ALPHA(surface_format)) {
-                temp = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBA32);
+            if (SDL_ISPIXELFORMAT_ALPHA(surface->format)) {
+                temp = SDL_ConvertSurface(surface, SDL_PIXELFORMAT_RGBA32);
             } else {
-                temp = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_RGBX32);
+                temp = SDL_ConvertSurface(surface, SDL_PIXELFORMAT_RGBX32);
             }
             if (!temp) {
                 goto done;
             }
             break;
         }
-        rgb.ignoreAlpha = SDL_ISPIXELFORMAT_ALPHA(surface_format) ? SDL_FALSE : SDL_TRUE;
+        rgb.ignoreAlpha = SDL_ISPIXELFORMAT_ALPHA(surface->format) ? SDL_FALSE : SDL_TRUE;
         rgb.pixels = (uint8_t *)temp->pixels;
         rgb.rowBytes = (uint32_t)temp->pitch;
 
@@ -755,11 +754,10 @@ int IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int qu
         return IMG_SetError("Passed NULL dst");
     }
 
-#if SDL_IMAGE_SAVE_AVIF
+#ifdef SDL_IMAGE_SAVE_AVIF
     if (result < 0) {
         result = IMG_SaveAVIF_IO_libavif(surface, dst, quality);
     }
-
 #else
     (void) surface;
     (void) quality;

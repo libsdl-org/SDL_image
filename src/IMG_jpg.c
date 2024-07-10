@@ -539,8 +539,8 @@ static int IMG_SaveJPG_IO_jpeglib(SDL_Surface *surface, SDL_IOStream *dst, int q
     }
 
     /* Convert surface to format we can save */
-    if (surface->format->format != jpg_format) {
-        jpeg_surface = SDL_ConvertSurfaceFormat(surface, jpg_format);
+    if (surface->format != jpg_format) {
+        jpeg_surface = SDL_ConvertSurface(surface, jpg_format);
         if (!jpeg_surface) {
             return -1;
         }
@@ -715,8 +715,8 @@ static int IMG_SaveJPG_IO_tinyjpeg(SDL_Surface *surface, SDL_IOStream *dst, int 
     int result = -1;
 
     /* Convert surface to format we can save */
-    if (surface->format->format != jpg_format) {
-        jpeg_surface = SDL_ConvertSurfaceFormat(surface, jpg_format);
+    if (surface->format != jpg_format) {
+        jpeg_surface = SDL_ConvertSurface(surface, jpg_format);
         if (!jpeg_surface) {
             return -1;
         }
