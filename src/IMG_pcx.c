@@ -233,12 +233,20 @@ SDL_Surface *IMG_LoadPCX_IO(SDL_IOStream *src)
     }
 
     if ( bits == 8 ) {
-        SDL_Palette *palette = SDL_GetSurfacePalette(surface);
-        SDL_Color *colors = palette->colors;
         int nc = 1 << src_bits;
+        SDL_Palette *palette;
         int i;
 
+        palette = SDL_CreatePalette(1 << SDL_BITSPERPIXEL(surface->format));
+        if (!palette) {
+            error = "Couldn't create palette";
+            goto done;
+        }
+        if (nc > palette->ncolors) {
+            nc = palette->ncolors;
+        }
         palette->ncolors = nc;
+
         if ( src_bits == 8 ) {
             Uint8 pch;
             Uint8 colormap[768];
@@ -257,17 +265,19 @@ SDL_Surface *IMG_LoadPCX_IO(SDL_IOStream *src)
                 goto done;
             }
             for ( i = 0; i < 256; i++ ) {
-                colors[i].r = colormap[i * 3 + 0];
-                colors[i].g = colormap[i * 3 + 1];
-                colors[i].b = colormap[i * 3 + 2];
+                palette->colors[i].r = colormap[i * 3 + 0];
+                palette->colors[i].g = colormap[i * 3 + 1];
+                palette->colors[i].b = colormap[i * 3 + 2];
             }
         } else {
             for ( i = 0; i < nc; i++ ) {
-                colors[i].r = pcxh.Colormap[i * 3 + 0];
-                colors[i].g = pcxh.Colormap[i * 3 + 1];
-                colors[i].b = pcxh.Colormap[i * 3 + 2];
+                palette->colors[i].r = pcxh.Colormap[i * 3 + 0];
+                palette->colors[i].g = pcxh.Colormap[i * 3 + 1];
+                palette->colors[i].b = pcxh.Colormap[i * 3 + 2];
             }
         }
+        SDL_SetSurfacePalette(surface, palette);
+        SDL_DestroyPalette(palette);
     }
 
 done:

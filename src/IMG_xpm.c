@@ -1056,9 +1056,18 @@ static SDL_Surface *load_xpm(char **xpm, SDL_IOStream *src, SDL_bool force_32bit
         indexed = 1;
         image = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_INDEX8);
         if (image) {
-            SDL_Palette *palette = SDL_GetSurfacePalette(image);
-            im_colors = palette->colors;
+            SDL_Palette *palette = SDL_CreatePalette(1 << SDL_BITSPERPIXEL(image->format));
+            if (!palette) {
+                error = "Couldn't create palette";
+                goto done;
+            }
+            if (ncolors > palette->ncolors) {
+                ncolors = palette->ncolors;
+            }
             palette->ncolors = ncolors;
+            im_colors = palette->colors;
+            SDL_SetSurfacePalette(image, palette);
+            SDL_DestroyPalette(palette);
         }
     } else {
         indexed = 0;

@@ -285,7 +285,6 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_Index(CGImageRef image_ref)
     size_t bytes_per_row = CGImageGetBytesPerRow(image_ref);
 
     SDL_Surface* surface;
-    SDL_Palette* palette;
     CGColorSpaceRef color_space = CGImageGetColorSpace(image_ref);
     CGColorSpaceRef base_color_space = CGColorSpaceGetBaseColorSpace(color_space);
     size_t num_components = CGColorSpaceGetNumberOfComponents(base_color_space);
@@ -319,12 +318,22 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_Index(CGImageRef image_ref)
         const uint8_t* bytes = [data bytes];
         size_t i;
 
-        palette = SDL_GetSurfacePalette(surface);
-        for (i = 0, entry = entries; i < num_entries; ++i) {
-            palette->colors[i].r = entry[0];
-            palette->colors[i].g = entry[1];
-            palette->colors[i].b = entry[2];
-            entry += num_components;
+        if (num_entries > 0) {
+            SDL_Palette* palette = SDL_CreatePalette(1 << SDL_BITSPERPIXEL(surface->format));
+            if (palette) {
+                if (num_entries > (size_t)palette->ncolors) {
+                    num_entries = (size_t)palette->ncolors;
+                }
+                palette->ncolors = num_entries;
+                for (i = 0, entry = entries; i < num_entries; ++i) {
+                    palette->colors[i].r = entry[0];
+                    palette->colors[i].g = entry[1];
+                    palette->colors[i].b = entry[2];
+                    entry += num_components;
+                }
+                SDL_SetSurfacePalette(surface, palette);
+                SDL_DestroyPalette(palette);
+            }
         }
 
         for (i = 0; i < h; ++i) {

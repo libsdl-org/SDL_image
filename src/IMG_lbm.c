@@ -273,10 +273,15 @@ SDL_Surface *IMG_LoadLBM_IO(SDL_IOStream *src )
     /* There is no palette in 24 bits ILBM file */
     if ( nbcolors>0 && flagHAM==0 )
     {
-        SDL_Palette *palette = SDL_GetSurfacePalette(Image);
         /* FIXME: Should this include the stencil? See comment below */
+        SDL_Palette *palette;
         int nbrcolorsfinal = 1 << (nbplanes + stencil);
         ptr = &colormap[0];
+
+        palette = SDL_CreatePalette(1 << SDL_BITSPERPIXEL(Image->format));
+        if (!palette) {
+            goto done;
+        }
 
         for ( i=0; i<nbcolors; i++ )
         {
@@ -315,6 +320,9 @@ SDL_Surface *IMG_LoadLBM_IO(SDL_IOStream *src )
         }
         if ( !pbm )
             palette->ncolors = nbrcolorsfinal;
+
+        SDL_SetSurfacePalette(Image, palette);
+        SDL_DestroyPalette(palette);
     }
 
     /* Get the bitmap */

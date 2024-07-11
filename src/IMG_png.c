@@ -247,7 +247,6 @@ static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
     png_uint_32 width, height;
     int bit_depth, color_type, interlace_type, num_channels;
     Uint32 format;
-    SDL_Palette *palette;
     int row, i;
     int ckey;
     png_color_16 *transv;
@@ -425,25 +424,42 @@ static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
     */
 
     /* Load the palette, if any */
-    palette = SDL_GetSurfacePalette(vars->surface);
-    if ( palette ) {
+    if (SDL_ISPIXELFORMAT_INDEXED(vars->surface->format)) {
+        SDL_Palette *palette = NULL;
         int png_num_palette;
         png_colorp png_palette;
         lib.png_get_PLTE(vars->png_ptr, vars->info_ptr, &png_palette, &png_num_palette);
         if (color_type == PNG_COLOR_TYPE_GRAY) {
-            palette->ncolors = 256;
+            palette = SDL_CreatePalette(256);
+            if (!palette) {
+                vars->error = SDL_GetError();
+                return;
+            }
             for (i = 0; i < 256; i++) {
                 palette->colors[i].r = (Uint8)i;
                 palette->colors[i].g = (Uint8)i;
                 palette->colors[i].b = (Uint8)i;
             }
         } else if (png_num_palette > 0 ) {
+            palette = SDL_CreatePalette(1 << SDL_BITSPERPIXEL(vars->surface->format));
+            if (!palette) {
+                vars->error = SDL_GetError();
+                return;
+            }
+            if (png_num_palette > palette->ncolors) {
+                png_num_palette = palette->ncolors;
+            }
             palette->ncolors = png_num_palette;
-            for ( i=0; i<png_num_palette; ++i ) {
+
+            for (i = 0; i < png_num_palette; ++i) {
                 palette->colors[i].b = png_palette[i].blue;
                 palette->colors[i].g = png_palette[i].green;
                 palette->colors[i].r = png_palette[i].red;
             }
+        }
+        if (palette) {
+            SDL_SetSurfacePalette(vars->surface, palette);
+            SDL_DestroyPalette(palette);
         }
     }
 }
