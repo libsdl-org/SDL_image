@@ -189,13 +189,15 @@ SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
         size_t palsiz = ncols * ((hdr.cmap_bits + 7) >> 3);
         if (indexed && !grey) {
             Uint8 *pal = (Uint8 *)SDL_malloc(palsiz), *p = pal;
-            SDL_Palette *palette = SDL_CreatePalette(1 << SDL_BITSPERPIXEL(img->format));
+            SDL_Palette *palette = SDL_CreateSurfacePalette(img);
             if (!palette) {
                 error = "Couldn't create palette";
+                SDL_free(pal);
                 goto error;
             }
             if (SDL_ReadIO(src, pal, palsiz) != palsiz) {
                 error = "Error reading TGA data";
+                SDL_free(pal);
                 goto error;
             }
             if (ncols > palette->ncolors) {
@@ -226,8 +228,6 @@ SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
                 }
             }
             SDL_free(pal);
-            SDL_SetSurfacePalette(img, palette);
-            SDL_DestroyPalette(palette);
 
             if (ckey >= 0)
                 SDL_SetSurfaceColorKey(img, SDL_TRUE, ckey);
@@ -238,7 +238,7 @@ SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
     }
 
     if (grey) {
-        SDL_Palette *palette = SDL_CreatePalette(256);
+        SDL_Palette *palette = SDL_CreateSurfacePalette(img);
         SDL_Color *colors;
         if (!palette) {
             error = "Couldn't create palette";

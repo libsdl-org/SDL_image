@@ -319,7 +319,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_Index(CGImageRef image_ref)
         size_t i;
 
         if (num_entries > 0) {
-            SDL_Palette* palette = SDL_CreatePalette(1 << SDL_BITSPERPIXEL(surface->format));
+            SDL_Palette* palette = SDL_CreateSurfacePalette(surface);
             if (palette) {
                 if (num_entries > (size_t)palette->ncolors) {
                     num_entries = (size_t)palette->ncolors;
@@ -331,8 +331,6 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_Index(CGImageRef image_ref)
                     palette->colors[i].b = entry[2];
                     entry += num_components;
                 }
-                SDL_SetSurfacePalette(surface, palette);
-                SDL_DestroyPalette(palette);
             }
         }
 

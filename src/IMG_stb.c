@@ -151,7 +151,7 @@ SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src)
             SDL_bool has_colorkey = SDL_FALSE;
             int colorkey_index = -1;
             SDL_bool has_alpha = SDL_FALSE;
-            SDL_Palette *palette = SDL_CreatePalette(256);
+            SDL_Palette *palette = SDL_CreateSurfacePalette(surface);
             if (palette) {
                 int i;
                 Uint8 *palette_bytes = (Uint8 *)palette_colors;
@@ -171,8 +171,6 @@ SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src)
                         }
                     }
                 }
-                SDL_SetSurfacePalette(surface, palette);
-                SDL_DestroyPalette(palette);
             }
             if (has_alpha) {
                 SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_BLEND);
@@ -201,7 +199,7 @@ SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src)
         if (surface) {
             /* Set a grayscale palette for gray images */
             if (surface->format == SDL_PIXELFORMAT_INDEX8) {
-                SDL_Palette *palette = SDL_CreatePalette(256);
+                SDL_Palette *palette = SDL_CreateSurfacePalette(surface);
                 if (palette) {
                     int i;
 
@@ -211,8 +209,6 @@ SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src)
                         palette->colors[i].b = (Uint8)i;
                     }
                 }
-                SDL_SetSurfacePalette(surface, palette);
-                SDL_DestroyPalette(palette);
             }
 
             /* FIXME: This sucks. It'd be better to allocate the surface first, then

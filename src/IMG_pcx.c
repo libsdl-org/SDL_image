@@ -237,7 +237,7 @@ SDL_Surface *IMG_LoadPCX_IO(SDL_IOStream *src)
         SDL_Palette *palette;
         int i;
 
-        palette = SDL_CreatePalette(1 << SDL_BITSPERPIXEL(surface->format));
+        palette = SDL_CreateSurfacePalette(surface);
         if (!palette) {
             error = "Couldn't create palette";
             goto done;
@@ -276,8 +276,6 @@ SDL_Surface *IMG_LoadPCX_IO(SDL_IOStream *src)
                 palette->colors[i].b = pcxh.Colormap[i * 3 + 2];
             }
         }
-        SDL_SetSurfacePalette(surface, palette);
-        SDL_DestroyPalette(palette);
     }
 
 done:

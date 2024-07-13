@@ -278,7 +278,7 @@ SDL_Surface *IMG_LoadLBM_IO(SDL_IOStream *src )
         int nbrcolorsfinal = 1 << (nbplanes + stencil);
         ptr = &colormap[0];
 
-        palette = SDL_CreatePalette(1 << SDL_BITSPERPIXEL(Image->format));
+        palette = SDL_CreateSurfacePalette(Image);
         if (!palette) {
             goto done;
         }
@@ -320,9 +320,6 @@ SDL_Surface *IMG_LoadLBM_IO(SDL_IOStream *src )
         }
         if ( !pbm )
             palette->ncolors = nbrcolorsfinal;
-
-        SDL_SetSurfacePalette(Image, palette);
-        SDL_DestroyPalette(palette);
     }
 
     /* Get the bitmap */

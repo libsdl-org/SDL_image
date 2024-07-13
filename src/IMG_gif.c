@@ -645,7 +645,7 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
         return NULL;
     }
 
-    palette = SDL_CreatePalette(1 << SDL_BITSPERPIXEL(image->format));
+    palette = SDL_CreateSurfacePalette(image);
     if (!palette) {
         return NULL;
     }
@@ -656,8 +656,6 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
     for (i = 0; i < cmapSize; i++) {
         ImageSetCmap(image, i, cmap[CM_RED][i], cmap[CM_GREEN][i], cmap[CM_BLUE][i]);
     }
-    SDL_SetSurfacePalette(image, palette);
-    SDL_DestroyPalette(palette);
 
     while ((v = LWZReadByte(src, FALSE, c, state)) >= 0) {
         ((Uint8 *)image->pixels)[xpos + ypos * image->pitch] = (Uint8)v;

@@ -430,7 +430,7 @@ static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
         png_colorp png_palette;
         lib.png_get_PLTE(vars->png_ptr, vars->info_ptr, &png_palette, &png_num_palette);
         if (color_type == PNG_COLOR_TYPE_GRAY) {
-            palette = SDL_CreatePalette(256);
+            palette = SDL_CreateSurfacePalette(vars->surface);
             if (!palette) {
                 vars->error = SDL_GetError();
                 return;
@@ -441,7 +441,7 @@ static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
                 palette->colors[i].b = (Uint8)i;
             }
         } else if (png_num_palette > 0 ) {
-            palette = SDL_CreatePalette(1 << SDL_BITSPERPIXEL(vars->surface->format));
+            palette = SDL_CreateSurfacePalette(vars->surface);
             if (!palette) {
                 vars->error = SDL_GetError();
                 return;
@@ -456,10 +456,6 @@ static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
                 palette->colors[i].g = png_palette[i].green;
                 palette->colors[i].r = png_palette[i].red;
             }
-        }
-        if (palette) {
-            SDL_SetSurfacePalette(vars->surface, palette);
-            SDL_DestroyPalette(palette);
         }
     }
 }
