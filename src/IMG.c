@@ -227,7 +227,7 @@ SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, SDL_bool closeio, const char *t
 
 #ifdef __EMSCRIPTEN__
     /*load through preloadedImages*/
-    FILE *fp = (FILE *)SDL_GetProperty(SDL_GetIOProperties(src), SDL_PROP_IOSTREAM_STDIO_FILE_POINTER, NULL);
+    FILE *fp = (FILE *)SDL_GetPointerProperty(SDL_GetIOProperties(src), SDL_PROP_IOSTREAM_STDIO_FILE_POINTER, NULL);
     if (fp) {
         int w, h, success;
         char *data;
