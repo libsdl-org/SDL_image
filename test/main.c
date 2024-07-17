@@ -65,22 +65,14 @@ GetStringBoolean(const char *value, SDL_bool default_value)
 static char *
 GetTestFilename(TestFileType type, const char *file)
 {
-    const char *env;
-    char *base = NULL;
+    const char *base;
     char *path = NULL;
     SDL_bool needPathSep = SDL_TRUE;
 
     if (type == TEST_FILE_DIST) {
-        env = SDL_getenv("SDL_TEST_SRCDIR");
+        base = SDL_getenv("SDL_TEST_SRCDIR");
     } else {
-        env = SDL_getenv("SDL_TEST_BUILDDIR");
-    }
-
-    if (env != NULL) {
-        base = SDL_strdup(env);
-        if (base == NULL) {
-            return NULL;
-        }
+        base = SDL_getenv("SDL_TEST_BUILDDIR");
     }
 
     if (base == NULL) {
@@ -102,8 +94,6 @@ GetTestFilename(TestFileType type, const char *file)
         } else {
             SDL_snprintf(path, len, "%s%s", base, file);
         }
-
-        SDL_free(base);
     } else {
         path = SDL_strdup(file);
         if (path == NULL) {
