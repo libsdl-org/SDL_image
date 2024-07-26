@@ -468,7 +468,7 @@ SDL_Surface *IMG_LoadAVIF_IO(SDL_IOStream *src)
                                                               image->transferCharacteristics,
                                                               SDL_MATRIX_COEFFICIENTS_IDENTITY,
                                                               SDL_CHROMA_LOCATION_NONE);
-            SDL_SetNumberProperty(props, SDL_PROP_SURFACE_COLORSPACE_NUMBER, colorspace);
+            SDL_SetSurfaceColorspace(surface, colorspace);
             if (image->clli.maxCLL > 0) {
                 maxCLL = image->clli.maxCLL;
                 SDL_SetNumberProperty(props, SDL_PROP_SURFACE_MAXCLL_NUMBER, image->clli.maxCLL);
@@ -537,8 +537,8 @@ static int IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int 
     }
 
     /* Get the colorspace and light level properties, if any */
+    colorspace = SDL_GetSurfaceColorspace(surface);
     props = SDL_GetSurfaceProperties(surface);
-    colorspace = (SDL_Colorspace)SDL_GetNumberProperty(props, SDL_PROP_SURFACE_COLORSPACE_NUMBER, SDL_COLORSPACE_RGB_DEFAULT);
     maxCLL = (Uint16)SDL_GetNumberProperty(props, SDL_PROP_SURFACE_MAXCLL_NUMBER, 0);
     maxFALL = (Uint16)SDL_GetNumberProperty(props, SDL_PROP_SURFACE_MAXFALL_NUMBER, 0);
 
