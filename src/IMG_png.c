@@ -336,13 +336,13 @@ static void LIBPNG_LoadPNG_RW(SDL_RWops *src, struct loadpng_vars *vars)
                 /* more than one transparent index, or translucency */
                 lib.png_set_expand(vars->png_ptr);
             }
+        } else if (color_type == PNG_COLOR_TYPE_GRAY) {
+            /* This will be turned into PNG_COLOR_TYPE_GRAY_ALPHA, so expand to RGBA */
+            lib.png_set_gray_to_rgb(vars->png_ptr);
         } else {
             ckey = 0; /* actual value will be set later */
         }
     }
-
-    if ( color_type == PNG_COLOR_TYPE_GRAY_ALPHA )
-        lib.png_set_gray_to_rgb(vars->png_ptr);
 
     lib.png_read_update_info(vars->png_ptr, vars->info_ptr);
 
