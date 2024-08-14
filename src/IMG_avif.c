@@ -84,11 +84,11 @@ static struct {
     if (lib.FUNC == NULL) { IMG_SetError("Missing avif.framework"); return -1; }
 #endif
 
-int IMG_InitAVIF(void)
 #ifdef __APPLE__
     /* Need to turn off optimizations so weak framework load check works */
     __attribute__ ((optnone))
 #endif
+int IMG_InitAVIF(void)
 {
     if ( lib.loaded == 0 ) {
 #ifdef LOAD_AVIF_DYNAMIC

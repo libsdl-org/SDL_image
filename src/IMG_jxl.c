@@ -52,11 +52,11 @@ static struct {
     if (lib.FUNC == NULL) { IMG_SetError("Missing jxl.framework"); return -1; }
 #endif
 
-int IMG_InitJXL(void)
 #ifdef __APPLE__
     /* Need to turn off optimizations so weak framework load check works */
     __attribute__ ((optnone))
 #endif
+int IMG_InitJXL(void)
 {
     if ( lib.loaded == 0 ) {
 #ifdef LOAD_JXL_DYNAMIC
