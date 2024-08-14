@@ -1082,7 +1082,7 @@ main(int argc, char *argv[])
     }
 
     /* Call Harness */
-    result = SDLTest_RunSuites(testSuites, (const char *)userRunSeed, userExecKey, (const char *)filter, testIterations);
+    result = SDLTest_RunSuites(testSuites, (const char *)userRunSeed, userExecKey, (const char *)filter, testIterations, SDL_FALSE);
 
     /* Empty event queue */
     done = 0;
