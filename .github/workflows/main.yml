@@ -16,9 +16,9 @@ jobs:
       matrix:
         platform:
         - { name: Windows (MSVC),    os: windows-latest, shell: sh,  vendored: true, msvc: 1, shared: 1, static: 0, artifact: 'SDL3_image-VC-x64',
-            cmake: '-DSDL3IMAGE_BACKEND_STB=OFF -DPerl_ROOT=C:/Strawberry/perl/bin/ -GNinja -DCMAKE_POLICY_DEFAULT_CMP0141=NEW -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=ProgramDatabase -DCMAKE_EXE_LINKER_FLAGS=-DEBUG -DCMAKE_SHARED_LINKER_FLAGS=-DEBUG' }
+            cmake: '-DSDLIMAGE_BACKEND_STB=OFF -DPerl_ROOT=C:/Strawberry/perl/bin/ -GNinja -DCMAKE_POLICY_DEFAULT_CMP0141=NEW -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=ProgramDatabase -DCMAKE_EXE_LINKER_FLAGS=-DEBUG -DCMAKE_SHARED_LINKER_FLAGS=-DEBUG' }
         - { name: Windows (mingw64), os: windows-latest, shell: 'msys2 {0}', vendored: false, msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0, artifact: 'SDL3_image-mingw64',
-            cmake: '-DSDL3IMAGE_BACKEND_STB=OFF -DSDL3IMAGE_BACKEND_WIC=OFF  -DSDL3IMAGE_AVIF=ON -G "Ninja Multi-Config"' }
+            cmake: '-DSDLIMAGE_BACKEND_STB=OFF -DSDLIMAGE_BACKEND_WIC=OFF  -DSDLIMAGE_AVIF=ON -G "Ninja Multi-Config"' }
         - { name: Linux,             os: ubuntu-latest,  shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0, noavif: true, nojxl: true, artifact: 'SDL3_image-linux-x64' }
         - { name: 'Linux (static)',  os: ubuntu-latest,  shell: sh,  vendored: true, cmake: '-DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1, artifact: 'SDL3_image-static-linux-x64' }
         - { name: Macos,             os: macos-latest,   shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0, artifact: 'SDL3_image-macos' }
@@ -97,19 +97,19 @@ jobs:
       run: |
         export CMAKE_CONFIGURATION_TYPES=Release
         cmake -B build \
-          -DSDL3IMAGE_VENDORED=${{ matrix.platform.vendored }} \
+          -DSDLIMAGE_VENDORED=${{ matrix.platform.vendored }} \
           -DBUILD_SHARED_LIBS=ON \
           -DCMAKE_BUILD_TYPE=Release \
-          -DSDL3IMAGE_SAMPLES=ON \
-          -DSDL3IMAGE_TESTS=ON \
-          -DSDL3IMAGE_TESTS_INSTALL=ON \
-          -DSDL3IMAGE_AVIF=${{ !matrix.platform.noavif }} \
-          -DSDL3IMAGE_JXL=${{ !matrix.platform.nojxl }} \
-          -DSDL3IMAGE_TIF=ON \
-          -DSDL3IMAGE_WEBP=ON \
-          -DSDL3IMAGE_STRICT=ON \
-          -DSDL3IMAGE_WERROR=ON \
-          -DSDL3IMAGE_INSTALL_MAN=ON \
+          -DSDLIMAGE_SAMPLES=ON \
+          -DSDLIMAGE_TESTS=ON \
+          -DSDLIMAGE_TESTS_INSTALL=ON \
+          -DSDLIMAGE_AVIF=${{ !matrix.platform.noavif }} \
+          -DSDLIMAGE_JXL=${{ !matrix.platform.nojxl }} \
+          -DSDLIMAGE_TIF=ON \
+          -DSDLIMAGE_WEBP=ON \
+          -DSDLIMAGE_STRICT=ON \
+          -DSDLIMAGE_WERROR=ON \
+          -DSDLIMAGE_INSTALL_MAN=ON \
           -DCMAKE_INSTALL_PREFIX=prefix_cmake \
           -DCMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE=$PWD/build \
           -DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE=$PWD/build \
