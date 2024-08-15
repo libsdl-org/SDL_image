@@ -4,7 +4,7 @@
 Build-time tests
 ----------------
 
-Configure with `--enable-tests` (Autotools) or `-DSDL3IMAGE_TESTS` (CMake).
+Configure with `--enable-tests` (Autotools) or `-DSDLIMAGE_TESTS` (CMake).
 
 Run build-time tests in the usual way, for example `make check`
 (Autotools), or `ctest` or `make test` (CMake).
@@ -17,7 +17,7 @@ run on a target platform as a somewhat realistic equivalent of how a
 game would behave.
 
 Configure with `--enable-tests --enable-installed-tests` (Autotools) or
-`-DSDL3IMAGE_TESTS -DSDL3IMAGE_TESTS_INSTALL` (CMake).
+`-DSDLIMAGE_TESTS -DSDLIMAGE_TESTS_INSTALL` (CMake).
 
 The tests and their required resource files are installed into
 `${libexecdir}/installed-tests/SDL3_image`. When run, they will write
