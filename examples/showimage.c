@@ -182,7 +182,8 @@ int main(int argc, char *argv[])
                 } else if (ext && SDL_strcasecmp(ext, ".png") == 0) {
                     result = IMG_SavePNG(surface, saveFile);
                 } else {
-                    result = SDL_SetError("Unknown save file type");
+                    SDL_SetError("Unknown save file type");
+                    result = -1;
                 }
                 if (result < 0) {
                     SDL_Log("Couldn't save %s: %s\n", saveFile, SDL_GetError());

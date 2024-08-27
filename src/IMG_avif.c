@@ -751,7 +751,8 @@ int IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int qu
     int result = -1;
 
     if (!dst) {
-        return IMG_SetError("Passed NULL dst");
+        IMG_SetError("Passed NULL dst");
+        return -1;
     }
 
 #ifdef SDL_IMAGE_SAVE_AVIF
@@ -761,7 +762,8 @@ int IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int qu
 #else
     (void) surface;
     (void) quality;
-    result = IMG_SetError("SDL_image built without AVIF save support");
+    IMG_SetError("SDL_image built without AVIF save support");
+    result = -1;
 #endif
 
     if (closeio) {

@@ -613,7 +613,8 @@ static int LIBPNG_SavePNG_IO(struct savepng_vars *vars, SDL_Surface *surface, SD
 
     vars->png_ptr = lib.png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (vars->png_ptr == NULL) {
-        return IMG_SetError("Couldn't allocate memory for PNG file or incompatible PNG dll");
+        IMG_SetError("Couldn't allocate memory for PNG file or incompatible PNG dll");
+        return -1;
     }
 
     vars->info_ptr = lib.png_create_info_struct(vars->png_ptr);
@@ -768,7 +769,8 @@ static int IMG_SavePNG_IO_miniz(SDL_Surface *surface, SDL_IOStream *dst)
     int result = -1;
 
     if (!dst) {
-        return IMG_SetError("Passed NULL dst");
+        IMG_SetError("Passed NULL dst");
+        return -1;
     }
 
     if (surface->format == png_format) {
@@ -786,7 +788,8 @@ static int IMG_SavePNG_IO_miniz(SDL_Surface *surface, SDL_IOStream *dst)
         }
         mz_free(png); /* calls SDL_free() */
     } else {
-        return IMG_SetError("Failed to convert and save image");
+        IMG_SetError("Failed to convert and save image");
+        return -1;
     }
     return result;
 }
@@ -809,7 +812,8 @@ int IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio)
     int result = -1;
 
     if (!dst) {
-        return IMG_SetError("Passed NULL dst");
+        IMG_SetError("Passed NULL dst");
+        return -1;
     }
 
 #if SDL_IMAGE_SAVE_PNG
@@ -826,7 +830,8 @@ int IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio)
 #endif
 
 #else
-    result = IMG_SetError("SDL_image built without PNG save support");
+    IMG_SetError("SDL_image built without PNG save support");
+    result = -1;
 #endif
 
     if (closeio) {

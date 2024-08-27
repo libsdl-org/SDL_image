@@ -497,7 +497,8 @@ static int JPEG_SaveJPEG_IO(struct savejpeg_vars *vars, SDL_Surface *jpeg_surfac
         /* If we get here, libjpeg found an error */
         lib.jpeg_destroy_compress(&vars->cinfo);
         SDL_SeekIO(dst, vars->original_offset, SDL_IO_SEEK_SET);
-        return IMG_SetError("Error saving JPEG with libjpeg");
+        IMG_SetError("Error saving JPEG with libjpeg");
+        return -1;
     }
 
     lib.jpeg_create_compress(&vars->cinfo);
@@ -771,7 +772,8 @@ int IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int qua
     (void)quality;
 
     if (!dst) {
-        return IMG_SetError("Passed NULL dst");
+        IMG_SetError("Passed NULL dst");
+        return -1;
     }
 
 #if SDL_IMAGE_SAVE_JPG
@@ -788,7 +790,8 @@ int IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int qua
 #endif
 
 #else
-    result = IMG_SetError("SDL_image built without JPEG save support");
+    IMG_SetError("SDL_image built without JPEG save support");
+    result = -1;
 #endif
 
     if (closeio) {
