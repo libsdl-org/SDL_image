@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (SDL_Init(SDL_INIT_VIDEO) == -1) {
+    if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("SDL_Init(SDL_INIT_VIDEO) failed: %s\n", SDL_GetError());
         result = 2;
         goto done;
