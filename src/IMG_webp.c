@@ -66,10 +66,10 @@ static struct {
 #else
 #define FUNCTION_LOADER_LIBWEBP(FUNC, SIG) \
     lib.FUNC = FUNC; \
-    if (lib.FUNC == NULL) { IMG_SetError("Missing webp.framework"); return -1; }
+    if (lib.FUNC == NULL) { SDL_SetError("Missing webp.framework"); return -1; }
 #define FUNCTION_LOADER_LIBWEBPDEMUX(FUNC, SIG) \
     lib.FUNC = FUNC; \
-    if (lib.FUNC == NULL) { IMG_SetError("Missing webpdemux.framework"); return -1; }
+    if (lib.FUNC == NULL) { SDL_SetError("Missing webpdemux.framework"); return -1; }
 #endif
 
 #ifdef __APPLE__
@@ -115,16 +115,18 @@ void IMG_QuitWEBP(void)
     --lib.loaded;
 }
 
-static int webp_getinfo(SDL_IOStream *src, size_t *datasize) {
+static SDL_bool webp_getinfo(SDL_IOStream *src, size_t *datasize)
+{
     Sint64 start, size;
-    int is_WEBP;
+    SDL_bool is_WEBP;
     Uint8 magic[20];
 
     if (!src) {
-        return 0;
+        return SDL_FALSE;
     }
+
     start = SDL_TellIO(src);
-    is_WEBP = 0;
+    is_WEBP = SDL_FALSE;
     if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic)) {
         if (magic[ 0] == 'R' &&
             magic[ 1] == 'I' &&
@@ -138,7 +140,7 @@ static int webp_getinfo(SDL_IOStream *src, size_t *datasize) {
             magic[13] == 'P' &&
             magic[14] == '8' &&
            (magic[15] == ' ' || magic[15] == 'X' || magic[15] == 'L')) {
-            is_WEBP = 1;
+            is_WEBP = SDL_TRUE;
             if (datasize) {
                 size = SDL_GetIOSize(src);
                 if (size > 0) {
@@ -150,11 +152,11 @@ static int webp_getinfo(SDL_IOStream *src, size_t *datasize) {
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
-    return(is_WEBP);
+    return is_WEBP;
 }
 
 /* See if an image is contained in a data source */
-int IMG_isWEBP(SDL_IOStream *src)
+SDL_bool IMG_isWEBP(SDL_IOStream *src)
 {
     return webp_getinfo(src, NULL);
 }
@@ -252,7 +254,7 @@ error:
     }
 
     if (error) {
-        IMG_SetError("%s", error);
+        SDL_SetError("%s", error);
     }
 
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
@@ -372,7 +374,7 @@ error:
     }
 
     if (error) {
-        IMG_SetError("%s", error);
+        SDL_SetError("%s", error);
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return NULL;
@@ -385,7 +387,7 @@ error:
 
 int IMG_InitWEBP(void)
 {
-    IMG_SetError("WEBP images are not supported");
+    SDL_SetError("WEBP images are not supported");
     return -1;
 }
 
@@ -394,11 +396,11 @@ void IMG_QuitWEBP(void)
 }
 
 /* See if an image is contained in a data source */
-int IMG_isWEBP(SDL_IOStream *src)
+SDL_bool IMG_isWEBP(SDL_IOStream *src)
 {
     (void)src;
 
-    return 0;
+    return SDL_FALSE;
 }
 
 /* Load a WEBP type image from an SDL datasource */

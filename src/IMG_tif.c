@@ -139,16 +139,18 @@ static toff_t tiff_size(thandle_t fd)
     return size;
 }
 
-int IMG_isTIF(SDL_IOStream * src)
+SDL_bool IMG_isTIF(SDL_IOStream * src)
 {
     Sint64 start;
-    int is_TIF;
+    SDL_bool is_TIF;
     Uint8 magic[4];
 
-    if ( !src )
-        return 0;
+    if (!src) {
+        return SDL_FALSE;
+    }
+
     start = SDL_TellIO(src);
-    is_TIF = 0;
+    is_TIF = SDL_FALSE;
     if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if ( (magic[0] == 'I' &&
                       magic[1] == 'I' &&
@@ -158,11 +160,11 @@ int IMG_isTIF(SDL_IOStream * src)
                       magic[1] == 'M' &&
               magic[2] == 0x00 &&
                       magic[3] == 0x2a) ) {
-            is_TIF = 1;
+            is_TIF = SDL_TRUE;
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
-    return(is_TIF);
+    return is_TIF;
 }
 
 SDL_Surface* IMG_LoadTIF_IO(SDL_IOStream * src)
@@ -221,8 +223,8 @@ error:
 
 int IMG_InitTIF(void)
 {
-    IMG_SetError("TIFF images are not supported");
-    return(-1);
+    SDL_SetError("TIFF images are not supported");
+    return -1;
 }
 
 void IMG_QuitTIF(void)
@@ -230,11 +232,11 @@ void IMG_QuitTIF(void)
 }
 
 /* See if an image is contained in a data source */
-int IMG_isTIF(SDL_IOStream *src)
+SDL_bool IMG_isTIF(SDL_IOStream *src)
 {
     (void)src;
 
-    return(0);
+    return SDL_FALSE;
 }
 
 /* Load a TIFF type image from an SDL datasource */
@@ -242,7 +244,7 @@ SDL_Surface *IMG_LoadTIF_IO(SDL_IOStream *src)
 {
     (void)src;
 
-    return(NULL);
+    return NULL;
 }
 
 #endif /* LOAD_TIF */

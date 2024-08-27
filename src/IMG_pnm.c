@@ -33,16 +33,18 @@
 #ifdef LOAD_PNM
 
 /* See if an image is contained in a data source */
-int IMG_isPNM(SDL_IOStream *src)
+SDL_bool IMG_isPNM(SDL_IOStream *src)
 {
     Sint64 start;
-    int is_PNM;
+    SDL_bool is_PNM;
     char magic[2];
 
-    if ( !src )
-        return 0;
+    if (!src) {
+        return SDL_FALSE;
+    }
+
     start = SDL_TellIO(src);
-    is_PNM = 0;
+    is_PNM = SDL_FALSE;
     if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
         /*
          * PNM magic signatures:
@@ -55,11 +57,11 @@ int IMG_isPNM(SDL_IOStream *src)
          * P7   PAM, a general wrapper for PNM data
          */
         if ( magic[0] == 'P' && magic[1] >= '1' && magic[1] <= '6' ) {
-            is_PNM = 1;
+            is_PNM = SDL_TRUE;
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
-    return(is_PNM);
+    return is_PNM;
 }
 
 /* read a non-negative integer from the source. return -1 upon error */
@@ -74,7 +76,7 @@ static int ReadNumber(SDL_IOStream *src)
     /* Skip leading whitespace */
     do {
         if (SDL_ReadIO(src, &ch, 1) != 1 ) {
-            return(-1);
+            return -1;
         }
         /* Eat comments as whitespace */
         if ( ch == '#' ) {  /* Comment is '#' to end of line */
@@ -103,7 +105,7 @@ static int ReadNumber(SDL_IOStream *src)
         }
     } while ( SDL_isdigit(ch) );
 
-    return(number);
+    return number;
 }
 
 SDL_Surface *IMG_LoadPNM_IO(SDL_IOStream *src)
@@ -246,9 +248,9 @@ done:
             SDL_DestroySurface(surface);
             surface = NULL;
         }
-        IMG_SetError("%s", error);
+        SDL_SetError("%s", error);
     }
-    return(surface);
+    return surface;
 }
 
 #else
@@ -257,15 +259,15 @@ done:
 #endif
 
 /* See if an image is contained in a data source */
-int IMG_isPNM(SDL_IOStream *src)
+SDL_bool IMG_isPNM(SDL_IOStream *src)
 {
-    return(0);
+    return SDL_FALSE;
 }
 
 /* Load a PNM type image from an SDL datasource */
 SDL_Surface *IMG_LoadPNM_IO(SDL_IOStream *src)
 {
-    return(NULL);
+    return NULL;
 }
 
 #endif /* LOAD_PNM */

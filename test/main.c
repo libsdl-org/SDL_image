@@ -117,7 +117,7 @@ typedef struct
     int initFlag;
     SDL_bool canLoad;
     SDL_bool canSave;
-    int (SDLCALL * checkFunction)(SDL_IOStream *src);
+    SDL_bool (SDLCALL * checkFunction)(SDL_IOStream *src);
     SDL_Surface *(SDLCALL * loadFunction)(SDL_IOStream *src);
 } Format;
 

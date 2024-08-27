@@ -213,17 +213,17 @@ typedef unsigned char *(*load_tile_type)(SDL_IOStream *, size_t, int, int, int);
 
 
 /* See if an image is contained in a data source */
-int IMG_isXCF(SDL_IOStream *src)
+SDL_bool IMG_isXCF(SDL_IOStream *src)
 {
     Sint64 start;
-    int is_XCF = 0;
+    SDL_bool is_XCF = SDL_FALSE;
     char magic[14];
 
     if (src) {
         start = SDL_TellIO(src);
         if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic)) {
             if (SDL_strncmp(magic, "gimp xcf ", 9) == 0) {
-                is_XCF = 1;
+                is_XCF = SDL_TRUE;
             }
         }
         SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
@@ -738,13 +738,13 @@ do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_
     hierarchy = read_xcf_hierarchy(src, head);
 
     if (hierarchy->bpp > 4) {  /* unsupported. */
-        IMG_SetError("Unknown Gimp image bpp (%u)", (unsigned int) hierarchy->bpp);
+        SDL_SetError("Unknown Gimp image bpp (%u)", (unsigned int) hierarchy->bpp);
         free_xcf_hierarchy(hierarchy);
         return 1;
     }
 
     if ((hierarchy->width > 20000) || (hierarchy->height > 20000)) {  /* arbitrary limit to avoid integer overflow. */
-        IMG_SetError("Gimp image too large (%ux%u)", (unsigned int) hierarchy->width, (unsigned int) hierarchy->height);
+        SDL_SetError("Gimp image too large (%ux%u)", (unsigned int) hierarchy->width, (unsigned int) hierarchy->height);
         free_xcf_hierarchy(hierarchy);
         return 1;
     }
@@ -770,7 +770,7 @@ do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_
             if (length <= SDL_SIZE_MAX) {
                 tile = load_tile(src, (size_t)length, hierarchy->bpp, ox, oy);
             } else {
-                IMG_SetError("Gimp image invalid tile offsets");
+                SDL_SetError("Gimp image invalid tile offsets");
                 tile = NULL;
             }
             if (!tile) {
@@ -826,7 +826,7 @@ do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_
                         }
                         break;
                     default:
-                        IMG_SetError("Unknown Gimp image type (%" SDL_PRIu32 ")", head->image_type);
+                        SDL_SetError("Unknown Gimp image type (%" SDL_PRIu32 ")", head->image_type);
                         if (hierarchy) {
                             free_xcf_hierarchy(hierarchy);
                         }
@@ -857,7 +857,7 @@ do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_
                         }
                         break;
                     default:
-                        IMG_SetError("Unknown Gimp image type (%" SDL_PRIu32 ")\n", head->image_type);
+                        SDL_SetError("Unknown Gimp image type (%" SDL_PRIu32 ")\n", head->image_type);
                         if (tile)
                             free_xcf_tile(tile);
                         if (level)
@@ -1024,7 +1024,7 @@ done:
             SDL_DestroySurface(surface);
             surface = NULL;
         }
-        IMG_SetError("%s", error);
+        SDL_SetError("%s", error);
     }
     return surface;
 }
@@ -1035,9 +1035,9 @@ done:
 #endif
 
 /* See if an image is contained in a data source */
-int IMG_isXCF(SDL_IOStream *src)
+SDL_bool IMG_isXCF(SDL_IOStream *src)
 {
-    return 0;
+    return SDL_FALSE;
 }
 
 /* Load a XCF type image from an SDL datasource */

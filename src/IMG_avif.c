@@ -81,7 +81,7 @@ static struct {
 #else
 #define FUNCTION_LOADER(FUNC, SIG) \
     lib.FUNC = FUNC; \
-    if (lib.FUNC == NULL) { IMG_SetError("Missing avif.framework"); return -1; }
+    if (lib.FUNC == NULL) { SDL_SetError("Missing avif.framework"); return -1; }
 #endif
 
 #ifdef __APPLE__
@@ -196,15 +196,15 @@ static SDL_bool ReadAVIFHeader(SDL_IOStream *src, Uint8 **header_data, size_t *h
 }
 
 /* See if an image is contained in a data source */
-int IMG_isAVIF(SDL_IOStream *src)
+SDL_bool IMG_isAVIF(SDL_IOStream *src)
 {
     Sint64 start;
-    int is_AVIF;
+    SDL_bool is_AVIF;
     Uint8 *data;
     size_t size;
 
     if (!src) {
-        return 0;
+        return SDL_FALSE;
     }
 
     start = SDL_TellIO(src);
@@ -221,7 +221,7 @@ int IMG_isAVIF(SDL_IOStream *src)
         SDL_free(data);
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
-    return(is_AVIF);
+    return is_AVIF;
 }
 
 /* Context for AFIF I/O operations */
@@ -374,7 +374,7 @@ SDL_Surface *IMG_LoadAVIF_IO(SDL_IOStream *src)
 
     decoder = lib.avifDecoderCreate();
     if (!decoder) {
-        IMG_SetError("Couldn't create AVIF decoder");
+        SDL_SetError("Couldn't create AVIF decoder");
         goto done;
     }
 
@@ -390,13 +390,13 @@ SDL_Surface *IMG_LoadAVIF_IO(SDL_IOStream *src)
 
     result = lib.avifDecoderParse(decoder);
     if (result != AVIF_RESULT_OK) {
-        IMG_SetError("Couldn't parse AVIF image: %s", lib.avifResultToString(result));
+        SDL_SetError("Couldn't parse AVIF image: %s", lib.avifResultToString(result));
         goto done;
     }
 
     result = lib.avifDecoderNextImage(decoder);
     if (result != AVIF_RESULT_OK) {
-        IMG_SetError("Couldn't get AVIF image: %s", lib.avifResultToString(result));
+        SDL_SetError("Couldn't get AVIF image: %s", lib.avifResultToString(result));
         goto done;
     }
 
@@ -435,7 +435,7 @@ SDL_Surface *IMG_LoadAVIF_IO(SDL_IOStream *src)
             }
             result = lib.avifImageYUVToRGB(image, &rgb);
             if (result != AVIF_RESULT_OK) {
-                IMG_SetError("Couldn't convert AVIF image to RGB: %s", lib.avifResultToString(result));
+                SDL_SetError("Couldn't convert AVIF image to RGB: %s", lib.avifResultToString(result));
                 SDL_free(rgb.pixels);
                 goto done;
             }
@@ -503,7 +503,7 @@ SDL_Surface *IMG_LoadAVIF_IO(SDL_IOStream *src)
         rgb.rowBytes = (uint32_t)surface->pitch;
         result = lib.avifImageYUVToRGB(image, &rgb);
         if (result != AVIF_RESULT_OK) {
-            IMG_SetError("Couldn't convert AVIF image to RGB: %s", lib.avifResultToString(result));
+            SDL_SetError("Couldn't convert AVIF image to RGB: %s", lib.avifResultToString(result));
             SDL_DestroySurface(surface);
             surface = NULL;
             goto done;
@@ -520,7 +520,7 @@ done:
     return surface;
 }
 
-static int IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int quality)
+static SDL_bool IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int quality)
 {
     avifImage *image = NULL;
     avifRGBImage rgb;
@@ -530,10 +530,10 @@ static int IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int 
     SDL_Colorspace colorspace;
     Uint16 maxCLL, maxFALL;
     SDL_PropertiesID props;
-    int result = -1;
+    SDL_bool result = SDL_FALSE;
 
     if (!IMG_Init(IMG_INIT_AVIF)) {
-        return -1;
+        return SDL_FALSE;
     }
 
     /* Get the colorspace and light level properties, if any */
@@ -544,7 +544,7 @@ static int IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int 
 
     image = lib.avifImageCreate(surface->w, surface->h, 10, AVIF_PIXEL_FORMAT_YUV444);
     if (!image) {
-        IMG_SetError("Couldn't create AVIF YUV image");
+        SDL_SetError("Couldn't create AVIF YUV image");
         goto done;
     }
     image->yuvRange = AVIF_RANGE_FULL;
@@ -603,7 +603,7 @@ static int IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int 
 
         rc = lib.avifImageRGBToYUV(image, &rgb);
         if (rc != AVIF_RESULT_OK) {
-            IMG_SetError("Couldn't convert to YUV: %s", lib.avifResultToString(rc));
+            SDL_SetError("Couldn't convert to YUV: %s", lib.avifResultToString(rc));
             goto done;
         }
 
@@ -660,7 +660,7 @@ static int IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int 
 
         /* Check the result of the conversion */
         if (rc != AVIF_RESULT_OK) {
-            IMG_SetError("Couldn't convert to YUV: %s", lib.avifResultToString(rc));
+            SDL_SetError("Couldn't convert to YUV: %s", lib.avifResultToString(rc));
             goto done;
         }
     }
@@ -672,18 +672,18 @@ static int IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int 
 
     rc = lib.avifEncoderAddImage(encoder, image, 1, AVIF_ADD_IMAGE_FLAG_SINGLE);
     if (rc != AVIF_RESULT_OK) {
-        IMG_SetError("Failed to add image to avif encoder: %s", lib.avifResultToString(rc));
+        SDL_SetError("Failed to add image to avif encoder: %s", lib.avifResultToString(rc));
         goto done;
     }
 
     rc = lib.avifEncoderFinish(encoder, &avifOutput);
     if (rc != AVIF_RESULT_OK) {
-        IMG_SetError("Failed to finish encoder: %s", lib.avifResultToString(rc));
+        SDL_SetError("Failed to finish encoder: %s", lib.avifResultToString(rc));
         goto done;
     }
 
     if (SDL_WriteIO(dst, avifOutput.data, avifOutput.size) == avifOutput.size) {
-        result = 0;
+        result = SDL_TRUE;
     }
 
 done:
@@ -712,8 +712,8 @@ done:
 
 int IMG_InitAVIF(void)
 {
-    IMG_SetError("AVIF images are not supported");
-    return(-1);
+    SDL_SetError("AVIF images are not supported");
+    return -1;
 }
 
 void IMG_QuitAVIF(void)
@@ -721,49 +721,47 @@ void IMG_QuitAVIF(void)
 }
 
 /* See if an image is contained in a data source */
-int IMG_isAVIF(SDL_IOStream *src)
+SDL_bool IMG_isAVIF(SDL_IOStream *src)
 {
     (void)src;
-    return(0);
+    return SDL_FALSE;
 }
 
 /* Load a AVIF type image from an SDL datasource */
 SDL_Surface *IMG_LoadAVIF_IO(SDL_IOStream *src)
 {
     (void)src;
-    return(NULL);
+    return NULL;
 }
 
 #endif /* LOAD_AVIF */
 
-int IMG_SaveAVIF(SDL_Surface *surface, const char *file, int quality)
+SDL_bool IMG_SaveAVIF(SDL_Surface *surface, const char *file, int quality)
 {
     SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
     if (dst) {
         return IMG_SaveAVIF_IO(surface, dst, 1, quality);
     } else {
-        return -1;
+        return SDL_FALSE;
     }
 }
 
-int IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int quality)
+SDL_bool IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int quality)
 {
-    int result = -1;
+    SDL_bool result = SDL_FALSE;
 
     if (!dst) {
-        IMG_SetError("Passed NULL dst");
-        return -1;
+        return SDL_SetError("Passed NULL dst");
     }
 
 #ifdef SDL_IMAGE_SAVE_AVIF
-    if (result < 0) {
+    if (!result) {
         result = IMG_SaveAVIF_IO_libavif(surface, dst, quality);
     }
 #else
     (void) surface;
     (void) quality;
-    IMG_SetError("SDL_image built without AVIF save support");
-    result = -1;
+    result = SDL_SetError("SDL_image built without AVIF save support");
 #endif
 
     if (closeio) {

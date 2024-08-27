@@ -161,7 +161,7 @@ static CGImageRef CreateCGImageFromCGImageSource(CGImageSourceRef image_source)
     image_ref = CGImageSourceCreateImageAtIndex(image_source, 0, NULL);
     if(NULL == image_ref)
     {
-        IMG_SetError("CGImageSourceCreateImageAtIndex() failed");
+        SDL_SetError("CGImageSourceCreateImageAtIndex() failed");
     }
     return image_ref;
 }
@@ -391,12 +391,13 @@ void IMG_QuitTIF(void)
 {
 }
 
-static int Internal_isType (SDL_IOStream *rw_ops, CFStringRef uti_string_to_test)
+static SDL_bool Internal_isType (SDL_IOStream *rw_ops, CFStringRef uti_string_to_test)
 {
-    int is_type = 0;
+    SDL_bool is_type = SDL_FALSE;
 
-    if (rw_ops == NULL)
-        return 0;
+    if (rw_ops == NULL) {
+        return SDL_FALSE;
+    }
 
     Sint64 start = SDL_TellIO(rw_ops);
     CFDictionaryRef hint_dictionary = CreateHintDictionary(uti_string_to_test);
@@ -421,7 +422,7 @@ static int Internal_isType (SDL_IOStream *rw_ops, CFStringRef uti_string_to_test
     //  CFShow(uti_type);
 
     // Unsure if we really want conformance or equality
-    is_type = (int)UTTypeConformsTo(uti_string_to_test, uti_type);
+    is_type = UTTypeConformsTo(uti_string_to_test, uti_type);
 
     CFRelease(image_source);
 
@@ -432,25 +433,25 @@ static int Internal_isType (SDL_IOStream *rw_ops, CFStringRef uti_string_to_test
 
 #ifdef BMP_USES_IMAGEIO
 
-int IMG_isCUR(SDL_IOStream *src)
+SDL_bool IMG_isCUR(SDL_IOStream *src)
 {
     /* FIXME: Is this a supported type? */
     return Internal_isType(src, CFSTR("com.microsoft.cur"));
 }
 
-int IMG_isICO(SDL_IOStream *src)
+SDL_bool IMG_isICO(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypeICO);
 }
 
-int IMG_isBMP(SDL_IOStream *src)
+SDL_bool IMG_isBMP(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypeBMP);
 }
 
 #endif /* BMP_USES_IMAGEIO */
 
-int IMG_isGIF(SDL_IOStream *src)
+SDL_bool IMG_isGIF(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypeGIF);
 }
@@ -458,7 +459,7 @@ int IMG_isGIF(SDL_IOStream *src)
 #ifdef JPG_USES_IMAGEIO
 
 // Note: JPEG 2000 is kUTTypeJPEG2000
-int IMG_isJPG(SDL_IOStream *src)
+SDL_bool IMG_isJPG(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypeJPEG);
 }
@@ -467,7 +468,7 @@ int IMG_isJPG(SDL_IOStream *src)
 
 #ifdef PNG_USES_IMAGEIO
 
-int IMG_isPNG(SDL_IOStream *src)
+SDL_bool IMG_isPNG(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypePNG);
 }
@@ -475,12 +476,12 @@ int IMG_isPNG(SDL_IOStream *src)
 #endif /* PNG_USES_IMAGEIO */
 
 // This isn't a public API function. Apple seems to be able to identify tga's.
-int IMG_isTGA(SDL_IOStream *src)
+SDL_bool IMG_isTGA(SDL_IOStream *src)
 {
     return Internal_isType(src, CFSTR("com.truevision.tga-image"));
 }
 
-int IMG_isTIF(SDL_IOStream *src)
+SDL_bool IMG_isTIF(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypeTIFF);
 }

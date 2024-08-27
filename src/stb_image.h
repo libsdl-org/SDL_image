@@ -1034,7 +1034,7 @@ static int      stbi__pnm_is16(stbi__context *s);
 #if 1 /* SDL_image change: */
 static int stbi__err(const char *str)
 {
-   IMG_SetError("%s", str);
+   SDL_SetError("%s", str);
    return 0;
 }
 #else /* SDL_image change. */

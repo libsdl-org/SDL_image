@@ -70,15 +70,14 @@ extern SDL_DECLSPEC int SDLCALL IMG_Version(void);
 /**
  * Initialization flags
  */
-typedef enum IMG_InitFlags
-{
-    IMG_INIT_JPG    = 0x00000001,
-    IMG_INIT_PNG    = 0x00000002,
-    IMG_INIT_TIF    = 0x00000004,
-    IMG_INIT_WEBP   = 0x00000008,
-    IMG_INIT_JXL    = 0x00000010,
-    IMG_INIT_AVIF   = 0x00000020
-} IMG_InitFlags;
+typedef Uint32 IMG_InitFlags;
+
+#define IMG_INIT_JPG    0x00000001
+#define IMG_INIT_PNG    0x00000002
+#define IMG_INIT_TIF    0x00000004
+#define IMG_INIT_WEBP   0x00000008
+#define IMG_INIT_JXL    0x00000010
+#define IMG_INIT_AVIF   0x00000020
 
 /**
  * Initialize SDL_image.
@@ -142,7 +141,7 @@ typedef enum IMG_InitFlags
  *
  * \sa IMG_Quit
  */
-extern SDL_DECLSPEC int SDLCALL IMG_Init(int flags);
+extern SDL_DECLSPEC IMG_InitFlags SDLCALL IMG_Init(IMG_InitFlags flags);
 
 /**
  * Deinitialize SDL_image.
@@ -489,7 +488,7 @@ extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_IO(SDL_Renderer *
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is AVIF data, zero otherwise.
+ * \returns SDL_TRUE if this is AVIF data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -512,7 +511,7 @@ extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_IO(SDL_Renderer *
  * \sa IMG_isXV
  * \sa IMG_isWEBP
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isAVIF(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isAVIF(SDL_IOStream *src);
 
 /**
  * Detect ICO image data on a readable/seekable SDL_IOStream.
@@ -533,7 +532,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isAVIF(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is ICO data, zero otherwise.
+ * \returns SDL_TRUE if this is ICO data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -555,7 +554,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isAVIF(SDL_IOStream *src);
  * \sa IMG_isXV
  * \sa IMG_isWEBP
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isICO(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isICO(SDL_IOStream *src);
 
 /**
  * Detect CUR image data on a readable/seekable SDL_IOStream.
@@ -576,7 +575,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isICO(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is CUR data, zero otherwise.
+ * \returns SDL_TRUE if this is CUR data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -598,7 +597,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isICO(SDL_IOStream *src);
  * \sa IMG_isXV
  * \sa IMG_isWEBP
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isCUR(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isCUR(SDL_IOStream *src);
 
 /**
  * Detect BMP image data on a readable/seekable SDL_IOStream.
@@ -619,7 +618,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isCUR(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is BMP data, zero otherwise.
+ * \returns SDL_TRUE if this is BMP data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -641,7 +640,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isCUR(SDL_IOStream *src);
  * \sa IMG_isXV
  * \sa IMG_isWEBP
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isBMP(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isBMP(SDL_IOStream *src);
 
 /**
  * Detect GIF image data on a readable/seekable SDL_IOStream.
@@ -662,7 +661,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isBMP(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is GIF data, zero otherwise.
+ * \returns SDL_TRUE if this is GIF data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -684,7 +683,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isBMP(SDL_IOStream *src);
  * \sa IMG_isXV
  * \sa IMG_isWEBP
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isGIF(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isGIF(SDL_IOStream *src);
 
 /**
  * Detect JPG image data on a readable/seekable SDL_IOStream.
@@ -705,7 +704,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isGIF(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is JPG data, zero otherwise.
+ * \returns SDL_TRUE if this is JPG data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -727,7 +726,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isGIF(SDL_IOStream *src);
  * \sa IMG_isXV
  * \sa IMG_isWEBP
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isJPG(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isJPG(SDL_IOStream *src);
 
 /**
  * Detect JXL image data on a readable/seekable SDL_IOStream.
@@ -748,7 +747,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isJPG(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is JXL data, zero otherwise.
+ * \returns SDL_TRUE if this is JXL data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -770,7 +769,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isJPG(SDL_IOStream *src);
  * \sa IMG_isXV
  * \sa IMG_isWEBP
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isJXL(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isJXL(SDL_IOStream *src);
 
 /**
  * Detect LBM image data on a readable/seekable SDL_IOStream.
@@ -791,7 +790,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isJXL(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is LBM data, zero otherwise.
+ * \returns SDL_TRUE if this is LBM data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -813,7 +812,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isJXL(SDL_IOStream *src);
  * \sa IMG_isXV
  * \sa IMG_isWEBP
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isLBM(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isLBM(SDL_IOStream *src);
 
 /**
  * Detect PCX image data on a readable/seekable SDL_IOStream.
@@ -834,7 +833,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isLBM(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is PCX data, zero otherwise.
+ * \returns SDL_TRUE if this is PCX data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -856,7 +855,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isLBM(SDL_IOStream *src);
  * \sa IMG_isXV
  * \sa IMG_isWEBP
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isPCX(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isPCX(SDL_IOStream *src);
 
 /**
  * Detect PNG image data on a readable/seekable SDL_IOStream.
@@ -877,7 +876,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isPCX(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is PNG data, zero otherwise.
+ * \returns SDL_TRUE if this is PNG data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -899,7 +898,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isPCX(SDL_IOStream *src);
  * \sa IMG_isXV
  * \sa IMG_isWEBP
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isPNG(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isPNG(SDL_IOStream *src);
 
 /**
  * Detect PNM image data on a readable/seekable SDL_IOStream.
@@ -920,7 +919,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isPNG(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is PNM data, zero otherwise.
+ * \returns SDL_TRUE if this is PNM data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -942,7 +941,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isPNG(SDL_IOStream *src);
  * \sa IMG_isXV
  * \sa IMG_isWEBP
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isPNM(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isPNM(SDL_IOStream *src);
 
 /**
  * Detect SVG image data on a readable/seekable SDL_IOStream.
@@ -963,7 +962,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isPNM(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is SVG data, zero otherwise.
+ * \returns SDL_TRUE if this is SVG data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -985,7 +984,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isPNM(SDL_IOStream *src);
  * \sa IMG_isXV
  * \sa IMG_isWEBP
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isSVG(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isSVG(SDL_IOStream *src);
 
 /**
  * Detect QOI image data on a readable/seekable SDL_IOStream.
@@ -1006,7 +1005,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isSVG(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is QOI data, zero otherwise.
+ * \returns SDL_TRUE if this is QOI data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1028,7 +1027,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isSVG(SDL_IOStream *src);
  * \sa IMG_isXV
  * \sa IMG_isWEBP
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isQOI(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isQOI(SDL_IOStream *src);
 
 /**
  * Detect TIFF image data on a readable/seekable SDL_IOStream.
@@ -1049,7 +1048,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isQOI(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is TIFF data, zero otherwise.
+ * \returns SDL_TRUE if this is TIFF data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1071,7 +1070,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isQOI(SDL_IOStream *src);
  * \sa IMG_isXV
  * \sa IMG_isWEBP
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isTIF(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isTIF(SDL_IOStream *src);
 
 /**
  * Detect XCF image data on a readable/seekable SDL_IOStream.
@@ -1092,7 +1091,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isTIF(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is XCF data, zero otherwise.
+ * \returns SDL_TRUE if this is XCF data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1114,7 +1113,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isTIF(SDL_IOStream *src);
  * \sa IMG_isXV
  * \sa IMG_isWEBP
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isXCF(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isXCF(SDL_IOStream *src);
 
 /**
  * Detect XPM image data on a readable/seekable SDL_IOStream.
@@ -1135,7 +1134,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isXCF(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is XPM data, zero otherwise.
+ * \returns SDL_TRUE if this is XPM data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1157,7 +1156,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isXCF(SDL_IOStream *src);
  * \sa IMG_isXV
  * \sa IMG_isWEBP
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isXPM(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isXPM(SDL_IOStream *src);
 
 /**
  * Detect XV image data on a readable/seekable SDL_IOStream.
@@ -1178,7 +1177,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isXPM(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is XV data, zero otherwise.
+ * \returns SDL_TRUE if this is XV data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1200,7 +1199,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isXPM(SDL_IOStream *src);
  * \sa IMG_isXPM
  * \sa IMG_isWEBP
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isXV(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isXV(SDL_IOStream *src);
 
 /**
  * Detect WEBP image data on a readable/seekable SDL_IOStream.
@@ -1221,7 +1220,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isXV(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is WEBP data, zero otherwise.
+ * \returns SDL_TRUE if this is WEBP data, SDL_FALSE otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1243,7 +1242,7 @@ extern SDL_DECLSPEC int SDLCALL IMG_isXV(SDL_IOStream *src);
  * \sa IMG_isXPM
  * \sa IMG_isXV
  */
-extern SDL_DECLSPEC int SDLCALL IMG_isWEBP(SDL_IOStream *src);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_isWEBP(SDL_IOStream *src);
 
 /**
  * Load a AVIF image directly.
@@ -1959,13 +1958,13 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArrayToRGB888(char **xp
  * \param file path on the filesystem to write new file to.
  * \param quality the desired quality, ranging between 0 (lowest) and 100
  *                (highest).
- * \returns 0 if successful, -1 on error.
+ * \returns SDL_TRUE on success or SDL_FALSE on failure; call SDL_GetError() for more information.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SaveAVIF_IO
  */
-extern SDL_DECLSPEC int SDLCALL IMG_SaveAVIF(SDL_Surface *surface, const char *file, int quality);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_SaveAVIF(SDL_Surface *surface, const char *file, int quality);
 
 /**
  * Save an SDL_Surface into AVIF image data, via an SDL_IOStream.
@@ -1981,13 +1980,13 @@ extern SDL_DECLSPEC int SDLCALL IMG_SaveAVIF(SDL_Surface *surface, const char *f
  *                SDL_FALSE to leave it open.
  * \param quality the desired quality, ranging between 0 (lowest) and 100
  *                (highest).
- * \returns 0 if successful, -1 on error.
+ * \returns SDL_TRUE on success or SDL_FALSE on failure; call SDL_GetError() for more information.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SaveAVIF
  */
-extern SDL_DECLSPEC int SDLCALL IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int quality);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int quality);
 
 /**
  * Save an SDL_Surface into a PNG image file.
@@ -1996,13 +1995,13 @@ extern SDL_DECLSPEC int SDLCALL IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStre
  *
  * \param surface the SDL surface to save.
  * \param file path on the filesystem to write new file to.
- * \returns 0 if successful, -1 on error.
+ * \returns SDL_TRUE on success or SDL_FALSE on failure; call SDL_GetError() for more information.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SavePNG_IO
  */
-extern SDL_DECLSPEC int SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
 
 /**
  * Save an SDL_Surface into PNG image data, via an SDL_IOStream.
@@ -2016,13 +2015,13 @@ extern SDL_DECLSPEC int SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *fi
  * \param dst the SDL_IOStream to save the image data to.
  * \param closeio SDL_TRUE to close/free the SDL_IOStream before returning,
  *                SDL_FALSE to leave it open.
- * \returns 0 if successful, -1 on error.
+ * \returns SDL_TRUE on success or SDL_FALSE on failure; call SDL_GetError() for more information.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SavePNG
  */
-extern SDL_DECLSPEC int SDLCALL IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio);
 
 /**
  * Save an SDL_Surface into a JPEG image file.
@@ -2033,13 +2032,13 @@ extern SDL_DECLSPEC int SDLCALL IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStrea
  * \param file path on the filesystem to write new file to.
  * \param quality [0; 33] is Lowest quality, [34; 66] is Middle quality, [67;
  *                100] is Highest quality.
- * \returns 0 if successful, -1 on error.
+ * \returns SDL_TRUE on success or SDL_FALSE on failure; call SDL_GetError() for more information.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SaveJPG_IO
  */
-extern SDL_DECLSPEC int SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality);
 
 /**
  * Save an SDL_Surface into JPEG image data, via an SDL_IOStream.
@@ -2055,13 +2054,13 @@ extern SDL_DECLSPEC int SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *fi
  *                SDL_FALSE to leave it open.
  * \param quality [0; 33] is Lowest quality, [34; 66] is Middle quality, [67;
  *                100] is Highest quality.
- * \returns 0 if successful, -1 on error.
+ * \returns SDL_TRUE on success or SDL_FALSE on failure; call SDL_GetError() for more information.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SaveJPG
  */
-extern SDL_DECLSPEC int SDLCALL IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int quality);
+extern SDL_DECLSPEC SDL_bool SDLCALL IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int quality);
 
 /**
  * Animated image support Currently only animated GIFs are supported.
@@ -2194,20 +2193,6 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadGIFAnimation_IO(SDL_IOStream
  * \sa IMG_FreeAnimation
  */
 extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadWEBPAnimation_IO(SDL_IOStream *src);
-
-/**
- * Report SDL_image errors
- *
- * \sa IMG_GetError
- */
-#define IMG_SetError    SDL_SetError
-
-/**
- * Get last SDL_image error
- *
- * \sa IMG_SetError
- */
-#define IMG_GetError    SDL_GetError
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus

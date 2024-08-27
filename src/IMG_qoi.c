@@ -43,23 +43,25 @@
 #include "qoi.h"
 
 /* See if an image is contained in a data source */
-int IMG_isQOI(SDL_IOStream *src)
+SDL_bool IMG_isQOI(SDL_IOStream *src)
 {
     Sint64 start;
-    int is_QOI;
+    SDL_bool is_QOI;
     char magic[4];
 
-    if ( !src )
-        return 0;
+    if (!src) {
+        return SDL_FALSE;
+    }
+
     start = SDL_TellIO(src);
-    is_QOI = 0;
+    is_QOI = SDL_FALSE;
     if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if ( SDL_strncmp(magic, "qoif", 4) == 0 ) {
-            is_QOI = 1;
+            is_QOI = SDL_TRUE;
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
-    return(is_QOI);
+    return is_QOI;
 }
 
 /* Load a QOI type image from an SDL datasource */
@@ -77,7 +79,7 @@ SDL_Surface *IMG_LoadQOI_IO(SDL_IOStream *src)
     }
     if ( size > INT_MAX ) {
         SDL_free(data);
-        IMG_SetError("QOI image is too big.");
+        SDL_SetError("QOI image is too big.");
         return NULL;
     }
 
@@ -85,7 +87,7 @@ SDL_Surface *IMG_LoadQOI_IO(SDL_IOStream *src)
     /* pixel_data is in R,G,B,A order regardless of endianness */
     SDL_free(data);
     if ( !pixel_data ) {
-        IMG_SetError("Couldn't parse QOI image");
+        SDL_SetError("Couldn't parse QOI image");
         return NULL;
     }
 
@@ -96,7 +98,7 @@ SDL_Surface *IMG_LoadQOI_IO(SDL_IOStream *src)
                                     (image_info.width * 4));
     if ( !surface ) {
         QOI_FREE(pixel_data);
-        IMG_SetError("Couldn't create SDL_Surface");
+        SDL_SetError("Couldn't create SDL_Surface");
         return NULL;
     }
 
@@ -112,15 +114,15 @@ SDL_Surface *IMG_LoadQOI_IO(SDL_IOStream *src)
 #endif
 
 /* See if an image is contained in a data source */
-int IMG_isQOI(SDL_IOStream *src)
+SDL_bool IMG_isQOI(SDL_IOStream *src)
 {
-    return(0);
+    return SDL_FALSE;
 }
 
 /* Load a QOI type image from an SDL datasource */
 SDL_Surface *IMG_LoadQOI_IO(SDL_IOStream *src)
 {
-    return(NULL);
+    return NULL;
 }
 
 #endif /* LOAD_QOI */

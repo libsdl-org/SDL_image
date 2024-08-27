@@ -80,21 +80,23 @@ static int get_header(SDL_IOStream *src, int *w, int *h)
 }
 
 /* See if an image is contained in a data source */
-int IMG_isXV(SDL_IOStream *src)
+SDL_bool IMG_isXV(SDL_IOStream *src)
 {
     Sint64 start;
-    int is_XV;
+    SDL_bool is_XV;
     int w, h;
 
-    if ( !src )
-        return 0;
+    if (!src) {
+        return SDL_FALSE;
+    }
+
     start = SDL_TellIO(src);
-    is_XV = 0;
+    is_XV = SDL_FALSE;
     if ( get_header(src, &w, &h) == 0 ) {
-        is_XV = 1;
+        is_XV = SDL_TRUE;
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
-    return(is_XV);
+    return is_XV;
 }
 
 /* Load a XV thumbnail image from an SDL datasource */
@@ -141,7 +143,7 @@ done:
             SDL_DestroySurface(surface);
             surface = NULL;
         }
-        IMG_SetError("%s", error);
+        SDL_SetError("%s", error);
     }
     return surface;
 }
@@ -152,15 +154,15 @@ done:
 #endif
 
 /* See if an image is contained in a data source */
-int IMG_isXV(SDL_IOStream *src)
+SDL_bool IMG_isXV(SDL_IOStream *src)
 {
-    return(0);
+    return SDL_FALSE;
 }
 
 /* Load a XXX type image from an SDL datasource */
 SDL_Surface *IMG_LoadXV_IO(SDL_IOStream *src)
 {
-    return(NULL);
+    return NULL;
 }
 
 #endif /* LOAD_XV */

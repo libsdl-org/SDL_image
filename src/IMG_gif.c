@@ -48,7 +48,7 @@
 #include <SDL3/SDL.h>
 
 #define Image           SDL_Surface
-#define RWSetMsg        IMG_SetError
+#define RWSetMsg        SDL_SetError
 #define ImageNewCmap(w, h, s)   SDL_CreateSurface(w, h, SDL_PIXELFORMAT_INDEX8)
 #define ImageSetCmap(s, i, R, G, B) do { \
                 palette->colors[i].r = R; \
@@ -753,25 +753,27 @@ IMG_Animation *IMG_LoadGIFAnimation_IO(SDL_IOStream *src)
 #ifdef LOAD_GIF
 
 /* See if an image is contained in a data source */
-int IMG_isGIF(SDL_IOStream *src)
+SDL_bool IMG_isGIF(SDL_IOStream *src)
 {
     Sint64 start;
-    int is_GIF;
+    SDL_bool is_GIF;
     char magic[6];
 
-    if ( !src )
-        return 0;
+    if (!src) {
+        return SDL_FALSE;
+    }
+
     start = SDL_TellIO(src);
-    is_GIF = 0;
+    is_GIF = SDL_FALSE;
     if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if ( (SDL_strncmp(magic, "GIF", 3) == 0) &&
              ((SDL_memcmp(magic + 3, "87a", 3) == 0) ||
               (SDL_memcmp(magic + 3, "89a", 3) == 0)) ) {
-            is_GIF = 1;
+            is_GIF = SDL_TRUE;
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
-    return(is_GIF);
+    return is_GIF;
 }
 
 /* Load a GIF type image from an SDL datasource */
@@ -793,15 +795,15 @@ SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
 #endif
 
 /* See if an image is contained in a data source */
-int IMG_isGIF(SDL_IOStream *src)
+SDL_bool IMG_isGIF(SDL_IOStream *src)
 {
-    return(0);
+    return SDL_FALSE;
 }
 
 /* Load a GIF type image from an SDL datasource */
 SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
 {
-    return(NULL);
+    return NULL;
 }
 
 #endif /* LOAD_GIF */

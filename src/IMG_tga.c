@@ -332,7 +332,7 @@ error:
     if ( img ) {
         SDL_DestroySurface(img);
     }
-    IMG_SetError("%s", error);
+    SDL_SetError("%s", error);
     return NULL;
 }
 

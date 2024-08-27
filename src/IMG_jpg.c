@@ -139,43 +139,45 @@ void IMG_QuitJPG(void)
 }
 
 /* See if an image is contained in a data source */
-int IMG_isJPG(SDL_IOStream *src)
+SDL_bool IMG_isJPG(SDL_IOStream *src)
 {
     Sint64 start;
-    int is_JPG;
-    int in_scan;
+    SDL_bool is_JPG;
+    SDL_bool in_scan;
     Uint8 magic[4];
 
     /* This detection code is by Steaphan Greene <stea@cs.binghamton.edu> */
     /* Blame me, not Sam, if this doesn't work right. */
     /* And don't forget to report the problem to the the sdl list too! */
 
-    if ( !src )
-        return 0;
+    if (!src) {
+        return SDL_FALSE;
+    }
+
     start = SDL_TellIO(src);
-    is_JPG = 0;
-    in_scan = 0;
+    is_JPG = SDL_FALSE;
+    in_scan = SDL_FALSE;
     if (SDL_ReadIO(src, magic, 2) == 2) {
         if ( (magic[0] == 0xFF) && (magic[1] == 0xD8) ) {
-            is_JPG = 1;
-            while (is_JPG == 1) {
-                if(SDL_ReadIO(src, magic, 2) != 2) {
-                    is_JPG = 0;
-                } else if( (magic[0] != 0xFF) && (in_scan == 0) ) {
-                    is_JPG = 0;
-                } else if( (magic[0] != 0xFF) || (magic[1] == 0xFF) ) {
+            is_JPG = SDL_TRUE;
+            while (is_JPG) {
+                if (SDL_ReadIO(src, magic, 2) != 2) {
+                    is_JPG = SDL_FALSE;
+                } else if ( (magic[0] != 0xFF) && !in_scan ) {
+                    is_JPG = SDL_FALSE;
+                } else if ( (magic[0] != 0xFF) || (magic[1] == 0xFF) ) {
                     /* Extra padding in JPEG (legal) */
                     /* or this is data and we are scanning */
                     SDL_SeekIO(src, -1, SDL_IO_SEEK_CUR);
-                } else if(magic[1] == 0xD9) {
+                } else if (magic[1] == 0xD9) {
                     /* Got to end of good JPEG */
                     break;
-                } else if( (in_scan == 1) && (magic[1] == 0x00) ) {
+                } else if ( in_scan && (magic[1] == 0x00) ) {
                     /* This is an encoded 0xFF within the data */
-                } else if( (magic[1] >= 0xD0) && (magic[1] < 0xD9) ) {
+                } else if ( (magic[1] >= 0xD0) && (magic[1] < 0xD9) ) {
                     /* These have nothing else */
-                } else if(SDL_ReadIO(src, magic+2, 2) != 2) {
-                    is_JPG = 0;
+                } else if (SDL_ReadIO(src, magic+2, 2) != 2) {
+                    is_JPG = SDL_FALSE;
                 } else {
                     /* Yes, it's big-endian */
                     Sint64 innerStart;
@@ -184,7 +186,9 @@ int IMG_isJPG(SDL_IOStream *src)
                     innerStart = SDL_TellIO(src);
                     size = (magic[2] << 8) + magic[3];
                     end = SDL_SeekIO(src, size-2, SDL_IO_SEEK_CUR);
-                    if ( end != innerStart + size - 2 ) is_JPG = 0;
+                    if ( end != innerStart + size - 2 ) {
+                        is_JPG = SDL_FALSE;
+                    }
                     if ( magic[1] == 0xDA ) {
                         /* Now comes the actual JPEG meat */
 #ifdef  FAST_IS_JPEG
@@ -192,7 +196,7 @@ int IMG_isJPG(SDL_IOStream *src)
                         break;
 #else
                         /* I'm not convinced.  Prove it! */
-                        in_scan = 1;
+                        in_scan = SDL_TRUE;
 #endif
                     }
                 }
@@ -200,7 +204,7 @@ int IMG_isJPG(SDL_IOStream *src)
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
-    return(is_JPG);
+    return is_JPG;
 }
 
 #define INPUT_BUFFER_SIZE   4096
@@ -364,14 +368,14 @@ SDL_Surface *IMG_LoadJPG_IO(SDL_IOStream *src)
 #ifdef _MSC_VER
 #pragma warning(disable:4611)   /* warning C4611: interaction between '_setjmp' and C++ object destruction is non-portable */
 #endif
-    if(setjmp(jerr.escape)) {
+    if (setjmp(jerr.escape)) {
         /* If we get here, libjpeg found an error */
         lib.jpeg_destroy_decompress(&cinfo);
         if ( surface != NULL ) {
             SDL_DestroySurface(surface);
         }
         SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
-        IMG_SetError("JPEG loading error");
+        SDL_SetError("JPEG loading error");
         return NULL;
     }
 
@@ -379,7 +383,7 @@ SDL_Surface *IMG_LoadJPG_IO(SDL_IOStream *src)
     jpeg_SDL_IO_src(&cinfo, src);
     lib.jpeg_read_header(&cinfo, TRUE);
 
-    if(cinfo.num_components == 4) {
+    if (cinfo.num_components == 4) {
         /* Set 32-bit Raw output */
         cinfo.out_color_space = JCS_CMYK;
         cinfo.quantize_colors = FALSE;
@@ -406,7 +410,7 @@ SDL_Surface *IMG_LoadJPG_IO(SDL_IOStream *src)
     if ( surface == NULL ) {
         lib.jpeg_destroy_decompress(&cinfo);
         SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
-        IMG_SetError("Out of memory");
+        SDL_SetError("Out of memory");
         return NULL;
     }
 
@@ -420,7 +424,7 @@ SDL_Surface *IMG_LoadJPG_IO(SDL_IOStream *src)
     lib.jpeg_finish_decompress(&cinfo);
     lib.jpeg_destroy_decompress(&cinfo);
 
-    return(surface);
+    return surface;
 }
 
 #define OUTPUT_BUFFER_SIZE   4096
@@ -485,7 +489,7 @@ struct savejpeg_vars
     Sint64 original_offset;
 };
 
-static int JPEG_SaveJPEG_IO(struct savejpeg_vars *vars, SDL_Surface *jpeg_surface, SDL_IOStream *dst, int quality)
+static SDL_bool JPEG_SaveJPEG_IO(struct savejpeg_vars *vars, SDL_Surface *jpeg_surface, SDL_IOStream *dst, int quality)
 {
     /* Create a compression structure and load the JPEG header */
     vars->cinfo.err = lib.jpeg_std_error(&vars->jerr.errmgr);
@@ -493,12 +497,11 @@ static int JPEG_SaveJPEG_IO(struct savejpeg_vars *vars, SDL_Surface *jpeg_surfac
     vars->jerr.errmgr.output_message = output_no_message;
     vars->original_offset = SDL_TellIO(dst);
 
-    if(setjmp(vars->jerr.escape)) {
+    if (setjmp(vars->jerr.escape)) {
         /* If we get here, libjpeg found an error */
         lib.jpeg_destroy_compress(&vars->cinfo);
         SDL_SeekIO(dst, vars->original_offset, SDL_IO_SEEK_SET);
-        IMG_SetError("Error saving JPEG with libjpeg");
-        return -1;
+        return SDL_SetError("Error saving JPEG with libjpeg");
     }
 
     lib.jpeg_create_compress(&vars->cinfo);
@@ -523,37 +526,37 @@ static int JPEG_SaveJPEG_IO(struct savejpeg_vars *vars, SDL_Surface *jpeg_surfac
 
     lib.jpeg_finish_compress(&vars->cinfo);
     lib.jpeg_destroy_compress(&vars->cinfo);
-    return 0;
+    return SDL_TRUE;
 }
 
-static int IMG_SaveJPG_IO_jpeglib(SDL_Surface *surface, SDL_IOStream *dst, int quality)
+static SDL_bool IMG_SaveJPG_IO_jpeglib(SDL_Surface *surface, SDL_IOStream *dst, int quality)
 {
     /* The JPEG library reads bytes in R,G,B order, so this is the right
      * encoding for either endianness */
     struct savejpeg_vars vars;
     static const Uint32 jpg_format = SDL_PIXELFORMAT_RGB24;
     SDL_Surface* jpeg_surface = surface;
-    int ret;
+    SDL_bool result;
 
     if (!IMG_Init(IMG_INIT_JPG)) {
-        return -1;
+        return SDL_FALSE;
     }
 
     /* Convert surface to format we can save */
     if (surface->format != jpg_format) {
         jpeg_surface = SDL_ConvertSurface(surface, jpg_format);
         if (!jpeg_surface) {
-            return -1;
+            return SDL_FALSE;
         }
     }
 
     SDL_zero(vars);
-    ret = JPEG_SaveJPEG_IO(&vars, jpeg_surface, dst, quality);
+    result = JPEG_SaveJPEG_IO(&vars, jpeg_surface, dst, quality);
 
     if (jpeg_surface != surface) {
         SDL_DestroySurface(jpeg_surface);
     }
-    return ret;
+    return result;
 }
 
 #elif defined(USE_STBIMAGE)
@@ -575,43 +578,45 @@ void IMG_QuitJPG(void)
 /* Define this for quicker (but less perfect) JPEG identification */
 #define FAST_IS_JPEG
 /* See if an image is contained in a data source */
-int IMG_isJPG(SDL_IOStream *src)
+SDL_bool IMG_isJPG(SDL_IOStream *src)
 {
     Sint64 start;
-    int is_JPG;
-    int in_scan;
+    SDL_bool is_JPG;
+    SDL_bool in_scan;
     Uint8 magic[4];
 
     /* This detection code is by Steaphan Greene <stea@cs.binghamton.edu> */
     /* Blame me, not Sam, if this doesn't work right. */
     /* And don't forget to report the problem to the the sdl list too! */
 
-    if ( !src )
-        return 0;
+    if (!src) {
+        return SDL_FALSE;
+    }
+
     start = SDL_TellIO(src);
-    is_JPG = 0;
-    in_scan = 0;
-    if (SDL_ReadIO(src, magic, 2) == 2 ) {
+    is_JPG = SDL_FALSE;
+    in_scan = SDL_FALSE;
+    if (SDL_ReadIO(src, magic, 2) == 2) {
         if ( (magic[0] == 0xFF) && (magic[1] == 0xD8) ) {
-            is_JPG = 1;
-            while (is_JPG == 1) {
-                if(SDL_ReadIO(src, magic, 2) != 2) {
-                    is_JPG = 0;
-                } else if( (magic[0] != 0xFF) && (in_scan == 0) ) {
-                    is_JPG = 0;
-                } else if( (magic[0] != 0xFF) || (magic[1] == 0xFF) ) {
+            is_JPG = SDL_TRUE;
+            while (is_JPG) {
+                if (SDL_ReadIO(src, magic, 2) != 2) {
+                    is_JPG = SDL_FALSE;
+                } else if ( (magic[0] != 0xFF) && !in_scan ) {
+                    is_JPG = SDL_FALSE;
+                } else if ( (magic[0] != 0xFF) || (magic[1] == 0xFF) ) {
                     /* Extra padding in JPEG (legal) */
                     /* or this is data and we are scanning */
                     SDL_SeekIO(src, -1, SDL_IO_SEEK_CUR);
-                } else if(magic[1] == 0xD9) {
+                } else if (magic[1] == 0xD9) {
                     /* Got to end of good JPEG */
                     break;
-                } else if( (in_scan == 1) && (magic[1] == 0x00) ) {
+                } else if ( in_scan && (magic[1] == 0x00) ) {
                     /* This is an encoded 0xFF within the data */
-                } else if( (magic[1] >= 0xD0) && (magic[1] < 0xD9) ) {
+                } else if ( (magic[1] >= 0xD0) && (magic[1] < 0xD9) ) {
                     /* These have nothing else */
-                } else if(SDL_ReadIO(src, magic+2, 2) != 2) {
-                    is_JPG = 0;
+                } else if (SDL_ReadIO(src, magic+2, 2) != 2) {
+                    is_JPG = SDL_FALSE;
                 } else {
                     /* Yes, it's big-endian */
                     Sint64 innerStart;
@@ -620,7 +625,9 @@ int IMG_isJPG(SDL_IOStream *src)
                     innerStart = SDL_TellIO(src);
                     size = (magic[2] << 8) + magic[3];
                     end = SDL_SeekIO(src, size-2, SDL_IO_SEEK_CUR);
-                    if ( end != innerStart + size - 2 ) is_JPG = 0;
+                    if ( end != innerStart + size - 2 ) {
+                        is_JPG = SDL_FALSE;
+                    }
                     if ( magic[1] == 0xDA ) {
                         /* Now comes the actual JPEG meat */
 #ifdef  FAST_IS_JPEG
@@ -628,7 +635,7 @@ int IMG_isJPG(SDL_IOStream *src)
                         break;
 #else
                         /* I'm not convinced.  Prove it! */
-                        in_scan = 1;
+                        in_scan = SDL_TRUE;
 #endif
                     }
                 }
@@ -636,7 +643,7 @@ int IMG_isJPG(SDL_IOStream *src)
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
-    return(is_JPG);
+    return is_JPG;
 }
 
 /* Load a JPEG type image from an SDL datasource */
@@ -654,8 +661,8 @@ SDL_Surface *IMG_LoadJPG_IO(SDL_IOStream *src)
 
 int IMG_InitJPG(void)
 {
-    IMG_SetError("JPEG images are not supported");
-    return(-1);
+    SDL_SetError("JPEG images are not supported");
+    return -1;
 }
 
 void IMG_QuitJPG(void)
@@ -663,17 +670,17 @@ void IMG_QuitJPG(void)
 }
 
 /* See if an image is contained in a data source */
-int IMG_isJPG(SDL_IOStream *src)
+SDL_bool IMG_isJPG(SDL_IOStream *src)
 {
     (void)src;
-    return(0);
+    return SDL_FALSE;
 }
 
 /* Load a JPEG type image from an SDL datasource */
 SDL_Surface *IMG_LoadJPG_IO(SDL_IOStream *src)
 {
     (void)src;
-    return(NULL);
+    return NULL;
 }
 
 #endif /* LOAD_JPG */
@@ -707,19 +714,19 @@ static void IMG_SaveJPG_IO_tinyjpeg_callback(void* context, void* data, int size
     SDL_WriteIO((SDL_IOStream*) context, data, size);
 }
 
-static int IMG_SaveJPG_IO_tinyjpeg(SDL_Surface *surface, SDL_IOStream *dst, int quality)
+static SDL_bool IMG_SaveJPG_IO_tinyjpeg(SDL_Surface *surface, SDL_IOStream *dst, int quality)
 {
     /* The JPEG library reads bytes in R,G,B order, so this is the right
      * encoding for either endianness */
     static const Uint32 jpg_format = SDL_PIXELFORMAT_RGB24;
     SDL_Surface* jpeg_surface = surface;
-    int result = -1;
+    SDL_bool result = SDL_FALSE;
 
     /* Convert surface to format we can save */
     if (surface->format != jpg_format) {
         jpeg_surface = SDL_ConvertSurface(surface, jpg_format);
         if (!jpeg_surface) {
-            return -1;
+            return SDL_FALSE;
         }
     }
 
@@ -741,13 +748,13 @@ static int IMG_SaveJPG_IO_tinyjpeg(SDL_Surface *surface, SDL_IOStream *dst, int 
         3,
         jpeg_surface->pixels,
         jpeg_surface->pitch
-    ) - 1; /* tinyjpeg returns 0 on error, 1 on success */
+    );
 
     if (jpeg_surface != surface) {
         SDL_DestroySurface(jpeg_surface);
     }
 
-    if (result < 0) {
+    if (!result) {
         SDL_SetError("tinyjpeg error");
     }
     return result;
@@ -755,43 +762,41 @@ static int IMG_SaveJPG_IO_tinyjpeg(SDL_Surface *surface, SDL_IOStream *dst, int 
 
 #endif /* SDL_IMAGE_SAVE_JPG && (defined(LOAD_JPG_DYNAMIC) || !defined(WANT_JPEGLIB)) */
 
-int IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality)
+SDL_bool IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality)
 {
     SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
     if (dst) {
         return IMG_SaveJPG_IO(surface, dst, 1, quality);
     } else {
-        return -1;
+        return SDL_FALSE;
     }
 }
 
-int IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int quality)
+SDL_bool IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int quality)
 {
-    int result = -1;
+    SDL_bool result = SDL_FALSE;
     (void)surface;
     (void)quality;
 
     if (!dst) {
-        IMG_SetError("Passed NULL dst");
-        return -1;
+        return SDL_SetError("Passed NULL dst");
     }
 
 #if SDL_IMAGE_SAVE_JPG
 #ifdef USE_JPEGLIB
-    if (result < 0) {
+    if (!result) {
         result = IMG_SaveJPG_IO_jpeglib(surface, dst, quality);
     }
 #endif
 
 #if defined(LOAD_JPG_DYNAMIC) || !defined(WANT_JPEGLIB)
-    if (result < 0) {
+    if (!result) {
         result = IMG_SaveJPG_IO_tinyjpeg(surface, dst, quality);
     }
 #endif
 
 #else
-    IMG_SetError("SDL_image built without JPEG save support");
-    result = -1;
+    result = SDL_SetError("SDL_image built without JPEG save support");
 #endif
 
     if (closeio) {

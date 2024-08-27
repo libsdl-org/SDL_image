@@ -58,30 +58,32 @@ struct PCXheader {
 };
 
 /* See if an image is contained in a data source */
-int IMG_isPCX(SDL_IOStream *src)
+SDL_bool IMG_isPCX(SDL_IOStream *src)
 {
     Sint64 start;
-    int is_PCX;
+    SDL_bool is_PCX;
     const int ZSoft_Manufacturer = 10;
     const int PC_Paintbrush_Version = 5;
     const int PCX_Uncompressed_Encoding = 0;
     const int PCX_RunLength_Encoding = 1;
     struct PCXheader pcxh;
 
-    if ( !src )
-        return 0;
+    if (!src) {
+        return SDL_FALSE;
+    }
+
     start = SDL_TellIO(src);
-    is_PCX = 0;
+    is_PCX = SDL_FALSE;
     if (SDL_ReadIO(src, &pcxh, sizeof(pcxh)) == sizeof(pcxh) ) {
         if ( (pcxh.Manufacturer == ZSoft_Manufacturer) &&
              (pcxh.Version == PC_Paintbrush_Version) &&
              (pcxh.Encoding == PCX_RunLength_Encoding ||
               pcxh.Encoding == PCX_Uncompressed_Encoding) ) {
-            is_PCX = 1;
+            is_PCX = SDL_TRUE;
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
-    return(is_PCX);
+    return is_PCX;
 }
 
 /* Load a PCX type image from an SDL datasource */
@@ -286,9 +288,9 @@ done:
             SDL_DestroySurface(surface);
             surface = NULL;
         }
-        IMG_SetError("%s", error);
+        SDL_SetError("%s", error);
     }
-    return(surface);
+    return surface;
 }
 
 #else
@@ -297,15 +299,15 @@ done:
 #endif
 
 /* See if an image is contained in a data source */
-int IMG_isPCX(SDL_IOStream *src)
+SDL_bool IMG_isPCX(SDL_IOStream *src)
 {
-    return(0);
+    return SDL_FALSE;
 }
 
 /* Load a PCX type image from an SDL datasource */
 SDL_Surface *IMG_LoadPCX_IO(SDL_IOStream *src)
 {
-    return(NULL);
+    return NULL;
 }
 
 #endif /* LOAD_PCX */

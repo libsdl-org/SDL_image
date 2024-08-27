@@ -71,7 +71,7 @@ static void IMG_LoadSTB_IO_skip(void *user, int n)
 static int IMG_LoadSTB_IO_eof(void *user)
 {
     SDL_IOStream *src = (SDL_IOStream*)user;
-    return (SDL_GetIOStatus(src) == SDL_IO_STATUS_EOF);
+    return SDL_GetIOStatus(src) == SDL_IO_STATUS_EOF;
 }
 
 SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src)
@@ -241,7 +241,7 @@ SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src)
             stbi_image_free(pixels);
         }
     } else {
-        IMG_SetError("Unknown image format: %d", format);
+        SDL_SetError("Unknown image format: %d", format);
     }
 
     if (!surface) {

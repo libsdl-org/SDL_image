@@ -84,91 +84,88 @@ void IMG_QuitTIF(void)
     WIC_Quit();
 }
 
-int IMG_isPNG(SDL_IOStream *src)
+SDL_bool IMG_isPNG(SDL_IOStream *src)
 {
     Sint64 start;
-    int is_PNG;
+    SDL_bool is_PNG;
     Uint8 magic[4];
 
-    if ( !src ) {
-        return 0;
+    if (!src) {
+        return SDL_FALSE;
     }
 
     start = SDL_TellIO(src);
-    is_PNG = 0;
+    is_PNG = SDL_FALSE;
     if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if ( magic[0] == 0x89 &&
              magic[1] == 'P' &&
              magic[2] == 'N' &&
              magic[3] == 'G' ) {
-            is_PNG = 1;
+            is_PNG = SDL_TRUE;
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
-    return(is_PNG);
+    return is_PNG;
 }
 
-int IMG_isJPG(SDL_IOStream *src)
+SDL_bool IMG_isJPG(SDL_IOStream *src)
 {
     Sint64 start;
-    int is_JPG;
-    int in_scan;
+    SDL_bool is_JPG;
+    SDL_bool in_scan;
     Uint8 magic[4];
 
     /* This detection code is by Steaphan Greene <stea@cs.binghamton.edu> */
     /* Blame me, not Sam, if this doesn't work right. */
     /* And don't forget to report the problem to the the sdl list too! */
 
-    if (!src)
-        return 0;
+    if (!src) {
+        return SDL_FALSE;
+    }
+
     start = SDL_TellIO(src);
-    is_JPG = 0;
-    in_scan = 0;
+    is_JPG = SDL_FALSE;
+    in_scan = SDL_FALSE;
     if (SDL_ReadIO(src, magic, 2) == 2) {
-        if ((magic[0] == 0xFF) && (magic[1] == 0xD8)) {
-            is_JPG = 1;
-            while (is_JPG == 1) {
+        if ( (magic[0] == 0xFF) && (magic[1] == 0xD8) ) {
+            is_JPG = SDL_TRUE;
+            while (is_JPG) {
                 if (SDL_ReadIO(src, magic, 2) != 2) {
-                    is_JPG = 0;
-                }
-                else if ((magic[0] != 0xFF) && (in_scan == 0)) {
-                    is_JPG = 0;
-                }
-                else if ((magic[0] != 0xFF) || (magic[1] == 0xFF)) {
+                    is_JPG = SDL_FALSE;
+                } else if ( (magic[0] != 0xFF) && !in_scan ) {
+                    is_JPG = SDL_FALSE;
+                } else if ( (magic[0] != 0xFF) || (magic[1] == 0xFF) ) {
                     /* Extra padding in JPEG (legal) */
                     /* or this is data and we are scanning */
                     SDL_SeekIO(src, -1, SDL_IO_SEEK_CUR);
-                }
-                else if (magic[1] == 0xD9) {
+                } else if (magic[1] == 0xD9) {
                     /* Got to end of good JPEG */
                     break;
-                }
-                else if ((in_scan == 1) && (magic[1] == 0x00)) {
+                } else if ( in_scan && (magic[1] == 0x00) ) {
                     /* This is an encoded 0xFF within the data */
-                }
-                else if ((magic[1] >= 0xD0) && (magic[1] < 0xD9)) {
+                } else if ( (magic[1] >= 0xD0) && (magic[1] < 0xD9) ) {
                     /* These have nothing else */
-                }
-                else if (SDL_ReadIO(src, magic + 2, 2) != 2) {
-                    is_JPG = 0;
-                }
-                else {
+                } else if (SDL_ReadIO(src, magic+2, 2) != 2) {
+                    is_JPG = SDL_FALSE;
+                } else {
                     /* Yes, it's big-endian */
                     Sint64 innerStart;
                     Uint32 size;
                     Sint64 end;
                     innerStart = SDL_TellIO(src);
                     size = (magic[2] << 8) + magic[3];
-                    end = SDL_SeekIO(src, size - 2, SDL_IO_SEEK_CUR);
-                    if (end != innerStart + size - 2) is_JPG = 0;
-                    if (magic[1] == 0xDA) {
+                    end = SDL_SeekIO(src, size-2, SDL_IO_SEEK_CUR);
+                    if ( end != innerStart + size - 2 ) {
+                        is_JPG = SDL_FALSE;
+                    }
+                    if ( magic[1] == 0xDA ) {
                         /* Now comes the actual JPEG meat */
 #ifdef  FAST_IS_JPEG
                         /* Ok, I'm convinced.  It is a JPEG. */
                         break;
 #else
                         /* I'm not convinced.  Prove it! */
-                        in_scan = 1;
+                        in_scan = SDL_TRUE;
 #endif
                     }
                 }
@@ -176,33 +173,35 @@ int IMG_isJPG(SDL_IOStream *src)
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
-    return(is_JPG);
+    return is_JPG;
 }
 
-int IMG_isTIF(SDL_IOStream * src)
+SDL_bool IMG_isTIF(SDL_IOStream * src)
 {
     Sint64 start;
-    int is_TIF;
+    SDL_bool is_TIF;
     Uint8 magic[4];
 
-    if (!src)
-        return 0;
+    if (!src) {
+        return SDL_FALSE;
+    }
+
     start = SDL_TellIO(src);
-    is_TIF = 0;
-    if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic)) {
-        if ((magic[0] == 'I' &&
-            magic[1] == 'I' &&
-            magic[2] == 0x2a &&
-            magic[3] == 0x00) ||
-            (magic[0] == 'M' &&
-            magic[1] == 'M' &&
-            magic[2] == 0x00 &&
-            magic[3] == 0x2a)) {
-            is_TIF = 1;
+    is_TIF = SDL_FALSE;
+    if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
+        if ( (magic[0] == 'I' &&
+                      magic[1] == 'I' &&
+              magic[2] == 0x2a &&
+                      magic[3] == 0x00) ||
+             (magic[0] == 'M' &&
+                      magic[1] == 'M' &&
+              magic[2] == 0x00 &&
+                      magic[3] == 0x2a) ) {
+            is_TIF = SDL_TRUE;
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
-    return(is_TIF);
+    return is_TIF;
 }
 
 static SDL_Surface* WIC_LoadImage(SDL_IOStream *src)
@@ -216,7 +215,7 @@ static SDL_Surface* WIC_LoadImage(SDL_IOStream *src)
     UINT width, height;
 
     if (wicFactory == NULL && (WIC_Init() < 0)) {
-        IMG_SetError("WIC failed to initialize!");
+        SDL_SetError("WIC failed to initialize!");
         return NULL;
     }
 
