@@ -1958,8 +1958,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArrayToRGB888(char **xp
  * \param file path on the filesystem to write new file to.
  * \param quality the desired quality, ranging between 0 (lowest) and 100
  *                (highest).
- * \returns SDL_TRUE on success or SDL_FALSE on failure; call SDL_GetError()
- *          for more information.
+ * \returns 0 if successful, -1 on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1981,8 +1980,7 @@ extern SDL_DECLSPEC SDL_bool SDLCALL IMG_SaveAVIF(SDL_Surface *surface, const ch
  *                SDL_FALSE to leave it open.
  * \param quality the desired quality, ranging between 0 (lowest) and 100
  *                (highest).
- * \returns SDL_TRUE on success or SDL_FALSE on failure; call SDL_GetError()
- *          for more information.
+ * \returns 0 if successful, -1 on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1997,8 +1995,7 @@ extern SDL_DECLSPEC SDL_bool SDLCALL IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_I
  *
  * \param surface the SDL surface to save.
  * \param file path on the filesystem to write new file to.
- * \returns SDL_TRUE on success or SDL_FALSE on failure; call SDL_GetError()
- *          for more information.
+ * \returns 0 if successful, -1 on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -2018,8 +2015,7 @@ extern SDL_DECLSPEC SDL_bool SDLCALL IMG_SavePNG(SDL_Surface *surface, const cha
  * \param dst the SDL_IOStream to save the image data to.
  * \param closeio SDL_TRUE to close/free the SDL_IOStream before returning,
  *                SDL_FALSE to leave it open.
- * \returns SDL_TRUE on success or SDL_FALSE on failure; call SDL_GetError()
- *          for more information.
+ * \returns 0 if successful, -1 on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -2036,8 +2032,7 @@ extern SDL_DECLSPEC SDL_bool SDLCALL IMG_SavePNG_IO(SDL_Surface *surface, SDL_IO
  * \param file path on the filesystem to write new file to.
  * \param quality [0; 33] is Lowest quality, [34; 66] is Middle quality, [67;
  *                100] is Highest quality.
- * \returns SDL_TRUE on success or SDL_FALSE on failure; call SDL_GetError()
- *          for more information.
+ * \returns 0 if successful, -1 on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -2059,8 +2054,7 @@ extern SDL_DECLSPEC SDL_bool SDLCALL IMG_SaveJPG(SDL_Surface *surface, const cha
  *                SDL_FALSE to leave it open.
  * \param quality [0; 33] is Lowest quality, [34; 66] is Middle quality, [67;
  *                100] is Highest quality.
- * \returns SDL_TRUE on success or SDL_FALSE on failure; call SDL_GetError()
- *          for more information.
+ * \returns 0 if successful, -1 on error.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
