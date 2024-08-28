@@ -244,7 +244,7 @@ SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, SDL_bool closeio, const char *t
                 continue;
         } else {
             /* magicless format */
-            if (!type || !SDL_strcasecmp(type, supported[i].type))
+            if (!type || SDL_strcasecmp(type, supported[i].type) != 0)
                 continue;
         }
 #ifdef DEBUG_IMGLIB
@@ -348,7 +348,7 @@ IMG_Animation *IMG_LoadAnimationTyped_IO(SDL_IOStream *src, SDL_bool closeio, co
                 continue;
         } else {
             /* magicless format */
-            if (!type || !SDL_strcasecmp(type, supported_anims[i].type))
+            if (!type || SDL_strcasecmp(type, supported_anims[i].type) != 0)
                 continue;
         }
 #ifdef DEBUG_IMGLIB

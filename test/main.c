@@ -801,7 +801,7 @@ FormatSaveTest(const Format *format,
     SDL_IOStream *dest = NULL;
     int initResult = 0;
     int diff;
-    int result;
+    SDL_bool result;
 
     SDL_snprintf(filename, sizeof(filename),
                  "save%s.%s",
@@ -867,7 +867,7 @@ FormatSaveTest(const Format *format,
         goto out;
     }
 
-    SDLTest_AssertCheck(result == 0, "Save %s (%s)", filename, SDL_GetError());
+    SDLTest_AssertCheck(result, "Save %s (%s)", filename, SDL_GetError());
 
     if (format->canLoad) {
         SDL_ClearError();
