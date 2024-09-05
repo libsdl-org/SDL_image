@@ -113,7 +113,8 @@ ifeq ($(SUPPORT_AVIF),true)
 endif
 
 ifeq ($(SUPPORT_JPG),true)
-    LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(JPG_LIBRARY_PATH)
+    LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(JPG_LIBRARY_PATH)              \
+                        $(LOCAL_PATH)/$(JPG_LIBRARY_PATH)/android
     LOCAL_CFLAGS += -DLOAD_JPG
     LOCAL_STATIC_LIBRARIES += jpeg
 ifeq ($(SUPPORT_SAVE_JPG),true)
@@ -131,7 +132,8 @@ ifeq ($(SUPPORT_JXL),true)
 endif
 
 ifeq ($(SUPPORT_PNG),true)
-    LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(PNG_LIBRARY_PATH)
+    LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(PNG_LIBRARY_PATH)             \
+                        $(LOCAL_PATH)/$(PNG_LIBRARY_PATH)/android
     LOCAL_CFLAGS += -DLOAD_PNG
     LOCAL_STATIC_LIBRARIES += png
     LOCAL_LDLIBS += -lz
