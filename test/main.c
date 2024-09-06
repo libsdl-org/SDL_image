@@ -16,8 +16,6 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_test.h>
 
-#include <stdlib.h>
-
 #if defined(SDL_PLATFORM_OS2) || defined(SDL_PLATFORM_WIN32)
 static const char pathsep[] = "\\";
 #elif defined(SDL_PLATFORM_RISCOS)
@@ -1002,24 +1000,13 @@ static SDLTest_TestSuiteReference *testSuites[] =  {
     NULL
 };
 
-/* Call this instead of exit(), so we can clean up SDL: atexit() is evil. */
-static void
-quit(int rc)
-{
-    SDLTest_CommonQuit(state);
-    exit(rc);
-}
-
 int
 main(int argc, char *argv[])
 {
     int result;
-    int testIterations = 1;
-    Uint64 userExecKey = 0;
-    char *userRunSeed = NULL;
-    char *filter = NULL;
     int i, done;
     SDL_Event event;
+    SDLTest_TestSuiteRunner *runner;
 
     /* Initialize test framework */
     state = SDLTest_CommonCreateState(argv, SDL_INIT_VIDEO);
@@ -1027,51 +1014,15 @@ main(int argc, char *argv[])
         return 1;
     }
 
-    /* Parse commandline */
-    for (i = 1; i < argc;) {
-        int consumed;
+    runner = SDLTest_CreateTestSuiteRunner(state, testSuites);
 
-        consumed = SDLTest_CommonArg(state, i);
-        if (consumed == 0) {
-            consumed = -1;
-            if (SDL_strcasecmp(argv[i], "--iterations") == 0) {
-                if (argv[i + 1]) {
-                    testIterations = SDL_atoi(argv[i + 1]);
-                    if (testIterations < 1) testIterations = 1;
-                    consumed = 2;
-                }
-            }
-            else if (SDL_strcasecmp(argv[i], "--execKey") == 0) {
-                if (argv[i + 1]) {
-                    SDL_sscanf(argv[i + 1], "%" SDL_PRIu64, &userExecKey);
-                    consumed = 2;
-                }
-            }
-            else if (SDL_strcasecmp(argv[i], "--seed") == 0) {
-                if (argv[i + 1]) {
-                    userRunSeed = SDL_strdup(argv[i + 1]);
-                    consumed = 2;
-                }
-            }
-            else if (SDL_strcasecmp(argv[i], "--filter") == 0) {
-                if (argv[i + 1]) {
-                    filter = SDL_strdup(argv[i + 1]);
-                    consumed = 2;
-                }
-            }
-        }
-        if (consumed < 0) {
-            static const char *options[] = { "[--iterations #]", "[--execKey #]", "[--seed string]", "[--filter suite_name|test_name]", NULL };
-            SDLTest_CommonLogUsage(state, argv[0], options);
-            quit(1);
-        }
-
-        i += consumed;
+    if (!SDLTest_CommonDefaultArgs(state, argc, argv)) {
+        return 1;
     }
 
     /* Initialize common state */
     if (!SDLTest_CommonInit(state)) {
-        quit(2);
+        goto failure;
     }
 
     /* Create the windows, initialize the renderers */
@@ -1082,7 +1033,7 @@ main(int argc, char *argv[])
     }
 
     /* Call Harness */
-    result = SDLTest_RunSuites(testSuites, (const char *)userRunSeed, userExecKey, (const char *)filter, testIterations, SDL_FALSE);
+    result = SDLTest_ExecuteTestSuiteRunner(runner);
 
     /* Empty event queue */
     done = 0;
@@ -1093,13 +1044,10 @@ main(int argc, char *argv[])
       SDL_Delay(10);
     }
 
-    /* Clean up */
-    SDL_free(userRunSeed);
-    SDL_free(filter);
-
     /* Shutdown everything */
-    quit(result);
-    return(result);
+    SDLTest_CommonQuit(state);
+    return result;
+failure:
+    SDLTest_CommonQuit(state);
+    return 1;
 }
-
-/* vi: set ts=4 sw=4 expandtab: */
