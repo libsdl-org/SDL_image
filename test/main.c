@@ -968,7 +968,7 @@ FormatTest(const Format *format)
     }
 }
 
-static int
+static int SDLCALL
 TestFormats(void *arg)
 {
     size_t i;
