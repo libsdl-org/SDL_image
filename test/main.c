@@ -68,9 +68,9 @@ GetTestFilename(TestFileType type, const char *file)
     SDL_bool needPathSep = SDL_TRUE;
 
     if (type == TEST_FILE_DIST) {
-        base = SDL_getenv("SDL_TEST_SRCDIR");
+        base = SDL_GetEnvironmentVariable(SDL_GetEnvironment(), "SDL_TEST_SRCDIR");
     } else {
-        base = SDL_getenv("SDL_TEST_BUILDDIR");
+        base = SDL_GetEnvironmentVariable(SDL_GetEnvironment(), "SDL_TEST_BUILDDIR");
     }
 
     if (base == NULL) {
@@ -750,7 +750,7 @@ FormatLoadTest(const Format *format,
                         "Expected height %d px, got %d",
                         format->h, surface->h);
 
-    if (GetStringBoolean(SDL_getenv("SDL_IMAGE_TEST_DEBUG"), SDL_FALSE)) {
+    if (GetStringBoolean(SDL_GetEnvironmentVariable(SDL_GetEnvironment(), "SDL_IMAGE_TEST_DEBUG"), SDL_FALSE)) {
         DumpPixels(filename, surface);
     }
 
@@ -761,7 +761,7 @@ FormatLoadTest(const Format *format,
         SDLTest_AssertCheck(diff == 0,
                             "Surface differed from reference by at most %d in %d pixels",
                             format->tolerance, diff);
-        if (diff != 0 || GetStringBoolean(SDL_getenv("SDL_IMAGE_TEST_DEBUG"), SDL_FALSE)) {
+        if (diff != 0 || GetStringBoolean(SDL_GetEnvironmentVariable(SDL_GetEnvironment(), "SDL_IMAGE_TEST_DEBUG"), SDL_FALSE)) {
             DumpPixels(filename, surface);
             DumpPixels(refFilename, reference);
         }
@@ -890,7 +890,7 @@ FormatSaveTest(const Format *format,
         SDLTest_AssertCheck(diff == 0,
                             "Surface differed from reference by at most %d in %d pixels",
                             format->tolerance, diff);
-        if (diff != 0 || GetStringBoolean(SDL_getenv("SDL_IMAGE_TEST_DEBUG"), SDL_FALSE)) {
+        if (diff != 0 || GetStringBoolean(SDL_GetEnvironmentVariable(SDL_GetEnvironment(), "SDL_IMAGE_TEST_DEBUG"), SDL_FALSE)) {
             DumpPixels(filename, surface);
             DumpPixels(refFilename, reference);
         }
@@ -920,7 +920,7 @@ FormatTest(const Format *format)
     SDL_snprintf(envVar, sizeof(envVar), "SDL_IMAGE_TEST_REQUIRE_LOAD_%s",
                  format->name);
 
-    forced = GetStringBoolean(SDL_getenv(envVar), SDL_FALSE);
+    forced = GetStringBoolean(SDL_GetEnvironmentVariable(SDL_GetEnvironment(), envVar), SDL_FALSE);
     if (forced) {
         SDLTest_AssertCheck(format->canLoad,
                             "%s loading should be enabled", format->name);
@@ -953,7 +953,7 @@ FormatTest(const Format *format)
     SDL_snprintf(envVar, sizeof(envVar), "SDL_IMAGE_TEST_REQUIRE_SAVE_%s",
                  format->name);
 
-    forced = GetStringBoolean(SDL_getenv(envVar), SDL_FALSE);
+    forced = GetStringBoolean(SDL_GetEnvironmentVariable(SDL_GetEnvironment(), envVar), SDL_FALSE);
     if (forced) {
         SDLTest_AssertCheck(format->canSave,
                             "%s saving should be enabled", format->name);
