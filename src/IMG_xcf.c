@@ -213,17 +213,17 @@ typedef unsigned char *(*load_tile_type)(SDL_IOStream *, size_t, int, int, int);
 
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isXCF(SDL_IOStream *src)
+bool IMG_isXCF(SDL_IOStream *src)
 {
     Sint64 start;
-    SDL_bool is_XCF = SDL_FALSE;
+    bool is_XCF = false;
     char magic[14];
 
     if (src) {
         start = SDL_TellIO(src);
         if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic)) {
             if (SDL_strncmp(magic, "gimp xcf ", 9) == 0) {
-                is_XCF = SDL_TRUE;
+                is_XCF = true;
             }
         }
         SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
@@ -1035,9 +1035,9 @@ done:
 #endif
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isXCF(SDL_IOStream *src)
+bool IMG_isXCF(SDL_IOStream *src)
 {
-    return SDL_FALSE;
+    return false;
 }
 
 /* Load a XCF type image from an SDL datasource */

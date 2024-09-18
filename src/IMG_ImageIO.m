@@ -391,12 +391,12 @@ void IMG_QuitTIF(void)
 {
 }
 
-static SDL_bool Internal_isType (SDL_IOStream *rw_ops, CFStringRef uti_string_to_test)
+static bool Internal_isType (SDL_IOStream *rw_ops, CFStringRef uti_string_to_test)
 {
-    SDL_bool is_type = SDL_FALSE;
+    bool is_type = false;
 
     if (rw_ops == NULL) {
-        return SDL_FALSE;
+        return false;
     }
 
     Sint64 start = SDL_TellIO(rw_ops);
@@ -433,25 +433,25 @@ static SDL_bool Internal_isType (SDL_IOStream *rw_ops, CFStringRef uti_string_to
 
 #ifdef BMP_USES_IMAGEIO
 
-SDL_bool IMG_isCUR(SDL_IOStream *src)
+bool IMG_isCUR(SDL_IOStream *src)
 {
     /* FIXME: Is this a supported type? */
     return Internal_isType(src, CFSTR("com.microsoft.cur"));
 }
 
-SDL_bool IMG_isICO(SDL_IOStream *src)
+bool IMG_isICO(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypeICO);
 }
 
-SDL_bool IMG_isBMP(SDL_IOStream *src)
+bool IMG_isBMP(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypeBMP);
 }
 
 #endif /* BMP_USES_IMAGEIO */
 
-SDL_bool IMG_isGIF(SDL_IOStream *src)
+bool IMG_isGIF(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypeGIF);
 }
@@ -459,7 +459,7 @@ SDL_bool IMG_isGIF(SDL_IOStream *src)
 #ifdef JPG_USES_IMAGEIO
 
 // Note: JPEG 2000 is kUTTypeJPEG2000
-SDL_bool IMG_isJPG(SDL_IOStream *src)
+bool IMG_isJPG(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypeJPEG);
 }
@@ -468,7 +468,7 @@ SDL_bool IMG_isJPG(SDL_IOStream *src)
 
 #ifdef PNG_USES_IMAGEIO
 
-SDL_bool IMG_isPNG(SDL_IOStream *src)
+bool IMG_isPNG(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypePNG);
 }
@@ -476,12 +476,12 @@ SDL_bool IMG_isPNG(SDL_IOStream *src)
 #endif /* PNG_USES_IMAGEIO */
 
 // This isn't a public API function. Apple seems to be able to identify tga's.
-SDL_bool IMG_isTGA(SDL_IOStream *src)
+bool IMG_isTGA(SDL_IOStream *src)
 {
     return Internal_isType(src, CFSTR("com.truevision.tga-image"));
 }
 
-SDL_bool IMG_isTIF(SDL_IOStream *src)
+bool IMG_isTIF(SDL_IOStream *src)
 {
     return Internal_isType(src, kUTTypeTIFF);
 }

@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
         goto done;
     }
 
-    if (SDL_GetBooleanProperty(SDL_GetDisplayProperties(SDL_GetPrimaryDisplay()), SDL_PROP_DISPLAY_HDR_ENABLED_BOOLEAN, SDL_FALSE)) {
+    if (SDL_GetBooleanProperty(SDL_GetDisplayProperties(SDL_GetPrimaryDisplay()), SDL_PROP_DISPLAY_HDR_ENABLED_BOOLEAN, false)) {
         SDL_PropertiesID props = SDL_CreateProperties();
 
         SDL_SetPointerProperty(props, SDL_PROP_RENDERER_CREATE_WINDOW_POINTER, window);
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
             SDL_Surface *surface = IMG_Load(argv[i]);
             if (surface) {
                 const char *ext = SDL_strrchr(saveFile, '.');
-                SDL_bool saved = SDL_FALSE;
+                bool saved = false;
                 if (ext && SDL_strcasecmp(ext, ".avif") == 0) {
                     saved = IMG_SaveAVIF(surface, saveFile, 90);
                 } else if (ext && SDL_strcasecmp(ext, ".bmp") == 0) {

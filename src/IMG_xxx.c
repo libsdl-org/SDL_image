@@ -28,17 +28,17 @@
 
 /* See if an image is contained in a data source */
 /* Remember to declare this procedure in IMG.h . */
-SDL_bool IMG_isXXX(SDL_IOStream *src)
+bool IMG_isXXX(SDL_IOStream *src)
 {
     int start;
-    SDL_bool is_XXX;
+    bool is_XXX;
 
     if (!src) {
-        return SDL_FALSE;
+        return false;
     }
 
     start = SDL_TellIO(src);
-    is_XXX = SDL_FALSE;
+    is_XXX = false;
 
     /* Detect the image here */
 
@@ -81,10 +81,10 @@ SDL_Surface *IMG_LoadXXX_IO(SDL_IOStream *src)
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
 #endif
 
-SDL_bool IMG_isXXX(SDL_IOStream *src)
+bool IMG_isXXX(SDL_IOStream *src)
 {
     (void) src;
-    return SDL_FALSE;
+    return false;
 }
 
 SDL_Surface *IMG_LoadXXX_IO(SDL_IOStream *src)

@@ -230,7 +230,7 @@ SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
             SDL_free(pal);
 
             if (ckey >= 0)
-                SDL_SetSurfaceColorKey(img, SDL_TRUE, ckey);
+                SDL_SetSurfaceColorKey(img, true, ckey);
         } else {
             /* skip unneeded colormap */
             SDL_SeekIO(src, palsiz, SDL_IO_SEEK_CUR);

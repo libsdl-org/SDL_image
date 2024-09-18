@@ -36,16 +36,16 @@ typedef enum
     TEST_FILE_BUILT
 } TestFileType;
 
-static SDL_bool
-GetStringBoolean(const char *value, SDL_bool default_value)
+static bool
+GetStringBoolean(const char *value, bool default_value)
 {
     if (!value || !*value) {
         return default_value;
     }
     if (*value == '0' || SDL_strcasecmp(value, "false") == 0) {
-        return SDL_FALSE;
+        return false;
     }
-    return SDL_TRUE;
+    return true;
 }
 
 /*
@@ -65,7 +65,7 @@ GetTestFilename(TestFileType type, const char *file)
 {
     const char *base;
     char *path = NULL;
-    SDL_bool needPathSep = SDL_TRUE;
+    bool needPathSep = true;
 
     if (type == TEST_FILE_DIST) {
         base = SDL_getenv("SDL_TEST_SRCDIR");
@@ -76,7 +76,7 @@ GetTestFilename(TestFileType type, const char *file)
     if (base == NULL) {
         base = SDL_GetBasePath();
         /* SDL_GetBasePath() guarantees a trailing path separator */
-        needPathSep = SDL_FALSE;
+        needPathSep = false;
     }
 
     if (base != NULL) {
@@ -113,9 +113,9 @@ typedef struct
     int h;
     int tolerance;
     int initFlag;
-    SDL_bool canLoad;
-    SDL_bool canSave;
-    SDL_bool (SDLCALL * checkFunction)(SDL_IOStream *src);
+    bool canLoad;
+    bool canSave;
+    bool (SDLCALL * checkFunction)(SDL_IOStream *src);
     SDL_Surface *(SDLCALL * loadFunction)(SDL_IOStream *src);
 } Format;
 
@@ -130,9 +130,9 @@ static const Format formats[] =
         300,
         IMG_INIT_AVIF,
 #ifdef LOAD_AVIF
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
         SDL_IMAGE_SAVE_AVIF,
         IMG_isAVIF,
@@ -147,11 +147,11 @@ static const Format formats[] =
         0,              /* lossless */
         0,              /* no initialization */
 #ifdef LOAD_BMP
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         IMG_isBMP,
         IMG_LoadBMP_IO,
     },
@@ -164,11 +164,11 @@ static const Format formats[] =
         0,              /* lossless */
         0,              /* no initialization */
 #ifdef LOAD_BMP
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         IMG_isCUR,
         IMG_LoadCUR_IO,
     },
@@ -181,11 +181,11 @@ static const Format formats[] =
         0,              /* lossless */
         0,              /* no initialization */
 #if USING_IMAGEIO || defined(LOAD_GIF)
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         IMG_isGIF,
         IMG_LoadGIF_IO,
     },
@@ -198,11 +198,11 @@ static const Format formats[] =
         0,              /* lossless */
         0,              /* no initialization */
 #ifdef LOAD_BMP
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         IMG_isICO,
         IMG_LoadICO_IO,
     },
@@ -215,9 +215,9 @@ static const Format formats[] =
         100,
         IMG_INIT_JPG,
 #if (USING_IMAGEIO && defined(JPG_USES_IMAGEIO)) || defined(SDL_IMAGE_USE_WIC_BACKEND) || defined(LOAD_JPG)
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
         SDL_IMAGE_SAVE_JPG,
         IMG_isJPG,
@@ -232,11 +232,11 @@ static const Format formats[] =
         300,
         IMG_INIT_JXL,
 #ifdef LOAD_JXL
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         IMG_isJXL,
         IMG_LoadJXL_IO,
     },
@@ -250,11 +250,11 @@ static const Format formats[] =
         0,              /* lossless? */
         0,              /* no initialization */
 #ifdef LOAD_LBM
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         IMG_isLBM,
         IMG_LoadLBM_IO,
     },
@@ -268,11 +268,11 @@ static const Format formats[] =
         0,              /* lossless? */
         0,              /* no initialization */
 #ifdef LOAD_PCX
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         IMG_isPCX,
         IMG_LoadPCX_IO,
     },
@@ -285,9 +285,9 @@ static const Format formats[] =
         0,              /* lossless */
         IMG_INIT_PNG,
 #if (USING_IMAGEIO && defined(PNG_USES_IMAGEIO)) || defined(SDL_IMAGE_USE_WIC_BACKEND) || defined(LOAD_PNG)
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
         SDL_IMAGE_SAVE_PNG,
         IMG_isPNG,
@@ -302,11 +302,11 @@ static const Format formats[] =
         0,              /* lossless */
         0,              /* no initialization */
 #ifdef LOAD_PNM
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         IMG_isPNM,
         IMG_LoadPNM_IO,
     },
@@ -319,11 +319,11 @@ static const Format formats[] =
         0,              /* lossless */
         0,              /* no initialization */
 #ifdef LOAD_QOI
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         IMG_isQOI,
         IMG_LoadQOI_IO,
     },
@@ -336,11 +336,11 @@ static const Format formats[] =
         100,
         0,              /* no initialization */
 #ifdef LOAD_SVG
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         IMG_isSVG,
         IMG_LoadSVG_IO,
     },
@@ -353,11 +353,11 @@ static const Format formats[] =
         100,
         0,              /* no initialization */
 #ifdef LOAD_SVG
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         IMG_isSVG,
         IMG_LoadSVG_IO,
     },
@@ -370,11 +370,11 @@ static const Format formats[] =
         0,              /* lossless? */
         0,              /* no initialization */
 #ifdef LOAD_SVG
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         IMG_isSVG,
         IMG_LoadSVG_IO,
     },
@@ -387,11 +387,11 @@ static const Format formats[] =
         0,              /* lossless? */
         0,              /* no initialization */
 #if USING_IMAGEIO || defined(LOAD_TGA)
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         NULL,
         IMG_LoadTGA_IO,
     },
@@ -404,11 +404,11 @@ static const Format formats[] =
         0,              /* lossless */
         IMG_INIT_TIF,
 #if USING_IMAGEIO || defined(SDL_IMAGE_USE_WIC_BACKEND) || defined(LOAD_TIF)
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         IMG_isTIF,
         IMG_LoadTIF_IO,
     },
@@ -421,11 +421,11 @@ static const Format formats[] =
         0,              /* lossless */
         IMG_INIT_WEBP,
 #ifdef LOAD_WEBP
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         IMG_isWEBP,
         IMG_LoadWEBP_IO,
     },
@@ -438,11 +438,11 @@ static const Format formats[] =
         0,              /* lossless */
         0,              /* no initialization */
 #ifdef LOAD_XCF
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         IMG_isXCF,
         IMG_LoadXCF_IO,
     },
@@ -455,11 +455,11 @@ static const Format formats[] =
         0,              /* lossless */
         0,              /* no initialization */
 #ifdef LOAD_XPM
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         IMG_isXPM,
         IMG_LoadXPM_IO,
     },
@@ -473,18 +473,18 @@ static const Format formats[] =
         0,              /* lossless? */
         0,              /* no initialization */
 #ifdef LOAD_XV
-        SDL_TRUE,
+        true,
 #else
-        SDL_FALSE,
+        false,
 #endif
-        SDL_FALSE,      /* can save */
+        false,      /* can save */
         IMG_isXV,
         IMG_LoadXV_IO,
     },
 #endif
 };
 
-static SDL_bool
+static bool
 StrHasSuffix(const char *str, const char *suffix)
 {
     size_t str_len = SDL_strlen(str);
@@ -504,7 +504,7 @@ typedef enum
 } LoadMode;
 
 /* Convert to RGBA for comparison, if necessary */
-static SDL_bool
+static bool
 ConvertToRgba32(SDL_Surface **surface_p)
 {
     if ((*surface_p)->format != SDL_PIXELFORMAT_RGBA32) {
@@ -516,12 +516,12 @@ ConvertToRgba32(SDL_Surface **surface_p)
                             "Converting to RGBA should succeed (%s)",
                             SDL_GetError());
         if (temp == NULL) {
-            return SDL_FALSE;
+            return false;
         }
         SDL_DestroySurface(*surface_p);
         *surface_p = temp;
     }
-    return SDL_TRUE;
+    return true;
 }
 
 static void
@@ -718,12 +718,12 @@ FormatLoadTest(const Format *format,
             }
 
             SDL_ClearError();
-            surface = IMG_Load_IO(src, SDL_TRUE);
+            surface = IMG_Load_IO(src, true);
             src = NULL;      /* ownership taken */
             break;
 
         case LOAD_TYPED_IO:
-            surface = IMG_LoadTyped_IO(src, SDL_TRUE, format->name);
+            surface = IMG_LoadTyped_IO(src, true, format->name);
             src = NULL;      /* ownership taken */
             break;
 
@@ -750,7 +750,7 @@ FormatLoadTest(const Format *format,
                         "Expected height %d px, got %d",
                         format->h, surface->h);
 
-    if (GetStringBoolean(SDL_getenv("SDL_IMAGE_TEST_DEBUG"), SDL_FALSE)) {
+    if (GetStringBoolean(SDL_getenv("SDL_IMAGE_TEST_DEBUG"), false)) {
         DumpPixels(filename, surface);
     }
 
@@ -761,7 +761,7 @@ FormatLoadTest(const Format *format,
         SDLTest_AssertCheck(diff == 0,
                             "Surface differed from reference by at most %d in %d pixels",
                             format->tolerance, diff);
-        if (diff != 0 || GetStringBoolean(SDL_getenv("SDL_IMAGE_TEST_DEBUG"), SDL_FALSE)) {
+        if (diff != 0 || GetStringBoolean(SDL_getenv("SDL_IMAGE_TEST_DEBUG"), false)) {
             DumpPixels(filename, surface);
             DumpPixels(refFilename, reference);
         }
@@ -790,7 +790,7 @@ out:
 
 static void
 FormatSaveTest(const Format *format,
-               SDL_bool rw)
+               bool rw)
 {
     char *refFilename = NULL;
     char filename[64] = { 0 };
@@ -799,7 +799,7 @@ FormatSaveTest(const Format *format,
     SDL_IOStream *dest = NULL;
     int initResult = 0;
     int diff;
-    SDL_bool result;
+    bool result;
 
     SDL_snprintf(filename, sizeof(filename),
                  "save%s.%s",
@@ -839,7 +839,7 @@ FormatSaveTest(const Format *format,
     if (SDL_strcmp (format->name, "AVIF") == 0) {
         if (rw) {
             dest = SDL_IOFromFile(filename, "wb");
-            result = IMG_SaveAVIF_IO(reference, dest, SDL_FALSE, 90);
+            result = IMG_SaveAVIF_IO(reference, dest, false, 90);
             SDL_CloseIO(dest);
         } else {
             result = IMG_SaveAVIF(reference, filename, 90);
@@ -847,7 +847,7 @@ FormatSaveTest(const Format *format,
     } else if (SDL_strcmp(format->name, "JPG") == 0) {
         if (rw) {
             dest = SDL_IOFromFile(filename, "wb");
-            result = IMG_SaveJPG_IO(reference, dest, SDL_FALSE, 90);
+            result = IMG_SaveJPG_IO(reference, dest, false, 90);
             SDL_CloseIO(dest);
         } else {
             result = IMG_SaveJPG(reference, filename, 90);
@@ -855,13 +855,13 @@ FormatSaveTest(const Format *format,
     } else if (SDL_strcmp (format->name, "PNG") == 0) {
         if (rw) {
             dest = SDL_IOFromFile(filename, "wb");
-            result = IMG_SavePNG_IO(reference, dest, SDL_FALSE);
+            result = IMG_SavePNG_IO(reference, dest, false);
             SDL_CloseIO(dest);
         } else {
             result = IMG_SavePNG(reference, filename);
         }
     } else {
-        SDLTest_AssertCheck(SDL_FALSE, "How do I save %s?", format->name);
+        SDLTest_AssertCheck(false, "How do I save %s?", format->name);
         goto out;
     }
 
@@ -890,7 +890,7 @@ FormatSaveTest(const Format *format,
         SDLTest_AssertCheck(diff == 0,
                             "Surface differed from reference by at most %d in %d pixels",
                             format->tolerance, diff);
-        if (diff != 0 || GetStringBoolean(SDL_getenv("SDL_IMAGE_TEST_DEBUG"), SDL_FALSE)) {
+        if (diff != 0 || GetStringBoolean(SDL_getenv("SDL_IMAGE_TEST_DEBUG"), false)) {
             DumpPixels(filename, surface);
             DumpPixels(refFilename, reference);
         }
@@ -914,13 +914,13 @@ out:
 static void
 FormatTest(const Format *format)
 {
-    SDL_bool forced;
+    bool forced;
     char envVar[64] = { 0 };
 
     SDL_snprintf(envVar, sizeof(envVar), "SDL_IMAGE_TEST_REQUIRE_LOAD_%s",
                  format->name);
 
-    forced = GetStringBoolean(SDL_getenv(envVar), SDL_FALSE);
+    forced = GetStringBoolean(SDL_getenv(envVar), false);
     if (forced) {
         SDLTest_AssertCheck(format->canLoad,
                             "%s loading should be enabled", format->name);
@@ -953,7 +953,7 @@ FormatTest(const Format *format)
     SDL_snprintf(envVar, sizeof(envVar), "SDL_IMAGE_TEST_REQUIRE_SAVE_%s",
                  format->name);
 
-    forced = GetStringBoolean(SDL_getenv(envVar), SDL_FALSE);
+    forced = GetStringBoolean(SDL_getenv(envVar), false);
     if (forced) {
         SDLTest_AssertCheck(format->canSave,
                             "%s saving should be enabled", format->name);
@@ -961,8 +961,8 @@ FormatTest(const Format *format)
 
     if (format->canSave || forced) {
         SDLTest_Log("Testing ability to save format %s", format->name);
-        FormatSaveTest(format, SDL_FALSE);
-        FormatSaveTest(format, SDL_TRUE);
+        FormatSaveTest(format, false);
+        FormatSaveTest(format, true);
     } else {
         SDLTest_Log("Saving format %s is not supported", format->name);
     }

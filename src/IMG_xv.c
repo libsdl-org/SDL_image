@@ -80,20 +80,20 @@ static int get_header(SDL_IOStream *src, int *w, int *h)
 }
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isXV(SDL_IOStream *src)
+bool IMG_isXV(SDL_IOStream *src)
 {
     Sint64 start;
-    SDL_bool is_XV;
+    bool is_XV;
     int w, h;
 
     if (!src) {
-        return SDL_FALSE;
+        return false;
     }
 
     start = SDL_TellIO(src);
-    is_XV = SDL_FALSE;
+    is_XV = false;
     if ( get_header(src, &w, &h) == 0 ) {
-        is_XV = SDL_TRUE;
+        is_XV = true;
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return is_XV;
@@ -154,9 +154,9 @@ done:
 #endif
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isXV(SDL_IOStream *src)
+bool IMG_isXV(SDL_IOStream *src)
 {
-    return SDL_FALSE;
+    return false;
 }
 
 /* Load a XXX type image from an SDL datasource */

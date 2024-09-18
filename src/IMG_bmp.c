@@ -36,31 +36,31 @@
 #ifdef LOAD_BMP
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isBMP(SDL_IOStream *src)
+bool IMG_isBMP(SDL_IOStream *src)
 {
     Sint64 start;
-    SDL_bool is_BMP;
+    bool is_BMP;
     char magic[2];
 
     if (!src) {
-        return SDL_FALSE;
+        return false;
     }
 
     start = SDL_TellIO(src);
-    is_BMP = SDL_FALSE;
+    is_BMP = false;
     if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic)) {
         if (SDL_strncmp(magic, "BM", 2) == 0) {
-            is_BMP = SDL_TRUE;
+            is_BMP = true;
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return is_BMP;
 }
 
-static SDL_bool IMG_isICOCUR(SDL_IOStream *src, int type)
+static bool IMG_isICOCUR(SDL_IOStream *src, int type)
 {
     Sint64 start;
-    SDL_bool is_ICOCUR;
+    bool is_ICOCUR;
 
     /* The Win32 ICO file header (14 bytes) */
     Uint16 bfReserved;
@@ -68,28 +68,28 @@ static SDL_bool IMG_isICOCUR(SDL_IOStream *src, int type)
     Uint16 bfCount;
 
     if (!src) {
-        return SDL_FALSE;
+        return false;
     }
 
     start = SDL_TellIO(src);
-    is_ICOCUR = SDL_FALSE;
+    is_ICOCUR = false;
     if (SDL_ReadU16LE(src, &bfReserved) &&
         SDL_ReadU16LE(src, &bfType) &&
         SDL_ReadU16LE(src, &bfCount) &&
         (bfReserved == 0) && (bfType == type) && (bfCount != 0)) {
-        is_ICOCUR = SDL_TRUE;
+        is_ICOCUR = true;
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
 
     return is_ICOCUR;
 }
 
-SDL_bool IMG_isICO(SDL_IOStream *src)
+bool IMG_isICO(SDL_IOStream *src)
 {
     return IMG_isICOCUR(src, 1);
 }
 
-SDL_bool IMG_isCUR(SDL_IOStream *src)
+bool IMG_isCUR(SDL_IOStream *src)
 {
     return IMG_isICOCUR(src, 2);
 }
@@ -106,15 +106,15 @@ SDL_bool IMG_isCUR(SDL_IOStream *src)
 #define BI_BITFIELDS    3
 #endif
 
-static SDL_Surface *LoadBMP_IO (SDL_IOStream *src, SDL_bool closeio)
+static SDL_Surface *LoadBMP_IO (SDL_IOStream *src, bool closeio)
 {
     return SDL_LoadBMP_IO(src, closeio);
 }
 
 static SDL_Surface *
-LoadICOCUR_IO(SDL_IOStream * src, int type, SDL_bool closeio)
+LoadICOCUR_IO(SDL_IOStream * src, int type, bool closeio)
 {
-    SDL_bool was_error = SDL_TRUE;
+    bool was_error = true;
     Sint64 fp_offset = 0;
     int bmpPitch;
     int i,j, pad;
@@ -418,7 +418,7 @@ LoadICOCUR_IO(SDL_IOStream * src, int type, SDL_bool closeio)
         }
     }
 
-    was_error = SDL_FALSE;
+    was_error = false;
 
 done:
     if (closeio && src) {
@@ -439,19 +439,19 @@ done:
 /* Load a BMP type image from an SDL datasource */
 SDL_Surface *IMG_LoadBMP_IO(SDL_IOStream *src)
 {
-    return LoadBMP_IO(src, SDL_FALSE);
+    return LoadBMP_IO(src, false);
 }
 
 /* Load a ICO type image from an SDL datasource */
 SDL_Surface *IMG_LoadICO_IO(SDL_IOStream *src)
 {
-    return LoadICOCUR_IO(src, 1, SDL_FALSE);
+    return LoadICOCUR_IO(src, 1, false);
 }
 
 /* Load a CUR type image from an SDL datasource */
 SDL_Surface *IMG_LoadCUR_IO(SDL_IOStream *src)
 {
-    return LoadICOCUR_IO(src, 2, SDL_FALSE);
+    return LoadICOCUR_IO(src, 2, false);
 }
 
 #else
@@ -461,19 +461,19 @@ SDL_Surface *IMG_LoadCUR_IO(SDL_IOStream *src)
 #endif
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isBMP(SDL_IOStream *src)
+bool IMG_isBMP(SDL_IOStream *src)
 {
-    return SDL_FALSE;
+    return false;
 }
 
-SDL_bool IMG_isICO(SDL_IOStream *src)
+bool IMG_isICO(SDL_IOStream *src)
 {
-    return SDL_FALSE;
+    return false;
 }
 
-SDL_bool IMG_isCUR(SDL_IOStream *src)
+bool IMG_isCUR(SDL_IOStream *src)
 {
-    return SDL_FALSE;
+    return false;
 }
 
 /* Load a BMP type image from an SDL datasource */

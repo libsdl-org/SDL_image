@@ -132,7 +132,7 @@ void IMG_QuitAVIF(void)
     --lib.loaded;
 }
 
-static SDL_bool ReadAVIFHeader(SDL_IOStream *src, Uint8 **header_data, size_t *header_size)
+static bool ReadAVIFHeader(SDL_IOStream *src, Uint8 **header_data, size_t *header_size)
 {
     Uint8 magic[16];
     Uint64 size;
@@ -143,12 +143,12 @@ static SDL_bool ReadAVIFHeader(SDL_IOStream *src, Uint8 **header_data, size_t *h
     *header_size = 0;
 
     if (SDL_ReadIO(src, magic, 8) != 8) {
-        return SDL_FALSE;
+        return false;
     }
     read += 8;
 
     if (SDL_memcmp(&magic[4], "ftyp", 4) != 0) {
-        return SDL_FALSE;
+        return false;
     }
 
     size = (((Uint64)magic[0] << 24) |
@@ -158,7 +158,7 @@ static SDL_bool ReadAVIFHeader(SDL_IOStream *src, Uint8 **header_data, size_t *h
     if (size == 1) {
         /* 64-bit header size */
         if (SDL_ReadIO(src, &magic[8], 8) != 8) {
-            return SDL_FALSE;
+            return false;
         }
         read += 8;
 
@@ -173,38 +173,38 @@ static SDL_bool ReadAVIFHeader(SDL_IOStream *src, Uint8 **header_data, size_t *h
     }
 
     if (size > SDL_SIZE_MAX) {
-        return SDL_FALSE;
+        return false;
     }
     if (size <= read) {
-        return SDL_FALSE;
+        return false;
     }
 
     /* Read in the header */
     data = (Uint8 *)SDL_malloc((size_t)size);
     if (!data) {
-        return SDL_FALSE;
+        return false;
     }
     SDL_memcpy(data, magic, (size_t)read);
 
     if (SDL_ReadIO(src, &data[read], (size_t)(size - read)) != (size_t)(size - read)) {
         SDL_free(data);
-        return SDL_FALSE;
+        return false;
     }
     *header_data = data;
     *header_size = (size_t)size;
-    return SDL_TRUE;
+    return true;
 }
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isAVIF(SDL_IOStream *src)
+bool IMG_isAVIF(SDL_IOStream *src)
 {
     Sint64 start;
-    SDL_bool is_AVIF;
+    bool is_AVIF;
     Uint8 *data;
     size_t size;
 
     if (!src) {
-        return SDL_FALSE;
+        return false;
     }
 
     start = SDL_TellIO(src);
@@ -520,7 +520,7 @@ done:
     return surface;
 }
 
-static SDL_bool IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int quality)
+static bool IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int quality)
 {
     avifImage *image = NULL;
     avifRGBImage rgb;
@@ -530,10 +530,10 @@ static SDL_bool IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst,
     SDL_Colorspace colorspace;
     Uint16 maxCLL, maxFALL;
     SDL_PropertiesID props;
-    SDL_bool result = SDL_FALSE;
+    bool result = false;
 
     if (!IMG_Init(IMG_INIT_AVIF)) {
-        return SDL_FALSE;
+        return false;
     }
 
     /* Get the colorspace and light level properties, if any */
@@ -576,7 +576,7 @@ static SDL_bool IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst,
         } else {
             rgb.format = AVIF_RGB_FORMAT_BGRA;
         }
-        rgb.ignoreAlpha = SDL_ISPIXELFORMAT_ALPHA(surface->format) ? SDL_FALSE : SDL_TRUE;
+        rgb.ignoreAlpha = SDL_ISPIXELFORMAT_ALPHA(surface->format) ? false : true;
         rgb.depth = 10;
         rgb.rowBytes = (uint32_t)image->width * 4 * sizeof(Uint16);
         rgb.pixels = (uint8_t *)SDL_malloc(image->height * rgb.rowBytes);
@@ -645,7 +645,7 @@ static SDL_bool IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst,
             }
             break;
         }
-        rgb.ignoreAlpha = SDL_ISPIXELFORMAT_ALPHA(surface->format) ? SDL_FALSE : SDL_TRUE;
+        rgb.ignoreAlpha = SDL_ISPIXELFORMAT_ALPHA(surface->format) ? false : true;
         rgb.pixels = (uint8_t *)temp->pixels;
         rgb.rowBytes = (uint32_t)temp->pitch;
 
@@ -683,7 +683,7 @@ static SDL_bool IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst,
     }
 
     if (SDL_WriteIO(dst, avifOutput.data, avifOutput.size) == avifOutput.size) {
-        result = SDL_TRUE;
+        result = true;
     }
 
 done:
@@ -721,10 +721,10 @@ void IMG_QuitAVIF(void)
 }
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isAVIF(SDL_IOStream *src)
+bool IMG_isAVIF(SDL_IOStream *src)
 {
     (void)src;
-    return SDL_FALSE;
+    return false;
 }
 
 /* Load a AVIF type image from an SDL datasource */
@@ -736,19 +736,19 @@ SDL_Surface *IMG_LoadAVIF_IO(SDL_IOStream *src)
 
 #endif /* LOAD_AVIF */
 
-SDL_bool IMG_SaveAVIF(SDL_Surface *surface, const char *file, int quality)
+bool IMG_SaveAVIF(SDL_Surface *surface, const char *file, int quality)
 {
     SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
     if (dst) {
         return IMG_SaveAVIF_IO(surface, dst, 1, quality);
     } else {
-        return SDL_FALSE;
+        return false;
     }
 }
 
-SDL_bool IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int quality)
+bool IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int quality)
 {
-    SDL_bool result = SDL_FALSE;
+    bool result = false;
 
     if (!dst) {
         return SDL_SetError("Passed NULL dst");

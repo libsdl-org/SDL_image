@@ -115,18 +115,18 @@ void IMG_QuitWEBP(void)
     --lib.loaded;
 }
 
-static SDL_bool webp_getinfo(SDL_IOStream *src, size_t *datasize)
+static bool webp_getinfo(SDL_IOStream *src, size_t *datasize)
 {
     Sint64 start, size;
-    SDL_bool is_WEBP;
+    bool is_WEBP;
     Uint8 magic[20];
 
     if (!src) {
-        return SDL_FALSE;
+        return false;
     }
 
     start = SDL_TellIO(src);
-    is_WEBP = SDL_FALSE;
+    is_WEBP = false;
     if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic)) {
         if (magic[ 0] == 'R' &&
             magic[ 1] == 'I' &&
@@ -140,7 +140,7 @@ static SDL_bool webp_getinfo(SDL_IOStream *src, size_t *datasize)
             magic[13] == 'P' &&
             magic[14] == '8' &&
            (magic[15] == ' ' || magic[15] == 'X' || magic[15] == 'L')) {
-            is_WEBP = SDL_TRUE;
+            is_WEBP = true;
             if (datasize) {
                 size = SDL_GetIOSize(src);
                 if (size > 0) {
@@ -156,7 +156,7 @@ static SDL_bool webp_getinfo(SDL_IOStream *src, size_t *datasize)
 }
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isWEBP(SDL_IOStream *src)
+bool IMG_isWEBP(SDL_IOStream *src)
 {
     return webp_getinfo(src, NULL);
 }
@@ -396,11 +396,11 @@ void IMG_QuitWEBP(void)
 }
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isWEBP(SDL_IOStream *src)
+bool IMG_isWEBP(SDL_IOStream *src)
 {
     (void)src;
 
-    return SDL_FALSE;
+    return false;
 }
 
 /* Load a WEBP type image from an SDL datasource */

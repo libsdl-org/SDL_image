@@ -33,18 +33,18 @@
 #ifdef LOAD_PNM
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isPNM(SDL_IOStream *src)
+bool IMG_isPNM(SDL_IOStream *src)
 {
     Sint64 start;
-    SDL_bool is_PNM;
+    bool is_PNM;
     char magic[2];
 
     if (!src) {
-        return SDL_FALSE;
+        return false;
     }
 
     start = SDL_TellIO(src);
-    is_PNM = SDL_FALSE;
+    is_PNM = false;
     if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
         /*
          * PNM magic signatures:
@@ -57,7 +57,7 @@ SDL_bool IMG_isPNM(SDL_IOStream *src)
          * P7   PAM, a general wrapper for PNM data
          */
         if ( magic[0] == 'P' && magic[1] >= '1' && magic[1] <= '6' ) {
-            is_PNM = SDL_TRUE;
+            is_PNM = true;
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
@@ -259,9 +259,9 @@ done:
 #endif
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isPNM(SDL_IOStream *src)
+bool IMG_isPNM(SDL_IOStream *src)
 {
-    return SDL_FALSE;
+    return false;
 }
 
 /* Load a PNM type image from an SDL datasource */

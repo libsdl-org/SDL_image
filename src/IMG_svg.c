@@ -85,24 +85,24 @@ static float SDLCALL SDL_roundf(float x)
 #include "nanosvgrast.h"
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isSVG(SDL_IOStream *src)
+bool IMG_isSVG(SDL_IOStream *src)
 {
     Sint64 start;
-    SDL_bool is_SVG;
+    bool is_SVG;
     char magic[4096];
     size_t magic_len;
 
     if (!src) {
-        return SDL_FALSE;
+        return false;
     }
 
     start = SDL_TellIO(src);
-    is_SVG = SDL_FALSE;
+    is_SVG = false;
     magic_len = SDL_ReadIO(src, magic, sizeof(magic) - 1);
     if (magic_len > 0) {
         magic[magic_len] = '\0';
         if (SDL_strstr(magic, "<svg")) {
-            is_SVG = SDL_TRUE;
+            is_SVG = true;
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
@@ -118,7 +118,7 @@ SDL_Surface *IMG_LoadSizedSVG_IO(SDL_IOStream *src, int width, int height)
     SDL_Surface *surface = NULL;
     float scale = 1.0f;
 
-    data = (char *)SDL_LoadFile_IO(src, NULL, SDL_FALSE);
+    data = (char *)SDL_LoadFile_IO(src, NULL, false);
     if (!data) {
         return NULL;
     }
@@ -174,9 +174,9 @@ SDL_Surface *IMG_LoadSizedSVG_IO(SDL_IOStream *src, int width, int height)
 #endif
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isSVG(SDL_IOStream *src)
+bool IMG_isSVG(SDL_IOStream *src)
 {
-    return SDL_FALSE;
+    return false;
 }
 
 /* Load a SVG type image from an SDL datasource */

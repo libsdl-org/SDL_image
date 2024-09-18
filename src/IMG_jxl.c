@@ -92,22 +92,22 @@ void IMG_QuitJXL(void)
 }
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isJXL(SDL_IOStream *src)
+bool IMG_isJXL(SDL_IOStream *src)
 {
     Sint64 start;
-    SDL_bool is_JXL;
+    bool is_JXL;
     Uint8 magic[12];
 
     if (!src) {
-        return SDL_FALSE;
+        return false;
     }
 
     start = SDL_TellIO(src);
-    is_JXL = SDL_FALSE;
+    is_JXL = false;
     if (SDL_ReadIO(src, magic, 2) == 2 ) {
         if ( magic[0] == 0xFF && magic[1] == 0x0A ) {
             /* This is a JXL codestream */
-            is_JXL = SDL_TRUE;
+            is_JXL = true;
         } else {
             if (SDL_ReadIO(src, &magic[2], sizeof(magic) - 2) == (sizeof(magic) - 2) ) {
                 if ( magic[0] == 0x00 && magic[1] == 0x00 &&
@@ -117,7 +117,7 @@ SDL_bool IMG_isJXL(SDL_IOStream *src)
                      magic[8] == 0x0D && magic[9] == 0x0A &&
                      magic[10] == 0x87 && magic[11] == 0x0A ) {
                     /* This is a JXL container */
-                    is_JXL = SDL_TRUE;
+                    is_JXL = true;
                 }
             }
         }
@@ -150,7 +150,7 @@ SDL_Surface *IMG_LoadJXL_IO(SDL_IOStream *src)
         return NULL;
     }
 
-    data = (unsigned char *)SDL_LoadFile_IO(src, &datasize, SDL_FALSE);
+    data = (unsigned char *)SDL_LoadFile_IO(src, &datasize, false);
     if (!data) {
         return NULL;
     }
@@ -265,10 +265,10 @@ void IMG_QuitJXL(void)
 }
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isJXL(SDL_IOStream *src)
+bool IMG_isJXL(SDL_IOStream *src)
 {
     (void)src;
-    return SDL_FALSE;
+    return false;
 }
 
 /* Load a JXL type image from an SDL datasource */

@@ -43,21 +43,21 @@
 #include "qoi.h"
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isQOI(SDL_IOStream *src)
+bool IMG_isQOI(SDL_IOStream *src)
 {
     Sint64 start;
-    SDL_bool is_QOI;
+    bool is_QOI;
     char magic[4];
 
     if (!src) {
-        return SDL_FALSE;
+        return false;
     }
 
     start = SDL_TellIO(src);
-    is_QOI = SDL_FALSE;
+    is_QOI = false;
     if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if ( SDL_strncmp(magic, "qoif", 4) == 0 ) {
-            is_QOI = SDL_TRUE;
+            is_QOI = true;
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
@@ -73,7 +73,7 @@ SDL_Surface *IMG_LoadQOI_IO(SDL_IOStream *src)
     qoi_desc image_info;
     SDL_Surface *surface = NULL;
 
-    data = (void *)SDL_LoadFile_IO(src, &size, SDL_FALSE);
+    data = (void *)SDL_LoadFile_IO(src, &size, false);
     if ( !data ) {
         return NULL;
     }
@@ -114,9 +114,9 @@ SDL_Surface *IMG_LoadQOI_IO(SDL_IOStream *src)
 #endif
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isQOI(SDL_IOStream *src)
+bool IMG_isQOI(SDL_IOStream *src)
 {
-    return SDL_FALSE;
+    return false;
 }
 
 /* Load a QOI type image from an SDL datasource */

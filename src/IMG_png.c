@@ -201,24 +201,24 @@ void IMG_QuitPNG(void)
 }
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isPNG(SDL_IOStream *src)
+bool IMG_isPNG(SDL_IOStream *src)
 {
     Sint64 start;
-    SDL_bool is_PNG;
+    bool is_PNG;
     Uint8 magic[4];
 
     if (!src) {
-        return SDL_FALSE;
+        return false;
     }
 
     start = SDL_TellIO(src);
-    is_PNG = SDL_FALSE;
+    is_PNG = false;
     if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if ( magic[0] == 0x89 &&
              magic[1] == 'P' &&
              magic[2] == 'N' &&
              magic[3] == 'G' ) {
-            is_PNG = SDL_TRUE;
+            is_PNG = true;
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
@@ -398,7 +398,7 @@ static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
                          (Uint8)transv->green,
                          (Uint8)transv->blue);
         }
-        SDL_SetSurfaceColorKey(vars->surface, SDL_TRUE, ckey);
+        SDL_SetSurfaceColorKey(vars->surface, true, ckey);
     }
 
     /* Create the array of pointers to image data */
@@ -516,24 +516,24 @@ void IMG_QuitPNG(void)
 
 /* FIXME: This is a copypaste from LIBPNG! Pull that out of the ifdefs */
 /* See if an image is contained in a data source */
-SDL_bool IMG_isPNG(SDL_IOStream *src)
+bool IMG_isPNG(SDL_IOStream *src)
 {
     Sint64 start;
-    SDL_bool is_PNG;
+    bool is_PNG;
     Uint8 magic[4];
 
     if (!src) {
-        return SDL_FALSE;
+        return false;
     }
 
     start = SDL_TellIO(src);
-    is_PNG = SDL_FALSE;
+    is_PNG = false;
     if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if ( magic[0] == 0x89 &&
              magic[1] == 'P' &&
              magic[2] == 'N' &&
              magic[3] == 'G' ) {
-            is_PNG = SDL_TRUE;
+            is_PNG = true;
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
@@ -564,9 +564,9 @@ void IMG_QuitPNG(void)
 }
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isPNG(SDL_IOStream *src)
+bool IMG_isPNG(SDL_IOStream *src)
 {
-    return SDL_FALSE;
+    return false;
 }
 
 /* Load a PNG type image from an SDL datasource */
@@ -603,7 +603,7 @@ struct savepng_vars {
     SDL_Surface *source;
 };
 
-static SDL_bool LIBPNG_SavePNG_IO(struct savepng_vars *vars, SDL_Surface *surface, SDL_IOStream *dst)
+static bool LIBPNG_SavePNG_IO(struct savepng_vars *vars, SDL_Surface *surface, SDL_IOStream *dst)
 {
     Uint8 transparent_table[256];
     SDL_Palette *palette;
@@ -614,13 +614,13 @@ static SDL_bool LIBPNG_SavePNG_IO(struct savepng_vars *vars, SDL_Surface *surfac
     vars->png_ptr = lib.png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (vars->png_ptr == NULL) {
         vars->error = "Couldn't allocate memory for PNG file or incompatible PNG dll";
-        return SDL_FALSE;
+        return false;
     }
 
     vars->info_ptr = lib.png_create_info_struct(vars->png_ptr);
     if (vars->info_ptr == NULL) {
         vars->error = "Couldn't create image information for PNG file";
-        return SDL_FALSE;
+        return false;
     }
 #ifdef PNG_SETJMP_SUPPORTED
 #ifndef LIBPNG_VERSION_12
@@ -631,7 +631,7 @@ static SDL_bool LIBPNG_SavePNG_IO(struct savepng_vars *vars, SDL_Surface *surfac
 #endif
     {
         vars->error = "Error writing the PNG file.";
-        return SDL_FALSE;
+        return false;
     }
 
     palette = SDL_GetSurfacePalette(surface);
@@ -643,7 +643,7 @@ static SDL_bool LIBPNG_SavePNG_IO(struct savepng_vars *vars, SDL_Surface *surfac
         vars->color_ptr = (png_colorp)SDL_malloc(sizeof(png_color) * ncolors);
         if (vars->color_ptr == NULL) {
             vars->error = "Couldn't create palette for PNG file";
-            return SDL_FALSE;
+            return false;
         }
         for (i = 0; i < ncolors; i++) {
             vars->color_ptr[i].red = palette->colors[i].r;
@@ -693,7 +693,7 @@ static SDL_bool LIBPNG_SavePNG_IO(struct savepng_vars *vars, SDL_Surface *surfac
         vars->row_pointers = (png_bytep *) SDL_malloc(sizeof(png_bytep) * vars->source->h);
         if (!vars->row_pointers) {
             vars->error = "Out of memory";
-            return SDL_FALSE;
+            return false;
         }
         for (row = 0; row < (int)vars->source->h; row++) {
             vars->row_pointers[row] = (png_bytep) (Uint8 *) vars->source->pixels + row * vars->source->pitch;
@@ -703,16 +703,16 @@ static SDL_bool LIBPNG_SavePNG_IO(struct savepng_vars *vars, SDL_Surface *surfac
         lib.png_write_png(vars->png_ptr, vars->info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
     }
 
-    return SDL_TRUE;
+    return true;
 }
 
-static SDL_bool IMG_SavePNG_IO_libpng(SDL_Surface *surface, SDL_IOStream *dst)
+static bool IMG_SavePNG_IO_libpng(SDL_Surface *surface, SDL_IOStream *dst)
 {
     struct savepng_vars vars;
-    SDL_bool result;
+    bool result;
 
     if (!IMG_Init(IMG_INIT_PNG)) {
-        return SDL_FALSE;
+        return false;
     }
 
     SDL_zero(vars);
@@ -762,11 +762,11 @@ static SDL_bool IMG_SavePNG_IO_libpng(SDL_Surface *surface, SDL_IOStream *dst)
 #define MINIZ_SDL_NOUNUSED
 #include "miniz.h"
 
-static SDL_bool IMG_SavePNG_IO_miniz(SDL_Surface *surface, SDL_IOStream *dst)
+static bool IMG_SavePNG_IO_miniz(SDL_Surface *surface, SDL_IOStream *dst)
 {
     size_t size = 0;
     void *png = NULL;
-    SDL_bool result = SDL_FALSE;
+    bool result = false;
 
     if (!dst) {
         return SDL_SetError("Passed NULL dst");
@@ -783,7 +783,7 @@ static SDL_bool IMG_SavePNG_IO_miniz(SDL_Surface *surface, SDL_IOStream *dst)
     }
     if (png) {
         if (SDL_WriteIO(dst, png, size)) {
-            result = SDL_TRUE;
+            result = true;
         }
         mz_free(png); /* calls SDL_free() */
     } else {
@@ -795,19 +795,19 @@ static SDL_bool IMG_SavePNG_IO_miniz(SDL_Surface *surface, SDL_IOStream *dst)
 
 #endif /* SDL_IMAGE_SAVE_PNG */
 
-SDL_bool IMG_SavePNG(SDL_Surface *surface, const char *file)
+bool IMG_SavePNG(SDL_Surface *surface, const char *file)
 {
     SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
     if (dst) {
         return IMG_SavePNG_IO(surface, dst, 1);
     } else {
-        return SDL_FALSE;
+        return false;
     }
 }
 
-SDL_bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio)
+bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio)
 {
-    SDL_bool result = SDL_FALSE;
+    bool result = false;
 
     if (!dst) {
         return SDL_SetError("Passed NULL dst");

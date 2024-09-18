@@ -48,7 +48,7 @@ SDL_COMPILE_TIME_ASSERT(SDL_IMAGE_MICRO_VERSION_max, SDL_IMAGE_MICRO_VERSION <= 
 /* Table of image detection and loading functions */
 static struct {
     const char *type;
-    SDL_bool (SDLCALL *is)(SDL_IOStream *src);
+    bool (SDLCALL *is)(SDL_IOStream *src);
     SDL_Surface *(SDLCALL *load)(SDL_IOStream *src);
 } supported[] = {
     /* keep magicless formats first */
@@ -76,7 +76,7 @@ static struct {
 /* Table of animation detection and loading functions */
 static struct {
     const char *type;
-    SDL_bool (SDLCALL *is)(SDL_IOStream *src);
+    bool (SDLCALL *is)(SDL_IOStream *src);
     IMG_Animation *(SDLCALL *load)(SDL_IOStream *src);
 } supported_anims[] = {
     /* keep magicless formats first */
@@ -182,18 +182,18 @@ SDL_Surface *IMG_Load(const char *file)
         /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
-    return IMG_LoadTyped_IO(src, SDL_TRUE, ext);
+    return IMG_LoadTyped_IO(src, true, ext);
 }
 #endif
 
 /* Load an image from an SDL datasource (for compatibility) */
-SDL_Surface *IMG_Load_IO(SDL_IOStream *src, SDL_bool closeio)
+SDL_Surface *IMG_Load_IO(SDL_IOStream *src, bool closeio)
 {
     return IMG_LoadTyped_IO(src, closeio, NULL);
 }
 
 /* Load an image from an SDL datasource, optionally specifying the type */
-SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, SDL_bool closeio, const char *type)
+SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type)
 {
     size_t i;
     SDL_Surface *image;
@@ -276,7 +276,7 @@ SDL_Texture *IMG_LoadTexture(SDL_Renderer *renderer, const char *file)
     return texture;
 }
 
-SDL_Texture *IMG_LoadTexture_IO(SDL_Renderer *renderer, SDL_IOStream *src, SDL_bool closeio)
+SDL_Texture *IMG_LoadTexture_IO(SDL_Renderer *renderer, SDL_IOStream *src, bool closeio)
 {
     SDL_Texture *texture = NULL;
     SDL_Surface *surface = IMG_Load_IO(src, closeio);
@@ -287,7 +287,7 @@ SDL_Texture *IMG_LoadTexture_IO(SDL_Renderer *renderer, SDL_IOStream *src, SDL_b
     return texture;
 }
 
-SDL_Texture *IMG_LoadTextureTyped_IO(SDL_Renderer *renderer, SDL_IOStream *src, SDL_bool closeio, const char *type)
+SDL_Texture *IMG_LoadTextureTyped_IO(SDL_Renderer *renderer, SDL_IOStream *src, bool closeio, const char *type)
 {
     SDL_Texture *texture = NULL;
     SDL_Surface *surface = IMG_LoadTyped_IO(src, closeio, type);
@@ -311,17 +311,17 @@ IMG_Animation *IMG_LoadAnimation(const char *file)
         /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
-    return IMG_LoadAnimationTyped_IO(src, SDL_TRUE, ext);
+    return IMG_LoadAnimationTyped_IO(src, true, ext);
 }
 
 /* Load an animation from an SDL datasource (for compatibility) */
-IMG_Animation *IMG_LoadAnimation_IO(SDL_IOStream *src, SDL_bool closeio)
+IMG_Animation *IMG_LoadAnimation_IO(SDL_IOStream *src, bool closeio)
 {
     return IMG_LoadAnimationTyped_IO(src, closeio, NULL);
 }
 
 /* Load an animation from an SDL datasource, optionally specifying the type */
-IMG_Animation *IMG_LoadAnimationTyped_IO(SDL_IOStream *src, SDL_bool closeio, const char *type)
+IMG_Animation *IMG_LoadAnimationTyped_IO(SDL_IOStream *src, bool closeio, const char *type)
 {
     size_t i;
     IMG_Animation *anim;

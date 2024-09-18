@@ -82,7 +82,7 @@ SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src)
     stbi_uc *pixels;
     stbi_io_callbacks rw_callbacks;
     SDL_Surface *surface = NULL;
-    SDL_bool use_palette = SDL_FALSE;
+    bool use_palette = false;
     unsigned int palette_colors[256];
 
     if (!src) {
@@ -102,7 +102,7 @@ SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src)
             magic[14] == 'D' &&
             magic[15] == 'R' &&
             magic[25] == PNG_COLOR_INDEXED) {
-            use_palette = SDL_TRUE;
+            use_palette = true;
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
@@ -148,9 +148,9 @@ SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src)
             w
         );
         if (surface) {
-            SDL_bool has_colorkey = SDL_FALSE;
+            bool has_colorkey = false;
             int colorkey_index = -1;
-            SDL_bool has_alpha = SDL_FALSE;
+            bool has_alpha = false;
             SDL_Palette *palette = SDL_CreateSurfacePalette(surface);
             if (palette) {
                 int i;
@@ -163,11 +163,11 @@ SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src)
                     palette->colors[i].a = *palette_bytes++;
                     if (palette->colors[i].a != SDL_ALPHA_OPAQUE) {
                         if (palette->colors[i].a == SDL_ALPHA_TRANSPARENT && !has_colorkey) {
-                            has_colorkey = SDL_TRUE;
+                            has_colorkey = true;
                             colorkey_index = i;
                         } else {
                             /* Partial opacity or multiple colorkeys */
-                            has_alpha = SDL_TRUE;
+                            has_alpha = true;
                         }
                     }
                 }
@@ -175,7 +175,7 @@ SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src)
             if (has_alpha) {
                 SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_BLEND);
             } else if (has_colorkey) {
-                SDL_SetSurfaceColorKey(surface, SDL_TRUE, colorkey_index);
+                SDL_SetSurfaceColorKey(surface, true, colorkey_index);
             }
 
             /* FIXME: This sucks. It'd be better to allocate the surface first, then

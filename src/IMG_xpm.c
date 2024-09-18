@@ -51,21 +51,21 @@
 #ifdef LOAD_XPM
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isXPM(SDL_IOStream *src)
+bool IMG_isXPM(SDL_IOStream *src)
 {
     Sint64 start;
-    SDL_bool is_XPM;
+    bool is_XPM;
     char magic[9];
 
     if (!src) {
-        return SDL_FALSE;
+        return false;
     }
 
     start = SDL_TellIO(src);
-    is_XPM = SDL_FALSE;
+    is_XPM = false;
     if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
         if ( SDL_memcmp(magic, "/* XPM */", sizeof(magic)) == 0 ) {
-            is_XPM = SDL_TRUE;
+            is_XPM = true;
         }
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
@@ -997,7 +997,7 @@ do {                            \
 } while (0)
 
 /* read XPM from either array or IOStream */
-static SDL_Surface *load_xpm(char **xpm, SDL_IOStream *src, SDL_bool force_32bit)
+static SDL_Surface *load_xpm(char **xpm, SDL_IOStream *src, bool force_32bit)
 {
     Sint64 start = 0;
     SDL_Surface *image = NULL;
@@ -1123,7 +1123,7 @@ static SDL_Surface *load_xpm(char **xpm, SDL_IOStream *src, SDL_bool force_32bit
                 c->b = (Uint8)(argb);
                 pixel = index;
                 if (argb == 0x00000000) {
-                    SDL_SetSurfaceColorKey(image, SDL_TRUE, pixel);
+                    SDL_SetSurfaceColorKey(image, true, pixel);
                 }
             } else {
                 pixel = argb;
@@ -1196,7 +1196,7 @@ SDL_Surface *IMG_ReadXPMFromArray(char **xpm)
         SDL_SetError("array is NULL");
         return NULL;
     }
-    return load_xpm(xpm, NULL, SDL_FALSE);
+    return load_xpm(xpm, NULL, false);
 }
 
 SDL_Surface *IMG_ReadXPMFromArrayToRGB888(char **xpm)
@@ -1205,7 +1205,7 @@ SDL_Surface *IMG_ReadXPMFromArrayToRGB888(char **xpm)
         SDL_SetError("array is NULL");
         return NULL;
     }
-    return load_xpm(xpm, NULL, SDL_TRUE);
+    return load_xpm(xpm, NULL, true);
 }
 
 #else  /* not LOAD_XPM */
@@ -1214,9 +1214,9 @@ SDL_Surface *IMG_ReadXPMFromArrayToRGB888(char **xpm)
 #endif
 
 /* See if an image is contained in a data source */
-SDL_bool IMG_isXPM(SDL_IOStream *src)
+bool IMG_isXPM(SDL_IOStream *src)
 {
-    return SDL_FALSE;
+    return false;
 }
 
 
