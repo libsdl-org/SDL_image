@@ -208,7 +208,7 @@ bool IMG_isAVIF(SDL_IOStream *src)
     }
 
     start = SDL_TellIO(src);
-    is_AVIF = 0;
+    is_AVIF = false;
     if (ReadAVIFHeader(src, &data, &size)) {
         /* This might be AVIF, do more thorough checks */
         if ((IMG_Init(IMG_INIT_AVIF) & IMG_INIT_AVIF) != 0) {
