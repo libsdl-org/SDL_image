@@ -55,3 +55,4 @@ Release
 *.ncb
 *.suo
 *.sdf
+Xcode/build.xcconfig

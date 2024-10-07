@@ -6,7 +6,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 set(MAJOR_VERSION 3)
 set(MINOR_VERSION 0)
 set(MICRO_VERSION 0)
-set(SDL_REQUIRED_VERSION 3.0.0)
+set(SDL_REQUIRED_VERSION 3.1.3)
 
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_CURRENT_BINARY_DIR)
     message(FATAL_ERROR "Prevented in-tree built. Please create a build directory outside of the SDL_image source code and call cmake from there")
@@ -288,21 +288,6 @@ set_target_properties(${sdl3_image_target_name} PROPERTIES
     EXPORT_NAME ${sdl3_image_target_name}
     C_VISIBILITY_PRESET "hidden"
 )
-
-if (MSVC  AND CMAKE_BUILD_TYPE MATCHES "Release")
-   target_compile_options(${sdl3_image_target_name} PRIVATE /Zi)
-
-   # Tell linker to include symbol data
-    set_target_properties(${sdl3_image_target_name} PROPERTIES
-        LINK_FLAGS "/INCREMENTAL:NO /DEBUG /OPT:REF /OPT:ICF"
-    )
-
-    # Set file name & location
-    set_target_properties(${sdl3_image_target_name} PROPERTIES
-        COMPILE_PDB_NAME ${sdl3_image_target_name}
-        COMPILE_PDB_OUTPUT_DIR ${CMAKE_BINARY_DIR}
-    )
-endif()
 
 sdl_target_link_option_version_file(${sdl3_image_target_name} "${CMAKE_CURRENT_SOURCE_DIR}/src/SDL_image.sym")
 
@@ -1038,6 +1023,7 @@ if(SDLIMAGE_INSTALL)
     endif()
 
     configure_package_config_file(cmake/SDL3_imageConfig.cmake.in SDL3_imageConfig.cmake
+        NO_SET_AND_CHECK_MACRO
         INSTALL_DESTINATION "${SDLIMAGE_INSTALL_CMAKEDIR}"
     )
     write_basic_package_version_file("${PROJECT_BINARY_DIR}/SDL3_imageConfigVersion.cmake"

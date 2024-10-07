@@ -43,10 +43,13 @@ set(SDLIMAGE_BACKEND_WIC       @SDLIMAGE_BACKEND_WIC@)
 
 set(SDLIMAGE_SDL3_REQUIRED_VERSION  @SDL_REQUIRED_VERSION@)
 
+set(SDL3_image_SDL3_image-shared_FOUND FALSE)
 if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/SDL3_image-shared-targets.cmake")
     include("${CMAKE_CURRENT_LIST_DIR}/SDL3_image-shared-targets.cmake")
+    set(SDL3_image_SDL3_image-shared_FOUND TRUE)
 endif()
 
+set(SDL3_image_SDL3_image-static_FOUND FALSE)
 if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/SDL3_image-static-targets.cmake")
 
     if(SDLIMAGE_VENDORED)
@@ -89,7 +92,7 @@ if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/SDL3_image-static-targets.cmake")
             endif()
         endif()
 
-        if(SDLIMAGE_JPG AND NOT TARGET JPEG::JPEG AND NOT SDLIMAGE_JPG_SHARED)
+        if(SDLIMAGE_JPG AND NOT TARGET JPEG::JPEG AND NOT SDLIMAGE_JPG_SHARED AND NOT (SDLIMAGE_BACKEND_STB OR SDLIMAGE_BACKEND_WIC OR SDLIMAGE_BACKEND_IMAGEIO))
             find_dependency(JPEG)
         endif()
 
@@ -98,11 +101,11 @@ if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/SDL3_image-static-targets.cmake")
             find_dependency(libjxl)
         endif()
 
-        if(SDLIMAGE_PNG AND NOT TARGET PNG::PNG AND NOT SDLIMAGE_PNG_SHARED)
+        if(SDLIMAGE_PNG AND NOT TARGET PNG::PNG AND NOT SDLIMAGE_PNG_SHARED AND NOT (SDLIMAGE_BACKEND_STB OR SDLIMAGE_BACKEND_WIC OR SDLIMAGE_BACKEND_IMAGEIO))
             find_dependency(PNG)
         endif()
 
-        if(SDLIMAGE_TIF AND NOT TARGET TIFF::TIFF)
+        if(SDLIMAGE_TIF AND NOT TARGET TIFF::TIFF AND NOT (SDLIMAGE_BACKEND_IMAGEIO OR SDLIMAGE_BACKEND_WIC))
             find_dependency(TIFF)
         endif()
 
@@ -117,6 +120,7 @@ if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/SDL3_image-static-targets.cmake")
     endif()
 
     include("${CMAKE_CURRENT_LIST_DIR}/SDL3_image-static-targets.cmake")
+    set(SDL3_image_SDL3_image-static_FOUND TRUE)
 endif()
 
 function(_sdl_create_target_alias_compat NEW_TARGET TARGET)
@@ -133,7 +137,10 @@ endfunction()
 if(NOT TARGET SDL3_image::SDL3_image)
     if(TARGET SDL3_image::SDL3_image-shared)
         _sdl_create_target_alias_compat(SDL3_image::SDL3_image SDL3_image::SDL3_image-shared)
-    else()
+    elseif(TARGET SDL3_image::SDL3_image-static)
         _sdl_create_target_alias_compat(SDL3_image::SDL3_image SDL3_image::SDL3_image-static)
     endif()
 endif()
+
+@PACKAGE_INIT@
+check_required_components(SDL3_image)
