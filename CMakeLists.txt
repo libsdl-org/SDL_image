@@ -701,7 +701,7 @@ if(SDL2IMAGE_WEBP)
     else()
         message(STATUS "${PROJECT_NAME}: Using system libwebp")
         find_package(webp REQUIRED)
-        list(APPEND PC_REQUIRES libwebp)
+        list(APPEND PC_REQUIRES libwebp libwebpdemux)
     endif()
     if(SDL2IMAGE_WEBP_SHARED)
         target_include_directories(SDL2_image PRIVATE
