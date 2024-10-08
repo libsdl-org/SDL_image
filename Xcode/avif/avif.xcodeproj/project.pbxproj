@@ -23,6 +23,11 @@
 /* Begin PBXBuildFile section */
 		F313F5A02ADDB009008B58D6 /* exif.c in Sources */ = {isa = PBXBuildFile; fileRef = F313F59F2ADDB009008B58D6 /* exif.c */; };
 		F313F5A22ADDB03F008B58D6 /* reformat_libsharpyuv.c in Sources */ = {isa = PBXBuildFile; fileRef = F313F5A12ADDB03F008B58D6 /* reformat_libsharpyuv.c */; };
+		F314CA602CB4C6A5008F776B /* planar_functions.c in Sources */ = {isa = PBXBuildFile; fileRef = F314CA5B2CB4C6A5008F776B /* planar_functions.c */; };
+		F314CA612CB4C6A5008F776B /* scale.c in Sources */ = {isa = PBXBuildFile; fileRef = F314CA5D2CB4C6A5008F776B /* scale.c */; };
+		F314CA622CB4C6A5008F776B /* scale_any.c in Sources */ = {isa = PBXBuildFile; fileRef = F314CA5E2CB4C6A5008F776B /* scale_any.c */; };
+		F314CA632CB4C6A5008F776B /* scale_common.c in Sources */ = {isa = PBXBuildFile; fileRef = F314CA5F2CB4C6A5008F776B /* scale_common.c */; };
+		F314CA642CB4C6A5008F776B /* row_common.c in Sources */ = {isa = PBXBuildFile; fileRef = F314CA5C2CB4C6A5008F776B /* row_common.c */; };
 		F314F1A82B62C7F90006624D /* codec_aom.c in Sources */ = {isa = PBXBuildFile; fileRef = F314F1A72B62C7F90006624D /* codec_aom.c */; };
 		F314F1B22B62C90C0006624D /* libaom.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F314F1AE2B62C8AA0006624D /* libaom.a */; };
 		F314F1FF2B62D8560006624D /* aom_decoder.c in Sources */ = {isa = PBXBuildFile; fileRef = F314F1FA2B62D8560006624D /* aom_decoder.c */; };
@@ -218,7 +223,6 @@
 		F314F37A2B62DFA60006624D /* ransac.c in Sources */ = {isa = PBXBuildFile; fileRef = F314F3752B62DFA60006624D /* ransac.c */; };
 		F314F37C2B62E0420006624D /* encodeframe_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = F314F37B2B62E0420006624D /* encodeframe_utils.c */; };
 		F314F37E2B62E08C0006624D /* rdopt.c in Sources */ = {isa = PBXBuildFile; fileRef = F314F37D2B62E08C0006624D /* rdopt.c */; };
-		F314F3802B62E0B70006624D /* hash_crc32.c in Sources */ = {isa = PBXBuildFile; fileRef = F314F37F2B62E0B70006624D /* hash_crc32.c */; };
 		F314F3842B62E0F10006624D /* fast.c in Sources */ = {isa = PBXBuildFile; fileRef = F314F3812B62E0F10006624D /* fast.c */; };
 		F314F3852B62E0F10006624D /* nonmax.c in Sources */ = {isa = PBXBuildFile; fileRef = F314F3822B62E0F10006624D /* nonmax.c */; };
 		F314F3862B62E0F10006624D /* fast_9.c in Sources */ = {isa = PBXBuildFile; fileRef = F314F3832B62E0F10006624D /* fast_9.c */; };
@@ -514,6 +518,11 @@
 /* Begin PBXFileReference section */
 		F313F59F2ADDB009008B58D6 /* exif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exif.c; path = ../../external/libavif/src/exif.c; sourceTree = "<group>"; };
 		F313F5A12ADDB03F008B58D6 /* reformat_libsharpyuv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = reformat_libsharpyuv.c; path = ../../external/libavif/src/reformat_libsharpyuv.c; sourceTree = "<group>"; };
+		F314CA5B2CB4C6A5008F776B /* planar_functions.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = planar_functions.c; sourceTree = "<group>"; };
+		F314CA5C2CB4C6A5008F776B /* row_common.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = row_common.c; sourceTree = "<group>"; };
+		F314CA5D2CB4C6A5008F776B /* scale.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = scale.c; sourceTree = "<group>"; };
+		F314CA5E2CB4C6A5008F776B /* scale_any.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = scale_any.c; sourceTree = "<group>"; };
+		F314CA5F2CB4C6A5008F776B /* scale_common.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = scale_common.c; sourceTree = "<group>"; };
 		F314F1A72B62C7F90006624D /* codec_aom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = codec_aom.c; path = ../../external/libavif/src/codec_aom.c; sourceTree = "<group>"; };
 		F314F1AE2B62C8AA0006624D /* libaom.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libaom.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F314F1FA2B62D8560006624D /* aom_decoder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = aom_decoder.c; path = ../../external/aom/aom/src/aom_decoder.c; sourceTree = "<group>"; };
@@ -709,7 +718,6 @@
 		F314F3752B62DFA60006624D /* ransac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ransac.c; path = ../../external/aom/aom_dsp/flow_estimation/ransac.c; sourceTree = "<group>"; };
 		F314F37B2B62E0420006624D /* encodeframe_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = encodeframe_utils.c; path = ../../external/aom/av1/encoder/encodeframe_utils.c; sourceTree = "<group>"; };
 		F314F37D2B62E08C0006624D /* rdopt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rdopt.c; path = ../../external/aom/av1/encoder/rdopt.c; sourceTree = "<group>"; };
-		F314F37F2B62E0B70006624D /* hash_crc32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hash_crc32.c; path = ../../external/aom/av1/encoder/arm/crc32/hash_crc32.c; sourceTree = "<group>"; };
 		F314F3812B62E0F10006624D /* fast.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fast.c; path = ../../external/aom/third_party/fastfeat/fast.c; sourceTree = "<group>"; };
 		F314F3822B62E0F10006624D /* nonmax.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = nonmax.c; path = ../../external/aom/third_party/fastfeat/nonmax.c; sourceTree = "<group>"; };
 		F314F3832B62E0F10006624D /* fast_9.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fast_9.c; path = ../../external/aom/third_party/fastfeat/fast_9.c; sourceTree = "<group>"; };
@@ -989,6 +997,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F314CA582CB4C5E1008F776B /* libyuv */ = {
+			isa = PBXGroup;
+			children = (
+				F314CA5B2CB4C6A5008F776B /* planar_functions.c */,
+				F314CA5C2CB4C6A5008F776B /* row_common.c */,
+				F314CA5D2CB4C6A5008F776B /* scale.c */,
+				F314CA5E2CB4C6A5008F776B /* scale_any.c */,
+				F314CA5F2CB4C6A5008F776B /* scale_common.c */,
+			);
+			name = libyuv;
+			path = ../../external/libavif/third_party/libyuv/source;
+			sourceTree = "<group>";
+		};
 		F314F1A92B62C8550006624D /* aom */ = {
 			isa = PBXGroup;
 			children = (
@@ -1172,7 +1193,6 @@
 				F314F3322B62DD2D0006624D /* encodetxb_neon.c */,
 				F314F2412B62DA880006624D /* fwd_txfm_neon.c */,
 				F314F2402B62DA880006624D /* hadamard_neon.c */,
-				F314F37F2B62E0B70006624D /* hash_crc32.c */,
 				F314F3352B62DD2D0006624D /* highbd_fwd_txfm_neon.c */,
 				F314F2482B62DA880006624D /* highbd_intrapred_neon.c */,
 				F314F3542B62DD980006624D /* highbd_inv_txfm_neon.c */,
@@ -1409,6 +1429,7 @@
 		F35474742829A8E6007E9EDA /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				F314CA582CB4C5E1008F776B /* libyuv */,
 				F35474772829A9CB007E9EDA /* alpha.c */,
 				F35474782829A9CB007E9EDA /* avif.c */,
 				F314F1A72B62C7F90006624D /* codec_aom.c */,
@@ -1704,7 +1725,6 @@
 				F314F51B2B62F1440006624D /* aom_subpixel_8t_intrin_ssse3.c in Sources */,
 				F314F5BC2B62FA9F0006624D /* warp_plane_sse2.c in Sources */,
 				F314F29D2B62DBE30006624D /* seg_common.c in Sources */,
-				F314F3802B62E0B70006624D /* hash_crc32.c in Sources */,
 				F314F4D52B62F1440006624D /* highbd_subpel_variance_impl_sse2.asm in Sources */,
 				F314F3492B62DD2E0006624D /* hybrid_fwd_txfm_neon.c in Sources */,
 				F314F5012B62F1440006624D /* aom_high_subpixel_bilinear_sse2.asm in Sources */,
@@ -2080,6 +2100,11 @@
 				F35474942829A9CB007E9EDA /* read.c in Sources */,
 				F313F5A02ADDB009008B58D6 /* exif.c in Sources */,
 				F35474922829A9CB007E9EDA /* mem.c in Sources */,
+				F314CA602CB4C6A5008F776B /* planar_functions.c in Sources */,
+				F314CA612CB4C6A5008F776B /* scale.c in Sources */,
+				F314CA622CB4C6A5008F776B /* scale_any.c in Sources */,
+				F314CA632CB4C6A5008F776B /* scale_common.c in Sources */,
+				F314CA642CB4C6A5008F776B /* row_common.c in Sources */,
 				F35474872829A9CB007E9EDA /* avif.c in Sources */,
 				F313F5A22ADDB03F008B58D6 /* reformat_libsharpyuv.c in Sources */,
 				F354748D2829A9CB007E9EDA /* reformat_libyuv.c in Sources */,
@@ -2209,7 +2234,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -2261,6 +2285,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../external/libavif/third_party/libyuv/include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -2286,7 +2311,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -2336,6 +2360,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../external/libavif/third_party/libyuv/include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
