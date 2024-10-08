@@ -9,6 +9,11 @@
 /* Begin PBXBuildFile section */
 		F313F5A02ADDB009008B58D6 /* exif.c in Sources */ = {isa = PBXBuildFile; fileRef = F313F59F2ADDB009008B58D6 /* exif.c */; };
 		F313F5A22ADDB03F008B58D6 /* reformat_libsharpyuv.c in Sources */ = {isa = PBXBuildFile; fileRef = F313F5A12ADDB03F008B58D6 /* reformat_libsharpyuv.c */; };
+		F314CA242CB4C362008F776B /* scale_any.c in Sources */ = {isa = PBXBuildFile; fileRef = F314CA222CB4C362008F776B /* scale_any.c */; };
+		F314CA252CB4C362008F776B /* row_common.c in Sources */ = {isa = PBXBuildFile; fileRef = F314CA202CB4C362008F776B /* row_common.c */; };
+		F314CA262CB4C362008F776B /* scale_common.c in Sources */ = {isa = PBXBuildFile; fileRef = F314CA232CB4C362008F776B /* scale_common.c */; };
+		F314CA272CB4C362008F776B /* planar_functions.c in Sources */ = {isa = PBXBuildFile; fileRef = F314CA1F2CB4C362008F776B /* planar_functions.c */; };
+		F314CA282CB4C362008F776B /* scale.c in Sources */ = {isa = PBXBuildFile; fileRef = F314CA212CB4C362008F776B /* scale.c */; };
 		F35474862829A9CB007E9EDA /* alpha.c in Sources */ = {isa = PBXBuildFile; fileRef = F35474772829A9CB007E9EDA /* alpha.c */; };
 		F35474872829A9CB007E9EDA /* avif.c in Sources */ = {isa = PBXBuildFile; fileRef = F35474782829A9CB007E9EDA /* avif.c */; };
 		F35474882829A9CB007E9EDA /* scale.c in Sources */ = {isa = PBXBuildFile; fileRef = F35474792829A9CB007E9EDA /* scale.c */; };
@@ -115,6 +120,11 @@
 /* Begin PBXFileReference section */
 		F313F59F2ADDB009008B58D6 /* exif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exif.c; path = ../../external/libavif/src/exif.c; sourceTree = "<group>"; };
 		F313F5A12ADDB03F008B58D6 /* reformat_libsharpyuv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = reformat_libsharpyuv.c; path = ../../external/libavif/src/reformat_libsharpyuv.c; sourceTree = "<group>"; };
+		F314CA1F2CB4C362008F776B /* planar_functions.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = planar_functions.c; sourceTree = "<group>"; };
+		F314CA202CB4C362008F776B /* row_common.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = row_common.c; sourceTree = "<group>"; };
+		F314CA212CB4C362008F776B /* scale.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = scale.c; sourceTree = "<group>"; };
+		F314CA222CB4C362008F776B /* scale_any.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = scale_any.c; sourceTree = "<group>"; };
+		F314CA232CB4C362008F776B /* scale_common.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = scale_common.c; sourceTree = "<group>"; };
 		F35474682829A8B3007E9EDA /* avif.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = avif.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F35474772829A9CB007E9EDA /* alpha.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = alpha.c; path = ../../external/libavif/src/alpha.c; sourceTree = "<group>"; };
 		F35474782829A9CB007E9EDA /* avif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = avif.c; path = ../../external/libavif/src/avif.c; sourceTree = "<group>"; };
@@ -211,6 +221,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F314CA152CB4C164008F776B /* libyuv */ = {
+			isa = PBXGroup;
+			children = (
+				F314CA1F2CB4C362008F776B /* planar_functions.c */,
+				F314CA202CB4C362008F776B /* row_common.c */,
+				F314CA212CB4C362008F776B /* scale.c */,
+				F314CA222CB4C362008F776B /* scale_any.c */,
+				F314CA232CB4C362008F776B /* scale_common.c */,
+			);
+			name = libyuv;
+			path = ../../external/libavif/third_party/libyuv/source;
+			sourceTree = "<group>";
+		};
 		F354745E2829A8B3007E9EDA = {
 			isa = PBXGroup;
 			children = (
@@ -237,6 +260,7 @@
 		F35474742829A8E6007E9EDA /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				F314CA152CB4C164008F776B /* libyuv */,
 				F35474772829A9CB007E9EDA /* alpha.c */,
 				F35474782829A9CB007E9EDA /* avif.c */,
 				F35474952829A9E0007E9EDA /* codec_dav1d.c */,
@@ -473,6 +497,11 @@
 				F35474902829A9CB007E9EDA /* obu.c in Sources */,
 				F354748A2829A9CB007E9EDA /* diag.c in Sources */,
 				F35474882829A9CB007E9EDA /* scale.c in Sources */,
+				F314CA242CB4C362008F776B /* scale_any.c in Sources */,
+				F314CA252CB4C362008F776B /* row_common.c in Sources */,
+				F314CA262CB4C362008F776B /* scale_common.c in Sources */,
+				F314CA272CB4C362008F776B /* planar_functions.c in Sources */,
+				F314CA282CB4C362008F776B /* scale.c in Sources */,
 				F35474912829A9CB007E9EDA /* write.c in Sources */,
 				F35474862829A9CB007E9EDA /* alpha.c in Sources */,
 				F35474942829A9CB007E9EDA /* read.c in Sources */,
@@ -568,7 +597,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -632,6 +661,7 @@
 					"\"$(SRCROOT)/../../external/libavif/include\"",
 					"\"$(SRCROOT)/../../external/dav1d\"",
 					"\"$(SRCROOT)/../../external/dav1d/include\"",
+					"\"$(SRCROOT)/../../external/libavif/third_party/libyuv/include\"",
 				);
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -642,7 +672,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -703,6 +733,7 @@
 					"\"$(SRCROOT)/../../external/libavif/include\"",
 					"\"$(SRCROOT)/../../external/dav1d\"",
 					"\"$(SRCROOT)/../../external/dav1d/include\"",
+					"\"$(SRCROOT)/../../external/libavif/third_party/libyuv/include\"",
 				);
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
