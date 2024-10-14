@@ -35,6 +35,7 @@
     "cmake": {
       "archs": ["x86", "x64"],
       "args": [
+        "-DBUILD_SHARED_LIBS=ON",
         "-DSDLIMAGE_AVIF=OFF",
         "-DSDLIMAGE_BMP=ON",
         "-DSDLIMAGE_GIF=ON",
@@ -56,7 +57,7 @@
         "-DSDLIMAGE_TESTS=OFF",
         "-DSDLIMAGE_VENDORED=OFF"
       ],
-      "shared-static": "both"
+      "shared-static": "args"
     },
     "files": {
       "": [
