@@ -264,7 +264,6 @@ SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type)
     return NULL;
 }
 
-#if SDL_VERSION_ATLEAST(2,0,0)
 SDL_Texture *IMG_LoadTexture(SDL_Renderer *renderer, const char *file)
 {
     SDL_Texture *texture = NULL;
@@ -297,7 +296,6 @@ SDL_Texture *IMG_LoadTextureTyped_IO(SDL_Renderer *renderer, SDL_IOStream *src, 
     }
     return texture;
 }
-#endif /* SDL 2.0 */
 
 /* Load an animation from a file */
 IMG_Animation *IMG_LoadAnimation(const char *file)

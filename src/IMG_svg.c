@@ -28,14 +28,6 @@
 
 #ifdef LOAD_SVG
 
-#if !SDL_VERSION_ATLEAST(2, 0, 16)
-/* SDL_roundf() is available starting with 2.0.16 */
-static float SDLCALL SDL_roundf(float x)
-{
-    return (x >= 0.0f) ? SDL_floorf(x + 0.5f) : SDL_ceilf(x - 0.5f);
-}
-#endif /* SDL 2.0.16 */
-
 /* Replace C runtime functions with SDL C runtime functions for building on Windows */
 #define free    SDL_free
 #define malloc  SDL_malloc

@@ -329,8 +329,6 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_Load(const char *file);
  */
 extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_Load_IO(SDL_IOStream *src, bool closeio);
 
-#if SDL_VERSION_ATLEAST(2,0,0)
-
 /**
  * Load an image from a filesystem path into a GPU texture.
  *
@@ -467,7 +465,6 @@ extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_IO(SDL_Renderer *rende
  * \sa SDL_DestroyTexture
  */
 extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_IO(SDL_Renderer *renderer, SDL_IOStream *src, bool closeio, const char *type);
-#endif /* SDL 2.0 */
 
 /**
  * Detect AVIF image data on a readable/seekable SDL_IOStream.
