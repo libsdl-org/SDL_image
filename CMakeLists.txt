@@ -17,9 +17,9 @@ project(SDL3_image
     VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}"
 )
 
-include("${CMAKE_CURRENT_LIST_DIR}/cmake/CheckCPUArchitecture.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/cmake/GetGitRevisionDescription.cmake" )
-include("${CMAKE_CURRENT_LIST_DIR}/cmake/PrivateSdlFunctions.cmake" )
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/GetGitRevisionDescription.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/PrivateSdlFunctions.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlcpu.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlplatform.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlmanpages.cmake")
 sdl_calculate_derived_version_variables(${MAJOR_VERSION} ${MINOR_VERSION} ${MICRO_VERSION})
@@ -60,7 +60,7 @@ include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
 set(PLATFORM_SUPPORTS_SHARED ON)
-if(VITA OR PSP OR PS2 OR N3DS OR RISCOS)
+if(EMSCRIPTEN OR VITA OR PSP OR PS2 OR N3DS OR RISCOS)
   set(PLATFORM_SUPPORTS_SHARED OFF)
 endif()
 
@@ -218,7 +218,7 @@ if(NOT TARGET SDL3::Headers OR NOT TARGET ${sdl3_target_name})
     find_package(SDL3 ${SDL_REQUIRED_VERSION} REQUIRED COMPONENTS ${sdl_required_components})
 endif()
 
-SDL_DetectCPUArchitecture()
+SDL_DetectTargetCPUArchitectures(SDL_CPU_NAMES)
 SDL_DetectCMakePlatform()
 
 # Set PROJECT_VERSION of subprojects to "" if it's project call does not set VERSION
@@ -417,7 +417,7 @@ if(SDLIMAGE_DAV1D)
         message(STATUS "${PROJECT_NAME}: Using vendored dav1d")
         set(BUILD_SHARED_LIBS ${SDLIMAGE_DAV1D_SHARED})
         add_subdirectory(external/dav1d EXCLUDE_FROM_ALL)
-        if(DAV1D_ASM AND (CHECK_CPU_ARCHITECTURE_X64 OR CHECK_CPU_ARCHITECTURE_X86))
+        if(DAV1D_ASM AND (SDL_CPU_X64 OR SDL_CPU_X86))
             enable_language(ASM_NASM)
         endif()
         set(DAV1D_LIBRARY dav1d)
@@ -1016,10 +1016,8 @@ if(SDLIMAGE_INSTALL)
 
     if(WIN32 AND NOT MINGW)
         set(SDLIMAGE_INSTALL_CMAKEDIR "${SDLIMAGE_INSTALL_CMAKEDIR_ROOT}")
-        set(LICENSES_PREFIX "licenses/SDL3_image")
     else()
         set(SDLIMAGE_INSTALL_CMAKEDIR "${SDLIMAGE_INSTALL_CMAKEDIR_ROOT}/SDL3_image")
-        set(LICENSES_PREFIX "${CMAKE_INSTALL_DATAROOTDIR}/licenses/SDL3_image")
     endif()
 
     configure_package_config_file(cmake/SDL3_imageConfig.cmake.in SDL3_imageConfig.cmake
@@ -1062,9 +1060,7 @@ if(SDLIMAGE_INSTALL)
     )
 
     if(SDLIMAGE_INSTALL_CPACK)
-        if(SDL2COMPAT_FRAMEWORK)
-            set(CPACK_GENERATOR "DragNDrop")
-        elseif(MSVC)
+        if(MSVC)
             set(CPACK_GENERATOR "ZIP")
         else()
             set(CPACK_GENERATOR "TGZ")

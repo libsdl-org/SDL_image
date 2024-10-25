@@ -9,15 +9,15 @@ set(SDL_CMAKE_PLATFORM "@SDL_CMAKE_PLATFORM@")
 set(SDL_CPU_NAMES "@SDL_CPU_NAMES@")
 list(SORT SDL_CPU_NAMES)
 
+string(TOLOWER "${SDL_CMAKE_PLATFORM}" SDL_CMAKE_PLATFORM)
+string(TOLOWER "${SDL_CPU_NAMES}" SDL_CPU_NAMES)
+if(lower_sdl_cmake_platform STREQUAL lower_sdl_cpu_names)
+    set(SDL_CPU_NAMES_WITH_DASHES)
+endif()
+
 string(REPLACE ";" "-" SDL_CPU_NAMES_WITH_DASHES "${SDL_CPU_NAMES}")
 if(SDL_CPU_NAMES_WITH_DASHES)
     set(SDL_CPU_NAMES_WITH_DASHES "-${SDL_CPU_NAMES_WITH_DASHES}")
-endif()
-
-string(TOLOWER "${SDL_CMAKE_PLATFORM}" lower_sdl_cmake_platform)
-string(TOLOWER "${SDL_CPU_NAMES}" lower_sdl_cpu_names)
-if(lower_sdl_cmake_platform STREQUAL lower_sdl_cpu_names)
-    set(SDL_CPU_NAMES_WITH_DASHES)
 endif()
 
 set(MSVC @MSVC@)
