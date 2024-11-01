@@ -73,7 +73,7 @@
     },
     "dependencies": {
       "SDL": {
-        "artifact": "SDL3-devel-*-mingw.tar.xz",
+        "artifact": "SDL3-devel-*-mingw.tar.gz",
         "install-command": "make install-@<@ARCH@>@ DESTDIR=@<@PREFIX@>@"
       }
     }

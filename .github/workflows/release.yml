@@ -107,7 +107,7 @@ jobs:
       - name: 'Extract dependencies, build and install them'
         id: deps-build
         run: |
-          tar -C /tmp -v -x -f "${{ steps.deps.outputs.dep-path }}/SDL3-${{ steps.deps.outputs.dep-sdl-version }}.tar.xz"
+          tar -C /tmp -v -x -f "${{ steps.deps.outputs.dep-path }}/SDL3-${{ steps.deps.outputs.dep-sdl-version }}.tar.gz"
           cmake -S /tmp/SDL3-${{ steps.deps.outputs.dep-sdl-version }} -B /tmp/SDL-build -DCMAKE_INSTALL_PREFIX=/tmp/deps-prefix
           cmake --build /tmp/SDL-build
           cmake --install /tmp/SDL-build
@@ -566,7 +566,7 @@ jobs:
           mkdir -p /tmp/deps-mingw/x86_64-w64-mingw32
           
           mkdir -p /tmp/deps-mingw-extract/sdl3
-          tar -C /tmp/deps-mingw-extract/sdl3 -v -x -f "${{ steps.deps.outputs.dep-path }}/SDL3-devel-${{ steps.deps.outputs.dep-sdl-version }}-mingw.tar.xz"
+          tar -C /tmp/deps-mingw-extract/sdl3 -v -x -f "${{ steps.deps.outputs.dep-path }}/SDL3-devel-${{ steps.deps.outputs.dep-sdl-version }}-mingw.tar.gz"
           make -C /tmp/deps-mingw-extract/sdl3/SDL3-${{ steps.deps.outputs.dep-sdl-version }} install-all DESTDIR=/tmp/deps-mingw
 
           # FIXME: this should be fixed in SDL3 releases after 3.1.3
