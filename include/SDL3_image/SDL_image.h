@@ -41,7 +41,7 @@ extern "C" {
  * Printable format: "%d.%d.%d", MAJOR, MINOR, MICRO
  */
 #define SDL_IMAGE_MAJOR_VERSION 3
-#define SDL_IMAGE_MINOR_VERSION 0
+#define SDL_IMAGE_MINOR_VERSION 1
 #define SDL_IMAGE_MICRO_VERSION 0
 
 /**
