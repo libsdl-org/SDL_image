@@ -103,7 +103,7 @@ jobs:
       uses: ilammy/setup-nasm@v1
       if: ${{ matrix.platform.vendored && !contains(matrix.platform.shell, 'msys2') }}
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
 
@@ -184,7 +184,7 @@ jobs:
         ( cd prefix_cmake; find . ) | LC_ALL=C sort -u
     - name: Upload artifacts (CMake)
       if: ${{ failure() && runner.os == 'Linux' && matrix.platform.cmake }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: "${{ matrix.platform.name }} artifacts"
         path: |
@@ -264,7 +264,7 @@ jobs:
         make -j"${parallel}" -C build distcheck V=1
     - name: Upload artifacts (Autotools)
       if: ${{ failure() && !matrix.platform.cmake }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.platform.name }} artifacts
         path: |
