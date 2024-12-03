@@ -323,7 +323,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_Index(CGImageRef image_ref)
                 if (num_entries > (size_t)palette->ncolors) {
                     num_entries = (size_t)palette->ncolors;
                 }
-                palette->ncolors = num_entries;
+                palette->ncolors = (int)num_entries;
                 for (i = 0, entry = entries; i < num_entries; ++i) {
                     palette->colors[i].r = entry[0];
                     palette->colors[i].g = entry[1];
