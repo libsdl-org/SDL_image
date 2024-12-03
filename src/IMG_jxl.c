@@ -22,7 +22,6 @@
 /* This is a JXL image file loading framework */
 
 #include <SDL3_image/SDL_image.h>
-#include "IMG.h"
 
 #ifdef LOAD_JXL
 
@@ -45,24 +44,24 @@ static struct {
 #ifdef LOAD_JXL_DYNAMIC
 #define FUNCTION_LOADER(FUNC, SIG) \
     lib.FUNC = (SIG) SDL_LoadFunction(lib.handle, #FUNC); \
-    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle); return -1; }
+    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle); return false; }
 #else
 #define FUNCTION_LOADER(FUNC, SIG) \
     lib.FUNC = FUNC; \
-    if (lib.FUNC == NULL) { SDL_SetError("Missing jxl.framework"); return -1; }
+    if (lib.FUNC == NULL) { return SDL_SetError("Missing jxl.framework"); }
 #endif
 
 #ifdef __APPLE__
     /* Need to turn off optimizations so weak framework load check works */
     __attribute__ ((optnone))
 #endif
-int IMG_InitJXL(void)
+static bool IMG_InitJXL(void)
 {
     if ( lib.loaded == 0 ) {
 #ifdef LOAD_JXL_DYNAMIC
         lib.handle = SDL_LoadObject(LOAD_JXL_DYNAMIC);
         if ( lib.handle == NULL ) {
-            return -1;
+            return false;
         }
 #endif
         FUNCTION_LOADER(JxlDecoderCreate, JxlDecoder* (*)(const JxlMemoryManager* memory_manager))
@@ -76,8 +75,9 @@ int IMG_InitJXL(void)
     }
     ++lib.loaded;
 
-    return 0;
+    return true;
 }
+#if 0
 void IMG_QuitJXL(void)
 {
     if ( lib.loaded == 0 ) {
@@ -90,6 +90,7 @@ void IMG_QuitJXL(void)
     }
     --lib.loaded;
 }
+#endif // 0
 
 /* See if an image is contained in a data source */
 bool IMG_isJXL(SDL_IOStream *src)
@@ -146,7 +147,7 @@ SDL_Surface *IMG_LoadJXL_IO(SDL_IOStream *src)
     }
     start = SDL_TellIO(src);
 
-    if ((IMG_Init(IMG_INIT_JXL) & IMG_INIT_JXL) == 0) {
+    if (!IMG_InitJXL()) {
         return NULL;
     }
 
@@ -253,16 +254,6 @@ done:
 #if defined(_MSC_VER) && _MSC_VER >= 1300
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
 #endif
-
-int IMG_InitJXL(void)
-{
-    SDL_SetError("JXL images are not supported");
-    return -1;
-}
-
-void IMG_QuitJXL(void)
-{
-}
 
 /* See if an image is contained in a data source */
 bool IMG_isJXL(SDL_IOStream *src)

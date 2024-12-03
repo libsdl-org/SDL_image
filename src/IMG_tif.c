@@ -24,7 +24,6 @@
 /* This is a TIFF image file loading framework */
 
 #include <SDL3_image/SDL_image.h>
-#include "IMG.h"
 
 #ifdef LOAD_TIF
 
@@ -43,19 +42,19 @@ static struct {
 #ifdef LOAD_TIF_DYNAMIC
 #define FUNCTION_LOADER(FUNC, SIG) \
     lib.FUNC = (SIG) SDL_LoadFunction(lib.handle, #FUNC); \
-    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle); return -1; }
+    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle); return false; }
 #else
 #define FUNCTION_LOADER(FUNC, SIG) \
     lib.FUNC = FUNC;
 #endif
 
-int IMG_InitTIF(void)
+static bool IMG_InitTIF(void)
 {
     if ( lib.loaded == 0 ) {
 #ifdef LOAD_TIF_DYNAMIC
         lib.handle = SDL_LoadObject(LOAD_TIF_DYNAMIC);
         if ( lib.handle == NULL ) {
-            return -1;
+            return false;
         }
 #endif
         FUNCTION_LOADER(TIFFClientOpen, TIFF * (*)(const char*, const char*, thandle_t, TIFFReadWriteProc, TIFFReadWriteProc, TIFFSeekProc, TIFFCloseProc, TIFFSizeProc, TIFFMapFileProc, TIFFUnmapFileProc))
@@ -66,8 +65,9 @@ int IMG_InitTIF(void)
     }
     ++lib.loaded;
 
-    return 0;
+    return true;
 }
+#if 0
 void IMG_QuitTIF(void)
 {
     if ( lib.loaded == 0 ) {
@@ -80,6 +80,7 @@ void IMG_QuitTIF(void)
     }
     --lib.loaded;
 }
+#endif // 0
 
 /*
  * These are the thunking routine to use the SDL_IOStream* routines from
@@ -180,7 +181,7 @@ SDL_Surface* IMG_LoadTIF_IO(SDL_IOStream * src)
     }
     start = SDL_TellIO(src);
 
-    if ( (IMG_Init(IMG_INIT_TIF) & IMG_INIT_TIF) == 0 ) {
+    if (!IMG_InitTIF()) {
         return NULL;
     }
 
@@ -220,16 +221,6 @@ error:
 #if defined(_MSC_VER) && _MSC_VER >= 1300
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
 #endif
-
-int IMG_InitTIF(void)
-{
-    SDL_SetError("TIFF images are not supported");
-    return -1;
-}
-
-void IMG_QuitTIF(void)
-{
-}
 
 /* See if an image is contained in a data source */
 bool IMG_isTIF(SDL_IOStream *src)

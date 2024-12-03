@@ -10,7 +10,6 @@
 #if defined(__APPLE__) && !defined(SDL_IMAGE_USE_COMMON_BACKEND)
 
 #include <SDL3_image/SDL_image.h>
-#include "IMG.h"
 
 // Used because CGDataProviderCreate became deprecated in 10.5
 #include <AvailabilityMacros.h>
@@ -356,41 +355,6 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage(CGImageRef image_ref)
     }
 }
 
-
-#ifdef JPG_USES_IMAGEIO
-
-int IMG_InitJPG(void)
-{
-    return 0;
-}
-
-void IMG_QuitJPG(void)
-{
-}
-
-#endif /* JPG_USES_IMAGEIO */
-
-#ifdef PNG_USES_IMAGEIO
-
-int IMG_InitPNG(void)
-{
-    return 0;
-}
-
-void IMG_QuitPNG(void)
-{
-}
-
-#endif /* PNG_USES_IMAGEIO */
-
-int IMG_InitTIF(void)
-{
-    return 0;
-}
-
-void IMG_QuitTIF(void)
-{
-}
 
 static bool Internal_isType (SDL_IOStream *rw_ops, CFStringRef uti_string_to_test)
 {
