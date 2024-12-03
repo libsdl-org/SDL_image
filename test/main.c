@@ -112,7 +112,6 @@ typedef struct
     int w;
     int h;
     int tolerance;
-    int initFlag;
     bool canLoad;
     bool canSave;
     bool (SDLCALL * checkFunction)(SDL_IOStream *src);
@@ -128,7 +127,6 @@ static const Format formats[] =
         23,
         42,
         300,
-        IMG_INIT_AVIF,
 #ifdef LOAD_AVIF
         true,
 #else
@@ -145,7 +143,6 @@ static const Format formats[] =
         23,
         42,
         0,              /* lossless */
-        0,              /* no initialization */
 #ifdef LOAD_BMP
         true,
 #else
@@ -162,7 +159,6 @@ static const Format formats[] =
         23,
         42,
         0,              /* lossless */
-        0,              /* no initialization */
 #ifdef LOAD_BMP
         true,
 #else
@@ -179,7 +175,6 @@ static const Format formats[] =
         23,
         42,
         0,              /* lossless */
-        0,              /* no initialization */
 #if USING_IMAGEIO || defined(LOAD_GIF)
         true,
 #else
@@ -196,7 +191,6 @@ static const Format formats[] =
         23,
         42,
         0,              /* lossless */
-        0,              /* no initialization */
 #ifdef LOAD_BMP
         true,
 #else
@@ -213,7 +207,6 @@ static const Format formats[] =
         23,
         42,
         100,
-        IMG_INIT_JPG,
 #if (USING_IMAGEIO && defined(JPG_USES_IMAGEIO)) || defined(SDL_IMAGE_USE_WIC_BACKEND) || defined(LOAD_JPG)
         true,
 #else
@@ -230,7 +223,6 @@ static const Format formats[] =
         23,
         42,
         300,
-        IMG_INIT_JXL,
 #ifdef LOAD_JXL
         true,
 #else
@@ -248,7 +240,6 @@ static const Format formats[] =
         23,
         42,
         0,              /* lossless? */
-        0,              /* no initialization */
 #ifdef LOAD_LBM
         true,
 #else
@@ -266,7 +257,6 @@ static const Format formats[] =
         23,
         42,
         0,              /* lossless? */
-        0,              /* no initialization */
 #ifdef LOAD_PCX
         true,
 #else
@@ -283,7 +273,6 @@ static const Format formats[] =
         23,
         42,
         0,              /* lossless */
-        IMG_INIT_PNG,
 #if (USING_IMAGEIO && defined(PNG_USES_IMAGEIO)) || defined(SDL_IMAGE_USE_WIC_BACKEND) || defined(LOAD_PNG)
         true,
 #else
@@ -300,7 +289,6 @@ static const Format formats[] =
         23,
         42,
         0,              /* lossless */
-        0,              /* no initialization */
 #ifdef LOAD_PNM
         true,
 #else
@@ -317,7 +305,6 @@ static const Format formats[] =
         23,
         42,
         0,              /* lossless */
-        0,              /* no initialization */
 #ifdef LOAD_QOI
         true,
 #else
@@ -334,7 +321,6 @@ static const Format formats[] =
         32,
         32,
         100,
-        0,              /* no initialization */
 #ifdef LOAD_SVG
         true,
 #else
@@ -351,7 +337,6 @@ static const Format formats[] =
         64,
         64,
         100,
-        0,              /* no initialization */
 #ifdef LOAD_SVG
         true,
 #else
@@ -368,7 +353,6 @@ static const Format formats[] =
         82,
         82,
         0,              /* lossless? */
-        0,              /* no initialization */
 #ifdef LOAD_SVG
         true,
 #else
@@ -385,7 +369,6 @@ static const Format formats[] =
         23,
         42,
         0,              /* lossless? */
-        0,              /* no initialization */
 #if USING_IMAGEIO || defined(LOAD_TGA)
         true,
 #else
@@ -402,7 +385,6 @@ static const Format formats[] =
         23,
         42,
         0,              /* lossless */
-        IMG_INIT_TIF,
 #if USING_IMAGEIO || defined(SDL_IMAGE_USE_WIC_BACKEND) || defined(LOAD_TIF)
         true,
 #else
@@ -419,7 +401,6 @@ static const Format formats[] =
         23,
         42,
         0,              /* lossless */
-        IMG_INIT_WEBP,
 #ifdef LOAD_WEBP
         true,
 #else
@@ -436,7 +417,6 @@ static const Format formats[] =
         23,
         42,
         0,              /* lossless */
-        0,              /* no initialization */
 #ifdef LOAD_XCF
         true,
 #else
@@ -453,7 +433,6 @@ static const Format formats[] =
         23,
         42,
         0,              /* lossless */
-        0,              /* no initialization */
 #ifdef LOAD_XPM
         true,
 #else
@@ -471,7 +450,6 @@ static const Format formats[] =
         23,
         42,
         0,              /* lossless? */
-        0,              /* no initialization */
 #ifdef LOAD_XV
         true,
 #else
@@ -622,7 +600,6 @@ FormatLoadTest(const Format *format,
     SDL_IOStream *src = NULL;
     char *filename = NULL;
     char *refFilename = NULL;
-    int initResult = 0;
     int diff;
 
     SDL_ClearError();
@@ -660,19 +637,6 @@ FormatLoadTest(const Format *format,
             goto out;
         }
 #endif
-    }
-
-    if (format->initFlag) {
-        SDL_ClearError();
-        initResult = IMG_Init(format->initFlag);
-        if (!SDLTest_AssertCheck(initResult != 0,
-                                 "Initialization should succeed (%s)",
-                                 SDL_GetError())) {
-            goto out;
-        }
-        SDLTest_AssertCheck(initResult & format->initFlag,
-                            "Expected at least bit 0x%x set, got 0x%x",
-                            format->initFlag, initResult);
     }
 
     if (mode != LOAD_CONVENIENCE) {
@@ -783,9 +747,6 @@ out:
     if (filename != NULL) {
         SDL_free(filename);
     }
-    if (initResult) {
-        IMG_Quit();
-    }
 }
 
 static void
@@ -797,7 +758,6 @@ FormatSaveTest(const Format *format,
     SDL_Surface *reference = NULL;
     SDL_Surface *surface = NULL;
     SDL_IOStream *dest = NULL;
-    int initResult = 0;
     int diff;
     bool result;
 
@@ -820,19 +780,6 @@ FormatSaveTest(const Format *format,
                              "Loading reference should succeed (%s)",
                              SDL_GetError())) {
         goto out;
-    }
-
-    if (format->initFlag) {
-        SDL_ClearError();
-        initResult = IMG_Init(format->initFlag);
-        if (!SDLTest_AssertCheck(initResult != 0,
-                                 "Initialization should succeed (%s)",
-                                 SDL_GetError())) {
-            goto out;
-        }
-        SDLTest_AssertCheck(initResult & format->initFlag,
-                            "Expected at least bit 0x%x set, got 0x%x",
-                            format->initFlag, initResult);
     }
 
     SDL_ClearError();
@@ -905,9 +852,6 @@ out:
     }
     if (refFilename != NULL) {
         SDL_free(refFilename);
-    }
-    if (initResult) {
-        IMG_Quit();
     }
 }
 

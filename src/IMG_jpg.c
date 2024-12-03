@@ -22,7 +22,6 @@
 /* This is a JPEG image file loading framework */
 
 #include <SDL3_image/SDL_image.h>
-#include "IMG.h"
 
 #include <stdio.h>
 #include <setjmp.h>
@@ -89,19 +88,19 @@ static struct {
 #ifdef LOAD_JPG_DYNAMIC
 #define FUNCTION_LOADER(FUNC, SIG) \
     lib.FUNC = (SIG) SDL_LoadFunction(lib.handle, #FUNC); \
-    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle); return -1; }
+    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle); return false; }
 #else
 #define FUNCTION_LOADER(FUNC, SIG) \
     lib.FUNC = FUNC;
 #endif
 
-int IMG_InitJPG(void)
+static bool IMG_InitJPG(void)
 {
     if ( lib.loaded == 0 ) {
 #ifdef LOAD_JPG_DYNAMIC
         lib.handle = SDL_LoadObject(LOAD_JPG_DYNAMIC);
         if ( lib.handle == NULL ) {
-            return -1;
+            return false;
         }
 #endif
         FUNCTION_LOADER(jpeg_calc_output_dimensions, void (*) (j_decompress_ptr cinfo))
@@ -123,8 +122,9 @@ int IMG_InitJPG(void)
     }
     ++lib.loaded;
 
-    return 0;
+    return true;
 }
+#if 0
 void IMG_QuitJPG(void)
 {
     if ( lib.loaded == 0 ) {
@@ -137,6 +137,7 @@ void IMG_QuitJPG(void)
     }
     --lib.loaded;
 }
+#endif // 0
 
 /* See if an image is contained in a data source */
 bool IMG_isJPG(SDL_IOStream *src)
@@ -357,7 +358,7 @@ SDL_Surface *IMG_LoadJPG_IO(SDL_IOStream *src)
     }
     start = SDL_TellIO(src);
 
-    if ( (IMG_Init(IMG_INIT_JPG) & IMG_INIT_JPG) == 0 ) {
+    if (!IMG_InitJPG()) {
         return NULL;
     }
 
@@ -538,7 +539,7 @@ static bool IMG_SaveJPG_IO_jpeglib(SDL_Surface *surface, SDL_IOStream *dst, int 
     SDL_Surface* jpeg_surface = surface;
     bool result;
 
-    if (!IMG_Init(IMG_INIT_JPG)) {
+    if (!IMG_InitJPG()) {
         return false;
     }
 
@@ -562,17 +563,6 @@ static bool IMG_SaveJPG_IO_jpeglib(SDL_Surface *surface, SDL_IOStream *dst, int 
 #elif defined(USE_STBIMAGE)
 
 extern SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src);
-
-int IMG_InitJPG(void)
-{
-    /* Nothing to load */
-    return 0;
-}
-
-void IMG_QuitJPG(void)
-{
-    /* Nothing to unload */
-}
 
 /* FIXME: This is a copypaste from JPEGLIB! Pull that out of the ifdefs */
 /* Define this for quicker (but less perfect) JPEG identification */
@@ -658,16 +648,6 @@ SDL_Surface *IMG_LoadJPG_IO(SDL_IOStream *src)
 #if defined(_MSC_VER) && _MSC_VER >= 1300
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
 #endif
-
-int IMG_InitJPG(void)
-{
-    SDL_SetError("JPEG images are not supported");
-    return -1;
-}
-
-void IMG_QuitJPG(void)
-{
-}
 
 /* See if an image is contained in a data source */
 bool IMG_isJPG(SDL_IOStream *src)

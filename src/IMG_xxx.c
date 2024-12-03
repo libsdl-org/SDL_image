@@ -22,7 +22,6 @@
 /* This is a generic "format not supported" image framework */
 
 #include <SDL3_image/SDL_image.h>
-#include "IMG.h"
 
 #ifdef LOAD_XXX
 

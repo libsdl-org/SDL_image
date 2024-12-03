@@ -22,7 +22,6 @@
 /* This is a WEBP image file loading framework */
 
 #include <SDL3_image/SDL_image.h>
-#include "IMG.h"
 
 #ifdef LOAD_WEBP
 
@@ -59,34 +58,34 @@ static struct {
 #if defined(LOAD_WEBP_DYNAMIC) && defined(LOAD_WEBPDEMUX_DYNAMIC)
 #define FUNCTION_LOADER_LIBWEBP(FUNC, SIG) \
     lib.FUNC = (SIG) SDL_LoadFunction(lib.handle_libwebp, #FUNC); \
-    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle_libwebp); return -1; }
+    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle_libwebp); return false; }
 #define FUNCTION_LOADER_LIBWEBPDEMUX(FUNC, SIG) \
     lib.FUNC = (SIG) SDL_LoadFunction(lib.handle_libwebpdemux, #FUNC); \
-    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle_libwebpdemux); return -1; }
+    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle_libwebpdemux); return false; }
 #else
 #define FUNCTION_LOADER_LIBWEBP(FUNC, SIG) \
     lib.FUNC = FUNC; \
-    if (lib.FUNC == NULL) { SDL_SetError("Missing webp.framework"); return -1; }
+    if (lib.FUNC == NULL) { return SDL_SetError("Missing webp.framework"); }
 #define FUNCTION_LOADER_LIBWEBPDEMUX(FUNC, SIG) \
     lib.FUNC = FUNC; \
-    if (lib.FUNC == NULL) { SDL_SetError("Missing webpdemux.framework"); return -1; }
+    if (lib.FUNC == NULL) { return SDL_SetError("Missing webpdemux.framework"); }
 #endif
 
 #ifdef __APPLE__
     /* Need to turn off optimizations so weak framework load check works */
     __attribute__ ((optnone))
 #endif
-int IMG_InitWEBP(void)
+static bool IMG_InitWEBP(void)
 {
     if (lib.loaded == 0) {
 #if defined(LOAD_WEBP_DYNAMIC) && defined(LOAD_WEBPDEMUX_DYNAMIC)
         lib.handle_libwebpdemux = SDL_LoadObject(LOAD_WEBPDEMUX_DYNAMIC);
         if (lib.handle_libwebpdemux == NULL) {
-            return -1;
+            return false;
         }
         lib.handle_libwebp = SDL_LoadObject(LOAD_WEBP_DYNAMIC);
         if (lib.handle_libwebp == NULL) {
-            return -1;
+            return false;
         }
 #endif
         FUNCTION_LOADER_LIBWEBP(WebPGetFeaturesInternal, VP8StatusCode (*) (const uint8_t *data, size_t data_size, WebPBitstreamFeatures* features, int decoder_abi_version))
@@ -99,8 +98,9 @@ int IMG_InitWEBP(void)
     }
     ++lib.loaded;
 
-    return 0;
+    return true;
 }
+#if 0
 void IMG_QuitWEBP(void)
 {
     if (lib.loaded == 0) {
@@ -114,6 +114,7 @@ void IMG_QuitWEBP(void)
     }
     --lib.loaded;
 }
+#endif // 0
 
 static bool webp_getinfo(SDL_IOStream *src, size_t *datasize)
 {
@@ -179,7 +180,7 @@ SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
 
     start = SDL_TellIO(src);
 
-    if ((IMG_Init(IMG_INIT_WEBP) & IMG_INIT_WEBP) == 0) {
+    if (!IMG_InitWEBP()) {
         goto error;
     }
 
@@ -283,7 +284,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
 
     start = SDL_TellIO(src);
 
-    if ((IMG_Init(IMG_INIT_WEBP) & IMG_INIT_WEBP) == 0) {
+    if (!IMG_InitWEBP()) {
         goto error;
     }
 
@@ -384,16 +385,6 @@ error:
 #if defined(_MSC_VER) && _MSC_VER >= 1300
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
 #endif
-
-int IMG_InitWEBP(void)
-{
-    SDL_SetError("WEBP images are not supported");
-    return -1;
-}
-
-void IMG_QuitWEBP(void)
-{
-}
 
 /* See if an image is contained in a data source */
 bool IMG_isWEBP(SDL_IOStream *src)

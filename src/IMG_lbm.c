@@ -32,7 +32,6 @@
 
 #include <SDL3/SDL_endian.h>
 #include <SDL3_image/SDL_image.h>
-#include "IMG.h"
 
 #ifdef LOAD_LBM
 

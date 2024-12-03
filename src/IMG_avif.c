@@ -22,7 +22,6 @@
 /* This is a AVIF image file loading framework */
 
 #include <SDL3_image/SDL_image.h>
-#include "IMG.h"
 
 /* We'll have AVIF save support by default */
 #if !defined(SDL_IMAGE_SAVE_AVIF)
@@ -77,24 +76,24 @@ static struct {
 #ifdef LOAD_AVIF_DYNAMIC
 #define FUNCTION_LOADER(FUNC, SIG) \
     lib.FUNC = (SIG) SDL_LoadFunction(lib.handle, #FUNC); \
-    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle); return -1; }
+    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle); return false; }
 #else
 #define FUNCTION_LOADER(FUNC, SIG) \
     lib.FUNC = FUNC; \
-    if (lib.FUNC == NULL) { SDL_SetError("Missing avif.framework"); return -1; }
+    if (lib.FUNC == NULL) { return SDL_SetError("Missing avif.framework"); }
 #endif
 
 #ifdef __APPLE__
     /* Need to turn off optimizations so weak framework load check works */
     __attribute__ ((optnone))
 #endif
-int IMG_InitAVIF(void)
+static bool IMG_InitAVIF(void)
 {
     if ( lib.loaded == 0 ) {
 #ifdef LOAD_AVIF_DYNAMIC
         lib.handle = SDL_LoadObject(LOAD_AVIF_DYNAMIC);
         if ( lib.handle == NULL ) {
-            return -1;
+            return false;
         }
 #endif
         FUNCTION_LOADER(avifDecoderCreate, avifDecoder * (*)(void))
@@ -117,8 +116,9 @@ int IMG_InitAVIF(void)
     }
     ++lib.loaded;
 
-    return 0;
+    return true;
 }
+#if 0
 void IMG_QuitAVIF(void)
 {
     if ( lib.loaded == 0 ) {
@@ -131,6 +131,7 @@ void IMG_QuitAVIF(void)
     }
     --lib.loaded;
 }
+#endif // 0
 
 static bool ReadAVIFHeader(SDL_IOStream *src, Uint8 **header_data, size_t *header_size)
 {
@@ -211,7 +212,7 @@ bool IMG_isAVIF(SDL_IOStream *src)
     is_AVIF = false;
     if (ReadAVIFHeader(src, &data, &size)) {
         /* This might be AVIF, do more thorough checks */
-        if ((IMG_Init(IMG_INIT_AVIF) & IMG_INIT_AVIF) != 0) {
+        if (IMG_InitAVIF()) {
             avifROData header;
 
             header.data = data;
@@ -365,7 +366,7 @@ SDL_Surface *IMG_LoadAVIF_IO(SDL_IOStream *src)
     }
     start = SDL_TellIO(src);
 
-    if ((IMG_Init(IMG_INIT_AVIF) & IMG_INIT_AVIF) == 0) {
+    if (!IMG_InitAVIF()) {
         return NULL;
     }
 
@@ -532,7 +533,7 @@ static bool IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int
     SDL_PropertiesID props;
     bool result = false;
 
-    if (!IMG_Init(IMG_INIT_AVIF)) {
+    if (!IMG_InitAVIF()) {
         return false;
     }
 
@@ -709,16 +710,6 @@ done:
 #if defined(_MSC_VER) && _MSC_VER >= 1300
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
 #endif
-
-int IMG_InitAVIF(void)
-{
-    SDL_SetError("AVIF images are not supported");
-    return -1;
-}
-
-void IMG_QuitAVIF(void)
-{
-}
 
 /* See if an image is contained in a data source */
 bool IMG_isAVIF(SDL_IOStream *src)

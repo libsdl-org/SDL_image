@@ -22,7 +22,6 @@
 /* This is a PNG image file loading framework */
 
 #include <SDL3_image/SDL_image.h>
-#include "IMG.h"
 
 /* We'll have PNG save support by default */
 #if !defined(SDL_IMAGE_SAVE_PNG)
@@ -132,19 +131,19 @@ static struct {
 #ifdef LOAD_PNG_DYNAMIC
 #define FUNCTION_LOADER(FUNC, SIG) \
     lib.FUNC = (SIG) SDL_LoadFunction(lib.handle, #FUNC); \
-    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle); return -1; }
+    if (lib.FUNC == NULL) { SDL_UnloadObject(lib.handle); return false; }
 #else
 #define FUNCTION_LOADER(FUNC, SIG) \
     lib.FUNC = FUNC;
 #endif
 
-int IMG_InitPNG(void)
+static bool IMG_InitPNG(void)
 {
     if ( lib.loaded == 0 ) {
 #ifdef LOAD_PNG_DYNAMIC
         lib.handle = SDL_LoadObject(LOAD_PNG_DYNAMIC);
         if ( lib.handle == NULL ) {
-            return -1;
+            return false;
         }
 #endif
         FUNCTION_LOADER(png_create_info_struct, png_infop (*) (png_noconst15_structrp png_ptr))
@@ -185,8 +184,9 @@ int IMG_InitPNG(void)
     }
     ++lib.loaded;
 
-    return 0;
+    return true;
 }
+#if 0
 void IMG_QuitPNG(void)
 {
     if ( lib.loaded == 0 ) {
@@ -199,6 +199,7 @@ void IMG_QuitPNG(void)
     }
     --lib.loaded;
 }
+#endif // 0
 
 /* See if an image is contained in a data source */
 bool IMG_isPNG(SDL_IOStream *src)
@@ -470,7 +471,7 @@ SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
         return NULL;
     }
 
-    if ( (IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) == 0 ) {
+    if (!IMG_InitPNG()) {
         return NULL;
     }
 
@@ -502,17 +503,6 @@ SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 #elif defined(USE_STBIMAGE)
 
 extern SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src);
-
-int IMG_InitPNG(void)
-{
-    /* Nothing to load */
-    return 0;
-}
-
-void IMG_QuitPNG(void)
-{
-    /* Nothing to unload */
-}
 
 /* FIXME: This is a copypaste from LIBPNG! Pull that out of the ifdefs */
 /* See if an image is contained in a data source */
@@ -552,16 +542,6 @@ SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 #if defined(_MSC_VER) && _MSC_VER >= 1300
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
 #endif
-
-int IMG_InitPNG(void)
-{
-    SDL_SetError("PNG images are not supported");
-    return -1;
-}
-
-void IMG_QuitPNG(void)
-{
-}
 
 /* See if an image is contained in a data source */
 bool IMG_isPNG(SDL_IOStream *src)
@@ -711,7 +691,7 @@ static bool IMG_SavePNG_IO_libpng(SDL_Surface *surface, SDL_IOStream *dst)
     struct savepng_vars vars;
     bool result;
 
-    if (!IMG_Init(IMG_INIT_PNG)) {
+    if (!IMG_InitPNG()) {
         return false;
     }
 

@@ -22,7 +22,6 @@
 /* A simple library to load images of various formats as SDL surfaces */
 
 #include <SDL3_image/SDL_image.h>
-#include "IMG.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten/emscripten.h>
@@ -87,70 +86,6 @@ static struct {
 int IMG_Version(void)
 {
     return SDL_IMAGE_VERSION;
-}
-
-static IMG_InitFlags initialized = 0;
-
-IMG_InitFlags IMG_Init(IMG_InitFlags flags)
-{
-    IMG_InitFlags result = 0;
-
-    if (flags & IMG_INIT_AVIF) {
-        if ((initialized & IMG_INIT_AVIF) || IMG_InitAVIF() == 0) {
-            result |= IMG_INIT_AVIF;
-        }
-    }
-    if (flags & IMG_INIT_JPG) {
-        if ((initialized & IMG_INIT_JPG) || IMG_InitJPG() == 0) {
-            result |= IMG_INIT_JPG;
-        }
-    }
-    if (flags & IMG_INIT_JXL) {
-        if ((initialized & IMG_INIT_JXL) || IMG_InitJXL() == 0) {
-            result |= IMG_INIT_JXL;
-        }
-    }
-    if (flags & IMG_INIT_PNG) {
-        if ((initialized & IMG_INIT_PNG) || IMG_InitPNG() == 0) {
-            result |= IMG_INIT_PNG;
-        }
-    }
-    if (flags & IMG_INIT_TIF) {
-        if ((initialized & IMG_INIT_TIF) || IMG_InitTIF() == 0) {
-            result |= IMG_INIT_TIF;
-        }
-    }
-    if (flags & IMG_INIT_WEBP) {
-        if ((initialized & IMG_INIT_WEBP) || IMG_InitWEBP() == 0) {
-            result |= IMG_INIT_WEBP;
-        }
-    }
-    initialized |= result;
-
-    return initialized;
-}
-
-void IMG_Quit(void)
-{
-    if (initialized & IMG_INIT_AVIF) {
-        IMG_QuitAVIF();
-    }
-    if (initialized & IMG_INIT_JPG) {
-        IMG_QuitJPG();
-    }
-    if (initialized & IMG_INIT_JXL) {
-        IMG_QuitJXL();
-    }
-    if (initialized & IMG_INIT_PNG) {
-        IMG_QuitPNG();
-    }
-    if (initialized & IMG_INIT_TIF) {
-        IMG_QuitTIF();
-    }
-    if (initialized & IMG_INIT_WEBP) {
-        IMG_QuitWEBP();
-    }
-    initialized = 0;
 }
 
 #if !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)

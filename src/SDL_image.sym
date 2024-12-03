@@ -1,7 +1,6 @@
 SDL3_image_0.0.0 {
   global:
     IMG_FreeAnimation;
-    IMG_Init;
     IMG_Version;
     IMG_Load;
     IMG_LoadAVIF_IO;
@@ -34,7 +33,6 @@ SDL3_image_0.0.0 {
     IMG_LoadXPM_IO;
     IMG_LoadXV_IO;
     IMG_Load_IO;
-    IMG_Quit;
     IMG_ReadXPMFromArray;
     IMG_ReadXPMFromArrayToRGB888;
     IMG_SaveJPG;

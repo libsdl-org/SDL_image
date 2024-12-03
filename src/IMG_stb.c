@@ -20,7 +20,6 @@
 */
 
 #include <SDL3_image/SDL_image.h>
-#include "IMG.h"
 
 #ifdef USE_STBIMAGE
 
