@@ -168,8 +168,8 @@ int tje_encode_with_func(tje_write_func* func,
 #ifdef TJE_IMPLEMENTATION
 
 
-#define tjei_min(a, b) ((a) < b) ? (a) : (b);
-#define tjei_max(a, b) ((a) < b) ? (b) : (a);
+#define tjei_min(a, b) ((a) < b) ? (a) : (b)
+#define tjei_max(a, b) ((a) < b) ? (b) : (a)
 
 
 #if defined(_MSC_VER)
