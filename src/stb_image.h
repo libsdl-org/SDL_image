@@ -2723,7 +2723,7 @@ static void stbi__idct_simd(stbi_uc *out, int out_stride, short data[64])
       b = _mm_unpackhi_epi16(tmp, b)
 
    #define dct_pass(bias,shift) \
-      { \
+      do { \
          /* even part */ \
          dct_rot(t2e,t3e, row2,row6, rot0_0,rot0_1); \
          __m128i sum04 = _mm_add_epi16(row0, row4); \
@@ -2748,7 +2748,7 @@ static void stbi__idct_simd(stbi_uc *out, int out_stride, short data[64])
          dct_bfly32o(row1,row6, x1,x6,bias,shift); \
          dct_bfly32o(row2,row5, x2,x5,bias,shift); \
          dct_bfly32o(row3,row4, x3,x4,bias,shift); \
-      }
+      } while ( 0 )
 
    __m128i rot0_0 = dct_const(stbi__f2f(0.5411961f), stbi__f2f(0.5411961f) + stbi__f2f(-1.847759065f));
    __m128i rot0_1 = dct_const(stbi__f2f(0.5411961f) + stbi__f2f( 0.765366865f), stbi__f2f(0.5411961f));
@@ -2887,15 +2887,15 @@ static void stbi__idct_simd(stbi_uc *out, int out_stride, short data[64])
 
 // butterfly a/b, then shift using "shiftop" by "s" and pack
 #define dct_bfly32o(out0,out1, a,b,shiftop,s) \
-   { \
+   do { \
       dct_wadd(sum, a, b); \
       dct_wsub(dif, a, b); \
       out0 = vcombine_s16(shiftop(sum_l, s), shiftop(sum_h, s)); \
       out1 = vcombine_s16(shiftop(dif_l, s), shiftop(dif_h, s)); \
-   }
+   } while ( 0 )
 
 #define dct_pass(shiftop, shift) \
-   { \
+   do { \
       /* even part */ \
       int16x8_t sum26 = vaddq_s16(row2, row6); \
       dct_long_mul(p1e, sum26, rot0_0); \
@@ -2932,7 +2932,7 @@ static void stbi__idct_simd(stbi_uc *out, int out_stride, short data[64])
       dct_bfly32o(row1,row6, x1,x6,shiftop,shift); \
       dct_bfly32o(row2,row5, x2,x5,shiftop,shift); \
       dct_bfly32o(row3,row4, x3,x4,shiftop,shift); \
-   }
+   } while ( 0 )
 
    // load
    row0 = vld1q_s16(data + 0*8);
@@ -2954,9 +2954,9 @@ static void stbi__idct_simd(stbi_uc *out, int out_stride, short data[64])
    {
 // these three map to a single VTRN.16, VTRN.32, and VSWP, respectively.
 // whether compilers actually get this is another story, sadly.
-#define dct_trn16(x, y) { int16x8x2_t t = vtrnq_s16(x, y); x = t.val[0]; y = t.val[1]; }
-#define dct_trn32(x, y) { int32x4x2_t t = vtrnq_s32(vreinterpretq_s32_s16(x), vreinterpretq_s32_s16(y)); x = vreinterpretq_s16_s32(t.val[0]); y = vreinterpretq_s16_s32(t.val[1]); }
-#define dct_trn64(x, y) { int16x8_t x0 = x; int16x8_t y0 = y; x = vcombine_s16(vget_low_s16(x0), vget_low_s16(y0)); y = vcombine_s16(vget_high_s16(x0), vget_high_s16(y0)); }
+#define dct_trn16(x, y) do { int16x8x2_t t = vtrnq_s16(x, y); x = t.val[0]; y = t.val[1]; } while ( 0 )
+#define dct_trn32(x, y) do { int32x4x2_t t = vtrnq_s32(vreinterpretq_s32_s16(x), vreinterpretq_s32_s16(y)); x = vreinterpretq_s16_s32(t.val[0]); y = vreinterpretq_s16_s32(t.val[1]); } while ( 0 )
+#define dct_trn64(x, y) do { int16x8_t x0 = x; int16x8_t y0 = y; x = vcombine_s16(vget_low_s16(x0), vget_low_s16(y0)); y = vcombine_s16(vget_high_s16(x0), vget_high_s16(y0)); } while ( 0 )
 
       // pass 1
       dct_trn16(row0, row1); // a0b0a2b2a4b4a6b6
@@ -2999,9 +2999,9 @@ static void stbi__idct_simd(stbi_uc *out, int out_stride, short data[64])
       uint8x8_t p7 = vqrshrun_n_s16(row7, 1);
 
       // again, these can translate into one instruction, but often don't.
-#define dct_trn8_8(x, y) { uint8x8x2_t t = vtrn_u8(x, y); x = t.val[0]; y = t.val[1]; }
-#define dct_trn8_16(x, y) { uint16x4x2_t t = vtrn_u16(vreinterpret_u16_u8(x), vreinterpret_u16_u8(y)); x = vreinterpret_u8_u16(t.val[0]); y = vreinterpret_u8_u16(t.val[1]); }
-#define dct_trn8_32(x, y) { uint32x2x2_t t = vtrn_u32(vreinterpret_u32_u8(x), vreinterpret_u32_u8(y)); x = vreinterpret_u8_u32(t.val[0]); y = vreinterpret_u8_u32(t.val[1]); }
+#define dct_trn8_8(x, y) do { uint8x8x2_t t = vtrn_u8(x, y); x = t.val[0]; y = t.val[1]; } while ( 0 )
+#define dct_trn8_16(x, y) do { uint16x4x2_t t = vtrn_u16(vreinterpret_u16_u8(x), vreinterpret_u16_u8(y)); x = vreinterpret_u8_u16(t.val[0]); y = vreinterpret_u8_u16(t.val[1]); } while ( 0 )
+#define dct_trn8_32(x, y) do { uint32x2x2_t t = vtrn_u32(vreinterpret_u32_u8(x), vreinterpret_u32_u8(y)); x = vreinterpret_u8_u32(t.val[0]); y = vreinterpret_u8_u32(t.val[1]); } while ( 0 )
 
       // sadly can't use interleaved stores here since we only write
       // 8 bytes to each scan line!
