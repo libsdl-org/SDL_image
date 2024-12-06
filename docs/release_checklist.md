@@ -1,5 +1,14 @@
 # Release checklist
 
+* Run `build-scripts/create-release.py -R libsdl-org/SDL_image --ref <branch>` to do
+  a dry run creating the release assets. Verify that the archives are correct.
+
+* Tag the release, e.g. `git tag release-3.8.0; git push --tags`
+
+* Run `build-scripts/create-release.py -R libsdl-org/SDL_image --ref <release-tag>`
+  to have GitHub Actions create release assets. This makes sure the revision
+  string baked into the archives is correct.
+
 ## New feature release
 
 * Update `CHANGES.txt`
