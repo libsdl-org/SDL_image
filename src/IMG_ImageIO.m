@@ -329,6 +329,7 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_Index(CGImageRef image_ref)
                     palette->colors[i].r = entry[0];
                     palette->colors[i].g = entry[1];
                     palette->colors[i].b = entry[2];
+                    palette->colors[i].a = SDL_ALPHA_OPAQUE;
                     entry += num_components;
                 }
             }
