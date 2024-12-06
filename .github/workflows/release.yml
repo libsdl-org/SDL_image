@@ -117,8 +117,8 @@ jobs:
           cmake \
             -S ${{ steps.tar.outputs.path }} \
             -B /tmp/build \
-            -DSDL3IMAGE_SAMPLES=ON \
-            -DSDL3IMAGE_TESTS=ON \
+            -DSDLIMAGE_SAMPLES=ON \
+            -DSDLIMAGE_TESTS=ON \
             -DCMAKE_PREFIX_PATH="${{ steps.deps-build.outputs.path }}"
           cmake --build /tmp/build --verbose
           # ctest --test-dir /tmp/build --no-tests=error --output-on-failure
@@ -251,7 +251,6 @@ jobs:
         run: |
           set -e
           cmake -S "${{ steps.src.outputs.path }}/cmake/test"               \
-              -DTEST_SHARED=TRUE                                            \
               -DTEST_SHARED=TRUE                                            \
               -DTEST_STATIC=FALSE                                           \
               -DCMAKE_PREFIX_PATH="${{ steps.mount.outputs.mount-point }};${{ steps.deps-mount.outputs.path }}" \
@@ -727,7 +726,6 @@ jobs:
               -DCMAKE_PREFIX_PATH="/tmp/deps-android" \
               -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake \
               -DANDROID_ABI=${android_abi} \
-              -Werror=dev \
               -DCMAKE_BUILD_TYPE=Release \
               -B "${android_abi}"
             echo "Building ${android_abi}..."
