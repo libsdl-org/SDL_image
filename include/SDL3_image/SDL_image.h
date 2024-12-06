@@ -1854,7 +1854,8 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArrayToRGB888(char **xp
  * \param file path on the filesystem to write new file to.
  * \param quality the desired quality, ranging between 0 (lowest) and 100
  *                (highest).
- * \returns 0 if successful, -1 on error.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1876,13 +1877,14 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIF(SDL_Surface *surface, const char *
  *                to leave it open.
  * \param quality the desired quality, ranging between 0 (lowest) and 100
  *                (highest).
- * \returns 0 if successful, -1 on error.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SaveAVIF
  */
-extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int quality);
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality);
 
 /**
  * Save an SDL_Surface into a PNG image file.
@@ -1891,7 +1893,8 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStr
  *
  * \param surface the SDL surface to save.
  * \param file path on the filesystem to write new file to.
- * \returns 0 if successful, -1 on error.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1911,13 +1914,14 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *f
  * \param dst the SDL_IOStream to save the image data to.
  * \param closeio true to close/free the SDL_IOStream before returning, false
  *                to leave it open.
- * \returns 0 if successful, -1 on error.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SavePNG
  */
-extern SDL_DECLSPEC bool SDLCALL IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio);
+extern SDL_DECLSPEC bool SDLCALL IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
 
 /**
  * Save an SDL_Surface into a JPEG image file.
@@ -1928,7 +1932,8 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStre
  * \param file path on the filesystem to write new file to.
  * \param quality [0; 33] is Lowest quality, [34; 66] is Middle quality, [67;
  *                100] is Highest quality.
- * \returns 0 if successful, -1 on error.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
@@ -1950,13 +1955,14 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *f
  *                to leave it open.
  * \param quality [0; 33] is Lowest quality, [34; 66] is Middle quality, [67;
  *                100] is Highest quality.
- * \returns 0 if successful, -1 on error.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SaveJPG
  */
-extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int quality);
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality);
 
 /**
  * Animated image support Currently only animated GIFs are supported.

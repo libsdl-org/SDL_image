@@ -785,7 +785,7 @@ bool IMG_SavePNG(SDL_Surface *surface, const char *file)
     }
 }
 
-bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio)
+bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
     bool result = false;
 

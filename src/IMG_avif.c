@@ -737,7 +737,7 @@ bool IMG_SaveAVIF(SDL_Surface *surface, const char *file, int quality)
     }
 }
 
-bool IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int quality)
+bool IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality)
 {
     bool result = false;
 

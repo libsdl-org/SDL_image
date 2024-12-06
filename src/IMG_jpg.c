@@ -752,7 +752,7 @@ bool IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality)
     }
 }
 
-bool IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, int closeio, int quality)
+bool IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality)
 {
     bool result = false;
     (void)surface;
