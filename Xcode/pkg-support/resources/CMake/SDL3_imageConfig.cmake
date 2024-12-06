@@ -2,7 +2,7 @@
 # This file is meant to be placed in Resources/CMake of a SDL3_image framework
 
 # INTERFACE_LINK_OPTIONS needs CMake 3.12
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.12...3.28)
 
 include(FeatureSummary)
 set_package_properties(SDL3_image PROPERTIES
