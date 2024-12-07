@@ -69,9 +69,6 @@
       "cmake": [
         "build-scripts/pkg-support/mingw/cmake/SDL3_imageConfig.cmake",
         "build-scripts/pkg-support/mingw/cmake/SDL3_imageConfigVersion.cmake"
-      ],
-      "test": [
-        "test/*"
       ]
     },
     "dependencies": {
