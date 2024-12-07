@@ -160,7 +160,8 @@
           "bin/aom.dll",
           "bin/tiff.dll",
           "bin/libwebp.dll",
-          "bin/libwebpdemux.dll"
+          "bin/libwebpdemux.dll",
+          "share/licenses/SDL3_image/optional/*.txt"
         ]
       },
       "files-devel": {
@@ -175,7 +176,8 @@
           "bin/aom.dll",
           "bin/tiff.dll",
           "bin/libwebp.dll",
-          "bin/libwebpdemux.dll"
+          "bin/libwebpdemux.dll",
+          "share/licenses/SDL3_image/optional/*.txt"
         ]
       }
     },
