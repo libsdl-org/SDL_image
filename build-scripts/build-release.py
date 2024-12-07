@@ -1103,7 +1103,9 @@ class Releaser:
                             dst.write_bytes(zip_data)
 
         prebuilt_paths = set(self.root / full_prebuilt_path for prebuilt_path in self.release_info["msvc"]["msbuild"].get("prebuilt", []) for full_prebuilt_path in glob.glob(configure_text(prebuilt_path, context=platform_context), root_dir=self.root))
+        logger.debug("prebuilt_paths=%s", prebuilt_paths)
         msbuild_paths = set(self.root / configure_text(f, context=platform_context) for file_mapping in (self.release_info["msvc"]["msbuild"]["files-lib"], self.release_info["msvc"]["msbuild"]["files-devel"]) for files_list in file_mapping.values() for f in files_list)
+        logger.debug("msbuild_paths=%s", msbuild_paths)
         assert prebuilt_paths.issubset(msbuild_paths), f"msvc.msbuild.prebuilt must be a subset of (msvc.msbuild.files-lib, msvc.msbuild.files-devel)"
         built_paths = msbuild_paths.difference(prebuilt_paths)
         logger.info("MSbuild builds these files, to be included in the package: %s", built_paths)
