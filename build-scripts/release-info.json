@@ -163,7 +163,11 @@
           "bin/tiff.dll",
           "bin/libwebp.dll",
           "bin/libwebpdemux.dll",
-          "share/licenses/SDL3_image/optional/*.txt"
+          "share/licenses/SDL3_image/optional/LICENSE.aom.txt",
+          "share/licenses/SDL3_image/optional/LICENSE.avif.txt",
+          "share/licenses/SDL3_image/optional/LICENSE.dav1d.txt",
+          "share/licenses/SDL3_image/optional/LICENSE.tiff.txt",
+          "share/licenses/SDL3_image/optional/LICENSE.webp.txt"
         ]
       },
       "files-devel": {
@@ -179,7 +183,11 @@
           "bin/tiff.dll",
           "bin/libwebp.dll",
           "bin/libwebpdemux.dll",
-          "share/licenses/SDL3_image/optional/*.txt"
+          "share/licenses/SDL3_image/optional/LICENSE.aom.txt",
+          "share/licenses/SDL3_image/optional/LICENSE.avif.txt",
+          "share/licenses/SDL3_image/optional/LICENSE.dav1d.txt",
+          "share/licenses/SDL3_image/optional/LICENSE.tiff.txt",
+          "share/licenses/SDL3_image/optional/LICENSE.webp.txt"
         ]
       }
     },
