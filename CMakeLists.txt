@@ -331,7 +331,9 @@ set(SDL2IMAGE_IMAGEIO_ENABLED FALSE)
 if(APPLE)
     if(SDL2IMAGE_BACKEND_IMAGEIO)
         set(SDL2IMAGE_IMAGEIO_ENABLED TRUE)
-        target_link_libraries(SDL2_image PRIVATE -Wl,-framework,ApplicationServices)
+        if(CMAKE_SYSTEM_NAME MATCHES ".*(Darwin|MacOS).*")
+            target_link_libraries(SDL2_image PRIVATE -Wl,-framework,ApplicationServices)
+        endif()
         target_link_libraries(SDL2_image PRIVATE objc)
         target_sources(SDL2_image PRIVATE
             src/IMG_ImageIO.m
