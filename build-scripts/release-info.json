@@ -36,7 +36,8 @@
       "archs": ["x86", "x64"],
       "args": [
         "--with-sdl-prefix=@<@DEP_PREFIX@>@",
-        "LDFLAGS=-L@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@",
+        "CFLAGS=-O2 -I@<@DEP_PREFIX@>@/include -I@<@DEP_PREFIX@>@/include/SDL2",
+        "LDFLAGS=-Wl,-s -L@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@ -L@<@DEP_PREFIX@>@/lib -lSDL2",
         "LIBAVIF_CFLAGS=-I@<@PROJECT_ROOT@>@/VisualC/external/include",
         "LIBAVIF_LIBS=-L@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@",
         "LIBTIFF_CFLAGS=-I@<@PROJECT_ROOT@>@/VisualC/external/include",
