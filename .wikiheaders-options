@@ -16,3 +16,7 @@ warn_about_missing = 0
 wikipreamble = (This function is part of SDL_image, a separate library from SDL.)
 wikiheaderfiletext = Defined in [<SDL3_image/%fname%>](https://github.com/libsdl-org/SDL_image/blob/main/include/SDL3_image/%fname%)
 manpageheaderfiletext = Defined in SDL3_image/%fname%
+quickrefenabled = 1
+quickreftitle = SDL3_image API Quick Reference
+quickrefurl = https://libsdl.org/
+quickrefdesc = The latest version of this document can be found at https://wiki.libsdl.org/SDL3_image/QuickReference

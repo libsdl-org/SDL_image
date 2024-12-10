@@ -19,13 +19,16 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+/* WIKI CATEGORY: SDLImage */
+
 /**
- *  \file SDL_image.h
+ * # CategorySDLImage
  *
- *  Header file for SDL_image library
+ * Header file for SDL_image library
  *
  * A simple library to load images of various formats as SDL surfaces
  */
+
 #ifndef SDL_IMAGE_H_
 #define SDL_IMAGE_H_
 
