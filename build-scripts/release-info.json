@@ -58,9 +58,6 @@
       "cmake": [
         "mingw/pkg-support/cmake/sdl2_image-config.cmake",
         "mingw/pkg-support/cmake/sdl2_image-config-version.cmake"
-      ],
-      "test": [
-        "test/*"
       ]
     },
     "dependencies": {
