@@ -1,11 +1,11 @@
 [submodule "external/jpeg"]
 	path = external/jpeg
 	url = https://github.com/libsdl-org/jpeg.git
-	branch = v9e-SDL
+	branch = v9f-SDL
 [submodule "external/libpng"]
 	path = external/libpng
 	url = https://github.com/libsdl-org/libpng.git
-	branch = v1.6.40-SDL
+	branch = v1.6.43-SDL
 [submodule "external/libwebp"]
 	path = external/libwebp
 	url = https://github.com/libsdl-org/libwebp.git
@@ -17,7 +17,7 @@
 [submodule "external/zlib"]
 	path = external/zlib
 	url = https://github.com/libsdl-org/zlib.git
-	branch = v1.3-SDL
+	branch = v1.3.1-SDL
 [submodule "external/libjxl"]
 	path = external/libjxl
 	url = https://github.com/libsdl-org/libjxl.git
