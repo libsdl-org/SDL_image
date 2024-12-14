@@ -15,7 +15,7 @@ while true; do
     read line; set -- $line
     branch=$3
 
-    if [ -z "${ARGUMENTS}" ]; then
+    if [ -z "$ARGUMENTS" ]; then
         ARGUMENTS="--depth 1"
     fi
 
