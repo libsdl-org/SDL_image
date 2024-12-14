@@ -19,5 +19,5 @@ while true; do
         ARGUMENTS="--depth 1"
     fi
 
-    git clone --filter=blob:none $url $path -b $branch --recursive $ARGUMENTS --depth 1
+    git clone --filter=blob:none $url $path -b $branch --recursive $ARGUMENTS
 done
