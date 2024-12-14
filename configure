@@ -1704,7 +1704,8 @@ Optional Features:
   --enable-stb-image      use stb_image for loading JPG and PNG images
                           [default=yes]
   --enable-avif           support loading AVIF images [default=yes]
-  --enable-avif-shared    dynamically load AVIF support [default=yes]
+  --enable-avif-shared[=SONAME]
+                          dynamically load AVIF support [default=yes]
   --enable-bmp            support loading BMP/ICO/CUR images [default=yes]
   --enable-gif            support loading GIF images [default=yes]
   --enable-jpg            support loading JPG images [default=yes]
@@ -1712,17 +1713,20 @@ Optional Features:
                           dynamically load JPG support [default=yes]
   --enable-save-jpg       support saving JPG images [default=yes]
   --enable-jxl            support loading JXL images [default=yes]
-  --enable-jxl-shared     dynamically load JXL support [default=yes]
+  --enable-jxl-shared[=SONAME]
+                          dynamically load JXL support [default=yes]
   --enable-lbm            support loading LBM images [default=yes]
   --enable-pcx            support loading PCX images [default=yes]
   --enable-png            support loading PNG images [default=yes]
-  --enable-png-shared     dynamically load PNG support [default=yes]
+  --enable-png-shared[=SONAME]
+                          dynamically load PNG support [default=yes]
   --enable-save-png       support saving PNG images [default=yes]
   --enable-pnm            support loading PNM images [default=yes]
   --enable-svg            support loading SVG images [default=yes]
   --enable-tga            support loading TGA images [default=yes]
   --enable-tif            support loading TIFF images [default=yes]
-  --enable-tif-shared     dynamically load TIFF support [default=yes]
+  --enable-tif-shared[=SONAME]
+                          dynamically load TIFF support [default=yes]
   --enable-xcf            support loading XCF images [default=yes]
   --enable-xpm            support loading XPM images [default=yes]
   --enable-xv             support loading XV images [default=yes]
@@ -4714,13 +4718,13 @@ then :
 else $as_nop
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:4717: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:4721: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4720: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:4724: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4723: output\"" >&5)
+  (eval echo "\"\$as_me:4727: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -5979,7 +5983,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5982 "configure"' > conftest.$ac_ext
+  echo '#line 5986 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7652,11 +7656,11 @@ else $as_nop
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7655: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7659: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7659: \$? = $ac_status" >&5
+   echo "$as_me:7663: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8002,11 +8006,11 @@ else $as_nop
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8005: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8009: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8009: \$? = $ac_status" >&5
+   echo "$as_me:8013: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8109,11 +8113,11 @@ else $as_nop
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8112: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8116: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8116: \$? = $ac_status" >&5
+   echo "$as_me:8120: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -8165,11 +8169,11 @@ else $as_nop
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8168: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8172: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8172: \$? = $ac_status" >&5
+   echo "$as_me:8176: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10608,7 +10612,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10611 "configure"
+#line 10615 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10705,7 +10709,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10708 "configure"
+#line 10712 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14524,6 +14528,15 @@ fi
                 ;;
         esac
         load_avif=1
+
+        case "$enable_avif_shared" in #(
+  yes | no) :
+     ;; #(
+  *) :
+    avif_lib="$enable_avif_shared" ;; #(
+  *) :
+     ;;
+esac
     elif test x$enable_avif = xyes; then
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find AVIF library (https://github.com/AOMediaCodec/libavif)" >&5
 printf "%s\n" "$as_me: WARNING: *** Unable to find AVIF library (https://github.com/AOMediaCodec/libavif)" >&2;}
@@ -14976,6 +14989,15 @@ fi
                 fi
                 ;;
         esac
+
+        case "$enable_jxl_shared" in #(
+  yes | no) :
+     ;; #(
+  *) :
+    jxl_lib="$enable_jxl_shared" ;; #(
+  *) :
+     ;;
+esac
     elif test x$enable_jxl = xyes; then
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find JXL library (https://jpegxl.info/)" >&5
 printf "%s\n" "$as_me: WARNING: *** Unable to find JXL library (https://jpegxl.info/)" >&2;}
@@ -15199,6 +15221,15 @@ fi
                     fi
                     ;;
             esac
+
+            case "$enable_png_shared" in #(
+  yes | no) :
+     ;; #(
+  *) :
+    png_lib="$enable_png_shared" ;; #(
+  *) :
+     ;;
+esac
         else
             { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find PNG library (http://www.libpng.org/pub/png/)" >&5
 printf "%s\n" "$as_me: WARNING: *** Unable to find PNG library (http://www.libpng.org/pub/png/)" >&2;}
@@ -15412,6 +15443,15 @@ fi
                 fi
                 ;;
         esac
+
+        case "$enable_tif_shared" in #(
+  yes | no) :
+     ;; #(
+  *) :
+    tif_lib="$enable_tif_shared" ;; #(
+  *) :
+     ;;
+esac
     else
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: *** Unable to find Tiff library (http://www.simplesystems.org/libtiff/)" >&5
 printf "%s\n" "$as_me: WARNING: *** Unable to find Tiff library (http://www.simplesystems.org/libtiff/)" >&2;}
@@ -15917,7 +15957,7 @@ LOAD_QOI=$load_qoi
 
 if test x$enable_webp = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib -a x$have_webpdemux_hdr = xyes -a x$have_webpdemux_lib = xyes; then
     CFLAGS="$LIBWEBP_CFLAGS $CFLAGS"
-    if test x$enable_webp_shared = xyes && test x$webp_lib != x; then
+    if test x$enable_webp_shared != xno && test x$webp_lib != x; then
         echo "-- dynamic libwebp -> $webp_lib"
         printf "%s\n" "#define LOAD_WEBP_DYNAMIC \"$webp_lib\"" >>confdefs.h
 
@@ -15936,7 +15976,7 @@ fi
 
 if test x$enable_avif = xyes -a x$have_avif_hdr = xyes -a x$have_avif_lib = xyes; then
     CFLAGS="$LIBAVIF_CFLAGS $CFLAGS"
-    if test x$enable_avif_shared = xyes && test x$avif_lib != x; then
+    if test x$enable_avif_shared != xno && test x$avif_lib != x; then
         echo "-- dynamic libavif -> $avif_lib"
         printf "%s\n" "#define LOAD_AVIF_DYNAMIC \"$avif_lib\"" >>confdefs.h
 
@@ -15951,7 +15991,7 @@ if test x$enable_avif = xyes -a x$have_avif_hdr = xyes -a x$have_avif_lib = xyes
 fi
 if test x$enable_tif = xyes -a x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; then
     CFLAGS="$LIBTIFF_CFLAGS $CFLAGS"
-    if test x$enable_tif_shared = xyes && test x$tif_lib != x; then
+    if test x$enable_tif_shared != xno && test x$tif_lib != x; then
         echo "-- dynamic libtiff -> $tif_lib"
         printf "%s\n" "#define LOAD_TIF_DYNAMIC \"$tif_lib\"" >>confdefs.h
 
@@ -15985,7 +16025,7 @@ if test x$enable_jpg = xyes -a x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; t
 fi
 if test x$enable_jxl = xyes -a x$have_jxl_hdr = xyes -a x$have_jxl_lib = xyes; then
     CFLAGS="$LIBJXL_CFLAGS $CFLAGS"
-    if test x$enable_jxl_shared = xyes && test x$jxl_lib != x; then
+    if test x$enable_jxl_shared != xno && test x$jxl_lib != x; then
         echo "-- dynamic libjxl -> $jxl_lib"
         printf "%s\n" "#define LOAD_JXL_DYNAMIC \"$jxl_lib\"" >>confdefs.h
 
@@ -16000,7 +16040,7 @@ if test x$enable_jxl = xyes -a x$have_jxl_hdr = xyes -a x$have_jxl_lib = xyes; t
 fi
 if test x$enable_png = xyes -a x$have_png_hdr = xyes -a x$have_png_lib = xyes; then
     CFLAGS="$LIBPNG_CFLAGS $CFLAGS"
-    if test x$enable_png_shared = xyes && test x$png_lib != x; then
+    if test x$enable_png_shared != xno && test x$png_lib != x; then
         echo "-- dynamic libpng -> $png_lib"
         printf "%s\n" "#define LOAD_PNG_DYNAMIC \"$png_lib\"" >>confdefs.h
 
