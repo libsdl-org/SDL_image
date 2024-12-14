@@ -14,5 +14,10 @@ while true; do
     url=$3
     read line; set -- $line
     branch=$3
+
+    if [ -z "$ARGUMENTS" ]; then
+        ARGUMENTS="--depth 1"
+    fi
+
     git clone --filter=blob:none $url $path -b $branch --recursive $ARGUMENTS
 done
