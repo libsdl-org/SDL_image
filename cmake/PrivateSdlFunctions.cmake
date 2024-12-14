@@ -273,7 +273,7 @@ function(check_linker_support_version_script VAR)
 endfunction()
 
 function(sdl_target_link_options_no_undefined TARGET)
-    if(NOT MSVC)
+    if(NOT MSVC AND NOT CMAKE_SYSTEM_NAME MATCHES ".*OpenBSD.*")
         if(CMAKE_C_COMPILER_ID MATCHES "AppleClang")
             target_link_options(${TARGET} PRIVATE "-Wl,-undefined,error")
         else()
