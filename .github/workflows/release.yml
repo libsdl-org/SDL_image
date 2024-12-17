@@ -286,9 +286,6 @@ jobs:
           cd C:\temp
           unzip "${{ github.workspace }}/${{ needs.src.outputs.src-zip }}"
           echo "path=C:\temp\${{ needs.src.outputs.project }}-${{ needs.src.outputs.version }}" >>$Env:GITHUB_OUTPUT
-      - name: 'Download external dependencies'
-        run: |
-          ${{ steps.zip.outputs.path }}/external/Get-GitModules.ps1
       - name: 'Build MSVC binary archives'
         id: releaser
         env:
