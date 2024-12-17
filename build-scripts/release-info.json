@@ -83,6 +83,7 @@
       },
       "files-devel": {
         "lib/@<@ARCH@>@": [
+          "VisualC/@<@PLATFORM@>@/@<@CONFIGURATION@>@/SDL2_image.dll",
           "VisualC/@<@PLATFORM@>@/@<@CONFIGURATION@>@/SDL2_image.lib",
           "VisualC/@<@PLATFORM@>@/@<@CONFIGURATION@>@/SDL2_image.pdb"
         ]
