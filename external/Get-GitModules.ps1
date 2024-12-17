@@ -14,11 +14,11 @@
 [String] $PathRegex   = "path\s*=\s*(?<path>.*)"
 [String] $URLRegex    = "url\s*=\s*(?<url>.*)" 
 [String] $BranchRegex = "branch\s*=\s*(?<Branch>.*)"
-[String] $Arguments   = $($args -join " ")
+[String[]] $Arguments = $args
 
 #------- Script ----------------------------------------------------------------
-if ([string]::IsNullOrEmpty($Arguments)) {
-    $Arguments = "--depth 1"
+if (-not $Arguments) {
+    [String[]]$Arguments = "--depth", "1"
 }
 
 foreach ($Line in Get-Content $PSScriptRoot\..\.gitmodules) {
