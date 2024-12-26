@@ -305,8 +305,11 @@ static void LIBPNG_LoadPNG_RW(SDL_RWops *src, struct loadpng_vars *vars)
     lib.png_set_packing(vars->png_ptr);
 
     /* scale greyscale values to the range 0..255 */
-    if (color_type == PNG_COLOR_TYPE_GRAY)
+    if (color_type == PNG_COLOR_TYPE_GRAY) {
         lib.png_set_expand(vars->png_ptr);
+    } else if (color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
+        lib.png_set_gray_to_rgb(vars->png_ptr);
+    }
 
     /* For images with a single "transparent colour", set colour key;
        if more than one index has transparency, or if partially transparent
