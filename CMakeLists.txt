@@ -32,9 +32,8 @@ else()
     set(SDLIMAGE_ROOTPROJECT OFF)
 endif()
 
-
 # By default, configure in RelWithDebInfo configuration
-if(NOT SDL3_SUBPROJECT)
+if(NOT SDLIMAGE_ROOTPROJECT)
     get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
     if(is_multi_config)
         # The first item in CMAKE_CONFIGURATION_TYPES is the default configuration
