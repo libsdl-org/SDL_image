@@ -9,9 +9,10 @@ cd `dirname $0`/..
 # Needed so sed doesn't report illegal byte sequences on macOS
 export LC_CTYPE=C
 
-ref_major=$(sed -ne 's/^#define SDL_IMAGE_MAJOR_VERSION  *//p' include/SDL_image.h)
-ref_minor=$(sed -ne 's/^#define SDL_IMAGE_MINOR_VERSION  *//p' include/SDL_image.h)
-ref_micro=$(sed -ne 's/^#define SDL_IMAGE_PATCHLEVEL  *//p' include/SDL_image.h)
+header=include/SDL_image.h
+ref_major=$(sed -ne 's/^#define SDL_IMAGE_MAJOR_VERSION  *//p' $header)
+ref_minor=$(sed -ne 's/^#define SDL_IMAGE_MINOR_VERSION  *//p' $header)
+ref_micro=$(sed -ne 's/^#define SDL_IMAGE_PATCHLEVEL  *//p' $header)
 ref_version="${ref_major}.${ref_minor}.${ref_micro}"
 
 tests=0
@@ -37,7 +38,7 @@ ref_sdl_req=$(sed -ne 's/^SDL_VERSION=//p' configure.ac)
 if [ "$ref_version" = "$version" ]; then
     ok "configure.ac $version"
 else
-    not_ok "configure.ac $version disagrees with SDL_image.h $ref_version"
+    not_ok "configure.ac $version disagrees with $header $ref_version"
 fi
 
 major=$(sed -ne 's/^MAJOR_VERSION=//p' configure)
@@ -48,7 +49,7 @@ version="${major}.${minor}.${micro}"
 if [ "$ref_version" = "$version" ]; then
     ok "configure $version"
 else
-    not_ok "configure $version disagrees with SDL_image.h $ref_version"
+    not_ok "configure $version disagrees with $header $ref_version"
 fi
 
 major=$(sed -ne 's/^set(MAJOR_VERSION \([0-9]*\))$/\1/p' CMakeLists.txt)
@@ -60,7 +61,7 @@ version="${major}.${minor}.${micro}"
 if [ "$ref_version" = "$version" ]; then
     ok "CMakeLists.txt $version"
 else
-    not_ok "CMakeLists.txt $version disagrees with SDL_image.h $ref_version"
+    not_ok "CMakeLists.txt $version disagrees with $header $ref_version"
 fi
 
 if [ "$ref_sdl_req" = "$sdl_req" ]; then
@@ -77,7 +78,7 @@ version="${major}.${minor}.${micro}"
 if [ "$ref_version" = "$version" ]; then
     ok "Makefile.os2 $version"
 else
-    not_ok "Makefile.os2 $version disagrees with SDL_image.h $ref_version"
+    not_ok "Makefile.os2 $version disagrees with $header $ref_version"
 fi
 
 for rcfile in src/version.rc VisualC/Version.rc; do
@@ -87,7 +88,7 @@ for rcfile in src/version.rc VisualC/Version.rc; do
     if [ "$ref_tuple" = "$tuple" ]; then
         ok "$rcfile FILEVERSION $tuple"
     else
-        not_ok "$rcfile FILEVERSION $tuple disagrees with SDL_image.h $ref_tuple"
+        not_ok "$rcfile FILEVERSION $tuple disagrees with $header $ref_tuple"
     fi
 
     tuple=$(sed -ne 's/^ *PRODUCTVERSION *//p' "$rcfile" | tr -d '\r')
@@ -95,7 +96,7 @@ for rcfile in src/version.rc VisualC/Version.rc; do
     if [ "$ref_tuple" = "$tuple" ]; then
         ok "$rcfile PRODUCTVERSION $tuple"
     else
-        not_ok "$rcfile PRODUCTVERSION $tuple disagrees with SDL_image.h $ref_tuple"
+        not_ok "$rcfile PRODUCTVERSION $tuple disagrees with $header $ref_tuple"
     fi
 
     tuple=$(sed -Ene 's/^ *VALUE "FileVersion", "([0-9, ]*)\\0"\r?$/\1/p' "$rcfile" | tr -d '\r')
@@ -104,7 +105,7 @@ for rcfile in src/version.rc VisualC/Version.rc; do
     if [ "$ref_tuple" = "$tuple" ]; then
         ok "$rcfile FileVersion $tuple"
     else
-        not_ok "$rcfile FileVersion $tuple disagrees with SDL_image.h $ref_tuple"
+        not_ok "$rcfile FileVersion $tuple disagrees with $header $ref_tuple"
     fi
 
     tuple=$(sed -Ene 's/^ *VALUE "ProductVersion", "([0-9, ]*)\\0"\r?$/\1/p' "$rcfile" | tr -d '\r')
@@ -112,7 +113,7 @@ for rcfile in src/version.rc VisualC/Version.rc; do
     if [ "$ref_tuple" = "$tuple" ]; then
         ok "$rcfile ProductVersion $tuple"
     else
-        not_ok "$rcfile ProductVersion $tuple disagrees with SDL_image.h $ref_tuple"
+        not_ok "$rcfile ProductVersion $tuple disagrees with $header $ref_tuple"
     fi
 done
 
@@ -121,7 +122,7 @@ version=$(sed -Ene '/CFBundleShortVersionString/,+1 s/.*<string>(.*)<\/string>.*
 if [ "$ref_version" = "$version" ]; then
     ok "Info-Framework.plist CFBundleShortVersionString $version"
 else
-    not_ok "Info-Framework.plist CFBundleShortVersionString $version disagrees with SDL_image.h $ref_version"
+    not_ok "Info-Framework.plist CFBundleShortVersionString $version disagrees with $header $ref_version"
 fi
 
 version=$(sed -Ene '/CFBundleVersion/,+1 s/.*<string>(.*)<\/string>.*/\1/p' Xcode/Info-Framework.plist)
@@ -129,7 +130,7 @@ version=$(sed -Ene '/CFBundleVersion/,+1 s/.*<string>(.*)<\/string>.*/\1/p' Xcod
 if [ "$ref_version" = "$version" ]; then
     ok "Info-Framework.plist CFBundleVersion $version"
 else
-    not_ok "Info-Framework.plist CFBundleVersion $version disagrees with SDL_image.h $ref_version"
+    not_ok "Info-Framework.plist CFBundleVersion $version disagrees with $header $ref_version"
 fi
 
 # For simplicity this assumes we'll never break ABI before SDL 3.
@@ -175,6 +176,14 @@ if [ "$ref" = "$dylib_cur" ]; then
     ok "project.pbxproj DYLIB_CURRENT_VERSION is consistent"
 else
     not_ok "project.pbxproj DYLIB_CURRENT_VERSION is inconsistent, expected $ref, got $dylib_cur"
+fi
+
+sdl_req=$(sed -ne 's/\$sdl2_version = "\([0-9.]*\)"$/\1/p' .github/fetch_sdl_vc.ps1)
+
+if [ "$ref_sdl_req" = "$sdl_req" ]; then
+    ok ".github/fetch_sdl_vc.ps1 $sdl_req"
+else
+    not_ok ".github/fetch_sdl_vc.ps1 sdl2_version=$sdl_req disagrees with configure.ac SDL_VERSION=$ref_sdl_req"
 fi
 
 echo "1..$tests"
