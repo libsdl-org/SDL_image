@@ -237,6 +237,7 @@ static const Format formats[] =
         IMG_isJPG,
         IMG_LoadJPG_RW,
     },
+#if 0 /* Different versions of JXL yield different output images */
     {
         "JXL",
         "sample.jxl",
@@ -254,6 +255,7 @@ static const Format formats[] =
         IMG_isJXL,
         IMG_LoadJXL_RW,
     },
+#endif
 #if 0
     {
         "LBM",
