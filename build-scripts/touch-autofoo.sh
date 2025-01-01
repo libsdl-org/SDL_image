@@ -4,5 +4,5 @@
 # autotools generated files, so that the build procedure
 # doesn't attempt to regenerate them.
 
-cd `dirname $0`
+cd `dirname $0`/..
 touch aclocal.m4 configure Makefile.in test/Makefile.in 
