@@ -37,6 +37,8 @@ logger = logging.getLogger(__name__)
 GIT_HASH_FILENAME = ".git-hash"
 REVISION_TXT = "REVISION.txt"
 
+RE_ILLEGAL_MINGW_LIBRARIES = re.compile(r"(?:lib)?(?:gcc|(?:std)?c[+][+]|(?:win)?pthread).*", flags=re.I)
+
 
 def safe_isotime_to_datetime(str_isotime: str) -> datetime.datetime:
     try:
@@ -659,6 +661,15 @@ class Releaser:
     def git_hash_data(self) -> bytes:
         return f"{self.commit}\n".encode()
 
+    def verify_mingw_library(self, triplet: str, path: Path):
+        objdump_output = self.executer.check_output([f"{triplet}-objdump", "-p", str(path)])
+        libraries = re.findall(r"DLL Name: ([^\n]+)", objdump_output)
+        logger.info("%s (%s) libraries: %r", path, triplet, libraries)
+        illegal_libraries = list(filter(RE_ILLEGAL_MINGW_LIBRARIES.match, libraries))
+        logger.error("Detected 'illegal' libraries: %r", illegal_libraries)
+        if illegal_libraries:
+            raise Exception(f"{path} links to illegal libraries: {illegal_libraries}")
+
     def create_mingw_archives(self) -> None:
         build_type = "Release"
         build_parent_dir = self.root / "build-mingw"
@@ -757,6 +768,7 @@ class Releaser:
                     self.executer.run(["make", f"-j{self.cpu_count}"], cwd=build_path, env=new_env)
                 with self.section_printer.group(f"Install MinGW {triplet} (autotools)"):
                     self.executer.run(["make", "install"], cwd=build_path, env=new_env)
+                self.verify_mingw_library(triplet=ARCH_TO_TRIPLET[arch], path=install_path / "bin" / f"{self.project}.dll")
                 archive_file_tree.add_directory_tree(arc_dir=arc_join(arc_root, triplet), path=install_path)
 
         if "cmake" in self.release_info["mingw"]:
@@ -801,6 +813,7 @@ class Releaser:
                         self.executer.run(["cmake", "--build", str(build_path), "--verbose", "--config", build_type], cwd=build_path, env=new_env)
                     with self.section_printer.group(f"Install MinGW {triplet} (CMake)"):
                         self.executer.run(["cmake", "--install", str(build_path)], cwd=build_path, env=new_env)
+                self.verify_mingw_library(triplet=ARCH_TO_TRIPLET[arch], path=install_path / "bin" / f"{self.project}.dll")
                 archive_file_tree.add_directory_tree(arc_dir=arc_join(arc_root, triplet), path=install_path, time=self.arc_time)
 
         print("Recording extra files for MinGW development archive ...")
@@ -1103,9 +1116,7 @@ class Releaser:
                             dst.write_bytes(zip_data)
 
         prebuilt_paths = set(self.root / full_prebuilt_path for prebuilt_path in self.release_info["msvc"]["msbuild"].get("prebuilt", []) for full_prebuilt_path in glob.glob(configure_text(prebuilt_path, context=platform_context), root_dir=self.root))
-        logger.debug("prebuilt_paths=%s", prebuilt_paths)
         msbuild_paths = set(self.root / configure_text(f, context=platform_context) for file_mapping in (self.release_info["msvc"]["msbuild"]["files-lib"], self.release_info["msvc"]["msbuild"]["files-devel"]) for files_list in file_mapping.values() for f in files_list)
-        logger.debug("msbuild_paths=%s", msbuild_paths)
         assert prebuilt_paths.issubset(msbuild_paths), f"msvc.msbuild.prebuilt must be a subset of (msvc.msbuild.files-lib, msvc.msbuild.files-devel)"
         built_paths = msbuild_paths.difference(prebuilt_paths)
         logger.info("MSbuild builds these files, to be included in the package: %s", built_paths)
