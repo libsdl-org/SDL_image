@@ -74,6 +74,8 @@ case "$host" in
         fi
         use_version_rc=true
         LT_EXTRA="-Wl,version.o"
+        # Eliminate libgcc*.dll dependency.
+        CFLAGS="$CFLAGS -static-libgcc"
         ;;
     *-*-darwin*)
         AC_ARG_ENABLE([imageio], [AS_HELP_STRING([--enable-imageio], [use native Mac OS X frameworks for loading images [default=yes]])],
