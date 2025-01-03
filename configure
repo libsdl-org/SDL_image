@@ -12267,6 +12267,8 @@ case "$host" in
         fi
         use_version_rc=true
         LT_EXTRA="-Wl,version.o"
+        # Eliminate libgcc*.dll dependency.
+        CFLAGS="$CFLAGS -static-libgcc"
         ;;
     *-*-darwin*)
         # Check whether --enable-imageio was given.
