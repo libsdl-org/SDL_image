@@ -240,6 +240,9 @@ if(WIN32 AND SDL2IMAGE_BUILD_SHARED_LIBS)
     target_sources(SDL2_image PRIVATE
         src/version.rc
     )
+    if(MINGW)
+        target_link_options(SDL2_image PRIVATE -static-libgcc)
+    endif()
 endif()
 set_target_properties(SDL2_image PROPERTIES
     DEFINE_SYMBOL DLL_EXPORT
