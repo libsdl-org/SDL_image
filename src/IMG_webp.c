@@ -80,10 +80,12 @@ static bool IMG_InitWEBP(void)
     if (lib.loaded == 0) {
 #if defined(LOAD_WEBP_DYNAMIC) && defined(LOAD_WEBPDEMUX_DYNAMIC)
         lib.handle_libwebpdemux = SDL_LoadObject(LOAD_WEBPDEMUX_DYNAMIC);
+        SDL_Log("SDL_LoadObject(\"" LOAD_WEBPDEMUX_DYNAMIC "\") -> %p", lib.handle_libwebpdemux);
         if (lib.handle_libwebpdemux == NULL) {
             return false;
         }
         lib.handle_libwebp = SDL_LoadObject(LOAD_WEBP_DYNAMIC);
+        SDL_Log("SDL_LoadObject(\"" LOAD_WEBPDEMUX_DYNAMIC "\") -> %p", lib.handle_libwebp);
         if (lib.handle_libwebp == NULL) {
             return false;
         }

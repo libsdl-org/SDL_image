@@ -142,8 +142,9 @@ SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type)
     /* See whether or not this data source can handle seeking */
     if (SDL_SeekIO(src, 0, SDL_IO_SEEK_CUR) < 0 ) {
         SDL_SetError("Can't seek in this data source");
-        if (closeio)
+        if (closeio) {
             SDL_CloseIO(src);
+        }
         return NULL;
     }
 
@@ -175,20 +176,22 @@ SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type)
     /* Detect the type of image being loaded */
     for ( i=0; i < SDL_arraysize(supported); ++i ) {
         if (supported[i].is) {
-            if (!supported[i].is(src))
+            if (!supported[i].is(src)) {
                 continue;
+            }
         } else {
             /* magicless format */
-            if (!type || SDL_strcasecmp(type, supported[i].type) != 0)
+            if (!type || SDL_strcasecmp(type, supported[i].type) != 0) {
                 continue;
+            }
         }
 #ifdef DEBUG_IMGLIB
-        fprintf(stderr, "IMGLIB: Loading image as %s\n",
-            supported[i].type);
+        SDL_Log("IMGLIB: Loading image as %s\n", supported[i].type);
 #endif
         image = supported[i].load(src);
-        if (closeio)
+        if (closeio) {
             SDL_CloseIO(src);
+        }
         return image;
     }
 
@@ -285,8 +288,7 @@ IMG_Animation *IMG_LoadAnimationTyped_IO(SDL_IOStream *src, bool closeio, const 
                 continue;
         }
 #ifdef DEBUG_IMGLIB
-        fprintf(stderr, "IMGLIB: Loading image as %s\n",
-            supported_anims[i].type);
+        SDL_Log("IMGLIB: Loading image as %s\n", supported_anims[i].type);
 #endif
         anim = supported_anims[i].load(src);
         if (closeio)

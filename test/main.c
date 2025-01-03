@@ -622,6 +622,7 @@ FormatLoadTest(const Format *format,
 
     if (StrHasSuffix(format->reference, ".bmp")) {
         SDL_ClearError();
+        SDLTest_AssertPass("About to call SDL_LoadBMP(\"%s\")", refFilename);
         reference = SDL_LoadBMP(refFilename);
         if (!SDLTest_AssertCheck(reference != NULL,
                                  "Loading reference should succeed (%s)",
@@ -632,6 +633,7 @@ FormatLoadTest(const Format *format,
     else if (StrHasSuffix (format->reference, ".png")) {
 #ifdef LOAD_PNG
         SDL_ClearError();
+        SDLTest_AssertPass("About to call IMG_Load(\"%s\")", refFilename);
         reference = IMG_Load(refFilename);
         if (!SDLTest_AssertCheck(reference != NULL,
                                  "Loading reference should succeed (%s)",
@@ -643,6 +645,7 @@ FormatLoadTest(const Format *format,
 
     if (mode != LOAD_CONVENIENCE) {
         SDL_ClearError();
+        SDLTest_AssertPass("About to call SDL_IOFromFile(\"%s\", \"rb\")", refFilename);
         src = SDL_IOFromFile(filename, "rb");
         SDLTest_AssertCheck(src != NULL,
                             "Opening %s should succeed (%s)",
@@ -654,6 +657,7 @@ FormatLoadTest(const Format *format,
     SDL_ClearError();
     switch (mode) {
         case LOAD_CONVENIENCE:
+            SDLTest_AssertPass("About to call IMG_Load(\"%s\")", filename);
             surface = IMG_Load(filename);
             break;
 
@@ -662,11 +666,13 @@ FormatLoadTest(const Format *format,
                 SDL_IOStream *ref_src;
                 int check;
 
+                SDLTest_AssertPass("About to call SDL_IOFromFile(\"%s\", \"rb\")", refFilename);
                 ref_src = SDL_IOFromFile(refFilename, "rb");
                 SDLTest_AssertCheck(ref_src != NULL,
                                     "Opening %s should succeed (%s)",
                                     refFilename, SDL_GetError());
                 if (ref_src != NULL) {
+                    SDLTest_AssertPass("About to call IMG_Is%s(<reference>)", format->name);
                     check = format->checkFunction(ref_src);
                     SDLTest_AssertCheck(!check,
                                         "Should not detect %s as %s -> %d",
@@ -676,6 +682,7 @@ FormatLoadTest(const Format *format,
             }
 
             if (format->checkFunction != NULL) {
+                SDLTest_AssertPass("About to call IMG_Is%s(<src>)", format->name);
                 int check = format->checkFunction(src);
 
                 SDLTest_AssertCheck(check,
@@ -684,16 +691,19 @@ FormatLoadTest(const Format *format,
             }
 
             SDL_ClearError();
+            SDLTest_AssertPass("About to call IMG_Load_IO(<src>, true)");
             surface = IMG_Load_IO(src, true);
             src = NULL;      /* ownership taken */
             break;
 
         case LOAD_TYPED_IO:
+            SDLTest_AssertPass("About to call IMG_LoadTyped_IO(<src>, true, \"%s\")", format->name);
             surface = IMG_LoadTyped_IO(src, true, format->name);
             src = NULL;      /* ownership taken */
             break;
 
         case LOAD_FORMAT_SPECIFIC:
+            SDLTest_AssertPass("About to call IMG_Load%s_IO(<src>)", format->name);
             surface = format->loadFunction(src);
             break;
 
@@ -818,6 +828,7 @@ FormatSaveTest(const Format *format,
 
     if (format->canLoad) {
         SDL_ClearError();
+        SDLTest_AssertPass("About to call IMG_Load(\"%s\")", filename);
         surface = IMG_Load(filename);
 
         if (!SDLTest_AssertCheck(surface != NULL,

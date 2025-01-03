@@ -459,14 +459,16 @@ static SDL_Surface *LoadImageFromIOStream (SDL_IOStream *rw_ops, CFStringRef uti
     if (hint_dictionary != NULL)
         CFRelease(hint_dictionary);
 
-    if (NULL == image_source)
+    if (NULL == image_source) {
         return NULL;
+    }
 
     CGImageRef image_ref = CreateCGImageFromCGImageSource(image_source);
     CFRelease(image_source);
 
-    if (NULL == image_ref)
+    if (NULL == image_ref) {
         return NULL;
+    }
     SDL_Surface *sdl_surface = Create_SDL_Surface_From_CGImage(image_ref);
     CFRelease(image_ref);
 
@@ -479,14 +481,16 @@ static SDL_Surface* LoadImageFromFile (const char *file)
 
     image_source = CreateCGImageSourceFromFile(file);
 
-    if(NULL == image_source)
+    if (NULL == image_source) {
         return NULL;
+    }
 
     CGImageRef image_ref = CreateCGImageFromCGImageSource(image_source);
     CFRelease(image_source);
 
-    if (NULL == image_ref)
+    if (NULL == image_ref) {
         return NULL;
+    }
     SDL_Surface *sdl_surface = Create_SDL_Surface_From_CGImage(image_ref);
     CFRelease(image_ref);
     return sdl_surface;
