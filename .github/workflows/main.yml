@@ -15,15 +15,15 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows (MSVC+CMake),         os: windows-latest, shell: sh, cmake: '-GNinja', msvc: 1, shared: 1, static: 0, vendored: 1 }
-        - { name: Windows (mingw32+autotools),  os: windows-latest, shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686, shared: 1, static: 1 }
-        - { name: Windows (mingw64+CMake),      os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0,
+        - { name: 'Windows (MSVC+CMake)',       os: windows-latest, shell: sh, cmake: '-GNinja', msvc: 1, shared: 1, static: 0, vendored: 1 }
+        - { name: 'Windows (mingw32+autotools)',os: windows-latest, shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686, shared: 1, static: 1 }
+        - { name: 'Windows (mingw64+CMake)',    os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0,
             cmake: '-DSDL2IMAGE_BACKEND_STB=OFF -DSDL2IMAGE_BACKEND_WIC=OFF -G "Ninja Multi-Config"' }
-        - { name: Linux (autotools),            os: ubuntu-latest,  shell: sh, shared: 1, static: 1}
-        - { name: Linux (CMake),                os: ubuntu-latest,  shell: sh, cmake: '-GNinja', shared: 1, static: 0, vendored: 1 }
+        - { name: 'Linux (autotools)',          os: ubuntu-latest,  shell: sh, shared: 1, static: 1}
+        - { name: 'Linux (CMake)',              os: ubuntu-latest,  shell: sh, cmake: '-GNinja', shared: 1, static: 0, vendored: 1 }
         - { name: 'Linux (CMake, static)',      os: ubuntu-latest,  shell: sh, cmake: '-DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1, vendored: 1 }
-        - { name: Macos (autotools),            os: macos-latest,   shell: sh, shared: 1, static: 1 }
-        - { name: Macos (CMake),                os: macos-latest,   shell: sh, cmake: '-GNinja', shared: 1, static: 0, vendored: 1 }
+        - { name: 'macOS (autotools)',          os: macos-latest,   shell: sh, shared: 1, static: 1 }
+        - { name: 'macOS (CMake)',              os: macos-latest,   shell: sh, cmake: '-GNinja -DSDL2IMAGE_DEPS_SHARED=OFF', shared: 1, static: 0, vendored: 1 }
 
     steps:
     - uses: ilammy/msvc-dev-cmd@v1
@@ -62,7 +62,7 @@ jobs:
         sdl-test: true
         shell: ${{ matrix.platform.shell }}
         add-to-environment: true
-    - name: Setup Macos dependencies
+    - name: Setup macOS dependencies
       if: ${{ runner.os == 'macOS' }}
       run: |
         brew install \
@@ -104,7 +104,7 @@ jobs:
 
     - uses: actions/checkout@v4
       with:
-        submodules: recursive
+        submodules: ${{ (matrix.platform.vendored && 'recursive') || false }}
 
     - name: Check that versioning is consistent
       # We only need to run this once: arbitrarily use the Linux/CMake build
@@ -141,7 +141,7 @@ jobs:
         if [ "x${{ runner.os }}" = xLinux ]; then
           export LD_LIBRARY_PATH="${{ github.workspace }}/build:$LD_LIBRARY_PATH"
         fi
-        if [ "x${{ runner.os }}" = xmacos ]; then
+        if [ "x${{ runner.os }}" = xmacOS ]; then
           export DYLD_LIBRARY_PATH="${{ github.workspace }}/build:$DYLD_LIBRARY_PATH"
         fi
         if [ "x${{ runner.os }}" = "xWindows" ]; then
