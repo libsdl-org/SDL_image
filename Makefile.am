@@ -109,6 +109,8 @@ install-data-local:
 	$(MKDIR_P) $(DESTDIR)$(libdir)/cmake/SDL2_image
 	$(INSTALL) -m 644 sdl2_image-config.cmake $(DESTDIR)$(libdir)/cmake/SDL2_image
 	$(INSTALL) -m 644 sdl2_image-config-version.cmake $(DESTDIR)$(libdir)/cmake/SDL2_image
+	$(INSTALL) -m 644 $(srcdir)/cmake/Findlibjxl.cmake $(DESTDIR)$(libdir)/cmake/SDL2_image
+	$(INSTALL) -m 644 $(srcdir)/cmake/Findwebp.cmake $(DESTDIR)$(libdir)/cmake/SDL2_image
 
 uninstall-hook:
 	rm $(DESTDIR)$(libdir)/cmake/SDL2_image/sdl2_image-config.cmake

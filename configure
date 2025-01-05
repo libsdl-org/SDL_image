@@ -809,6 +809,7 @@ BUILD_TESTS_FALSE
 BUILD_TESTS_TRUE
 PC_REQUIRES
 PC_LIBS
+CMAKE_LIBS
 IMG_LIBS
 SDL2IMAGE_JPG_SAVE
 SDL2IMAGE_PNG_SAVE
@@ -4718,13 +4719,13 @@ then :
 else $as_nop
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:4721: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:4722: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4724: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:4725: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:4727: output\"" >&5)
+  (eval echo "\"\$as_me:4728: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -5983,7 +5984,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5986 "configure"' > conftest.$ac_ext
+  echo '#line 5987 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7656,11 +7657,11 @@ else $as_nop
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7659: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7660: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7663: \$? = $ac_status" >&5
+   echo "$as_me:7664: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8006,11 +8007,11 @@ else $as_nop
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8009: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8010: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8013: \$? = $ac_status" >&5
+   echo "$as_me:8014: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8113,11 +8114,11 @@ else $as_nop
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8116: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8117: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8120: \$? = $ac_status" >&5
+   echo "$as_me:8121: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -8169,11 +8170,11 @@ else $as_nop
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8172: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8173: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8176: \$? = $ac_status" >&5
+   echo "$as_me:8177: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10612,7 +10613,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10615 "configure"
+#line 10616 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10709,7 +10710,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 10712 "configure"
+#line 10713 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13566,6 +13567,7 @@ printf %s "checking for ImageIO support... " >&6; }
 printf "%s\n" "$enable_imageio" >&6; }
         if test x$enable_imageio = xyes; then
             IMG_LIBS="-Wl,-framework,ApplicationServices -lobjc $IMG_LIBS"
+            CMAKE_LIBS="-Wl,-framework,ApplicationServices;objc;$CMAKE_LIBS"
         else
             CFLAGS="$CFLAGS -DSDL_IMAGE_USE_COMMON_BACKEND"
         fi
@@ -15968,6 +15970,7 @@ if test x$enable_webp = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib -a x$h
 
     else
         IMG_LIBS="$LIBWEBPDEMUX_LIBS $LIBWEBP_LIBS $IMG_LIBS"
+        CMAKE_LIBS="WebP::webp;WebP::webpdemux;$CMAKE_LIBS"
         if test x$have_webp_pc = xyes; then
             PC_REQUIRES="libwebpdemux libwebp $PC_REQUIRES"
         else
@@ -15984,6 +15987,7 @@ if test x$enable_avif = xyes -a x$have_avif_hdr = xyes -a x$have_avif_lib = xyes
 
     else
         IMG_LIBS="$LIBAVIF_LIBS $IMG_LIBS"
+        CMAKE_LIBS="avif;$CMAKE_LIBS"
         if test x$have_avif_pc = xyes; then
             PC_REQUIRES="libavif $PC_REQUIRES"
         else
@@ -16003,6 +16007,7 @@ if test x$enable_tif = xyes -a x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; t
             jpg_lib=''
         fi
         IMG_LIBS="$LIBTIFF_LIBS $IMG_LIBS"
+        CMAKE_LIBS="TIFF::TIFF;$CMAKE_LIBS"
         if test x$have_tif_pc = xyes; then
             PC_REQUIRES="libtiff-4 $PC_REQUIRES"
         else
@@ -16018,6 +16023,7 @@ if test x$enable_jpg = xyes -a x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; t
 
     else
         IMG_LIBS="$LIBJPEG_LIBS $IMG_LIBS"
+        CMAKE_LIBS="JPEG::JPEG;$CMAKE_LIBS"
         if test x$have_jpg_pc = xyes; then
             PC_REQUIRES="libjpeg $PC_REQUIRES"
         else
@@ -16033,6 +16039,7 @@ if test x$enable_jxl = xyes -a x$have_jxl_hdr = xyes -a x$have_jxl_lib = xyes; t
 
     else
         IMG_LIBS="$LIBJXL_LIBS $IMG_LIBS"
+        CMAKE_LIBS="libjxl::libjxl;$CMAKE_LIBS"
         if test x$have_jxl_pc = xyes; then
             PC_REQUIRES="libjxl $PC_REQUIRES"
         else
@@ -16048,6 +16055,7 @@ if test x$enable_png = xyes -a x$have_png_hdr = xyes -a x$have_png_lib = xyes; t
 
     else
         IMG_LIBS="$LIBPNG_LIBS $IMG_LIBS"
+        CMAKE_LIBS="PNG::PNG;$CMAKE_LIBS"
         if test x$have_png_pc = xyes; then
             PC_REQUIRES="libpng $PC_REQUIRES"
         else
@@ -16077,6 +16085,7 @@ else
     SDL2IMAGE_JPG_SAVE=0
 
 fi
+
 
 
 

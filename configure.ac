@@ -106,6 +106,7 @@ case "$host" in
         AC_MSG_RESULT($enable_imageio)
         if test x$enable_imageio = xyes; then
             IMG_LIBS="-Wl,-framework,ApplicationServices -lobjc $IMG_LIBS"
+            CMAKE_LIBS="-Wl,-framework,ApplicationServices;objc;$CMAKE_LIBS"
         else
             CFLAGS="$CFLAGS -DSDL_IMAGE_USE_COMMON_BACKEND"
         fi
@@ -737,6 +738,7 @@ if test x$enable_webp = xyes -a x$have_webp_hdr = xyes -a x$have_webp_lib -a x$h
         AC_DEFINE_UNQUOTED(LOAD_WEBPDEMUX_DYNAMIC, "$webpdemux_lib")
     else
         IMG_LIBS="$LIBWEBPDEMUX_LIBS $LIBWEBP_LIBS $IMG_LIBS"
+        CMAKE_LIBS="WebP::webp;WebP::webpdemux;$CMAKE_LIBS"
         if test x$have_webp_pc = xyes; then
             PC_REQUIRES="libwebpdemux libwebp $PC_REQUIRES"
         else
@@ -752,6 +754,7 @@ if test x$enable_avif = xyes -a x$have_avif_hdr = xyes -a x$have_avif_lib = xyes
         AC_DEFINE_UNQUOTED(LOAD_AVIF_DYNAMIC, "$avif_lib")
     else
         IMG_LIBS="$LIBAVIF_LIBS $IMG_LIBS"
+        CMAKE_LIBS="avif;$CMAKE_LIBS"
         if test x$have_avif_pc = xyes; then
             PC_REQUIRES="libavif $PC_REQUIRES"
         else
@@ -770,6 +773,7 @@ if test x$enable_tif = xyes -a x$have_tif_hdr = xyes -a x$have_tif_lib = xyes; t
             jpg_lib=''
         fi
         IMG_LIBS="$LIBTIFF_LIBS $IMG_LIBS"
+        CMAKE_LIBS="TIFF::TIFF;$CMAKE_LIBS"
         if test x$have_tif_pc = xyes; then
             PC_REQUIRES="libtiff-4 $PC_REQUIRES"
         else
@@ -784,6 +788,7 @@ if test x$enable_jpg = xyes -a x$have_jpg_hdr = xyes -a x$have_jpg_lib = xyes; t
         AC_DEFINE_UNQUOTED(LOAD_JPG_DYNAMIC, "$jpg_lib")
     else
         IMG_LIBS="$LIBJPEG_LIBS $IMG_LIBS"
+        CMAKE_LIBS="JPEG::JPEG;$CMAKE_LIBS"
         if test x$have_jpg_pc = xyes; then
             PC_REQUIRES="libjpeg $PC_REQUIRES"
         else
@@ -798,6 +803,7 @@ if test x$enable_jxl = xyes -a x$have_jxl_hdr = xyes -a x$have_jxl_lib = xyes; t
         AC_DEFINE_UNQUOTED(LOAD_JXL_DYNAMIC, "$jxl_lib")
     else
         IMG_LIBS="$LIBJXL_LIBS $IMG_LIBS"
+        CMAKE_LIBS="libjxl::libjxl;$CMAKE_LIBS"
         if test x$have_jxl_pc = xyes; then
             PC_REQUIRES="libjxl $PC_REQUIRES"
         else
@@ -812,6 +818,7 @@ if test x$enable_png = xyes -a x$have_png_hdr = xyes -a x$have_png_lib = xyes; t
         AC_DEFINE_UNQUOTED(LOAD_PNG_DYNAMIC, "$png_lib")
     else
         IMG_LIBS="$LIBPNG_LIBS $IMG_LIBS"
+        CMAKE_LIBS="PNG::PNG;$CMAKE_LIBS"
         if test x$have_png_pc = xyes; then
             PC_REQUIRES="libpng $PC_REQUIRES"
         else
@@ -835,6 +842,7 @@ else
 fi
 
 AC_SUBST([IMG_LIBS])
+AC_SUBST([CMAKE_LIBS])
 AC_SUBST([PC_LIBS])
 AC_SUBST([PC_REQUIRES])
 
