@@ -115,4 +115,6 @@ install-data-local:
 uninstall-hook:
 	rm $(DESTDIR)$(libdir)/cmake/SDL2_image/sdl2_image-config.cmake
 	rm $(DESTDIR)$(libdir)/cmake/SDL2_image/sdl2_image-config-version.cmake
+	rm $(DESTDIR)$(libdir)/cmake/SDL2_image/Findlibjxl.cmake
+	rm $(DESTDIR)$(libdir)/cmake/SDL2_image/Findwebp.cmake
 	rm -r $(DESTDIR)$(libdir)/cmake/SDL2_image
