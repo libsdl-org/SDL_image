@@ -1968,7 +1968,9 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *f
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality);
 
 /**
- * Animated image support Currently only animated GIFs are supported.
+ * Animated image support
+ *
+ * Currently only animated GIFs and WEBP images are supported.
  */
 typedef struct IMG_Animation
 {
