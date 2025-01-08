@@ -329,6 +329,9 @@ IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
     anim->count = lib.WebPDemuxGetI(demuxer, WEBP_FF_FRAME_COUNT);
     anim->frames = (SDL_Surface **)SDL_calloc(anim->count, sizeof(*anim->frames));
     anim->delays = (int *)SDL_calloc(anim->count, sizeof(*anim->delays));
+    if (!anim->frames || !anim->delays) {
+        goto error;
+    }
 
     canvas = SDL_CreateSurface(anim->w, anim->h, features.has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
     if (!canvas) {
