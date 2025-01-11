@@ -217,7 +217,7 @@ SDL_Surface *IMG_LoadWEBP_RW(SDL_RWops *src)
     } else {
        format = SDL_PIXELFORMAT_RGB24;
     }
-    
+
     surface = SDL_CreateRGBSurfaceWithFormat(0, features.width, features.height, 0, format);
     if (surface == NULL) {
         error = "Failed to allocate SDL_Surface";
@@ -334,13 +334,13 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
     /* Background color is BGRA byte order according to the spec */
     bgcolor = lib.WebPDemuxGetI(demuxer, WEBP_FF_BACKGROUND_COLOR);
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-	bgcolor = SDL_MapRGBA(canvas->format,
-		                  (bgcolor >> 8) & 0xFF,
-		                  (bgcolor >> 16) & 0xFF,
-		                  (bgcolor >> 24) & 0xFF,
-		                  (bgcolor >> 0) & 0xFF);
+    bgcolor = SDL_MapRGBA(canvas->format,
+                          (bgcolor >> 8) & 0xFF,
+                          (bgcolor >> 16) & 0xFF,
+                          (bgcolor >> 24) & 0xFF,
+                          (bgcolor >> 0) & 0xFF);
 #else
-	bgcolor = SDL_MapRGBA(canvas->format,
+    bgcolor = SDL_MapRGBA(canvas->format,
                           (bgcolor >> 16) & 0xFF,
                           (bgcolor >> 8) & 0xFF,
                           (bgcolor >> 0) & 0xFF,
@@ -367,10 +367,10 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
             }
 
             if (!lib.WebPDecodeRGBAInto(iter.fragment.bytes,
-                iter.fragment.size,
-                (uint8_t*)curr->pixels,
-                curr->pitch * curr->h,
-                curr->pitch)) {
+                                        iter.fragment.size,
+                                        (uint8_t *)curr->pixels,
+                                        curr->pitch * curr->h,
+                                        curr->pitch)) {
                 error = "WebPDecodeRGBAInto() failed";
                 SDL_FreeSurface(curr);
                 goto error;
@@ -380,11 +380,11 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
                 SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_BLEND);
             } else {
                 SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_NONE);
-			}
-			dst.x = iter.x_offset;
-			dst.y = iter.y_offset;
-			dst.w = iter.width;
-			dst.h = iter.height;
+            }
+            dst.x = iter.x_offset;
+            dst.y = iter.y_offset;
+            dst.w = iter.width;
+            dst.h = iter.height;
             SDL_BlitSurface(curr, NULL, canvas, &dst);
             SDL_FreeSurface(curr);
 
