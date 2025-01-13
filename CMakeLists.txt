@@ -367,8 +367,7 @@ if(SDL2IMAGE_ZLIB)
         set(ZLIB_BUILD_EXAMPLES OFF CACHE BOOL "zlib examples" FORCE)
         sdl_check_project_in_subfolder(external/zlib zlib SDL2IMAGE_VENDORED)
         add_subdirectory(external/zlib EXCLUDE_FROM_ALL)
-        # PNG_BUILD_ZLIB variable is used by vendored libpng
-        set(PNG_BUILD_ZLIB ON CACHE BOOL "libpng option to tell it should use 'our' vendored ZLIB library" FORCE)
+        set(ZLIB_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/external/zlib;${CMAKE_CURRENT_BINARY_DIR}/external/zlib")
         # ZLIB_INCLUDE_DIR variable is used by vendored libpng
         set(ZLIB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/zlib;${CMAKE_CURRENT_BINARY_DIR}/external/zlib" CACHE STRING "path of zlib, passed to libpng" FORCE)
         # ZLIB_LIBRARY variable is used by vendored libpng
@@ -376,6 +375,7 @@ if(SDL2IMAGE_ZLIB)
             set(ZLIB_LIBRARY zlib)
         else()
             set(ZLIB_LIBRARY zlibstatic)
+            set(SKIP_INSTALL_CONFIG_FILE ON)
         endif()
         if(NOT TARGET ZLIB::ZLIB)
             add_library(ZLIB::ZLIB ALIAS ${ZLIB_LIBRARY})
