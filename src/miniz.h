@@ -2370,15 +2370,14 @@ static MZ_FORCEINLINE void tdefl_find_match(tdefl_compressor *d, mz_uint lookahe
     for ( ; ; )
     {
       if (--num_probes_left == 0) return;
-      #define TDEFL_PROBE do { \
+      #define TDEFL_PROBE \
         next_probe_pos = d->m_next[probe_pos]; \
         if ((!next_probe_pos) || ((dist = (mz_uint16)(lookahead_pos - next_probe_pos)) > max_dist)) return; \
         probe_pos = next_probe_pos & TDEFL_LZ_DICT_SIZE_MASK; \
         if (TDEFL_READ_UNALIGNED_WORD(&d->m_dict[probe_pos + match_len - 1]) == c01) break;
-      } MZ_MACRO_END
-      TDEFL_PROBE;
-      TDEFL_PROBE;
-      TDEFL_PROBE;
+      TDEFL_PROBE
+      TDEFL_PROBE
+      TDEFL_PROBE
     }
     if (!dist) break;
     q = (const mz_uint16*)(d->m_dict + probe_pos);
@@ -2410,15 +2409,14 @@ static MZ_FORCEINLINE void tdefl_find_match(tdefl_compressor *d, mz_uint lookahe
     for ( ; ; )
     {
       if (--num_probes_left == 0) return;
-      #define TDEFL_PROBE do { \
+      #define TDEFL_PROBE \
         next_probe_pos = d->m_next[probe_pos]; \
         if ((!next_probe_pos) || ((dist = (mz_uint16)(lookahead_pos - next_probe_pos)) > max_dist)) return; \
         probe_pos = next_probe_pos & TDEFL_LZ_DICT_SIZE_MASK; \
-        if ((d->m_dict[probe_pos + match_len] == c0) && (d->m_dict[probe_pos + match_len - 1] == c1)) break; \
-      } MZ_MACRO_END
-      TDEFL_PROBE;
-      TDEFL_PROBE;
-      TDEFL_PROBE;
+        if ((d->m_dict[probe_pos + match_len] == c0) && (d->m_dict[probe_pos + match_len - 1] == c1)) break;
+      TDEFL_PROBE
+      TDEFL_PROBE
+      TDEFL_PROBE
     }
     if (!dist) break;
     p = s; q = d->m_dict + probe_pos;
