@@ -1280,11 +1280,19 @@
       },
       {
         "min_deployment": "11.0",
+        "target": "x86_64-ios-simulator"
+      },
+      {
+        "min_deployment": "11.0",
         "target": "arm64-tvos"
       },
       {
         "min_deployment": "11.0",
         "target": "arm64-tvos-simulator"
+      },
+      {
+        "min_deployment": "11.0",
+        "target": "x86_64-tvos-simulator"
       }
     ]
   },
