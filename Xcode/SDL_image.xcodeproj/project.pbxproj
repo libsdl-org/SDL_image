@@ -57,6 +57,7 @@
 		AADBAC8A175C6B4F004F8ED2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F85449145A19BC002CA294 /* Foundation.framework */; };
 		BE1FA71A07AF4C44004B6283 /* SDL_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 1014BAEA010A4B677F000001 /* SDL_image.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F31094C3282AE42D008EF641 /* IMG_stb.c in Sources */ = {isa = PBXBuildFile; fileRef = F31094C2282AE42D008EF641 /* IMG_stb.c */; };
+		F344FFFE2D401D5C003F26D7 /* SDL3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F344FFFD2D401D5C003F26D7 /* SDL3.framework */; };
 		F354743E2828CA66007E9EDA /* IMG_jxl.c in Sources */ = {isa = PBXBuildFile; fileRef = F354743B2828CA66007E9EDA /* IMG_jxl.c */; };
 		F35475FD2829BAF9007E9EDA /* IMG_avif.c in Sources */ = {isa = PBXBuildFile; fileRef = F35475FC2829BAF9007E9EDA /* IMG_avif.c */; };
 		F382070E284EF58C004DD584 /* CMake in Resources */ = {isa = PBXBuildFile; fileRef = F3820707284EF58C004DD584 /* CMake */; };
@@ -64,7 +65,6 @@
 		F3E1AAEC281CBB1F00740E39 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */; platformFilters = (ios, tvos, ); };
 		F3E1AAEE281CBD9F00740E39 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAED281CBD9F00740E39 /* UIKit.framework */; platformFilters = (ios, tvos, ); };
 		F3E1AAF0281CBDD100740E39 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAEF281CBDD100740E39 /* MobileCoreServices.framework */; platformFilters = (ios, tvos, ); };
-		F3E1F8962A794A6300AC76D3 /* SDL3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1F8952A794A3D00AC76D3 /* SDL3.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -138,13 +138,6 @@
 			remoteGlobalIDString = F3B38D2A296F7515005DA6D3;
 			remoteInfo = jxl.xcframework;
 		};
-		F3E1F8942A794A3D00AC76D3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F3E1F88E2A794A3D00AC76D3 /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BECDF66C0761BA81005FE872;
-			remoteInfo = SDL3;
-		};
 		F3F76C512BF6A84800214E05 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F35475D42829BA80007E9EDA /* avif.xcodeproj */;
@@ -179,18 +172,17 @@
 		BE1FA72E07AF4C45004B6283 /* SDL3_image.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDL3_image.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F307EFA82828C8FA003915D7 /* jxl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jxl.xcodeproj; path = jxl/jxl.xcodeproj; sourceTree = "<group>"; };
 		F31094C2282AE42D008EF641 /* IMG_stb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_stb.c; path = ../src/IMG_stb.c; sourceTree = "<group>"; };
+		F344FFFD2D401D5C003F26D7 /* SDL3.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL3.framework; sourceTree = "<group>"; };
 		F354743B2828CA66007E9EDA /* IMG_jxl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_jxl.c; path = ../src/IMG_jxl.c; sourceTree = "<group>"; };
 		F35475D42829BA80007E9EDA /* avif.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = avif.xcodeproj; path = avif/avif.xcodeproj; sourceTree = "<group>"; };
 		F35475FC2829BAF9007E9EDA /* IMG_avif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_avif.c; path = ../src/IMG_avif.c; sourceTree = "<group>"; };
 		F3547625282AE1C6007E9EDA /* config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = config.xcconfig; sourceTree = "<group>"; };
 		F3820707284EF58C004DD584 /* CMake */ = {isa = PBXFileReference; lastKnownFileType = folder; path = CMake; sourceTree = "<group>"; };
-		F3D87C03281DF8FC005DA540 /* SDL3.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL3.framework; path = macOS/SDL3.framework; sourceTree = "<group>"; };
 		F3D87D15281EA88F005DA540 /* webp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = webp.xcodeproj; path = webp/webp.xcodeproj; sourceTree = "<group>"; };
 		F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		F3E1AAEA281CBABD00740E39 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		F3E1AAED281CBD9F00740E39 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/System/iOSSupport/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		F3E1AAEF281CBDD100740E39 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/iOSSupport/System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
-		F3E1F88E2A794A3D00AC76D3 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = ../external/SDL/Xcode/SDL/SDL.xcodeproj; sourceTree = "<group>"; };
 		F59C710300D5CB5801000001 /* ReadMe.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
 		F59C710400D5CB5801000001 /* Welcome.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Welcome.txt; sourceTree = "<group>"; };
 		F59C710600D5CB5801000001 /* SDL_image.info */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SDL_image.info; sourceTree = "<group>"; };
@@ -204,7 +196,7 @@
 				AADBAC89175C6B4C004F8ED2 /* ApplicationServices.framework in Frameworks */,
 				F3E1AAEB281CBABD00740E39 /* CoreGraphics.framework in Frameworks */,
 				AADBAC8A175C6B4F004F8ED2 /* Foundation.framework in Frameworks */,
-				F3E1F8962A794A6300AC76D3 /* SDL3.framework in Frameworks */,
+				F344FFFE2D401D5C003F26D7 /* SDL3.framework in Frameworks */,
 				F3E1AAEC281CBB1F00740E39 /* ImageIO.framework in Frameworks */,
 				F3E1AAF0281CBDD100740E39 /* MobileCoreServices.framework in Frameworks */,
 				F3E1AAEE281CBD9F00740E39 /* UIKit.framework in Frameworks */,
@@ -235,7 +227,6 @@
 			isa = PBXGroup;
 			children = (
 				F3547625282AE1C6007E9EDA /* config.xcconfig */,
-				F3E1F88E2A794A3D00AC76D3 /* SDL.xcodeproj */,
 				F35475D42829BA80007E9EDA /* avif.xcodeproj */,
 				F307EFA82828C8FA003915D7 /* jxl.xcodeproj */,
 				F3D87D15281EA88F005DA540 /* webp.xcodeproj */,
@@ -283,24 +274,16 @@
 			name = "Library Source";
 			sourceTree = "<group>";
 		};
-		BE1FA76007AF72B1004B6283 /* Linked Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				007288A60F0DA79800C302A9 /* ApplicationServices.framework */,
-				61F85449145A19BC002CA294 /* Foundation.framework */,
-				F3D87C03281DF8FC005DA540 /* SDL3.framework */,
-			);
-			name = "Linked Frameworks";
-			sourceTree = "<group>";
-		};
 		BE1FA76107AF72F5004B6283 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F3E1AAEF281CBDD100740E39 /* MobileCoreServices.framework */,
-				F3E1AAED281CBD9F00740E39 /* UIKit.framework */,
+				007288A60F0DA79800C302A9 /* ApplicationServices.framework */,
 				F3E1AAEA281CBABD00740E39 /* CoreGraphics.framework */,
+				61F85449145A19BC002CA294 /* Foundation.framework */,
 				F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */,
-				BE1FA76007AF72B1004B6283 /* Linked Frameworks */,
+				F3E1AAEF281CBDD100740E39 /* MobileCoreServices.framework */,
+				F344FFFD2D401D5C003F26D7 /* SDL3.framework */,
+				F3E1AAED281CBD9F00740E39 /* UIKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -329,14 +312,6 @@
 			isa = PBXGroup;
 			children = (
 				F3D87D24281EA9D8005DA540 /* webp.framework */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		F3E1F88F2A794A3D00AC76D3 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				F3E1F8952A794A3D00AC76D3 /* SDL3.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -434,10 +409,6 @@
 					ProjectRef = F307EFA82828C8FA003915D7 /* jxl.xcodeproj */;
 				},
 				{
-					ProductGroup = F3E1F88F2A794A3D00AC76D3 /* Products */;
-					ProjectRef = F3E1F88E2A794A3D00AC76D3 /* SDL.xcodeproj */;
-				},
-				{
 					ProductGroup = F3D87D16281EA88F005DA540 /* Products */;
 					ProjectRef = F3D87D15281EA88F005DA540 /* webp.xcodeproj */;
 				},
@@ -492,13 +463,6 @@
 			fileType = wrapper.framework;
 			path = webp.framework;
 			remoteRef = F3D87D23281EA9D8005DA540 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		F3E1F8952A794A3D00AC76D3 /* SDL3.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = SDL3.framework;
-			remoteRef = F3E1F8942A794A3D00AC76D3 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		F3F76C522BF6A84800214E05 /* libaom.a */ = {
@@ -683,6 +647,10 @@
 		007288120F0DA5BA00C302A9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				OTHER_LDFLAGS = "$(CONFIG_FRAMEWORK_LDFLAGS)";
 			};
 			name = Debug;
@@ -744,6 +712,10 @@
 		007288160F0DA5C400C302A9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				OTHER_LDFLAGS = "$(CONFIG_FRAMEWORK_LDFLAGS)";
 			};
 			name = Release;
