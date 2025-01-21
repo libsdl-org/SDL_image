@@ -1267,6 +1267,10 @@
         "target": "arm64-macos"
       },
       {
+        "min_deployment": "10.13",
+        "target": "x86_64-macos"
+      },
+      {
         "min_deployment": "11.0",
         "target": "arm64-ios"
       },
