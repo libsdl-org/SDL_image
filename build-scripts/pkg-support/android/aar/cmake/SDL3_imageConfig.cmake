@@ -70,26 +70,27 @@ else()
     return()
 endif()
 
-get_filename_component(_sdl3_prefix "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
-get_filename_component(_sdl3_prefix "${_sdl3_prefix}/.." ABSOLUTE)
-get_filename_component(_sdl3_prefix "${_sdl3_prefix}/.." ABSOLUTE)
-set_and_check(_sdl3_prefix          "${_sdl3_prefix}")
-set_and_check(_sdl3_include_dirs    "${_sdl3_prefix}/include")
+get_filename_component(_sdl3image_prefix "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
+get_filename_component(_sdl3image_prefix "${_sdl3image_prefix}/.." ABSOLUTE)
+get_filename_component(_sdl3image_prefix "${_sdl3image_prefix}/.." ABSOLUTE)
+set_and_check(_sdl3image_prefix          "${_sdl3image_prefix}")
+set_and_check(_sdl3image_include_dirs    "${_sdl3image_prefix}/include")
 
-set_and_check(_sdl3_lib             "${_sdl3_prefix}/lib/${_sdl_arch_subdir}/libSDL3_image.so")
+set_and_check(_sdl3image_lib             "${_sdl3image_prefix}/lib/${_sdl_arch_subdir}/libSDL3_image.so")
 
 unset(_sdl_arch_subdir)
-unset(_sdl3_prefix)
+unset(_sdl3image_prefix)
 
 # All targets are created, even when some might not be requested though COMPONENTS.
 # This is done for compatibility with CMake generated SDL3_image-target.cmake files.
 
-if(EXISTS "${_sdl3_lib}")
+if(EXISTS "${_sdl3image_lib}")
     if(NOT TARGET SDL3_image::SDL3_image-shared)
         add_library(SDL3_image::SDL3_image-shared SHARED IMPORTED)
         set_target_properties(SDL3_image::SDL3_image-shared
             PROPERTIES
-                IMPORTED_LOCATION "${_sdl3_lib}"
+                IMPORTED_LOCATION "${_sdl3image_lib}"
+                INTERFACE_INCLUDE_DIRECTORIES "${_sdl3image_include_dirs}"
                 COMPATIBLE_INTERFACE_BOOL "SDL3_SHARED"
                 INTERFACE_SDL3_SHARED "ON"
                 COMPATIBLE_INTERFACE_STRING "SDL_VERSION"
@@ -100,7 +101,8 @@ if(EXISTS "${_sdl3_lib}")
 else()
     set(SDL3_image_SDL3_image-shared_FOUND FALSE)
 endif()
-unset(_sdl3_lib)
+unset(_sdl3image_lib)
+unset(_sdl3image_include_dirs)
 
 set(SDL3_image_SDL3_image-static_FOUND FALSE)
 

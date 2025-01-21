@@ -277,24 +277,28 @@
     "api-minimum": 19,
     "api-target": 29,
     "ndk-minimum": 21,
-    "files": {
+    "aar-files": {
       "": [
-        "build-scripts/pkg-support/android/INSTALL.md.in:INSTALL.md",
-        "build-scripts/pkg-support/android/__main__.py.in:__main__.py",
-        "build-scripts/pkg-support/android/description.json.in:description.json"
+        "build-scripts/pkg-support/android/aar/__main__.py.in:__main__.py",
+        "build-scripts/pkg-support/android/aar/description.json.in:description.json"
       ],
       "META-INF": [
         "LICENSE.txt"
       ],
       "cmake": [
         "cmake/sdlcpu.cmake",
-        "build-scripts/pkg-support/android/cmake/SDL3_imageConfig.cmake",
-        "build-scripts/pkg-support/android/cmake/SDL3_imageConfigVersion.cmake.in:SDL3_imageConfigVersion.cmake"
+        "build-scripts/pkg-support/android/aar/cmake/SDL3_imageConfig.cmake",
+        "build-scripts/pkg-support/android/aar/cmake/SDL3_imageConfigVersion.cmake.in:SDL3_imageConfigVersion.cmake"
+      ]
+    },
+    "files": {
+      "": [
+        "build-scripts/pkg-support/android/README.md.in:README.md"
       ]
     },
     "dependencies": {
       "SDL": {
-        "artifact": "SDL3-*.aar"
+        "artifact": "SDL3-devel-*-android.zip"
       }
     }
   }

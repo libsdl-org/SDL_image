@@ -692,7 +692,9 @@ jobs:
       - name: 'Extract Android SDK from AAR'
         id: sdk
         run: |
-          python "${{ github.workspace }}/${{ needs.android.outputs.android-aar }}" -o /tmp/deps-android
+          unzip -o "${{ github.workspace }}/${{ needs.android.outputs.android-aar }}"
+          python "${{ needs.src.outputs.project }}-${{ needs.src.outputs.version }}.aar" -o /tmp/SDL3_image-android
+          echo "prefix=/tmp/SDL3_image-android" >>$GITHUB_OUTPUT
       - name: 'Download dependencies'
         id: deps
         env:
@@ -707,7 +709,9 @@ jobs:
       - name: 'Extract dependencies'
         id: deps-extract
         run: |
-          python "${{ steps.deps.outputs.dep-path }}/SDL3-${{ steps.deps.outputs.dep-sdl-version }}.aar" -o /tmp/deps-android
+          unzip -o "${{ steps.deps.outputs.dep-path }}/SDL3-devel-${{ steps.deps.outputs.dep-sdl-version }}-android.zip"
+          python "SDL3-${{ steps.deps.outputs.dep-sdl-version }}.aar" -o /tmp/SDL3-android
+          echo "sdl3-prefix=/tmp/SDL3-android" >>$GITHUB_OUTPUT
       - name: 'Install ninja'
         run: |
           sudo apt-get update -y
@@ -721,7 +725,7 @@ jobs:
               -GNinja \
               -DTEST_FULL=TRUE \
               -DTEST_STATIC=FALSE \
-              -DCMAKE_PREFIX_PATH="/tmp/deps-android" \
+              -DCMAKE_PREFIX_PATH="${{ steps.sdk.outputs.prefix }};${{ steps.deps-extract.outputs.sdl3-prefix }}" \
               -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake \
               -DANDROID_ABI=${android_abi} \
               -DCMAKE_BUILD_TYPE=Release \
