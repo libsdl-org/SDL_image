@@ -28,6 +28,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		F34123142D4077A600D6C2B7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F344001D2D401E16003F26D7 /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BECDF66C0761BA81005FE872;
+			remoteInfo = SDL3;
+		};
 		F344000D2D401DF2003F26D7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F35475E52829BAB1007E9EDA /* avif.xcodeproj */;
@@ -176,6 +183,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F341230F2D4077A600D6C2B7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F34123152D4077A600D6C2B7 /* SDL3.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		F35474472828CADB007E9EDA /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -384,6 +399,10 @@
 					ProjectRef = F35474462828CADB007E9EDA /* jxl.xcodeproj */;
 				},
 				{
+					ProductGroup = F341230F2D4077A600D6C2B7 /* Products */;
+					ProjectRef = F344001D2D401E16003F26D7 /* SDL.xcodeproj */;
+				},
+				{
 					ProductGroup = F3ED80CE281D9ED600C33C5B /* Products */;
 					ProjectRef = F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */;
 				},
@@ -402,6 +421,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		F34123152D4077A600D6C2B7 /* SDL3.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SDL3.framework;
+			remoteRef = F34123142D4077A600D6C2B7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		F344000E2D401DF2003F26D7 /* libaom.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -526,10 +552,10 @@
 					"$(inherited)",
 				);
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../include\"";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				ONLY_ACTIVE_ARCH = YES;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				TVOS_DEPLOYMENT_TARGET = 11.0;
 			};
 			name = Debug;
 		};
@@ -540,9 +566,9 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../include\"";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				TVOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				TVOS_DEPLOYMENT_TARGET = 11.0;
 			};
 			name = Release;
 		};
