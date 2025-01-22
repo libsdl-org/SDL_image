@@ -1,5 +1,5 @@
 
-# Introduction to SDL with Android Studio
+# Introduction to SDL_image with Android Studio
 
 A complete example is available at:
 

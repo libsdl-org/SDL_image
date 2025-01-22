@@ -1,7 +1,7 @@
 
-# Introduction to SDL with CMake
+# Introduction to SDL_image with CMake
 
-The easiest way to use SDL is to include it as a subproject in your project.
+The easiest way to use SDL_image is to include it along with SDL as subprojects in your project.
 
 We'll start by creating a simple project to build and run [hello.c](hello.c)
 

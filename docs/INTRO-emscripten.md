@@ -1,7 +1,7 @@
 
-# Introduction to SDL with Emscripten
+# Introduction to SDL_image with Emscripten
 
-The easiest way to use SDL is to include it as a subproject in your project.
+The easiest way to use SDL_image is to include it along with SDL as subprojects in your project.
 
 We'll start by creating a simple project to build and run [hello.c](hello.c)
 
@@ -13,11 +13,6 @@ Create the file CMakeLists.txt
 ```cmake
 cmake_minimum_required(VERSION 3.16)
 project(hello)
-
-# Enable Objective C on Apple platforms, for ImageIO support
-if(APPLE)
-  enable_language(OBJC)
-endif()
 
 # set the output directory for built objects.
 # This makes sure that the dynamic library goes into the build directory automatically.

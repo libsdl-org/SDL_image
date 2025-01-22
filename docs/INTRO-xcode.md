@@ -1,7 +1,7 @@
 
 # Introduction to SDL_image with Xcode
 
-The easiest way to use SDL_image is to include it as a subproject in your project.
+The easiest way to use SDL_image is to include it along with SDL as subprojects in your project.
 
 We'll start by creating a simple project to build and run [hello.c](hello.c)
 
@@ -15,5 +15,5 @@ We'll start by creating a simple project to build and run [hello.c](hello.c)
 - Select the project, select the main target, select the General tab, look for "Frameworks, Libaries, and Embedded Content", and add SDL3.framework and SDL3_image.framework
 - Build and run!
 
-Support for AVIF, JPEG-XL, TIFF, and WebP are not included by default because of the size of the decode libraries, but you can get them by running external/download.sh and editing the config at the top of the Xcode project to enable them. You will need to include the appropriate framework in your application.
+Support for AVIF, JPEG-XL, and WebP are not included by default because of the size of the decode libraries, but you can get them by running external/download.sh and editing the config at the top of the Xcode project to enable them. You will need to include the appropriate framework in your application.
 
