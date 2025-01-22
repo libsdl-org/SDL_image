@@ -42,13 +42,14 @@ add_executable(hello WIN32 hello.c)
 target_link_libraries(hello PRIVATE SDL3::SDL3 SDL3_image::SDL3_image)
 ```
 
+Build:
 ```sh
 emcmake cmake -S . -B build
 cd build
 emmake make
 ```
 
-You can now run your app by pointing a webserver at your build directory and connecting a web browser to it, opening hello.html.
+You can now run your app by pointing a webserver at your build directory and connecting a web browser to it, opening hello.html
 
 A more complete example is available at:
 
