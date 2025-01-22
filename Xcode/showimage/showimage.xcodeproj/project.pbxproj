@@ -563,7 +563,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F3E1F7742A78A12600AC76D3 /* config.xcconfig */;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
