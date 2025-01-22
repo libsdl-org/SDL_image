@@ -1,35 +1,54 @@
 
 # Introduction to SDL with Emscripten
 
+The easiest way to use SDL is to include it as a subproject in your project.
+
+We'll start by creating a simple project to build and run [hello.c](hello.c)
+
 First, you should have the Emscripten SDK installed from:
 
 https://emscripten.org/docs/getting_started/downloads.html
 
-We'll start by creating a simple project to build and run [hello.c](hello.c)
+Create the file CMakeLists.txt
+```cmake
+cmake_minimum_required(VERSION 3.16)
+project(hello)
 
-## Building SDL_image
+# Enable Objective C on Apple platforms, for ImageIO support
+if(APPLE)
+  enable_language(OBJC)
+endif()
 
-Once you have a command line interface with the Emscripten SDK set up and you've changed directory to the SDL_image directory, you can build SDL_image like this:
+# set the output directory for built objects.
+# This makes sure that the dynamic library goes into the build directory automatically.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+
+# This assumes the SDL source is available in vendored/SDL
+add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
+
+# This assumes the SDL_image source is available in vendored/SDL_image
+add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
+
+# on Web targets, we need CMake to generate a HTML webpage. 
+if(EMSCRIPTEN)
+  set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
+endif()
+
+# Create your game executable target as usual
+add_executable(hello WIN32 hello.c)
+
+# Link to the actual SDL3 library.
+target_link_libraries(hello PRIVATE SDL3::SDL3 SDL3_image::SDL3_image)
+```
 
 ```sh
-mkdir hello
-cd hello
-emcmake cmake ..
+emcmake cmake -S . -B build
+cd build
 emmake make
 ```
 
-## Building your app
-
-In this case we'll just run a simple command to compile our source with the SDL library we just built:
-```sh
-emcc -o index.html ../docs/hello.c -I../include -L. -lSDL3_image -lSDL3
-```
-
-## Running your app
-
-You can now run your app by pointing a webserver at your build directory and connecting a web browser to it.
-
-## More information
+You can now run your app by pointing a webserver at your build directory and connecting a web browser to it, opening hello.html.
 
 A more complete example is available at:
 
