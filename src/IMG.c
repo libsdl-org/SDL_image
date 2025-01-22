@@ -152,7 +152,7 @@ SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type)
     /*load through preloadedImages*/
     FILE *fp = (FILE *)SDL_GetPointerProperty(SDL_GetIOProperties(src), SDL_PROP_IOSTREAM_STDIO_FILE_POINTER, NULL);
     if (fp) {
-        int w, h, success;
+        int w, h;
         char *data;
         SDL_Surface *surf;
 
