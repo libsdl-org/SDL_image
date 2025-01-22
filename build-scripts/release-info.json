@@ -62,10 +62,11 @@
     },
     "files": {
       "": [
-        "CHANGES.txt",
+        "build-scripts/pkg-support/mingw/INSTALL.md.in:INSTALL.md",
+        "build-scripts/pkg-support/mingw/Makefile",
         "LICENSE.txt",
-        "README.txt",
-        "build-scripts/pkg-support/mingw/Makefile"
+        "README.md"
+        "CHANGES.txt",
       ],
       "cmake": [
         "build-scripts/pkg-support/mingw/cmake/SDL3_imageConfig.cmake",
@@ -195,14 +196,17 @@
     },
     "files-lib": {
       "": [
-        "README.txt"
+        "build-scripts/pkg-support/msvc/@<@ARCH@>@/INSTALL.md.in:INSTALL.md",
+        "LICENSE.txt",
+        "README.md"
       ]
     },
     "files-devel": {
       "": [
-        "CHANGES.txt",
+        "build-scripts/pkg-support/msvc/INSTALL.md.in:INSTALL.md",
         "LICENSE.txt",
-        "README.txt"
+        "README.md"
+        "CHANGES.txt",
       ],
       "cmake": [
         "build-scripts/pkg-support/msvc/cmake/SDL3_imageConfig.cmake.in:SDL3_imageConfig.cmake",
@@ -274,8 +278,8 @@
       "x86",
       "x86_64"
     ],
-    "api-minimum": 19,
-    "api-target": 29,
+    "api-minimum": 21,
+    "api-target": 35,
     "ndk-minimum": 21,
     "aar-files": {
       "": [
@@ -293,7 +297,9 @@
     },
     "files": {
       "": [
-        "build-scripts/pkg-support/android/README.md.in:README.md"
+        "build-scripts/pkg-support/android/INSTALL.md.in:INSTALL.md",
+        "LICENSE.txt",
+        "README.md"
       ]
     },
     "dependencies": {
