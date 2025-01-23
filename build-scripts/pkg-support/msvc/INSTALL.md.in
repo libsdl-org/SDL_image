@@ -9,6 +9,8 @@ To use this package, edit your project properties:
 - Add @<@PROJECT_NAME@>@.lib to Linker -> Input -> "Additional Dependencies"
 - Copy lib/_arch_/@<@PROJECT_NAME@>@.dll to your project directory.
 
+You can include support for additional image formats by including the license and DLL files in the lib/_arch_/optional directory in your application. They will be automatically loaded by SDL_image as needed.
+
 # Documentation
 
 An API reference and additional documentation is available at:

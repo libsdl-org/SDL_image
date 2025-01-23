@@ -5,6 +5,8 @@ This package contains @<@PROJECT_NAME@>@ built for arm64 Windows.
 
 To use this package, simply replace an existing 64-bit ARM @<@PROJECT_NAME@>@.dll with the one included here.
 
+You can include support for additional image formats by including the license and DLL files in the optional directory in your application. They will be automatically loaded by SDL_image as needed.
+
 # Development packages
 
 If you're looking for packages with headers and libraries, you can download one of these:
