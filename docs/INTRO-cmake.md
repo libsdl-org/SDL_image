@@ -25,7 +25,7 @@ add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
 add_executable(hello WIN32 hello.c)
 
 # Link to the actual SDL3 library.
-target_link_libraries(hello PRIVATE SDL3::SDL3 SDL3_image::SDL3_image)
+target_link_libraries(hello PRIVATE SDL3_image::SDL3_image SDL3::SDL3)
 ```
 
 Build:
