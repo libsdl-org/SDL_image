@@ -57,7 +57,7 @@ if(NOT TARGET SDL3_image::SDL3_image-shared)
     set_target_properties(SDL3_image::SDL3_image-shared
         PROPERTIES
             FRAMEWORK "TRUE"
-            IMPORTED_LOCATION "${_sdl3_image_framework_path}/SDL3_image"
+            IMPORTED_LOCATION "${_sdl3_image_framework_path}"
             COMPATIBLE_INTERFACE_BOOL "SDL3_SHARED"
             INTERFACE_SDL3_SHARED "ON"
             COMPATIBLE_INTERFACE_STRING "SDL_VERSION"
