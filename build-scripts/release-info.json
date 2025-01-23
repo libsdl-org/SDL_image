@@ -36,7 +36,7 @@
       "archs": ["x86", "x64"],
       "args": [
         "-DBUILD_SHARED_LIBS=ON",
-        "-DSDLIMAGE_AVIF=OFF",
+        "-DSDLIMAGE_AVIF=ON",
         "-DSDLIMAGE_BMP=ON",
         "-DSDLIMAGE_GIF=ON",
         "-DSDLIMAGE_JPG=ON",
@@ -48,15 +48,21 @@
         "-DSDLIMAGE_QOI=ON",
         "-DSDLIMAGE_SVG=ON",
         "-DSDLIMAGE_TGA=ON",
-        "-DSDLIMAGE_TIF=OFF",
-        "-DSDLIMAGE_WEBP=OFF",
+        "-DSDLIMAGE_TIF=ON",
+        "-DSDLIMAGE_WEBP=ON",
         "-DSDLIMAGE_XCF=ON",
         "-DSDLIMAGE_XPM=ON",
         "-DSDLIMAGE_XV=ON",
         "-DSDLIMAGE_RELOCATABLE=ON",
         "-DSDLIMAGE_SAMPLES=OFF",
         "-DSDLIMAGE_TESTS=OFF",
-        "-DSDLIMAGE_VENDORED=OFF"
+        "-DSDLIMAGE_VENDORED=OFF",
+        "-DSDLIMAGE_DEPS_SHARED=ON",
+        "-DCMAKE_C_FLAGS=-I@<@PROJECT_ROOT@>@/VisualC/external/include",
+        "-DSDLIMAGE_DYNAMIC_AVIF=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libavif-16.dll",
+        "-DSDLIMAGE_DYNAMIC_TIF=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libtiff-6.dll",
+        "-DSDLIMAGE_DYNAMIC_WEBP=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libwebp-7.dll",
+        "-DSDLIMAGE_DYNAMIC_WEBPDEMUX=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libwebpdemux-2.dll"
       ],
       "shared-static": "args"
     },

@@ -700,7 +700,8 @@ class Releaser:
         libraries = re.findall(r"DLL Name: ([^\n]+)", objdump_output)
         logger.info("%s (%s) libraries: %r", path, triplet, libraries)
         illegal_libraries = list(filter(RE_ILLEGAL_MINGW_LIBRARIES.match, libraries))
-        logger.error("Detected 'illegal' libraries: %r", illegal_libraries)
+        if illegal_libraries:
+            logger.error("Detected 'illegal' libraries: %r", illegal_libraries)
         if illegal_libraries:
             raise Exception(f"{path} links to illegal libraries: {illegal_libraries}")
 
@@ -834,7 +835,16 @@ class Releaser:
                     "ARCH": arch,
                     "DEP_PREFIX": str(mingw_deps_path / triplet),
                 })
+                my_cflags = f"-ffile-prefix-map={self.root}=/src/{self.project}"
                 extra_args = configure_text_list(text_list=self.release_info["mingw"]["cmake"]["args"], context=context)
+                try:
+                    extra_cflags_i, extra_cmake_c_flags = next((arg_i, a) for (arg_i, a) in enumerate(extra_args) if a.startswith("-DCMAKE_C_FLAGS"))
+                    extra_cflags = extra_cmake_c_flags.removeprefix("-DCMAKE_C_FLAGS=")
+                    assert extra_cflags[:1] not in "'\"" and extra_cflags[:-1] not in "'\""
+                    extra_args[extra_cflags_i] = f"-DCMAKE_C_FLAGS={extra_cflags} {my_cflags}"
+                except StopIteration:
+                    extra_args.append(f"-DCMAKE_C_FLAGS={my_cflags}")
+
 
                 build_path = build_parent_dir / f"build-{triplet}"
                 install_path = build_parent_dir / f"install-{triplet}"
@@ -851,7 +861,6 @@ class Releaser:
                             f"cmake",
                             f"-S", str(self.root), "-B", str(build_path),
                             f"-DCMAKE_BUILD_TYPE={build_type}",
-                            f'''-DCMAKE_C_FLAGS="-ffile-prefix-map={self.root}=/src/{self.project}"''',
                             f'''-DCMAKE_CXX_FLAGS="-ffile-prefix-map={self.root}=/src/{self.project}"''',
                             f"-DCMAKE_PREFIX_PATH={mingw_deps_path / triplet}",
                             f"-DCMAKE_INSTALL_PREFIX={install_path}",

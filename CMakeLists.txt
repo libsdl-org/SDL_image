@@ -531,6 +531,9 @@ if(SDLIMAGE_AVIF)
             target_link_options(avif PRIVATE "-Wl,--no-undefined")
           endif()
         endif()
+    elseif(SDLIMAGE_AVIF_SHARED AND DEFINED SDLIMAGE_DYNAMIC_AVIF AND EXISTS "${SDLIMAGE_DYNAMIC_AVIF}")
+        message(STATUS "${PROJECT_NAME}: Using libavif from CMake variable")
+        set(SDLIMAGE_AVIF_ENABLED TRUE)
     else()
         find_package(libavif "${LIBAVIF_MINIMUM_VERSION}" QUIET ${required})
         if(libavif_FOUND)
@@ -550,17 +553,19 @@ if(SDLIMAGE_AVIF)
             SDL_IMAGE_SAVE_AVIF=$<BOOL:${SDLIMAGE_AVIF_SAVE}>
         )
         if(SDLIMAGE_AVIF_SHARED)
-            target_include_directories(${sdl3_image_target_name} PRIVATE
-                $<TARGET_PROPERTY:avif,INCLUDE_DIRECTORIES>
-                $<TARGET_PROPERTY:avif,INTERFACE_INCLUDE_DIRECTORIES>
-                $<TARGET_PROPERTY:avif,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
-            )
-            target_get_dynamic_library(dynamic_avif avif)
-            message(STATUS "Dynamic libavif: ${dynamic_avif}")
-            target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_AVIF_DYNAMIC=\"${dynamic_avif}\"")
-            if(SDLIMAGE_AVIF_VENDORED)
-                add_dependencies(${sdl3_image_target_name} avif)
+            if(NOT DEFINED SDLIMAGE_DYNAMIC_AVIF)
+                target_include_directories(${sdl3_image_target_name} PRIVATE
+                    $<TARGET_PROPERTY:avif,INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:avif,INTERFACE_INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:avif,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
+                )
+                if(SDLIMAGE_AVIF_VENDORED)
+                    add_dependencies(${sdl3_image_target_name} avif)
+                endif()
             endif()
+            target_get_dynamic_library(SDLIMAGE_DYNAMIC_AVIF avif)
+            message(STATUS "Dynamic libavif: ${SDLIMAGE_DYNAMIC_AVIF}")
+            target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_AVIF_DYNAMIC=\"${SDLIMAGE_DYNAMIC_AVIF}\"")
         else()
             target_link_libraries(${sdl3_image_target_name} PRIVATE avif)
         endif()
@@ -602,6 +607,9 @@ if(SDLIMAGE_JPG)
             if(NOT SDLIMAGE_JPG_SHARED)
                 list(APPEND PC_LIBS -l$<TARGET_FILE_BASE_NAME:jpeg>)
             endif()
+        elseif(SDLIMAGE_JPG_SHARED AND DEFINED SDLIMAGE_DYNAMIC_JPEG AND EXISTS "${SDLIMAGE_DYNAMIC_JPEG}")
+            message(STATUS "${PROJECT_NAME}: Using libjpeg from CMake variable")
+            set(SDLIMAGE_JPG_ENABLED TRUE)
         else()
             find_package(JPEG ${required})
             if(JPEG_FOUND)
@@ -616,17 +624,19 @@ if(SDLIMAGE_JPG)
         endif()
         if(SDLIMAGE_JPG_ENABLED)
             if(SDLIMAGE_JPG_SHARED)
-                target_include_directories(${sdl3_image_target_name} PRIVATE
-                    $<TARGET_PROPERTY:JPEG::JPEG,INCLUDE_DIRECTORIES>
-                    $<TARGET_PROPERTY:JPEG::JPEG,INTERFACE_INCLUDE_DIRECTORIES>
-                    $<TARGET_PROPERTY:JPEG::JPEG,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
-                )
-                target_get_dynamic_library(dynamic_jpeg JPEG::JPEG)
-                message(STATUS "Dynamic libjpeg: ${dynamic_jpeg}")
-                target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_JPG_DYNAMIC=\"${dynamic_jpeg}\"")
-                if(SDLIMAGE_JPG_VENDORED)
-                    add_dependencies(${sdl3_image_target_name} JPEG::JPEG)
+                if(NOT DEFINED SDLIMAGE_DYNAMIC_JPEG)
+                    target_include_directories(${sdl3_image_target_name} PRIVATE
+                        $<TARGET_PROPERTY:JPEG::JPEG,INCLUDE_DIRECTORIES>
+                        $<TARGET_PROPERTY:JPEG::JPEG,INTERFACE_INCLUDE_DIRECTORIES>
+                        $<TARGET_PROPERTY:JPEG::JPEG,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
+                    )
+                    if(SDLIMAGE_JPG_VENDORED)
+                      add_dependencies(${sdl3_image_target_name} JPEG::JPEG)
+                    endif()
                 endif()
+                target_get_dynamic_library(SDLIMAGE_DYNAMIC_JPEG JPEG::JPEG)
+                message(STATUS "Dynamic libjpeg: ${SDLIMAGE_DYNAMIC_JPEG}")
+                target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_JPG_DYNAMIC=\"${SDLIMAGE_DYNAMIC_JPEG}\"")
             else()
                 target_link_libraries(${sdl3_image_target_name} PRIVATE JPEG::JPEG)
             endif()
@@ -684,6 +694,9 @@ if(SDLIMAGE_JXL)
         if(NOT TARGET libjxl::libjxl)
             add_library(libjxl::libjxl ALIAS ${jxl_lib})
         endif()
+    elseif(SDLIMAGE_JXL_SHARED AND DEFINED SDLIMAGE_DYNAMIC_JXL AND EXISTS "${SDLIMAGE_DYNAMIC_JXL}")
+      message(STATUS "${PROJECT_NAME}: Using libjxl from CMake variable")
+      set(SDLIMAGE_JXL_ENABLED TRUE)
     else()
         find_package(libjxl ${required})
         if(libjxl_FOUND)
@@ -700,17 +713,19 @@ if(SDLIMAGE_JXL)
     if(SDLIMAGE_JXL_ENABLED)
         target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_JXL)
         if(SDLIMAGE_JXL_SHARED)
-            target_include_directories(${sdl3_image_target_name} PRIVATE
-                $<TARGET_PROPERTY:libjxl::libjxl,INCLUDE_DIRECTORIES>
-                $<TARGET_PROPERTY:libjxl::libjxl,INTERFACE_INCLUDE_DIRECTORIES>
-                $<TARGET_PROPERTY:libjxl::libjxl,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
-            )
-            target_get_dynamic_library(dynamic_jxl libjxl::libjxl)
-            message(STATUS "Dynamic libjxl: ${dynamic_jxl}")
-            target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_JXL_DYNAMIC=\"${dynamic_jxl}\"")
-            if(SDLIMAGE_JXL_VENDORED)
-                add_dependencies(${sdl3_image_target_name} libjxl::libjxl)
+           if(NOT DEFINED SDLIMAGE_DYNAMIC_JXL)
+                target_include_directories(${sdl3_image_target_name} PRIVATE
+                    $<TARGET_PROPERTY:libjxl::libjxl,INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:libjxl::libjxl,INTERFACE_INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:libjxl::libjxl,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
+                )
+                if(SDLIMAGE_JXL_VENDORED)
+                    add_dependencies(${sdl3_image_target_name} libjxl::libjxl)
+                endif()
             endif()
+           target_get_dynamic_library(SDLIMAGE_DYNAMIC_JXL libjxl::libjxl)
+           message(STATUS "Dynamic libjxl: ${SDLIMAGE_DYNAMIC_JXL}")
+           target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_JXL_DYNAMIC=\"${SDLIMAGE_DYNAMIC_JXL}\"")
         else()
             target_link_libraries(${sdl3_image_target_name} PRIVATE libjxl::libjxl)
         endif()
@@ -766,6 +781,9 @@ if(SDLIMAGE_PNG)
                     list(APPEND PC_REQUIRES zlib)
                 endif()
             endif()
+        elseif(SDLIMAGE_PNG_SHARED AND DEFINED SDLIMAGE_DYNAMIC_PNG AND EXISTS "${SDLIMAGE_DYNAMIC_PNG}")
+            message(STATUS "${PROJECT_NAME}: Using libpng from CMake variable")
+            set(SDLIMAGE_PNG_ENABLED TRUE)
         else()
             find_package(PNG ${required})
             if(PNG_FOUND)
@@ -780,17 +798,19 @@ if(SDLIMAGE_PNG)
         endif()
         if(SDLIMAGE_PNG_ENABLED)
             if(SDLIMAGE_PNG_SHARED)
-                target_include_directories(${sdl3_image_target_name} PRIVATE
-                    $<TARGET_PROPERTY:PNG::PNG,INCLUDE_DIRECTORIES>
-                    $<TARGET_PROPERTY:PNG::PNG,INTERFACE_INCLUDE_DIRECTORIES>
-                    $<TARGET_PROPERTY:PNG::PNG,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
-                )
-                target_get_dynamic_library(dynamic_png PNG::PNG)
-                message(STATUS "Dynamic libpng: ${dynamic_png}")
-                target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_PNG_DYNAMIC=\"${dynamic_png}\"")
-                if(SDLIMAGE_PNG_VENDORED)
-                    add_dependencies(${sdl3_image_target_name} PNG::PNG)
+                if(NOT DEFINED SDLIMAGE_DYNAMIC_PNG)
+                    target_include_directories(${sdl3_image_target_name} PRIVATE
+                        $<TARGET_PROPERTY:PNG::PNG,INCLUDE_DIRECTORIES>
+                        $<TARGET_PROPERTY:PNG::PNG,INTERFACE_INCLUDE_DIRECTORIES>
+                        $<TARGET_PROPERTY:PNG::PNG,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
+                    )
+                    if(SDLIMAGE_PNG_VENDORED)
+                      add_dependencies(${sdl3_image_target_name} PNG::PNG)
+                    endif()
                 endif()
+                target_get_dynamic_library(SDLIMAGE_DYNAMIC_PNG PNG::PNG)
+                message(STATUS "Dynamic libpng: ${SDLIMAGE_DYNAMIC_PNG}")
+                target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_PNG_DYNAMIC=\"${SDLIMAGE_DYNAMIC_PNG}\"")
             else()
                 target_link_libraries(${sdl3_image_target_name} PRIVATE PNG::PNG)
             endif()
@@ -868,7 +888,7 @@ if(SDLIMAGE_TIF)
             add_subdirectory(external/libtiff EXCLUDE_FROM_ALL)
             register_license(tiff external/libtiff/LICENSE.md)
             add_library(TIFF::TIFF ALIAS tiff)
-            set(SDL2IMAGE_TIF_TARGET "TIFF::tiff")
+            set(SDLIMAGE_TIF_TARGET "TIFF::tiff")
             if(SDLIMAGE_TIF_SHARED OR NOT SDLIMAGE_BUILD_SHARED_LIBS)
               list(APPEND INSTALL_EXTRA_TARGETS tiff)
             endif()
@@ -877,6 +897,10 @@ if(SDLIMAGE_TIF)
             if(NOT SDLIMAGE_TIF_SHARED)
                 list(APPEND PC_LIBS -l$<TARGET_FILE_BASE_NAME:tiff>)
             endif()
+        elseif(SDLIMAGE_TIF_SHARED AND DEFINED SDLIMAGE_DYNAMIC_TIF AND EXISTS "${SDLIMAGE_DYNAMIC_TIF}")
+            message(STATUS "${PROJECT_NAME}: Using libtiff from CMake variable")
+            set(SDLIMAGE_TIF_ENABLED TRUE)
+            set(SDLIMAGE_TIF_TARGET "tiff-non-existing-target")
         else()
             find_package(TIFF ${required})
             if(TIFF_FOUND)
@@ -888,9 +912,9 @@ if(SDLIMAGE_TIF)
                 if(TARGET TIFF::tiff)
                     # introduced in CMake 3.28
                     # TIFF::TIFF still exists, but it is an INTERFACE library linking to TIFF::tiff (no ALIAS library)
-                    set(SDL2IMAGE_TIF_TARGET "TIFF::tiff")
+                    set(SDLIMAGE_TIF_TARGET "TIFF::tiff")
                 else()
-                    set(SDL2IMAGE_TIF_TARGET "TIFF::TIFF")
+                    set(SDLIMAGE_TIF_TARGET "TIFF::TIFF")
                 endif()
             else()
                 message(${fatal_error} "libtiff NOT found")
@@ -899,19 +923,21 @@ if(SDLIMAGE_TIF)
         if(SDLIMAGE_TIF_ENABLED)
             target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_TIF)
             if(SDLIMAGE_TIF_SHARED)
-                target_include_directories(${sdl3_image_target_name} PRIVATE
-                    $<TARGET_PROPERTY:${SDL2IMAGE_TIF_TARGET},INCLUDE_DIRECTORIES>
-                    $<TARGET_PROPERTY:${SDL2IMAGE_TIF_TARGET},INTERFACE_INCLUDE_DIRECTORIES>
-                    $<TARGET_PROPERTY:${SDL2IMAGE_TIF_TARGET},INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
-                )
-                target_get_dynamic_library(dynamic_tif ${SDL2IMAGE_TIF_TARGET})
-                message(STATUS "Dynamic libtiff: ${dynamic_tif}")
-                target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_TIF_DYNAMIC=\"${dynamic_tif}\"")
-                if(SDLIMAGE_TIF_VENDORED)
-                    add_dependencies(${sdl3_image_target_name} ${SDL2IMAGE_TIF_TARGET})
+                if(NOT DEFINED SDLIMAGE_DYNAMIC_TIF)
+                    target_include_directories(${sdl3_image_target_name} PRIVATE
+                        $<TARGET_PROPERTY:${SDLIMAGE_TIF_TARGET},INCLUDE_DIRECTORIES>
+                        $<TARGET_PROPERTY:${SDLIMAGE_TIF_TARGET},INTERFACE_INCLUDE_DIRECTORIES>
+                        $<TARGET_PROPERTY:${SDLIMAGE_TIF_TARGET},INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
+                    )
+                    if(SDLIMAGE_TIF_VENDORED)
+                      add_dependencies(${sdl3_image_target_name} ${SDLIMAGE_TIF_TARGET})
+                    endif()
                 endif()
+                target_get_dynamic_library(SDLIMAGE_DYNAMIC_TIF ${SDLIMAGE_TIF_TARGET})
+                message(STATUS "Dynamic libtiff: ${SDLIMAGE_DYNAMIC_TIF}")
+                target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_TIF_DYNAMIC=\"${SDLIMAGE_DYNAMIC_TIF}\"")
             else()
-                target_link_libraries(${sdl3_image_target_name} PRIVATE ${SDL2IMAGE_TIF_TARGET})
+                target_link_libraries(${sdl3_image_target_name} PRIVATE ${SDLIMAGE_TIF_TARGET})
             endif()
         endif()
     endif()
@@ -941,6 +967,9 @@ if(SDLIMAGE_WEBP)
         set_target_properties(webpdemux PROPERTIES EXPORT_NAME "external_webpdemux")
         set_target_properties(sharpyuv PROPERTIES EXPORT_NAME "external_sharpyuv")
         add_library(SDL3_image::external_libwebp ALIAS webp)
+    elseif(SDLIMAGE_WEBP_SHARED AND DEFINED SDLIMAGE_DYNAMIC_WEBP AND EXISTS "${SDLIMAGE_DYNAMIC_WEBP}" AND DEFINED SDLIMAGE_DYNAMIC_WEBPDEMUX AND EXISTS "${SDLIMAGE_DYNAMIC_WEBPDEMUX}")
+        message(STATUS "${PROJECT_NAME}: Using libwebp from CMake variable")
+        set(SDLIMAGE_WEBP_ENABLED TRUE)
     else()
         find_package(webp ${required})
         if(webp_FOUND)
@@ -957,23 +986,25 @@ if(SDLIMAGE_WEBP)
     if(SDLIMAGE_WEBP_ENABLED)
         target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_WEBP)
         if(SDLIMAGE_WEBP_SHARED)
-            target_include_directories(${sdl3_image_target_name} PRIVATE
-                $<TARGET_PROPERTY:WebP::webp,INCLUDE_DIRECTORIES>
-                $<TARGET_PROPERTY:WebP::webp,INTERFACE_INCLUDE_DIRECTORIES>
-                $<TARGET_PROPERTY:WebP::webp,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
-                $<TARGET_PROPERTY:WebP::webpdemux,INCLUDE_DIRECTORIES>
-                $<TARGET_PROPERTY:WebP::webpdemux,INTERFACE_INCLUDE_DIRECTORIES>
-                $<TARGET_PROPERTY:WebP::webpdemux,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
-            )
-            target_get_dynamic_library(dynamic_webpdemux WebP::webpdemux)
-            message(STATUS "Dynamic libwebpdemux: ${dynamic_webpdemux}")
-            target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_WEBPDEMUX_DYNAMIC=\"${dynamic_webpdemux}\"")
-            target_get_dynamic_library(dynamic_webp WebP::webp)
-            message(STATUS "Dynamic libwebp: ${dynamic_webp}")
-            target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_WEBP_DYNAMIC=\"${dynamic_webp}\"")
-            if(SDLIMAGE_WEBP_VENDORED)
-                add_dependencies(${sdl3_image_target_name} WebP::webp WebP::webpdemux)
+           if(NOT DEFINED SDLIMAGE_DYNAMIC_WEBP AND NOT DEFINED SDLIMAGE_DYNAMIC_WEBPDEMUX)
+                target_include_directories(${sdl3_image_target_name} PRIVATE
+                    $<TARGET_PROPERTY:WebP::webp,INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:WebP::webp,INTERFACE_INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:WebP::webp,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:WebP::webpdemux,INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:WebP::webpdemux,INTERFACE_INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:WebP::webpdemux,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
+                )
+                if(SDLIMAGE_WEBP_VENDORED)
+                    add_dependencies(${sdl3_image_target_name} WebP::webp WebP::webpdemux)
+                endif()
             endif()
+            target_get_dynamic_library(SDLIMAGE_DYNAMIC_WEBPDEMUX WebP::webpdemux)
+            message(STATUS "Dynamic libwebpdemux: ${SDLIMAGE_DYNAMIC_WEBPDEMUX}")
+            target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_WEBPDEMUX_DYNAMIC=\"${SDLIMAGE_DYNAMIC_WEBPDEMUX}\"")
+            target_get_dynamic_library(SDLIMAGE_DYNAMIC_WEBP WebP::webp)
+            message(STATUS "Dynamic libwebp: ${SDLIMAGE_DYNAMIC_WEBP}")
+            target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_WEBP_DYNAMIC=\"${SDLIMAGE_DYNAMIC_WEBP}\"")
         else()
             target_link_libraries(${sdl3_image_target_name} PRIVATE WebP::webp WebP::webpdemux)
         endif()
