@@ -57,6 +57,9 @@
 		AADBAC8A175C6B4F004F8ED2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F85449145A19BC002CA294 /* Foundation.framework */; };
 		BE1FA71A07AF4C44004B6283 /* SDL_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 1014BAEA010A4B677F000001 /* SDL_image.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F31094C3282AE42D008EF641 /* IMG_stb.c in Sources */ = {isa = PBXBuildFile; fileRef = F31094C2282AE42D008EF641 /* IMG_stb.c */; };
+		F34123C02D41A75D00D6C2B7 /* INSTALL.md in Resources */ = {isa = PBXBuildFile; fileRef = F34123BF2D41A75D00D6C2B7 /* INSTALL.md */; };
+		F34123C42D41A79D00D6C2B7 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = F34123C32D41A79D00D6C2B7 /* LICENSE.txt */; };
+		F34123C62D41A7D800D6C2B7 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F34123C52D41A7D800D6C2B7 /* README.md */; };
 		F344FFFE2D401D5C003F26D7 /* SDL3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F344FFFD2D401D5C003F26D7 /* SDL3.framework */; };
 		F354743E2828CA66007E9EDA /* IMG_jxl.c in Sources */ = {isa = PBXBuildFile; fileRef = F354743B2828CA66007E9EDA /* IMG_jxl.c */; };
 		F35475FD2829BAF9007E9EDA /* IMG_avif.c in Sources */ = {isa = PBXBuildFile; fileRef = F35475FC2829BAF9007E9EDA /* IMG_avif.c */; };
@@ -172,6 +175,10 @@
 		BE1FA72E07AF4C45004B6283 /* SDL3_image.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDL3_image.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F307EFA82828C8FA003915D7 /* jxl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jxl.xcodeproj; path = jxl/jxl.xcodeproj; sourceTree = "<group>"; };
 		F31094C2282AE42D008EF641 /* IMG_stb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_stb.c; path = ../src/IMG_stb.c; sourceTree = "<group>"; };
+		F34123BF2D41A75D00D6C2B7 /* INSTALL.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = INSTALL.md; sourceTree = "<group>"; };
+		F34123C32D41A79D00D6C2B7 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = LICENSE.txt; path = ../../../LICENSE.txt; sourceTree = "<group>"; };
+		F34123C52D41A7D800D6C2B7 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../../../README.md; sourceTree = "<group>"; };
+		F34123C72D41A7F900D6C2B7 /* INSTALL.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = INSTALL.md; sourceTree = "<group>"; };
 		F344FFFD2D401D5C003F26D7 /* SDL3.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL3.framework; sourceTree = "<group>"; };
 		F354743B2828CA66007E9EDA /* IMG_jxl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_jxl.c; path = ../src/IMG_jxl.c; sourceTree = "<group>"; };
 		F35475D42829BA80007E9EDA /* avif.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = avif.xcodeproj; path = avif/avif.xcodeproj; sourceTree = "<group>"; };
@@ -183,8 +190,6 @@
 		F3E1AAEA281CBABD00740E39 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		F3E1AAED281CBD9F00740E39 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/System/iOSSupport/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		F3E1AAEF281CBDD100740E39 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/iOSSupport/System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
-		F59C710300D5CB5801000001 /* ReadMe.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
-		F59C710400D5CB5801000001 /* Welcome.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Welcome.txt; sourceTree = "<group>"; };
 		F59C710600D5CB5801000001 /* SDL_image.info */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = SDL_image.info; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -217,7 +222,6 @@
 		034768DDFF38A45A11DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				089C1665FE841158C02AAC07 /* Resources */,
 				BE1FA72E07AF4C45004B6283 /* SDL3_image.framework */,
 			);
 			name = Products;
@@ -238,13 +242,6 @@
 				BE1FA72D07AF4C44004B6283 /* Info-Framework.plist */,
 			);
 			name = SDL_imageFramework;
-			sourceTree = "<group>";
-		};
-		089C1665FE841158C02AAC07 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Resources;
 			sourceTree = "<group>";
 		};
 		08FB77ACFE841707C02AAC07 /* Library Source */ = {
@@ -296,6 +293,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		F34123BE2D41A71500D6C2B7 /* framework */ = {
+			isa = PBXGroup;
+			children = (
+				F34123BF2D41A75D00D6C2B7 /* INSTALL.md */,
+			);
+			path = framework;
+			sourceTree = "<group>";
+		};
 		F35475D52829BA80007E9EDA /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -328,9 +333,11 @@
 		F59C710100D5CB5801000001 /* resources */ = {
 			isa = PBXGroup;
 			children = (
+				F34123BE2D41A71500D6C2B7 /* framework */,
 				F3820707284EF58C004DD584 /* CMake */,
-				F59C710300D5CB5801000001 /* ReadMe.txt */,
-				F59C710400D5CB5801000001 /* Welcome.txt */,
+				F34123C32D41A79D00D6C2B7 /* LICENSE.txt */,
+				F34123C52D41A7D800D6C2B7 /* README.md */,
+				F34123C72D41A7F900D6C2B7 /* INSTALL.md */,
 			);
 			path = resources;
 			sourceTree = "<group>";
@@ -479,6 +486,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F34123C42D41A79D00D6C2B7 /* LICENSE.txt in Resources */,
+				F34123C02D41A75D00D6C2B7 /* INSTALL.md in Resources */,
+				F34123C62D41A7D800D6C2B7 /* README.md in Resources */,
 				F382070E284EF58C004DD584 /* CMake in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -530,7 +540,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -ex\n\nPRODUCT_NAME=SDL3_image\nOPTIONAL_FRAMEWORKS=\"avif jxl webp\"\n\nmkdir -p build/dmg-tmp/share/cmake/$PRODUCT_NAME\ncp -a build/$PRODUCT_NAME.xcframework build/dmg-tmp/\ncp pkg-support/resources/ReadMe.txt build/dmg-tmp\ncp pkg-support/resources/share/cmake/${PRODUCT_NAME}/${PRODUCT_NAME}Config.cmake build/dmg-tmp/share/cmake/${PRODUCT_NAME}\ncp pkg-support/resources/share/cmake/${PRODUCT_NAME}/${PRODUCT_NAME}ConfigVersion.cmake build/dmg-tmp/share/cmake/${PRODUCT_NAME}\nfor i in $OPTIONAL_FRAMEWORKS; do\n    if [ -d build/$i.xcframework ]; then\n        mkdir -p build/dmg-tmp/optional\n        cp -a build/$i.xcframework build/dmg-tmp/optional/\n    fi\ndone\n\n# remove the .DS_Store files if any (we may want to provide one in the future for fancy .dmgs)\nrm -rf build/dmg-tmp/.DS_Store\n\n# create the dmg\nhdiutil create -ov -fs HFS+ -volname $PRODUCT_NAME -srcfolder build/dmg-tmp build/$PRODUCT_NAME.dmg\n\n# clean up\nrm -rf build/dmg-tmp\n";
+			shellScript = "set -ex\n\nPRODUCT_NAME=SDL3_image\nOPTIONAL_FRAMEWORKS=\"avif jxl webp\"\n\nmkdir -p build/dmg-tmp/share/cmake/$PRODUCT_NAME\ncp -a build/$PRODUCT_NAME.xcframework build/dmg-tmp/\n\ncp ../LICENSE.txt build/dmg-tmp\ncp ../README.md build/dmg-tmp\ncp pkg-support/resources/INSTALL.md build/dmg-tmp\ncp pkg-support/resources/share/cmake/${PRODUCT_NAME}/${PRODUCT_NAME}Config.cmake build/dmg-tmp/share/cmake/${PRODUCT_NAME}\ncp pkg-support/resources/share/cmake/${PRODUCT_NAME}/${PRODUCT_NAME}ConfigVersion.cmake build/dmg-tmp/share/cmake/${PRODUCT_NAME}\nfor i in $OPTIONAL_FRAMEWORKS; do\n    if [ -d build/$i.xcframework ]; then\n        mkdir -p build/dmg-tmp/optional\n        cp -a build/$i.xcframework build/dmg-tmp/optional/\n    fi\ndone\n\n# remove the .DS_Store files if any (we may want to provide one in the future for fancy .dmgs)\nrm -rf build/dmg-tmp/.DS_Store\n\n# for fancy .dmg\nmkdir -p build/dmg-tmp/.logo\ncp pkg-support/resources/SDL_DS_Store build/dmg-tmp/.DS_Store\ncp pkg-support/sdl_logo.pdf build/dmg-tmp/.logo\n\n# create the dmg\nhdiutil create -ov -fs HFS+ -volname $PRODUCT_NAME -srcfolder build/dmg-tmp build/$PRODUCT_NAME.dmg\n\n# clean up\nrm -rf build/dmg-tmp\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
