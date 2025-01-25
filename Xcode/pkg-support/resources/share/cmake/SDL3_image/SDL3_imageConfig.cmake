@@ -129,7 +129,7 @@ if(NOT TARGET SDL3_image::SDL3_image-shared)
         set_target_properties(SDL3_image::SDL3_image-shared
             PROPERTIES
                 FRAMEWORK "TRUE"
-                IMPORTED_LOCATION "${_sdl3_image_framework_path}"
+                IMPORTED_LOCATION "${_sdl3_image_framework_path}/SDL3_image"
         )
     endif()
     set_target_properties(SDL3_image::SDL3_image-shared
