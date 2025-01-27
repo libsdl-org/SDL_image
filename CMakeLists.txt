@@ -680,7 +680,7 @@ if(SDLIMAGE_JXL)
             set(jxl_install_libs brotlidec brotlicommon brotlienc jxl)
         else()
             set(jxl_lib jxl_dec-static)
-            set(jxl_install_libs brotlidec-static brotlicommon-static hwy jxl_dec-static)
+            set(jxl_install_libs brotlidec brotlicommon hwy jxl_dec-static)
             list(APPEND PC_LIBS
                 -l$<TARGET_FILE_BASE_NAME:brotlidec> -l$<TARGET_FILE_BASE_NAME:brotlicommon>
                 -l$<TARGET_FILE_BASE_NAME:brotlienc> -l$<TARGET_FILE_BASE_NAME:jxl>
