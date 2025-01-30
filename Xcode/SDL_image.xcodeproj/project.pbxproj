@@ -631,6 +631,7 @@
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)/../include\"",
 					"\"$(SRCROOT)/../external/jpeg\"",
+					"\"$(PROJECT_DIR)/jxl\"",
 				);
 				INFOPLIST_FILE = "Info-Framework.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -697,6 +698,7 @@
 				HEADER_SEARCH_PATHS = (
 					"\"$(SRCROOT)/../include\"",
 					"\"$(SRCROOT)/../external/jpeg\"",
+					"\"$(PROJECT_DIR)/jxl\"",
 				);
 				INFOPLIST_FILE = "Info-Framework.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
