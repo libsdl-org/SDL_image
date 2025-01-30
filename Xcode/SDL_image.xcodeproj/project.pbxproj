@@ -655,6 +655,7 @@
 					"\"$(SRCROOT)/../include\"",
 					"\"$(SRCROOT)/$(PLATFORM)/SDL2.framework/Headers\"",
 					"\"$(SRCROOT)/../external/jpeg\"",
+					"\"$(PROJECT_DIR)/jxl\"",
 				);
 				INFOPLIST_FILE = "Info-Framework.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -745,6 +746,7 @@
 					"\"$(SRCROOT)/../include\"",
 					"\"$(SRCROOT)/$(PLATFORM)/SDL2.framework/Headers\"",
 					"\"$(SRCROOT)/../external/jpeg\"",
+					"\"$(PROJECT_DIR)/jxl\"",
 				);
 				INFOPLIST_FILE = "Info-Framework.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
