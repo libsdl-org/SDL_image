@@ -60,7 +60,7 @@
 		F34123C02D41A75D00D6C2B7 /* INSTALL.md in Resources */ = {isa = PBXBuildFile; fileRef = F34123BF2D41A75D00D6C2B7 /* INSTALL.md */; };
 		F34123C42D41A79D00D6C2B7 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = F34123C32D41A79D00D6C2B7 /* LICENSE.txt */; };
 		F34123C62D41A7D800D6C2B7 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F34123C52D41A7D800D6C2B7 /* README.md */; };
-		F344FFFE2D401D5C003F26D7 /* SDL3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F344FFFD2D401D5C003F26D7 /* SDL3.framework */; };
+		F34126942D4B3D6900D6C2B7 /* SDL3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F34126932D4B3D6900D6C2B7 /* SDL3.framework */; };
 		F354743E2828CA66007E9EDA /* IMG_jxl.c in Sources */ = {isa = PBXBuildFile; fileRef = F354743B2828CA66007E9EDA /* IMG_jxl.c */; };
 		F35475FD2829BAF9007E9EDA /* IMG_avif.c in Sources */ = {isa = PBXBuildFile; fileRef = F35475FC2829BAF9007E9EDA /* IMG_avif.c */; };
 		F382070E284EF58C004DD584 /* CMake in Resources */ = {isa = PBXBuildFile; fileRef = F3820707284EF58C004DD584 /* CMake */; };
@@ -179,7 +179,7 @@
 		F34123C32D41A79D00D6C2B7 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = LICENSE.txt; path = ../../../LICENSE.txt; sourceTree = "<group>"; };
 		F34123C52D41A7D800D6C2B7 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../../../README.md; sourceTree = "<group>"; };
 		F34123C72D41A7F900D6C2B7 /* INSTALL.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = INSTALL.md; sourceTree = "<group>"; };
-		F344FFFD2D401D5C003F26D7 /* SDL3.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL3.framework; sourceTree = "<group>"; };
+		F34126932D4B3D6900D6C2B7 /* SDL3.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL3.framework; path = macOS/SDL3.framework; sourceTree = "<group>"; };
 		F354743B2828CA66007E9EDA /* IMG_jxl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_jxl.c; path = ../src/IMG_jxl.c; sourceTree = "<group>"; };
 		F35475D42829BA80007E9EDA /* avif.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = avif.xcodeproj; path = avif/avif.xcodeproj; sourceTree = "<group>"; };
 		F35475FC2829BAF9007E9EDA /* IMG_avif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = IMG_avif.c; path = ../src/IMG_avif.c; sourceTree = "<group>"; };
@@ -198,10 +198,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F34126942D4B3D6900D6C2B7 /* SDL3.framework in Frameworks */,
 				AADBAC89175C6B4C004F8ED2 /* ApplicationServices.framework in Frameworks */,
 				F3E1AAEB281CBABD00740E39 /* CoreGraphics.framework in Frameworks */,
 				AADBAC8A175C6B4F004F8ED2 /* Foundation.framework in Frameworks */,
-				F344FFFE2D401D5C003F26D7 /* SDL3.framework in Frameworks */,
 				F3E1AAEC281CBB1F00740E39 /* ImageIO.framework in Frameworks */,
 				F3E1AAF0281CBDD100740E39 /* MobileCoreServices.framework in Frameworks */,
 				F3E1AAEE281CBD9F00740E39 /* UIKit.framework in Frameworks */,
@@ -274,12 +274,12 @@
 		BE1FA76107AF72F5004B6283 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F34126932D4B3D6900D6C2B7 /* SDL3.framework */,
 				007288A60F0DA79800C302A9 /* ApplicationServices.framework */,
 				F3E1AAEA281CBABD00740E39 /* CoreGraphics.framework */,
 				61F85449145A19BC002CA294 /* Foundation.framework */,
 				F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */,
 				F3E1AAEF281CBDD100740E39 /* MobileCoreServices.framework */,
-				F344FFFD2D401D5C003F26D7 /* SDL3.framework */,
 				F3E1AAED281CBD9F00740E39 /* UIKit.framework */,
 			);
 			name = Frameworks;
@@ -608,6 +608,9 @@
 				DYLIB_CURRENT_VERSION = 201.0.0;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_TESTABILITY = YES;
+				"FRAMEWORK_SEARCH_PATHS[sdk=appletv*]" = "$(PROJECT_DIR)/iOS";
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphone*]" = "$(PROJECT_DIR)/iOS";
+				"FRAMEWORK_SEARCH_PATHS[sdk=macosx*]" = "$(PROJECT_DIR)/macOS";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					USE_STBIMAGE,
@@ -658,10 +661,6 @@
 		007288120F0DA5BA00C302A9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-				);
 				OTHER_LDFLAGS = "$(CONFIG_FRAMEWORK_LDFLAGS)";
 			};
 			name = Debug;
@@ -675,6 +674,9 @@
 				DYLIB_COMPATIBILITY_VERSION = 201.0.0;
 				DYLIB_CURRENT_VERSION = 201.0.0;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				"FRAMEWORK_SEARCH_PATHS[sdk=appletv*]" = "$(PROJECT_DIR)/iOS";
+				"FRAMEWORK_SEARCH_PATHS[sdk=iphone*]" = "$(PROJECT_DIR)/iOS";
+				"FRAMEWORK_SEARCH_PATHS[sdk=macosx*]" = "$(PROJECT_DIR)/macOS";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					USE_STBIMAGE,
@@ -724,10 +726,6 @@
 		007288160F0DA5C400C302A9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-				);
 				OTHER_LDFLAGS = "$(CONFIG_FRAMEWORK_LDFLAGS)";
 			};
 			name = Release;

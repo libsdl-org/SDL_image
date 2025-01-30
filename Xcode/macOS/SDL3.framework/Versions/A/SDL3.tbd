@@ -2,12 +2,12 @@
   "main_library": {
     "compatibility_versions": [
       {
-        "version": "112"
+        "version": "201"
       }
     ],
     "current_versions": [
       {
-        "version": "112"
+        "version": "201"
       }
     ],
     "exported_symbols": [
@@ -1269,30 +1269,6 @@
       {
         "min_deployment": "10.13",
         "target": "x86_64-macos"
-      },
-      {
-        "min_deployment": "11.0",
-        "target": "arm64-ios"
-      },
-      {
-        "min_deployment": "11.0",
-        "target": "arm64-ios-simulator"
-      },
-      {
-        "min_deployment": "11.0",
-        "target": "x86_64-ios-simulator"
-      },
-      {
-        "min_deployment": "11.0",
-        "target": "arm64-tvos"
-      },
-      {
-        "min_deployment": "11.0",
-        "target": "arm64-tvos-simulator"
-      },
-      {
-        "min_deployment": "11.0",
-        "target": "x86_64-tvos-simulator"
       }
     ]
   },
