@@ -1,3 +1,21 @@
+2.8.5:
+ * Handle WEBP animation composition
+
+2.8.4:
+ * Fixed a regression in the last release with certain grayscale PNG images
+
+2.8.3:
+ * Fixed handling of grayscale images with alpha
+
+2.8.2:
+ * Fixed crash loading LBM images
+ * Automatically set the colorkey for indexed PNG images with transparency
+
+2.8.1:
+ * Indexed PNG images with alpha have blending automatically enabled
+ * Fixed a crash in the 32-bit webp DLLs on Windows
+ * Fixed issue extracting the tar release archives on Linux
+
 2.8.0:
  * Added support for loading WEBP animations
  * PNG images with a palette are loaded as SDL surfaces with a palette
