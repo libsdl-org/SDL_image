@@ -117,6 +117,7 @@ jobs:
         export CMAKE_CONFIGURATION_TYPES=Debug
         cmake -B build \
           -DSDL2IMAGE_VENDORED=${{ matrix.platform.vendored }} \
+          -DSDL2IMAGE_STRICT=ON \
           -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=$PWD/build \
           -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=$PWD/build \
           -DBUILD_SHARED_LIBS=ON \
