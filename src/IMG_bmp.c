@@ -34,6 +34,9 @@
 
 #ifdef LOAD_BMP
 
+#define ICON_TYPE_ICO   1
+#define ICON_TYPE_CUR   2
+
 /* See if an image is contained in a data source */
 bool IMG_isBMP(SDL_IOStream *src)
 {
@@ -85,12 +88,12 @@ static bool IMG_isICOCUR(SDL_IOStream *src, int type)
 
 bool IMG_isICO(SDL_IOStream *src)
 {
-    return IMG_isICOCUR(src, 1);
+    return IMG_isICOCUR(src, ICON_TYPE_ICO);
 }
 
 bool IMG_isCUR(SDL_IOStream *src)
 {
-    return IMG_isICOCUR(src, 2);
+    return IMG_isICOCUR(src, ICON_TYPE_CUR);
 }
 
 #include <SDL3/SDL_error.h>
@@ -105,13 +108,12 @@ bool IMG_isCUR(SDL_IOStream *src)
 #define BI_BITFIELDS    3
 #endif
 
-static SDL_Surface *LoadBMP_IO (SDL_IOStream *src, bool closeio)
+static SDL_Surface *LoadBMP_IO(SDL_IOStream *src, bool closeio)
 {
     return SDL_LoadBMP_IO(src, closeio);
 }
 
-static SDL_Surface *
-LoadICOCUR_IO(SDL_IOStream * src, int type, bool closeio)
+static SDL_Surface *LoadICOCUR_IO(SDL_IOStream * src, int type, bool closeio)
 {
     bool was_error = true;
     Sint64 fp_offset = 0;
@@ -127,6 +129,8 @@ LoadICOCUR_IO(SDL_IOStream * src, int type, bool closeio)
     int ExpandBMP;
     Uint8 maxCol = 0;
     Uint32 icoOfs = 0;
+    int nHotX = 0;
+    int nHotY = 0;
     Uint32 palette[256];
 
     /* The Win32 ICO file header (14 bytes) */
@@ -171,22 +175,20 @@ LoadICOCUR_IO(SDL_IOStream * src, int type, bool closeio)
         Uint8 bWidth;       /* Uint8, but 0 = 256 ! */
         Uint8 bHeight;      /* Uint8, but 0 = 256 ! */
         Uint8 bColorCount;  /* Uint8, but 0 = 256 ! */
-        /*
         Uint8 bReserved;
         Uint16 wPlanes;
         Uint16 wBitCount;
         Uint32 dwBytesInRes;
-        */
         Uint32 dwImageOffset;
         int nWidth, nHeight, nColorCount;
 
         if (!SDL_ReadU8(src, &bWidth) ||
             !SDL_ReadU8(src, &bHeight) ||
             !SDL_ReadU8(src, &bColorCount) ||
-            !SDL_ReadU8(src, NULL /* bReserved */) ||
-            !SDL_ReadU16LE(src, NULL /* wPlanes */) ||
-            !SDL_ReadU16LE(src, NULL /* wBitCount */) ||
-            !SDL_ReadU32LE(src, NULL /* dwBytesInRes */) ||
+            !SDL_ReadU8(src, &bReserved) ||
+            !SDL_ReadU16LE(src, &wPlanes) ||
+            !SDL_ReadU16LE(src, &wBitCount) ||
+            !SDL_ReadU32LE(src, &dwBytesInRes) ||
             !SDL_ReadU32LE(src, &dwImageOffset)) {
             goto done;
         }
@@ -205,6 +207,11 @@ LoadICOCUR_IO(SDL_IOStream * src, int type, bool closeio)
             nColorCount = bColorCount;
         } else {
             nColorCount = 256;
+        }
+
+        if (type == ICON_TYPE_CUR) {
+            nHotX = wPlanes;
+            nHotY = wBitCount;
         }
 
         //SDL_Log("%dx%d@%d - %08x\n", nWidth, nHeight, nColorCount, dwImageOffset);
@@ -417,6 +424,12 @@ LoadICOCUR_IO(SDL_IOStream * src, int type, bool closeio)
         }
     }
 
+    if (type == ICON_TYPE_CUR) {
+        SDL_PropertiesID props = SDL_GetSurfaceProperties(surface);
+        SDL_SetNumberProperty(props, SDL_PROP_SURFACE_HOTSPOT_X_NUMBER, nHotX);
+        SDL_SetNumberProperty(props, SDL_PROP_SURFACE_HOTSPOT_Y_NUMBER, nHotY);
+    }
+
     was_error = false;
 
 done:
@@ -444,13 +457,13 @@ SDL_Surface *IMG_LoadBMP_IO(SDL_IOStream *src)
 /* Load a ICO type image from an SDL datasource */
 SDL_Surface *IMG_LoadICO_IO(SDL_IOStream *src)
 {
-    return LoadICOCUR_IO(src, 1, false);
+    return LoadICOCUR_IO(src, ICON_TYPE_ICO, false);
 }
 
 /* Load a CUR type image from an SDL datasource */
 SDL_Surface *IMG_LoadCUR_IO(SDL_IOStream *src)
 {
-    return LoadICOCUR_IO(src, 2, false);
+    return LoadICOCUR_IO(src, ICON_TYPE_CUR, false);
 }
 
 #else
