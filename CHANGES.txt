@@ -1,3 +1,6 @@
+3.2.2:
+ * Fixed partial alpha in ICO and CUR images
+
 3.0.0:
  * Added support for loading HDR AVIF images
  * Added AVIF save support:
