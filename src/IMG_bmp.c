@@ -411,7 +411,7 @@ LoadICOCUR_RW(SDL_RWops * src, int type, int freesrc)
                     goto done;
                 }
             }
-            *((Uint32 *) bits + i) |= ((pixel >> shift) ? 0 : 0xFF000000);
+            *((Uint32 *) bits + i) &= ((pixel >> shift) ? 0 : 0xFFFFFFFF);
             pixel <<= ExpandBMP;
         }
         /* Skip padding bytes, ugh */

@@ -1,3 +1,6 @@
+2.8.6:
+ * Fixed partial alpha in ICO and CUR images
+
 2.8.5:
  * Handle WEBP animation composition
 
