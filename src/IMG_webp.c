@@ -259,23 +259,24 @@ error:
     return NULL;
 }
 
-IMG_Animation* IMG_LoadWEBPAnimation_RW(SDL_RWops* src)
+IMG_Animation* IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
 {
     Sint64 start;
-    const char* error = NULL;
+    const char *error = NULL;
     WebPBitstreamFeatures features;
-    struct WebPDemuxer* demuxer = NULL;
+    struct WebPDemuxer *demuxer = NULL;
     WebPIterator iter;
-    IMG_Animation* anim = NULL;
+    IMG_Animation *anim = NULL;
     int raw_data_size;
-    uint8_t* raw_data = NULL;
+    uint8_t *raw_data = NULL;
     WebPData wd;
     uint32_t bgcolor;
-    SDL_Surface* canvas = NULL;
-    SDL_Surface* prevCanvas = NULL;
+    SDL_Surface *canvas = NULL;
+    SDL_Surface *prevCanvas = NULL;
     SDL_Rect prevRect = { 0 };
 
     if (!src) {
+        /* The error message has been set in SDL_RWFromFile */
         return NULL;
     }
 
@@ -291,7 +292,7 @@ IMG_Animation* IMG_LoadWEBPAnimation_RW(SDL_RWops* src)
         goto error;
     }
 
-    raw_data = (uint8_t*)SDL_malloc(raw_data_size);
+    raw_data = (uint8_t*) SDL_malloc(raw_data_size);
     if (raw_data == NULL) {
         goto error;
     }
@@ -320,16 +321,14 @@ IMG_Animation* IMG_LoadWEBPAnimation_RW(SDL_RWops* src)
     anim->w = features.width;
     anim->h = features.height;
     anim->count = lib.WebPDemuxGetI(demuxer, WEBP_FF_FRAME_COUNT);
-    anim->frames = (SDL_Surface**)SDL_calloc(anim->count, sizeof(*anim->frames));
-    anim->delays = (int*)SDL_calloc(anim->count, sizeof(*anim->delays));
+    anim->frames = (SDL_Surface **)SDL_calloc(anim->count, sizeof(*anim->frames));
+    anim->delays = (int *)SDL_calloc(anim->count, sizeof(*anim->delays));
     if (!anim->frames || !anim->delays) {
         goto error;
     }
 
-    canvas = SDL_CreateRGBSurfaceWithFormat(0, anim->w, anim->h, 0,
-        features.has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
-    prevCanvas = SDL_CreateRGBSurfaceWithFormat(0, anim->w, anim->h, 0,
-        features.has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
+    canvas = SDL_CreateRGBSurfaceWithFormat(0, anim->w, anim->h, 0, features.has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
+    prevCanvas = SDL_CreateRGBSurfaceWithFormat(0, anim->w, anim->h, 0, features.has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
     if (!canvas || !prevCanvas) {
         goto error;
     }
@@ -338,16 +337,16 @@ IMG_Animation* IMG_LoadWEBPAnimation_RW(SDL_RWops* src)
     bgcolor = lib.WebPDemuxGetI(demuxer, WEBP_FF_BACKGROUND_COLOR);
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
     bgcolor = SDL_MapRGBA(canvas->format,
-        (bgcolor >> 8) & 0xFF,
-        (bgcolor >> 16) & 0xFF,
-        (bgcolor >> 24) & 0xFF,
-        (bgcolor >> 0) & 0xFF);
+                  (bgcolor >> 8) & 0xFF,
+                  (bgcolor >> 16) & 0xFF,
+                  (bgcolor >> 24) & 0xFF,
+                  (bgcolor >> 0) & 0xFF);
 #else
     bgcolor = SDL_MapRGBA(canvas->format,
-        (bgcolor >> 16) & 0xFF,
-        (bgcolor >> 8) & 0xFF,
-        (bgcolor >> 0) & 0xFF,
-        (bgcolor >> 24) & 0xFF);
+                  (bgcolor >> 16) & 0xFF,
+                  (bgcolor >> 8) & 0xFF,
+                  (bgcolor >> 0) & 0xFF,
+                  (bgcolor >> 24) & 0xFF);
 #endif
 
     // Initialize both canvases - use bgcolor for non-alpha format, transparency for alpha
