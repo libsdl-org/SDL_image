@@ -66,12 +66,20 @@ if(WEBP_UNICODE)
   add_definitions(-DUNICODE -D_UNICODE)
 endif()
 
+if(WIN32 AND BUILD_SHARED_LIBS)
+  add_definitions(-DWEBP_DLL)
+endif()
+
 set(prefix ${CMAKE_INSTALL_PREFIX})
 set(exec_prefix "\$\{prefix\}")
 set(libdir "\$\{prefix\}/lib")
 set(includedir "\$\{prefix\}/include")
 set(PTHREAD_LIBS ${CMAKE_THREAD_LIBS_INIT})
 set(INSTALLED_LIBRARIES)
+
+if(NOT WIN32)
+set(CMAKE_C_VISIBILITY_PRESET hidden)
+endif()
 
 # ##############################################################################
 # Android only.
