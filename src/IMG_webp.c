@@ -394,7 +394,8 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
             // Set blend mode based on the frame's blend method
             if (iter.blend_method == WEBP_MUX_BLEND) {
                 SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_BLEND);
-            } else {
+            }
+            else {
                 SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_NONE);
             }
 
