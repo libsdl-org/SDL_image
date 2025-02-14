@@ -438,6 +438,7 @@ error:
     if (raw_data) {
         SDL_free(raw_data);
     }
+
     if (error) {
         IMG_SetError("%s", error);
     }
