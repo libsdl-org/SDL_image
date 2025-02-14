@@ -272,8 +272,6 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
     WebPData wd;
     uint32_t bgcolor;
     SDL_Surface *canvas = NULL;
-    SDL_Surface *prevCanvas = NULL;
-    SDL_Rect prevRect = { 0 };
     WebPMuxAnimDispose dispose_method = WEBP_MUX_DISPOSE_BACKGROUND;
 
     if (!src) {
@@ -329,8 +327,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
     }
 
     canvas = SDL_CreateRGBSurfaceWithFormat(0, anim->w, anim->h, 0, features.has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
-    prevCanvas = SDL_CreateRGBSurfaceWithFormat(0, anim->w, anim->h, 0, features.has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
-    if (!canvas || !prevCanvas) {
+    if (!canvas) {
         goto error;
     }
 
@@ -353,10 +350,8 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
     // Initialize both canvases - use bgcolor for non-alpha format, transparency for alpha
     if (features.has_alpha) {
         SDL_FillRect(canvas, NULL, SDL_MapRGBA(canvas->format, 0, 0, 0, 0));
-        SDL_FillRect(prevCanvas, NULL, SDL_MapRGBA(prevCanvas->format, 0, 0, 0, 0));
     } else {
         SDL_FillRect(canvas, NULL, bgcolor);
-        SDL_FillRect(prevCanvas, NULL, bgcolor);
     }
 
     SDL_zero(iter);
@@ -375,9 +370,15 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
             dst.w = iter.width;
             dst.h = iter.height;
 
-            // Handle disposal of THIS frame's region before drawing it
-            if (iter.dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
-                SDL_FillRect(canvas, &dst, SDL_MapRGBA(canvas->format, 0, 0, 0, 0));
+            // Handle disposal and prepare region for new frame
+            if (iter.dispose_method == WEBP_MUX_DISPOSE_BACKGROUND ||
+                iter.blend_method == WEBP_MUX_NO_BLEND) {
+                if (features.has_alpha) {
+                    SDL_FillRect(canvas, &dst, SDL_MapRGBA(canvas->format, 0, 0, 0, 0));
+                }
+                else {
+                    SDL_FillRect(canvas, &dst, bgcolor);
+                }
             }
 
             curr = SDL_CreateRGBSurfaceWithFormat(0, iter.width, iter.height, 0, SDL_PIXELFORMAT_RGBA32);
@@ -386,16 +387,23 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
             }
 
             if (!lib.WebPDecodeRGBAInto(iter.fragment.bytes,
-                                        iter.fragment.size,
-                                        (uint8_t *)curr->pixels,
-                                        curr->pitch * curr->h,
-                                        curr->pitch)) {
+                iter.fragment.size,
+                (uint8_t*)curr->pixels,
+                curr->pitch * curr->h,
+                curr->pitch)) {
                 error = "WebPDecodeRGBAInto() failed";
                 SDL_FreeSurface(curr);
                 goto error;
             }
 
-            SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_NONE);
+            // Set blend mode based on the frame's blend method
+            if (iter.blend_method == WEBP_MUX_BLEND) {
+                SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_BLEND);
+            }
+            else {
+                SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_NONE);
+            }
+
             SDL_BlitSurface(curr, NULL, canvas, &dst);
             SDL_FreeSurface(curr);
 
@@ -403,16 +411,10 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
             anim->frames[frame_idx] = SDL_DuplicateSurface(canvas);
             anim->delays[frame_idx] = iter.duration;
 
-            // Save current frame region and disposal method for next iteration
-            prevRect = dst;
-            dispose_method = iter.dispose_method;
-
         } while (lib.WebPDemuxNextFrame(&iter));
 
         lib.WebPDemuxReleaseIterator(&iter);
     }
-
-    SDL_FreeSurface(prevCanvas);
 
     SDL_FreeSurface(canvas);
 
@@ -423,9 +425,6 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
     return anim;
 
 error:
-    if (prevCanvas) {
-        SDL_FreeSurface(prevCanvas);
-    }
     if (canvas) {
         SDL_FreeSurface(canvas);
     }
