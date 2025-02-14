@@ -414,11 +414,11 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
 
     SDL_FreeSurface(prevCanvas);
     
-	SDL_FreeSurface(canvas);
+    SDL_FreeSurface(canvas);
     
-	lib.WebPDemuxDelete(demuxer);
+    lib.WebPDemuxDelete(demuxer);
     
-	SDL_free(raw_data);
+    SDL_free(raw_data);
 
     return anim;
 
