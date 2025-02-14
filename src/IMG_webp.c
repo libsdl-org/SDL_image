@@ -354,8 +354,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
     if (features.has_alpha) {
         SDL_FillRect(canvas, NULL, SDL_MapRGBA(canvas->format, 0, 0, 0, 0));
         SDL_FillRect(prevCanvas, NULL, SDL_MapRGBA(prevCanvas->format, 0, 0, 0, 0));
-    }
-    else {
+    } else {
         SDL_FillRect(canvas, NULL, bgcolor);
         SDL_FillRect(prevCanvas, NULL, bgcolor);
     }
