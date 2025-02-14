@@ -272,6 +272,8 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
     WebPData wd;
     uint32_t bgcolor;
     SDL_Surface *canvas = NULL;
+    SDL_Surface *prevCanvas = NULL;
+    SDL_Rect prevRect = { 0 };
     WebPMuxAnimDispose dispose_method = WEBP_MUX_DISPOSE_BACKGROUND;
 
     if (!src) {
@@ -327,7 +329,8 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
     }
 
     canvas = SDL_CreateRGBSurfaceWithFormat(0, anim->w, anim->h, 0, features.has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
-    if (!canvas) {
+    prevCanvas = SDL_CreateRGBSurfaceWithFormat(0, anim->w, anim->h, 0, features.has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
+    if (!canvas || !prevCanvas) {
         goto error;
     }
 
@@ -347,6 +350,16 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
                           (bgcolor >> 24) & 0xFF);
 #endif
 
+    // Initialize both canvases - use bgcolor for non-alpha format, transparency for alpha
+    if (features.has_alpha) {
+        SDL_FillRect(canvas, NULL, SDL_MapRGBA(canvas->format, 0, 0, 0, 0));
+        SDL_FillRect(prevCanvas, NULL, SDL_MapRGBA(prevCanvas->format, 0, 0, 0, 0));
+    }
+    else {
+        SDL_FillRect(canvas, NULL, bgcolor);
+        SDL_FillRect(prevCanvas, NULL, bgcolor);
+    }
+
     SDL_zero(iter);
     if (lib.WebPDemuxGetFrame(demuxer, 1, &iter)) {
         do {
@@ -357,8 +370,15 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
                 continue;
             }
 
-            if (dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
-                SDL_FillRect(canvas, NULL, bgcolor);
+            // Set up destination rect for current frame
+            dst.x = iter.x_offset;
+            dst.y = iter.y_offset;
+            dst.w = iter.width;
+            dst.h = iter.height;
+
+            // Handle disposal of THIS frame's region before drawing it
+            if (iter.dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
+                SDL_FillRect(canvas, &dst, SDL_MapRGBA(canvas->format, 0, 0, 0, 0));
             }
 
             curr = SDL_CreateRGBSurfaceWithFormat(0, iter.width, iter.height, 0, SDL_PIXELFORMAT_RGBA32);
@@ -376,20 +396,16 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
                 goto error;
             }
 
-            if (iter.blend_method == WEBP_MUX_BLEND) {
-                SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_BLEND);
-            } else {
-                SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_NONE);
-            }
-            dst.x = iter.x_offset;
-            dst.y = iter.y_offset;
-            dst.w = iter.width;
-            dst.h = iter.height;
+            SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_NONE);
             SDL_BlitSurface(curr, NULL, canvas, &dst);
             SDL_FreeSurface(curr);
 
+            // Store complete frame state
             anim->frames[frame_idx] = SDL_DuplicateSurface(canvas);
             anim->delays[frame_idx] = iter.duration;
+
+            // Save current frame region and disposal method for next iteration
+            prevRect = dst;
             dispose_method = iter.dispose_method;
 
         } while (lib.WebPDemuxNextFrame(&iter));
@@ -397,15 +413,20 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
         lib.WebPDemuxReleaseIterator(&iter);
     }
 
-    SDL_FreeSurface(canvas);
-
-    lib.WebPDemuxDelete(demuxer);
-
-    SDL_free(raw_data);
+    SDL_FreeSurface(prevCanvas);
+    
+	SDL_FreeSurface(canvas);
+    
+	lib.WebPDemuxDelete(demuxer);
+    
+	SDL_free(raw_data);
 
     return anim;
 
 error:
+    if (prevCanvas) {
+        SDL_FreeSurface(prevCanvas);
+    }
     if (canvas) {
         SDL_FreeSurface(canvas);
     }
@@ -418,7 +439,7 @@ error:
     if (raw_data) {
         SDL_free(raw_data);
     }
-
+	
     if (error) {
         IMG_SetError("%s", error);
     }
