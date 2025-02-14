@@ -259,23 +259,23 @@ error:
     return NULL;
 }
 
-IMG_Animation* IMG_LoadWEBPAnimation_RW(SDL_RWops* src)
+IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
 {
     Sint64 start;
-    const char* error = NULL;
+    const char *error = NULL;
     WebPBitstreamFeatures features;
-    struct WebPDemuxer* demuxer = NULL;
+    struct WebPDemuxer *demuxer = NULL;
     WebPIterator iter;
-    IMG_Animation* anim = NULL;
+    IMG_Animation *anim = NULL;
     int raw_data_size;
-    uint8_t* raw_data = NULL;
+    uint8_t *raw_data = NULL;
     WebPData wd;
     uint32_t bgcolor;
-    SDL_Surface* canvas = NULL;
-    SDL_Surface* prevCanvas = NULL;
-    SDL_Rect prevRect = { 0 };
+    SDL_Surface *canvas = NULL;
+    WebPMuxAnimDispose dispose_method = WEBP_MUX_DISPOSE_BACKGROUND;
 
     if (!src) {
+        /* The error message has been set in SDL_RWFromFile */
         return NULL;
     }
 
@@ -291,7 +291,7 @@ IMG_Animation* IMG_LoadWEBPAnimation_RW(SDL_RWops* src)
         goto error;
     }
 
-    raw_data = (uint8_t*)SDL_malloc(raw_data_size);
+    raw_data = (uint8_t*) SDL_malloc(raw_data_size);
     if (raw_data == NULL) {
         goto error;
     }
@@ -313,24 +313,21 @@ IMG_Animation* IMG_LoadWEBPAnimation_RW(SDL_RWops* src)
         goto error;
     }
 
-    anim = (IMG_Animation*)SDL_calloc(1, sizeof(*anim));
+    anim = (IMG_Animation *)SDL_calloc(1, sizeof(*anim));
     if (!anim) {
         goto error;
     }
     anim->w = features.width;
     anim->h = features.height;
     anim->count = lib.WebPDemuxGetI(demuxer, WEBP_FF_FRAME_COUNT);
-    anim->frames = (SDL_Surface**)SDL_calloc(anim->count, sizeof(*anim->frames));
-    anim->delays = (int*)SDL_calloc(anim->count, sizeof(*anim->delays));
+    anim->frames = (SDL_Surface **)SDL_calloc(anim->count, sizeof(*anim->frames));
+    anim->delays = (int *)SDL_calloc(anim->count, sizeof(*anim->delays));
     if (!anim->frames || !anim->delays) {
         goto error;
     }
 
-    canvas = SDL_CreateRGBSurfaceWithFormat(0, anim->w, anim->h, 0,
-        features.has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
-    prevCanvas = SDL_CreateRGBSurfaceWithFormat(0, anim->w, anim->h, 0,
-        features.has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
-    if (!canvas || !prevCanvas) {
+    canvas = SDL_CreateRGBSurfaceWithFormat(0, anim->w, anim->h, 0, features.has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
+    if (!canvas) {
         goto error;
     }
 
@@ -338,30 +335,19 @@ IMG_Animation* IMG_LoadWEBPAnimation_RW(SDL_RWops* src)
     bgcolor = lib.WebPDemuxGetI(demuxer, WEBP_FF_BACKGROUND_COLOR);
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
     bgcolor = SDL_MapRGBA(canvas->format,
-        (bgcolor >> 8) & 0xFF,
-        (bgcolor >> 16) & 0xFF,
-        (bgcolor >> 24) & 0xFF,
-        (bgcolor >> 0) & 0xFF);
+                          (bgcolor >> 8) & 0xFF,
+                          (bgcolor >> 16) & 0xFF,
+                          (bgcolor >> 24) & 0xFF,
+                          (bgcolor >> 0) & 0xFF);
 #else
     bgcolor = SDL_MapRGBA(canvas->format,
-        (bgcolor >> 16) & 0xFF,
-        (bgcolor >> 8) & 0xFF,
-        (bgcolor >> 0) & 0xFF,
-        (bgcolor >> 24) & 0xFF);
+                          (bgcolor >> 16) & 0xFF,
+                          (bgcolor >> 8) & 0xFF,
+                          (bgcolor >> 0) & 0xFF,
+                          (bgcolor >> 24) & 0xFF);
 #endif
 
-    // Initialize both canvases - use bgcolor for non-alpha format, transparency for alpha
-    if (features.has_alpha) {
-        SDL_FillRect(canvas, NULL, SDL_MapRGBA(canvas->format, 0, 0, 0, 0));
-        SDL_FillRect(prevCanvas, NULL, SDL_MapRGBA(prevCanvas->format, 0, 0, 0, 0));
-    }
-    else {
-        SDL_FillRect(canvas, NULL, bgcolor);
-        SDL_FillRect(prevCanvas, NULL, bgcolor);
-    }
-
     SDL_zero(iter);
-    WebPMuxAnimDispose dispose_method = WEBP_MUX_DISPOSE_BACKGROUND;
     if (lib.WebPDemuxGetFrame(demuxer, 1, &iter)) {
         do {
             SDL_Surface* curr;
@@ -371,15 +357,8 @@ IMG_Animation* IMG_LoadWEBPAnimation_RW(SDL_RWops* src)
                 continue;
             }
 
-            // Set up destination rect for current frame
-            dst.x = iter.x_offset;
-            dst.y = iter.y_offset;
-            dst.w = iter.width;
-            dst.h = iter.height;
-
-            // Handle disposal of THIS frame's region before drawing it
-            if (iter.dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
-                SDL_FillRect(canvas, &dst, SDL_MapRGBA(canvas->format, 0, 0, 0, 0));
+            if (dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
+                SDL_FillRect(canvas, NULL, bgcolor);
             }
 
             curr = SDL_CreateRGBSurfaceWithFormat(0, iter.width, iter.height, 0, SDL_PIXELFORMAT_RGBA32);
@@ -388,59 +367,50 @@ IMG_Animation* IMG_LoadWEBPAnimation_RW(SDL_RWops* src)
             }
 
             if (!lib.WebPDecodeRGBAInto(iter.fragment.bytes,
-                iter.fragment.size,
-                (uint8_t*)curr->pixels,
-                curr->pitch * curr->h,
-                curr->pitch)) {
+                                        iter.fragment.size,
+                                        (uint8_t *)curr->pixels,
+                                        curr->pitch * curr->h,
+                                        curr->pitch)) {
                 error = "WebPDecodeRGBAInto() failed";
                 SDL_FreeSurface(curr);
                 goto error;
             }
 
-            // Use BLENDMODE_NONE like in your implementation
-            SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_NONE);
+            if (iter.blend_method == WEBP_MUX_BLEND) {
+                SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_BLEND);
+            } else {
+                SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_NONE);
+            }
+            dst.x = iter.x_offset;
+            dst.y = iter.y_offset;
+            dst.w = iter.width;
+            dst.h = iter.height;
             SDL_BlitSurface(curr, NULL, canvas, &dst);
             SDL_FreeSurface(curr);
 
-            // Store complete frame state
             anim->frames[frame_idx] = SDL_DuplicateSurface(canvas);
             anim->delays[frame_idx] = iter.duration;
-
-            // Save current frame region and disposal method for next iteration
-            prevRect = dst;
             dispose_method = iter.dispose_method;
 
         } while (lib.WebPDemuxNextFrame(&iter));
+
         lib.WebPDemuxReleaseIterator(&iter);
     }
 
-    SDL_FreeSurface(prevCanvas);
     SDL_FreeSurface(canvas);
+
     lib.WebPDemuxDelete(demuxer);
+
     SDL_free(raw_data);
 
     return anim;
 
 error:
-    if (prevCanvas) {
-        SDL_FreeSurface(prevCanvas);
-    }
     if (canvas) {
         SDL_FreeSurface(canvas);
     }
     if (anim) {
-        if (anim->frames) {
-            for (int i = 0; i < anim->count; ++i) {
-                if (anim->frames[i]) {
-                    SDL_FreeSurface(anim->frames[i]);
-                }
-            }
-            SDL_free(anim->frames);
-        }
-        if (anim->delays) {
-            SDL_free(anim->delays);
-        }
-        SDL_free(anim);
+        IMG_FreeAnimation(anim);
     }
     if (demuxer) {
         lib.WebPDemuxDelete(demuxer);
@@ -448,13 +418,14 @@ error:
     if (raw_data) {
         SDL_free(raw_data);
     }
+
     if (error) {
         IMG_SetError("%s", error);
     }
     SDL_RWseek(src, start, RW_SEEK_SET);
-
     return NULL;
 }
+
 #else
 #if _MSC_VER >= 1300
 #pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
