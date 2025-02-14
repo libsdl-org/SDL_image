@@ -382,10 +382,10 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
             }
 
             if (!lib.WebPDecodeRGBAInto(iter.fragment.bytes,
-                iter.fragment.size,
-                (uint8_t*)curr->pixels,
-                curr->pitch * curr->h,
-                curr->pitch)) {
+                                        iter.fragment.size,
+                                        (uint8_t *)curr->pixels,
+                                        curr->pitch * curr->h,
+                                        curr->pitch)) {
                 error = "WebPDecodeRGBAInto() failed";
                 SDL_FreeSurface(curr);
                 goto error;
