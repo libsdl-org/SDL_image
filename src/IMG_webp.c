@@ -347,7 +347,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
                           (bgcolor >> 24) & 0xFF);
 #endif
 
-    // Initialize both canvases - use bgcolor for non-alpha format, transparency for alpha
+    // Initialize canvas - use bgcolor for non-alpha format, transparency for alpha
     if (features.has_alpha) {
         SDL_FillRect(canvas, NULL, SDL_MapRGBA(canvas->format, 0, 0, 0, 0));
     } else {
@@ -373,12 +373,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
             // Handle disposal and prepare region for new frame
             if (iter.dispose_method == WEBP_MUX_DISPOSE_BACKGROUND ||
                 iter.blend_method == WEBP_MUX_NO_BLEND) {
-                if (features.has_alpha) {
-                    SDL_FillRect(canvas, &dst, SDL_MapRGBA(canvas->format, 0, 0, 0, 0));
-                }
-                else {
                     SDL_FillRect(canvas, &dst, bgcolor);
-                }
             }
 
             curr = SDL_CreateRGBSurfaceWithFormat(0, iter.width, iter.height, 0, SDL_PIXELFORMAT_RGBA32);
