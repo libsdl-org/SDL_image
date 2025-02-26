@@ -23,12 +23,9 @@ install-package:
 	    (cd $(arch) && cp -rv bin include lib $(prefix)/); \
 	    sed "s|^prefix=.*|prefix=$(prefix)|" <$(arch)/lib/pkgconfig/SDL2_image.pc >$(prefix)/lib/pkgconfig/SDL2_image.pc; \
 	    sed "s|^libdir=.*|libdir=\'$(prefix)/lib\'|" <$(arch)/lib/libSDL2_image.la >$(prefix)/lib/libSDL2_image.la; \
-		sed -e "s|^set[(]bindir \".*|set(bindir \"$(prefix)/bin\")|" \
-			-e "s|^set[(]includedir \".*|set(includedir \"$(prefix)/include\")|" \
-			-e "s|^set[(]libdir \".*|set(libdir \"$(prefix)/lib\")|" <$(arch)/lib/cmake/SDL2_image/sdl2_image-config.cmake >$(prefix)/lib/cmake/SDL2_image/sdl2_image-config.cmake; \
-		sed -e "s|^prefix=.*|prefix=$(prefix)|" \
-			-e "s|^includedir=.*|includedir=$(prefix)/include|" \
-			-e "s|^libdir=.*|libdir=$(prefix)/lib|" <$(arch)/lib/pkgconfig/SDL2_image.pc >$(prefix)/lib/pkgconfig/SDL2_image.pc; \
+	    sed -e "s|^set[(]bindir \".*|set(bindir \"$(prefix)/bin\")|" \
+	    	-e "s|^set[(]includedir \".*|set(includedir \"$(prefix)/include\")|" \
+	    	-e "s|^set[(]libdir \".*|set(libdir \"$(prefix)/lib\")|" <$(arch)/lib/cmake/SDL2_image/sdl2_image-config.cmake >$(prefix)/lib/cmake/SDL2_image/sdl2_image-config.cmake; \
 	else \
 	    echo "*** ERROR: $(arch) or $(prefix) does not exist!"; \
 	    exit 1; \
