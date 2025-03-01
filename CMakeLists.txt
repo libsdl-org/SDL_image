@@ -1047,6 +1047,9 @@ if(SDLIMAGE_INSTALL)
         FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/SDL3_image/SDL_image.h"
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/SDL3_image" COMPONENT DEVEL
     )
+
+    export(TARGETS ${sdl3_image_target_name} ${INSTALL_EXTRA_TARGETS} NAMESPACE "SDL3_image::" FILE "${sdl3_image_target_name}-targets.cmake")
+
     if(BUILD_SHARED_LIBS)
         set(pdbdir "${CMAKE_INSTALL_BINDIR}")
     else()

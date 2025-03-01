@@ -142,5 +142,8 @@ if(NOT TARGET SDL3_image::SDL3_image)
     endif()
 endif()
 
+if(NOT SDL3_image_COMPONENTS AND NOT TARGET SDL3_image::SDL3_image-shared AND NOT TARGET SDL3_image::SDL3_image-static)
+    set(SDL3_image_FOUND FALSE)
+endif()
 @PACKAGE_INIT@
 check_required_components(SDL3_image)
