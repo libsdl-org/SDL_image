@@ -73,7 +73,7 @@ typedef Uint32 SDL_SurfaceFlags;
  *
  * \since This macro is available since SDL 3.2.0.
  */
-#define SDL_MUSTLOCK(S) ((((S)->flags & SDL_SURFACE_LOCK_NEEDED)) == SDL_SURFACE_LOCK_NEEDED)
+#define SDL_MUSTLOCK(S) (((S)->flags & SDL_SURFACE_LOCK_NEEDED) == SDL_SURFACE_LOCK_NEEDED)
 
 /**
  * The scaling mode.
@@ -119,6 +119,9 @@ typedef enum SDL_FlipMode
  * contiguous without padding between them, e.g. a 32x32 surface in NV12
  * format with a pitch of 32 would consist of 32x32 bytes of Y plane followed
  * by 32x16 bytes of UV plane.
+ *
+ * When a surface holds MJPG format data, pixels points at the compressed JPEG
+ * image and pitch is the length of that data.
  *
  * \since This struct is available since SDL 3.2.0.
  *
@@ -221,6 +224,10 @@ extern SDL_DECLSPEC void SDLCALL SDL_DestroySurface(SDL_Surface *surface);
  *   the same tone mapping that Chrome uses for HDR content, the form "*=N",
  *   where N is a floating point scale factor applied in linear space, and
  *   "none", which disables tone mapping. This defaults to "chrome".
+ * - `SDL_PROP_SURFACE_HOTSPOT_X_NUMBER`: the hotspot pixel offset from the
+ *   left edge of the image, if this surface is being used as a cursor.
+ * - `SDL_PROP_SURFACE_HOTSPOT_Y_NUMBER`: the hotspot pixel offset from the
+ *   top edge of the image, if this surface is being used as a cursor.
  *
  * \param surface the SDL_Surface structure to query.
  * \returns a valid property ID on success or 0 on failure; call
@@ -233,6 +240,8 @@ extern SDL_DECLSPEC SDL_PropertiesID SDLCALL SDL_GetSurfaceProperties(SDL_Surfac
 #define SDL_PROP_SURFACE_SDR_WHITE_POINT_FLOAT              "SDL.surface.SDR_white_point"
 #define SDL_PROP_SURFACE_HDR_HEADROOM_FLOAT                 "SDL.surface.HDR_headroom"
 #define SDL_PROP_SURFACE_TONEMAP_OPERATOR_STRING            "SDL.surface.tonemap"
+#define SDL_PROP_SURFACE_HOTSPOT_X_NUMBER                   "SDL.surface.hotspot.x"
+#define SDL_PROP_SURFACE_HOTSPOT_Y_NUMBER                   "SDL.surface.hotspot.y"
 
 /**
  * Set the colorspace used by a surface.
@@ -1172,6 +1181,29 @@ extern SDL_DECLSPEC bool SDLCALL SDL_BlitSurfaceScaled(SDL_Surface *src, const S
  * \sa SDL_BlitSurfaceScaled
  */
 extern SDL_DECLSPEC bool SDLCALL SDL_BlitSurfaceUncheckedScaled(SDL_Surface *src, const SDL_Rect *srcrect, SDL_Surface *dst, const SDL_Rect *dstrect, SDL_ScaleMode scaleMode);
+
+/**
+ * Perform a stretched pixel copy from one surface to another.
+ *
+ * \param src the SDL_Surface structure to be copied from.
+ * \param srcrect the SDL_Rect structure representing the rectangle to be
+ *                copied, may not be NULL.
+ * \param dst the SDL_Surface structure that is the blit target.
+ * \param dstrect the SDL_Rect structure representing the target rectangle in
+ *                the destination surface, may not be NULL.
+ * \param scaleMode the SDL_ScaleMode to be used.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \threadsafety The same destination surface should not be used from two
+ *               threads at once. It is safe to use the same source surface
+ *               from multiple threads.
+ *
+ * \since This function is available since SDL 3.4.0.
+ *
+ * \sa SDL_BlitSurfaceScaled
+ */
+extern SDL_DECLSPEC bool SDLCALL SDL_StretchSurface(SDL_Surface *src, const SDL_Rect *srcrect, SDL_Surface *dst, const SDL_Rect *dstrect, SDL_ScaleMode scaleMode);
 
 /**
  * Perform a tiled blit to a destination surface, which may be of a different

@@ -1244,7 +1244,8 @@
             "_SDL_GetThreadState",
             "_SDL_AudioStreamDevicePaused",
             "_SDL_ClickTrayEntry",
-            "_SDL_UpdateTrays"
+            "_SDL_UpdateTrays",
+            "_SDL_StretchSurface"
           ]
         }
       }
