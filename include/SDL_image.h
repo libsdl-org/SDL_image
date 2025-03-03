@@ -43,7 +43,7 @@ extern "C" {
  */
 #define SDL_IMAGE_MAJOR_VERSION 2
 #define SDL_IMAGE_MINOR_VERSION 8
-#define SDL_IMAGE_PATCHLEVEL    8
+#define SDL_IMAGE_PATCHLEVEL    9
 
 /**
  * This macro can be used to fill a version structure with the compile-time
