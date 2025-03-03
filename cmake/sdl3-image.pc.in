@@ -1,7 +1,7 @@
 prefix=@SDL_PKGCONFIG_PREFIX@
 exec_prefix=${prefix}
-libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
-includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+libdir=@LIBDIR_FOR_PKG_CONFIG@
+includedir=@INCLUDEDIR_FOR_PKG_CONFIG@
 
 Name: @PROJECT_NAME@
 Description: image loading library for Simple DirectMedia Layer
