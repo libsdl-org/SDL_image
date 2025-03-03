@@ -313,6 +313,11 @@ static SDL_Surface *LoadICOCUR_IO(SDL_IOStream * src, int type, bool closeio)
             if (SDL_ReadIO(src, &palette[i], 4) != 4) {
                 goto done;
             }
+
+            /* Since biSize == 40, we know alpha is reserved and should be zero, meaning opaque */
+            if ((palette[i] & 0xFF000000) == 0) {
+                palette[i] |= 0xFF000000;
+            }
         }
     }
 
@@ -365,7 +370,7 @@ static SDL_Surface *LoadICOCUR_IO(SDL_IOStream * src, int type, bool closeio)
                 Uint32 pixel;
                 Uint8 channel;
                 for (i = 0; i < surface->w; ++i) {
-                    pixel = 0;
+                    pixel = 0xFF000000;
                     for (j = 0; j < 3; ++j) {
                         /* Load each color channel into pixel */
                         if (SDL_ReadIO(src, &channel, 1) != 1) {

@@ -1,3 +1,6 @@
+3.2.4:
+ * Fixed alpha in less than 32-bit ICO and CUR images
+
 3.2.2:
  * Fixed partial alpha in ICO and CUR images
  * Set the cursor hotspot properties when loading CUR images
