@@ -1,3 +1,6 @@
+2.8.8:
+ * Fixed alpha in less than 32-bit ICO and CUR images
+
 2.8.6:
  * Fixed partial alpha in ICO and CUR images
 
