@@ -9,7 +9,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 # See docs/release_checklist.md
 set(MAJOR_VERSION 3)
 set(MINOR_VERSION 2)
-set(MICRO_VERSION 4)
+set(MICRO_VERSION 5)
 set(SDL_REQUIRED_VERSION 3.2.6)
 
 project(SDL3_image
