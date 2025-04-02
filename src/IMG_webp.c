@@ -36,6 +36,14 @@
 
 #include "SDL_endian.h"
 
+#if !SDL_VERSION_ATLEAST(2,30,0)
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+#define SDL_PIXELFORMAT_RGBX32 SDL_PIXELFORMAT_RGBX8888
+#else
+#define SDL_PIXELFORMAT_RGBX32 SDL_PIXELFORMAT_XBGR8888
+#endif
+#endif
+
 #ifdef macintosh
 #define MACOS
 #endif
