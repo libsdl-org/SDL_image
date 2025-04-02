@@ -547,6 +547,12 @@ if(SDL2IMAGE_JXL)
         set(BUILD_TESTING OFF CACHE BOOL "build testing" FORCE)
         # JPEGXL_ENABLE_TOOLS variable is used by libjxl
         set(JPEGXL_ENABLE_JNI OFF CACHE BOOL "build jpegxl jni" FORCE)
+        # JPEGXL_ENABLE_SJPEG variable is used by libjxl
+        set(JPEGXL_ENABLE_SJPEG OFF CACHE BOOL "build jpegxl sjpeg" FORCE)
+        # JPEGXL_BUNDLE_SKCMS variable is used by libjxl
+        set(JPEGXL_BUNDLE_SKCMS OFF CACHE BOOL "build jpegxl bundle sjpeg" FORCE)
+        # JPEGXL_ENABLE_OPENEXR variable is used by libjxl
+        set(JPEGXL_ENABLE_OPENEXR OFF CACHE BOOL "build jpegxl openxr" FORCE)
         # JPEGXL_ENABLE_MANPAGES variable is used by libjxl
         set(JPEGXL_ENABLE_MANPAGES OFF CACHE BOOL "libjxl manpage option" FORCE)
         # JPEGXL_ENABLE_PLUGINS variable is used by libjxl
