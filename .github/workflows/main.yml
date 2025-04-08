@@ -100,6 +100,7 @@ jobs:
           -DBUILD_SHARED_LIBS=ON \
           -DCMAKE_BUILD_TYPE=Release \
           -DSDLIMAGE_SAMPLES=ON \
+          -DSDLIMAGE_SAMPLES_INSTALL=ON \
           -DSDLIMAGE_TESTS=ON \
           -DSDLIMAGE_TESTS_INSTALL=ON \
           -DSDLIMAGE_AVIF=${{ !matrix.platform.noavif }} \
