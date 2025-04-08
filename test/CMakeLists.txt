@@ -70,6 +70,9 @@ function(add_sdl_image_test_executable TARGET)
             TARGETS ${TARGET}
             DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}"
         )
+        if(MSVC)
+            SDL_install_pdb("${TARGET}" "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}")
+        endif()
     endif()
 endfunction()
 
