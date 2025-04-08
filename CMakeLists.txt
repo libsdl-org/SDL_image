@@ -1200,10 +1200,10 @@ if(SDLIMAGE_SAMPLES)
 
         if(SDLIMAGE_SAMPLES_INSTALL)
             install(TARGETS ${prog}
-                RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+                RUNTIME DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/SDL3_image"
             )
             if(MSVC)
-                SDL_install_pdb("${prog}" "${pdbdir}")
+                SDL_install_pdb("${prog}" "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/SDL3_image")
             endif()
         endif()
     endforeach()
