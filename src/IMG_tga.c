@@ -97,7 +97,7 @@ SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
     int i;
     int bpp;
     int lstep;
-    Uint32 pixel;
+    Uint32 pixelvalue;
     int count, rep;
 
     if ( !src ) {
@@ -283,7 +283,7 @@ SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
                         n = w - x;
                     rep -= n;
                     while (n--) {
-                        SDL_memcpy(dst + x * bpp, &pixel, bpp);
+                        SDL_memcpy(dst + x * bpp, &pixelvalue, bpp);
                         x++;
                     }
                     if (x == w)
@@ -295,7 +295,7 @@ SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
                     goto error;
                 }
                 if (c & 0x80) {
-                    if (SDL_ReadIO(src, &pixel, bpp) != (size_t)bpp) {
+                    if (SDL_ReadIO(src, &pixelvalue, bpp) != (size_t)bpp) {
                         error = "Error reading TGA data";
                         goto error;
                     }

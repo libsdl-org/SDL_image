@@ -154,7 +154,7 @@ static bool ReadAVIFHeader(SDL_IOStream *src, Uint8 **header_data, size_t *heade
 
     size = (((Uint64)magic[0] << 24) |
             ((Uint64)magic[1] << 16) |
-            ((Uint64)magic[2] << 8) |
+            ((Uint64)magic[2] << 8)  |
             ((Uint64)magic[3] << 0));
     if (size == 1) {
         /* 64-bit header size */
@@ -163,13 +163,13 @@ static bool ReadAVIFHeader(SDL_IOStream *src, Uint8 **header_data, size_t *heade
         }
         read += 8;
 
-        size = (((Uint64)magic[8] << 56) |
-                ((Uint64)magic[9] << 48) |
+        size = (((Uint64)magic[8] << 56)  |
+                ((Uint64)magic[9] << 48)  |
                 ((Uint64)magic[10] << 40) |
                 ((Uint64)magic[11] << 32) |
                 ((Uint64)magic[12] << 24) |
                 ((Uint64)magic[13] << 16) |
-                ((Uint64)magic[14] << 8) |
+                ((Uint64)magic[14] << 8)  |
                 ((Uint64)magic[15] << 0));
     }
 
@@ -592,12 +592,12 @@ static bool IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int
         while (height--) {
             width = image->width;
             while (width--) {
-                Uint32 pixel = *src++;
+                Uint32 pixelvalue = *src++;
 
-                *dst16++ = (pixel >> 20) & 0x3FF;
-                *dst16++ = (pixel >> 10) & 0x3FF;
-                *dst16++ = (pixel >> 0) & 0x3FF;
-                *dst16++ = expand_alpha[(pixel >> 30) & 0x3];
+                *dst16++ = (pixelvalue >> 20) & 0x3FF;
+                *dst16++ = (pixelvalue >> 10) & 0x3FF;
+                *dst16++ = (pixelvalue >> 0) & 0x3FF;
+                *dst16++ = expand_alpha[(pixelvalue >> 30) & 0x3];
             }
             src = (Uint32 *)(((Uint8 *)src) + srcskip);
         }

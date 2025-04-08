@@ -352,33 +352,33 @@ static SDL_Surface *LoadICOCUR_IO(SDL_IOStream * src, int type, bool closeio)
         case 4:
         case 8:
             {
-                Uint8 pixel = 0;
+                Uint8 pixelvalue = 0;
                 int shift = (8 - ExpandBMP);
                 for (i = 0; i < surface->w; ++i) {
                     if (i % (8 / ExpandBMP) == 0) {
-                        if (SDL_ReadIO(src, &pixel, 1) != 1) {
+                        if (SDL_ReadIO(src, &pixelvalue, 1) != 1) {
                             goto done;
                         }
                     }
-                    *((Uint32 *) bits + i) = (palette[pixel >> shift]);
-                    pixel <<= ExpandBMP;
+                    *((Uint32 *) bits + i) = (palette[pixelvalue >> shift]);
+                    pixelvalue <<= ExpandBMP;
                 }
             }
             break;
         case 24:
             {
-                Uint32 pixel;
+                Uint32 pixelvalue;
                 Uint8 channel;
                 for (i = 0; i < surface->w; ++i) {
-                    pixel = 0xFF000000;
+                    pixelvalue = 0xFF000000;
                     for (j = 0; j < 3; ++j) {
                         /* Load each color channel into pixel */
                         if (SDL_ReadIO(src, &channel, 1) != 1) {
                             goto done;
                         }
-                        pixel |= (channel << (j * 8));
+                        pixelvalue |= (channel << (j * 8));
                     }
-                    *((Uint32 *) bits + i) = pixel;
+                    *((Uint32 *) bits + i) = pixelvalue;
                 }
             }
             break;
@@ -405,18 +405,18 @@ static SDL_Surface *LoadICOCUR_IO(SDL_IOStream * src, int type, bool closeio)
     bmpPitch = (biWidth + 7) >> 3;
     pad = (((bmpPitch) % 4) ? (4 - ((bmpPitch) % 4)) : 0);
     while (bits > (Uint8 *) surface->pixels) {
-        Uint8 pixel = 0;
+        Uint8 pixelvalue = 0;
         int shift = (8 - ExpandBMP);
 
         bits -= surface->pitch;
         for (i = 0; i < surface->w; ++i) {
             if (i % (8 / ExpandBMP) == 0) {
-                if (SDL_ReadIO(src, &pixel, 1) != 1) {
+                if (SDL_ReadIO(src, &pixelvalue, 1) != 1) {
                     goto done;
                 }
             }
-            *((Uint32 *) bits + i) &= ((pixel >> shift) ? 0 : 0xFFFFFFFF);
-            pixel <<= ExpandBMP;
+            *((Uint32 *) bits + i) &= ((pixelvalue >> shift) ? 0 : 0xFFFFFFFF);
+            pixelvalue <<= ExpandBMP;
         }
         /* Skip padding bytes, ugh */
         if (pad) {

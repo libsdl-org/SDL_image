@@ -1095,7 +1095,7 @@ static SDL_Surface *load_xpm(char **xpm, SDL_IOStream *src, bool force_32bit)
         for (;;) {
             char nametype;
             char *colname;
-            Uint32 argb, pixel;
+            Uint32 argb, pixelvalue;
 
             SKIPSPACE(p);
             if (!*p) {
@@ -1120,14 +1120,14 @@ static SDL_Surface *load_xpm(char **xpm, SDL_IOStream *src, bool force_32bit)
                 c->r = (Uint8)(argb >> 16);
                 c->g = (Uint8)(argb >> 8);
                 c->b = (Uint8)(argb);
-                pixel = index;
+                pixelvalue = index;
                 if (argb == 0x00000000) {
-                    SDL_SetSurfaceColorKey(image, true, pixel);
+                    SDL_SetSurfaceColorKey(image, true, pixelvalue);
                 }
             } else {
-                pixel = argb;
+                pixelvalue = argb;
             }
-            add_colorhash(colors, nextkey, cpp, pixel);
+            add_colorhash(colors, nextkey, cpp, pixelvalue);
             nextkey += cpp;
             break;
         }
