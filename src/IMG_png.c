@@ -186,6 +186,7 @@ int IMG_InitPNG()
 
     return 0;
 }
+
 void IMG_QuitPNG()
 {
     if ( lib.loaded == 0 ) {
@@ -241,7 +242,7 @@ struct loadpng_vars {
     png_bytep *row_pointers;
 };
 
-static void LIBPNG_LoadPNG_RW(SDL_RWops *src, struct loadpng_vars *vars)
+static SDL_bool LIBPNG_LoadPNG_RW(SDL_RWops *src, struct loadpng_vars *vars)
 {
     png_uint_32 width, height;
     int bit_depth, color_type, interlace_type, num_channels;
@@ -256,14 +257,14 @@ static void LIBPNG_LoadPNG_RW(SDL_RWops *src, struct loadpng_vars *vars)
                       NULL,NULL,NULL);
     if (vars->png_ptr == NULL) {
         vars->error = "Couldn't allocate memory for PNG file or incompatible PNG dll";
-        return;
+        return SDL_FALSE;
     }
 
      /* Allocate/initialize the memory for image information.  REQUIRED. */
     vars->info_ptr = lib.png_create_info_struct(vars->png_ptr);
     if (vars->info_ptr == NULL) {
         vars->error = "Couldn't create image information for PNG file";
-        return;
+        return SDL_FALSE;
     }
 
     /* Set error handling if you are using setjmp/longjmp method (this is
@@ -272,9 +273,6 @@ static void LIBPNG_LoadPNG_RW(SDL_RWops *src, struct loadpng_vars *vars)
      */
 
 #ifdef PNG_SETJMP_SUPPORTED
-#ifdef _MSC_VER
-#pragma warning(disable:4611)   /* warning C4611: interaction between '_setjmp' and C++ object destruction is non-portable */
-#endif
 #ifndef LIBPNG_VERSION_12
     if (setjmp(*lib.png_set_longjmp_fn(vars->png_ptr, longjmp, sizeof(jmp_buf))))
 #else
@@ -282,7 +280,7 @@ static void LIBPNG_LoadPNG_RW(SDL_RWops *src, struct loadpng_vars *vars)
 #endif
     {
         vars->error = "Error reading the PNG file.";
-        return;
+        return SDL_FALSE;
     }
 #endif
     /* Set up the input control */
@@ -389,8 +387,7 @@ static void LIBPNG_LoadPNG_RW(SDL_RWops *src, struct loadpng_vars *vars)
 
     vars->surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 0, format);
     if (vars->surface == NULL) {
-        vars->error = SDL_GetError();
-        return;
+        return SDL_FALSE;
     }
 
     if (ckey != -1) {
@@ -408,7 +405,7 @@ static void LIBPNG_LoadPNG_RW(SDL_RWops *src, struct loadpng_vars *vars)
     vars->row_pointers = (png_bytep*) SDL_malloc(sizeof(png_bytep)*height);
     if (!vars->row_pointers) {
         vars->error = "Out of memory";
-        return;
+        return SDL_FALSE;
     }
     for (row = 0; row < (int)height; row++) {
         vars->row_pointers[row] = (png_bytep)
@@ -448,27 +445,29 @@ static void LIBPNG_LoadPNG_RW(SDL_RWops *src, struct loadpng_vars *vars)
             }
         }
     }
+
+    return SDL_TRUE;
 }
 
 SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
 {
     Sint64 start;
     struct loadpng_vars vars;
+    SDL_bool success;
 
-    if ( !src ) {
+    if (!src) {
         /* The error message has been set in SDL_RWFromFile */
         return NULL;
     }
 
-    if ( (IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) == 0 ) {
+    if ((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG) == 0) {
         return NULL;
     }
 
     start = SDL_RWtell(src);
     SDL_zero(vars);
 
-    LIBPNG_LoadPNG_RW(src, &vars);
-
+    success = LIBPNG_LoadPNG_RW(src, &vars);
     if (vars.png_ptr) {
         lib.png_destroy_read_struct(&vars.png_ptr,
                                 vars.info_ptr ? &vars.info_ptr : (png_infopp)0,
@@ -477,16 +476,20 @@ SDL_Surface *IMG_LoadPNG_RW(SDL_RWops *src)
     if (vars.row_pointers) {
         SDL_free(vars.row_pointers);
     }
+    if (success) {
+        return vars.surface;
+    }
+
+    /* this may clobber a set error if seek fails: don't care. */
+    SDL_RWseek(src, start, RW_SEEK_SET);
+    if (vars.surface) {
+        SDL_FreeSurface(vars.surface);
+    }
     if (vars.error) {
-        SDL_RWseek(src, start, RW_SEEK_SET);
-        if (vars.surface) {
-            SDL_FreeSurface(vars.surface);
-            vars.surface = NULL;
-        }
         IMG_SetError("%s", vars.error);
     }
 
-    return vars.surface;
+    return NULL;
 }
 
 #elif defined(USE_STBIMAGE)
@@ -603,7 +606,8 @@ static int LIBPNG_SavePNG_RW(struct savepng_vars *vars, SDL_Surface *surface, SD
 
     vars->png_ptr = lib.png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (vars->png_ptr == NULL) {
-        return IMG_SetError("Couldn't allocate memory for PNG file or incompatible PNG dll");
+        vars->error = "Couldn't allocate memory for PNG file or incompatible PNG dll";
+        return -1;
     }
 
     vars->info_ptr = lib.png_create_info_struct(vars->png_ptr);
