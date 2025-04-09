@@ -186,6 +186,7 @@ static bool IMG_InitPNG(void)
 
     return true;
 }
+
 #if 0
 void IMG_QuitPNG(void)
 {
@@ -243,7 +244,7 @@ struct loadpng_vars {
     png_bytep *row_pointers;
 };
 
-static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
+static bool LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
 {
     png_uint_32 width, height;
     int bit_depth, color_type, interlace_type, num_channels;
@@ -257,14 +258,14 @@ static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
                       NULL,NULL,NULL);
     if (vars->png_ptr == NULL) {
         vars->error = "Couldn't allocate memory for PNG file or incompatible PNG dll";
-        return;
+        return false;
     }
 
      /* Allocate/initialize the memory for image information.  REQUIRED. */
     vars->info_ptr = lib.png_create_info_struct(vars->png_ptr);
     if (vars->info_ptr == NULL) {
         vars->error = "Couldn't create image information for PNG file";
-        return;
+        return false;
     }
 
     /* Set error handling if you are using setjmp/longjmp method (this is
@@ -273,9 +274,6 @@ static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
      */
 
 #ifdef PNG_SETJMP_SUPPORTED
-#ifdef _MSC_VER
-#pragma warning(disable:4611)   /* warning C4611: interaction between '_setjmp' and C++ object destruction is non-portable */
-#endif
 #ifndef LIBPNG_VERSION_12
     if (setjmp(*lib.png_set_longjmp_fn(vars->png_ptr, longjmp, sizeof(jmp_buf))))
 #else
@@ -283,7 +281,7 @@ static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
 #endif
     {
         vars->error = "Error reading the PNG file.";
-        return;
+        return false;
     }
 #endif
     /* Set up the input control */
@@ -390,8 +388,7 @@ static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
 
     vars->surface = SDL_CreateSurface(width, height, format);
     if (vars->surface == NULL) {
-        vars->error = SDL_GetError();
-        return;
+        return false;
     }
 
     if (ckey != -1) {
@@ -409,7 +406,7 @@ static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
     vars->row_pointers = (png_bytep*) SDL_malloc(sizeof(png_bytep)*height);
     if (!vars->row_pointers) {
         vars->error = "Out of memory";
-        return;
+        return false;
     }
     for (row = 0; row < (int)height; row++) {
         vars->row_pointers[row] = (png_bytep)
@@ -429,15 +426,14 @@ static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
 
     /* Load the palette, if any */
     if (SDL_ISPIXELFORMAT_INDEXED(vars->surface->format)) {
-        SDL_Palette *palette = NULL;
+        SDL_Palette *palette;
         int png_num_palette;
         png_colorp png_palette;
         lib.png_get_PLTE(vars->png_ptr, vars->info_ptr, &png_palette, &png_num_palette);
         if (color_type == PNG_COLOR_TYPE_GRAY) {
             palette = SDL_CreateSurfacePalette(vars->surface);
             if (!palette) {
-                vars->error = SDL_GetError();
-                return;
+                return false;
             }
             for (i = 0; i < 256; i++) {
                 palette->colors[i].r = (Uint8)i;
@@ -447,8 +443,7 @@ static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
         } else if (png_num_palette > 0 ) {
             palette = SDL_CreateSurfacePalette(vars->surface);
             if (!palette) {
-                vars->error = SDL_GetError();
-                return;
+                return false;
             }
             if (png_num_palette > palette->ncolors) {
                 png_num_palette = palette->ncolors;
@@ -462,14 +457,17 @@ static void LIBPNG_LoadPNG_IO(SDL_IOStream *src, struct loadpng_vars *vars)
             }
         }
     }
+
+    return true;
 }
 
 SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 {
     Sint64 start;
     struct loadpng_vars vars;
+    bool success;
 
-    if ( !src ) {
+    if (!src) {
         /* The error message has been set in SDL_IOFromFile */
         return NULL;
     }
@@ -481,8 +479,7 @@ SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
     start = SDL_TellIO(src);
     SDL_zero(vars);
 
-    LIBPNG_LoadPNG_IO(src, &vars);
-
+    success = LIBPNG_LoadPNG_IO(src, &vars);
     if (vars.png_ptr) {
         lib.png_destroy_read_struct(&vars.png_ptr,
                                 vars.info_ptr ? &vars.info_ptr : (png_infopp)0,
@@ -491,16 +488,20 @@ SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
     if (vars.row_pointers) {
         SDL_free(vars.row_pointers);
     }
+    if (success) {
+        return vars.surface;
+    }
+
+    /* this may clobber a set error if seek fails: don't care. */
+    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
+    if (vars.surface) {
+        SDL_DestroySurface(vars.surface);
+    }
     if (vars.error) {
-        SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
-        if (vars.surface) {
-            SDL_DestroySurface(vars.surface);
-            vars.surface = NULL;
-        }
         SDL_SetError("%s", vars.error);
     }
 
-    return vars.surface;
+    return NULL;
 }
 
 #elif defined(USE_STBIMAGE)
