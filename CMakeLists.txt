@@ -1202,11 +1202,11 @@ if(SDLIMAGE_SAMPLES)
         target_link_libraries(${TARGET} PRIVATE ${sdl3_target_name})
 
         if(SDLIMAGE_SAMPLES_INSTALL)
-            install(TARGETS ${prog}
+            install(TARGETS ${TARGET}
                 RUNTIME DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/SDL3_image"
             )
             if(MSVC)
-                SDL_install_pdb("${prog}" "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/SDL3_image")
+                SDL_install_pdb("${TARGET}" "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/SDL3_image")
             endif()
         endif()
     endfunction()
