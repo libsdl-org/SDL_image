@@ -569,6 +569,9 @@ if(SDLIMAGE_AVIF)
         else()
             target_link_libraries(${sdl3_image_target_name} PRIVATE avif)
         endif()
+    else()
+        # Variable is used by test suite
+        set(SDLIMAGE_AVIF_SAVE OFF)
     endif()
 endif()
 
@@ -647,6 +650,9 @@ if(SDLIMAGE_JPG)
             LOAD_JPG
             SDL_IMAGE_SAVE_JPG=$<BOOL:${SDLIMAGE_JPG_SAVE}>
         )
+    else()
+        # Variable is used by test suite
+        set(SDLIMAGE_JPG_SAVE OFF)
     endif()
 endif()
 
@@ -827,6 +833,9 @@ if(SDLIMAGE_PNG)
             LOAD_PNG
             SDL_IMAGE_SAVE_PNG=$<BOOL:${SDLIMAGE_PNG_SAVE}>
         )
+    else()
+        # Variable is used by test suite
+        set(SDLIMAGE_PNG_SAVE OFF)
     endif()
 endif()
 
