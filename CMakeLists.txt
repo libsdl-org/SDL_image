@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16...3.28)
+cmake_minimum_required(VERSION 3.16...4.0)
 
 if(NOT DEFINED CMAKE_BUILD_TYPE)
     set(cmake_build_type_undefined 1)
