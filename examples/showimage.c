@@ -26,12 +26,12 @@
 /* Draw a Gimpish background pattern to show transparency in the image */
 static void draw_background(SDL_Renderer *renderer, int w, int h)
 {
-    SDL_Color col[2] = {
+    const SDL_Color col[2] = {
         { 0x66, 0x66, 0x66, 0xff },
-        { 0x99, 0x99, 0x99, 0xff },
+        { 0x99, 0x99, 0x99, 0xff }
     };
-    int i, x, y;
     SDL_Rect rect;
+    int i, x, y;
 
     rect.w = 8;
     rect.h = 8;
