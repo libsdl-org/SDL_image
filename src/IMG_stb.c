@@ -157,6 +157,14 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
             int colorkey_index = -1;
             SDL_bool has_alpha = SDL_FALSE;
             SDL_Palette *palette = surface->format->palette;
+
+            /* FIXME: This sucks. It'd be better to allocate the surface first, then
+             * write directly to the pixel buffer:
+             * https://github.com/nothings/stb/issues/58
+             * -flibit
+             */
+            surface->flags &= ~SDL_PREALLOC;
+
             if (palette) {
                 int i;
                 Uint8 *palette_bytes = (Uint8 *)palette_colors;
@@ -184,15 +192,6 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
                 surface = converted;
             } else if (has_colorkey) {
                 SDL_SetColorKey(surface, SDL_TRUE, colorkey_index);
-            }
-
-            /* FIXME: This sucks. It'd be better to allocate the surface first, then
-             * write directly to the pixel buffer:
-             * https://github.com/nothings/stb/issues/58
-             * -flibit
-             */
-            if (surface) {
-                surface->flags &= ~SDL_PREALLOC;
             }
         }
 
