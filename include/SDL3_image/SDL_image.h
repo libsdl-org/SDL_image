@@ -1974,10 +1974,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStre
  */
 typedef struct IMG_Animation
 {
-	int w, h;
-	int count;
-	SDL_Surface **frames;
-	int *delays;
+    int w;                  /**< The width of the frames */
+    int h;                  /**< The height of the frames */
+    int count;              /**< The number of frames */
+    SDL_Surface **frames;   /**< An array of frames */
+    int *delays;            /**< An array of frame delays, in milliseconds */
 } IMG_Animation;
 
 /**
