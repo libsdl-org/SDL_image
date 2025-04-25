@@ -110,23 +110,23 @@ option(SDLIMAGE_BACKEND_STB "Use stb_image for loading JPEG and PNG files" ON)
 cmake_dependent_option(SDLIMAGE_BACKEND_WIC "Add WIC backend (Windows Imaging Component)" OFF WIN32 OFF)
 cmake_dependent_option(SDLIMAGE_BACKEND_IMAGEIO "Use native Mac OS X frameworks for loading images" ON APPLE OFF)
 
-option(SDLIMAGE_AVIF "Support loading AVIF images" ON)
+option(SDLIMAGE_AVIF "Support loading AVIF images" OFF)
 option(SDLIMAGE_BMP "Support loading BMP images" ON)
 option(SDLIMAGE_GIF "Support loading GIF images" ON)
 option(SDLIMAGE_JPG "Support loading JPEG images" ON)
 option(SDLIMAGE_JXL "Support loading JXL images" OFF)
-option(SDLIMAGE_LBM "Support loading LBM images" ON)
-option(SDLIMAGE_PCX "Support loading PCX images" ON)
+option(SDLIMAGE_LBM "Support loading LBM images" OFF)
+option(SDLIMAGE_PCX "Support loading PCX images" OFF)
 option(SDLIMAGE_PNG "Support loading PNG images" ON)
-option(SDLIMAGE_PNM "Support loading PNM images" ON)
-option(SDLIMAGE_QOI "Support loading QOI images" ON)
-option(SDLIMAGE_SVG "Support loading SVG images" ON)
+option(SDLIMAGE_PNM "Support loading PNM images" OFF)
+option(SDLIMAGE_QOI "Support loading QOI images" OFF)
+option(SDLIMAGE_SVG "Support loading SVG images" OFF)
 option(SDLIMAGE_TGA "Support loading TGA images" ON)
-option(SDLIMAGE_TIF "Support loading TIFF images" ON)
-option(SDLIMAGE_WEBP "Support loading WEBP images" ON)
-option(SDLIMAGE_XCF "Support loading XCF images" ON)
-option(SDLIMAGE_XPM "Support loading XPM images" ON)
-option(SDLIMAGE_XV "Support loading XV images" ON)
+option(SDLIMAGE_TIF "Support loading TIFF images" OFF)
+option(SDLIMAGE_WEBP "Support loading WEBP images" OFF)
+option(SDLIMAGE_XCF "Support loading XCF images" OFF)
+option(SDLIMAGE_XPM "Support loading XPM images" OFF)
+option(SDLIMAGE_XV "Support loading XV images" OFF)
 
 cmake_dependent_option(SDLIMAGE_AVIF_SAVE "Add AVIF save support" ON SDLIMAGE_AVIF OFF)
 cmake_dependent_option(SDLIMAGE_JPG_SAVE "Add JPEG save support" ON SDLIMAGE_JPG OFF)
@@ -233,6 +233,7 @@ else()
 endif()
 
 if(NOT TARGET SDL3::Headers OR NOT TARGET ${sdl3_target_name})
+    message(NOT TARGET SDL3::Headers OR NOT TARGET ${sdl3_target_name})
     find_package(SDL3 ${SDL_REQUIRED_VERSION} REQUIRED COMPONENTS ${sdl_required_components})
 endif()
 
@@ -308,6 +309,7 @@ set_target_properties(${sdl3_image_target_name} PROPERTIES
     DEFINE_SYMBOL DLL_EXPORT
     EXPORT_NAME ${sdl3_image_target_name}
     C_VISIBILITY_PRESET "hidden"
+    FOLDER "Theus/Dependencies"
 )
 
 sdl_target_link_option_version_file(${sdl3_image_target_name} "${CMAKE_CURRENT_SOURCE_DIR}/src/SDL_image.sym")
