@@ -371,53 +371,41 @@ static void output_no_message(j_common_ptr cinfo)
 	/* do nothing */
 }
 
-/* Load a JPEG type image from an SDL datasource */
-SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
-{
-	int start;
+struct loadjpeg_vars {
+	const char *error;
+	SDL_Surface *surface;
 	struct jpeg_decompress_struct cinfo;
-	JSAMPROW rowptr[1];
-	SDL_Surface *surface = NULL;
 	struct my_error_mgr jerr;
+};
 
-	if ( !src ) {
-		/* The error message has been set in SDL_RWFromFile */
-		return NULL;
-	}
-	start = SDL_RWtell(src);
-
-	if ( (IMG_Init(IMG_INIT_JPG) & IMG_INIT_JPG) == 0 ) {
-		return NULL;
-	}
+static SDL_bool LIBJPEG_LoadJPG_RW(SDL_RWops *src, struct loadjpeg_vars *vars)
+{
+	JSAMPROW rowptr[1];
 
 	/* Create a decompression structure and load the JPEG header */
-	cinfo.err = lib.jpeg_std_error(&jerr.errmgr);
-	jerr.errmgr.error_exit = my_error_exit;
-	jerr.errmgr.output_message = output_no_message;
-	if(setjmp(jerr.escape)) {
+	vars->cinfo.err = lib.jpeg_std_error(&vars->jerr.errmgr);
+	vars->jerr.errmgr.error_exit = my_error_exit;
+	vars->jerr.errmgr.output_message = output_no_message;
+	if (setjmp(vars->jerr.escape)) {
 		/* If we get here, libjpeg found an error */
-		lib.jpeg_destroy_decompress(&cinfo);
-		if ( surface != NULL ) {
-			SDL_FreeSurface(surface);
-		}
-		SDL_RWseek(src, start, RW_SEEK_SET);
-		IMG_SetError("JPEG loading error");
-		return NULL;
+		vars->error = "JPEG loading error";
+		lib.jpeg_destroy_decompress(&vars->cinfo);
+		return SDL_FALSE;
 	}
 
-	lib.jpeg_create_decompress(&cinfo);
-	jpeg_SDL_RW_src(&cinfo, src);
-	lib.jpeg_read_header(&cinfo, TRUE);
+	lib.jpeg_create_decompress(&vars->cinfo);
+	jpeg_SDL_RW_src(&vars->cinfo, src);
+	lib.jpeg_read_header(&vars->cinfo, TRUE);
 
-	if(cinfo.num_components == 4) {
+	if (vars->cinfo.num_components == 4) {
 		/* Set 32-bit Raw output */
-		cinfo.out_color_space = JCS_CMYK;
-		cinfo.quantize_colors = FALSE;
-		lib.jpeg_calc_output_dimensions(&cinfo);
+		vars->cinfo.out_color_space = JCS_CMYK;
+		vars->cinfo.quantize_colors = FALSE;
+		lib.jpeg_calc_output_dimensions(&vars->cinfo);
 
 		/* Allocate an output surface to hold the image */
-		surface = SDL_AllocSurface(SDL_SWSURFACE,
-		        cinfo.output_width, cinfo.output_height, 32,
+		vars->surface = SDL_AllocSurface(SDL_SWSURFACE,
+		                   vars->cinfo.output_width, vars->cinfo.output_height, 32,
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
 		                   0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
 #else
@@ -425,19 +413,19 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 #endif
 	} else {
 		/* Set 24-bit RGB output */
-		cinfo.out_color_space = JCS_RGB;
-		cinfo.quantize_colors = FALSE;
+		vars->cinfo.out_color_space = JCS_RGB;
+		vars->cinfo.quantize_colors = FALSE;
 #ifdef FAST_JPEG
-		cinfo.scale_num   = 1;
-		cinfo.scale_denom = 1;
-		cinfo.dct_method = JDCT_FASTEST;
-		cinfo.do_fancy_upsampling = FALSE;
+		vars->cinfo.scale_num   = 1;
+		vars->cinfo.scale_denom = 1;
+		vars->cinfo.dct_method = JDCT_FASTEST;
+		vars->cinfo.do_fancy_upsampling = FALSE;
 #endif
-		lib.jpeg_calc_output_dimensions(&cinfo);
+		lib.jpeg_calc_output_dimensions(&vars->cinfo);
 
 		/* Allocate an output surface to hold the image */
-		surface = SDL_AllocSurface(SDL_SWSURFACE,
-		        cinfo.output_width, cinfo.output_height, 24,
+		vars->surface = SDL_AllocSurface(SDL_SWSURFACE,
+		                   vars->cinfo.output_width, vars->cinfo.output_height, 24,
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
 		                   0x0000FF, 0x00FF00, 0xFF0000,
 #else
@@ -446,24 +434,56 @@ SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
 		                   0);
 	}
 
-	if ( surface == NULL ) {
-		lib.jpeg_destroy_decompress(&cinfo);
-		SDL_RWseek(src, start, RW_SEEK_SET);
-		IMG_SetError("Out of memory");
-		return NULL;
+	if (vars->surface == NULL) {
+		vars-> error = "Out of memory";
+		lib.jpeg_destroy_decompress(&vars->cinfo);
+		return SDL_FALSE;
 	}
 
 	/* Decompress the image */
-	lib.jpeg_start_decompress(&cinfo);
-	while ( cinfo.output_scanline < cinfo.output_height ) {
-		rowptr[0] = (JSAMPROW)(Uint8 *)surface->pixels +
-		                    cinfo.output_scanline * surface->pitch;
-		lib.jpeg_read_scanlines(&cinfo, rowptr, (JDIMENSION) 1);
+	lib.jpeg_start_decompress(&vars->cinfo);
+	while (vars->cinfo.output_scanline < vars->cinfo.output_height) {
+		rowptr[0] = (JSAMPROW)(Uint8 *)vars->surface->pixels +
+				vars->cinfo.output_scanline * vars->surface->pitch;
+		lib.jpeg_read_scanlines(&vars->cinfo, rowptr, (JDIMENSION) 1);
 	}
-	lib.jpeg_finish_decompress(&cinfo);
-	lib.jpeg_destroy_decompress(&cinfo);
+	lib.jpeg_finish_decompress(&vars->cinfo);
+	lib.jpeg_destroy_decompress(&vars->cinfo);
 
-	return(surface);
+	return SDL_TRUE;
+}
+
+/* Load a JPEG type image from an SDL datasource */
+SDL_Surface *IMG_LoadJPG_RW(SDL_RWops *src)
+{
+	int start;
+	struct loadjpeg_vars vars;
+
+	if (!src) {
+		/* The error message has been set in SDL_RWFromFile */
+		return NULL;
+	}
+
+	if ((IMG_Init(IMG_INIT_JPG) & IMG_INIT_JPG) == 0) {
+		return NULL;
+	}
+
+	start = SDL_RWtell(src);
+	memset(&vars, 0, sizeof(vars));
+
+	if (LIBJPEG_LoadJPG_RW(src, &vars)) {
+		return vars.surface;
+	}
+
+	SDL_RWseek(src, start, RW_SEEK_SET);
+	if (vars.surface) {
+		SDL_FreeSurface(vars.surface);
+	}
+	if (vars.error) {
+		IMG_SetError("%s", vars.error);
+	}
+
+	return NULL;
 }
 
 #else
