@@ -383,6 +383,12 @@ if(APPLE)
         set(SDLIMAGE_IMAGEIO_ENABLED TRUE)
         if(CMAKE_SYSTEM_NAME MATCHES ".*(Darwin|MacOS).*")
             target_link_libraries(${sdl3_image_target_name} PRIVATE -Wl,-framework,ApplicationServices)
+        elseif(IOS)
+            target_link_libraries(${sdl3_image_target_name} PRIVATE
+                -Wl,-framework,CoreGraphics
+                -Wl,-framework,ImageIO
+                -Wl,-framework,MobileCoreServices
+            )
         endif()
         target_link_libraries(${sdl3_image_target_name} PRIVATE objc)
         target_sources(${sdl3_image_target_name} PRIVATE
