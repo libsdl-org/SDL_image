@@ -189,6 +189,12 @@ SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type)
         SDL_Log("IMGLIB: Loading image as %s\n", supported[i].type);
 #endif
         image = supported[i].load(src);
+        if (!image) {
+#ifdef DEBUG_IMGLIB
+            SDL_Log("IMGLIB: Failed to load image as %s. Reason: %s\n", supported[i].type, SDL_GetError());
+#endif
+            continue;
+        }
         if (closeio) {
             SDL_CloseIO(src);
         }
@@ -291,6 +297,12 @@ IMG_Animation *IMG_LoadAnimationTyped_IO(SDL_IOStream *src, bool closeio, const 
         SDL_Log("IMGLIB: Loading image as %s\n", supported_anims[i].type);
 #endif
         anim = supported_anims[i].load(src);
+        if (!anim) {
+#ifdef DEBUG_IMGLIB
+            SDL_Log("IMGLIB: Failed to load animation as %s. Reason: %s\n", supported_anims[i].type, SDL_GetError());
+#endif
+            continue;
+        }
         if (closeio)
             SDL_CloseIO(src);
         return anim;
