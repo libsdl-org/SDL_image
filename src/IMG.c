@@ -213,7 +213,7 @@ SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type)
 
     /* we want to keep loaders' last error message, if we ever attempted to load an image, and failed */
     if ( loader_error_save ) {
-        SDL_SetError(loader_error_save);
+        SDL_SetError("%s", loader_error_save);
         SDL_free(loader_error_save);
     } else {
         SDL_SetError("Unsupported image format");
@@ -329,7 +329,7 @@ IMG_Animation *IMG_LoadAnimationTyped_IO(SDL_IOStream *src, bool closeio, const 
     }
 
     if ( loader_error_save ) {
-        SDL_SetError(loader_error_save);
+        SDL_SetError("%s", loader_error_save);
         SDL_free(loader_error_save);
         return NULL;
     }
