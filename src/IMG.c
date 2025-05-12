@@ -132,7 +132,6 @@ SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type)
 {
     size_t i;
     SDL_Surface *image;
-    size_t load_attempts;
 
     /* Make sure there is something to do.. */
     if ( src == NULL ) {
@@ -175,7 +174,7 @@ SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type)
 #endif
 
     /* Detect the type of image being loaded */
-    load_attempts = 0;
+    char *loader_error_save = NULL;
     for ( i=0; i < SDL_arraysize(supported); ++i ) {
         if (supported[i].is) {
             if (!supported[i].is(src)) {
@@ -190,12 +189,12 @@ SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type)
 #ifdef DEBUG_IMGLIB
         SDL_Log("IMGLIB: Loading image as %s\n", supported[i].type);
 #endif
-        load_attempts++;
         image = supported[i].load(src);
         if (!image) {
 #ifdef DEBUG_IMGLIB
             SDL_Log("IMGLIB: Failed to load image as %s. Reason: %s\n", supported[i].type, SDL_GetError());
 #endif
+            loader_error_save = SDL_strdup(SDL_GetError());
             continue;
         }
         if (closeio) {
@@ -209,7 +208,10 @@ SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type)
     }
 
     /* we want to keep loaders' last error message, if we ever attempted to load an image, and failed */
-    if ( load_attempts < 1 ) {
+    if ( loader_error_save ) {
+        SDL_SetError(loader_error_save);
+        SDL_free(loader_error_save);
+    } else {
         SDL_SetError("Unsupported image format");
     }
 
