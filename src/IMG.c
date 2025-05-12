@@ -194,6 +194,10 @@ SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type)
 #ifdef DEBUG_IMGLIB
             SDL_Log("IMGLIB: Failed to load image as %s. Reason: %s\n", supported[i].type, SDL_GetError());
 #endif
+            if ( loader_error_save ) {
+                SDL_free(loader_error_save);
+            }
+
             loader_error_save = SDL_strdup(SDL_GetError());
             continue;
         }
@@ -294,6 +298,7 @@ IMG_Animation *IMG_LoadAnimationTyped_IO(SDL_IOStream *src, bool closeio, const 
     }
 
     /* Detect the type of image being loaded */
+    char *loader_error_save = NULL;
     for ( i=0; i < SDL_arraysize(supported_anims); ++i ) {
         if (supported_anims[i].is) {
             if (!supported_anims[i].is(src))
@@ -311,11 +316,22 @@ IMG_Animation *IMG_LoadAnimationTyped_IO(SDL_IOStream *src, bool closeio, const 
 #ifdef DEBUG_IMGLIB
             SDL_Log("IMGLIB: Failed to load animation as %s. Reason: %s\n", supported_anims[i].type, SDL_GetError());
 #endif
+            if ( loader_error_save ) {
+                SDL_free(loader_error_save);
+            }
+
+            loader_error_save = SDL_strdup(SDL_GetError());
             continue;
         }
         if (closeio)
             SDL_CloseIO(src);
         return anim;
+    }
+
+    if ( loader_error_save ) {
+        SDL_SetError(loader_error_save);
+        SDL_free(loader_error_save);
+        return NULL;
     }
 
     /* Create a single frame animation from an image */
