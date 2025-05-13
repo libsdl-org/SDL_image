@@ -5,7 +5,7 @@
 [submodule "external/libpng"]
 	path = external/libpng
 	url = https://github.com/libsdl-org/libpng.git
-	branch = v1.6.47-SDL
+	branch = v1.6.48-SDL
 [submodule "external/libwebp"]
 	path = external/libwebp
 	url = https://github.com/libsdl-org/libwebp.git
