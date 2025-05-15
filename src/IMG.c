@@ -174,6 +174,7 @@ SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type)
 #endif
 
     /* Detect the type of image being loaded */
+    char *loader_error_save = NULL;
     for ( i=0; i < SDL_arraysize(supported); ++i ) {
         if (supported[i].is) {
             if (!supported[i].is(src)) {
@@ -189,6 +190,17 @@ SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type)
         SDL_Log("IMGLIB: Loading image as %s\n", supported[i].type);
 #endif
         image = supported[i].load(src);
+        if (!image) {
+#ifdef DEBUG_IMGLIB
+            SDL_Log("IMGLIB: Failed to load image as %s. Reason: %s\n", supported[i].type, SDL_GetError());
+#endif
+            if ( loader_error_save ) {
+                SDL_free(loader_error_save);
+            }
+
+            loader_error_save = SDL_strdup(SDL_GetError());
+            continue;
+        }
         if (closeio) {
             SDL_CloseIO(src);
         }
@@ -198,7 +210,15 @@ SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type)
     if ( closeio ) {
         SDL_CloseIO(src);
     }
-    SDL_SetError("Unsupported image format");
+
+    /* we want to keep loaders' last error message, if we ever attempted to load an image, and failed */
+    if ( loader_error_save ) {
+        SDL_SetError("%s", loader_error_save);
+        SDL_free(loader_error_save);
+    } else {
+        SDL_SetError("Unsupported image format");
+    }
+
     return NULL;
 }
 
@@ -278,6 +298,7 @@ IMG_Animation *IMG_LoadAnimationTyped_IO(SDL_IOStream *src, bool closeio, const 
     }
 
     /* Detect the type of image being loaded */
+    char *loader_error_save = NULL;
     for ( i=0; i < SDL_arraysize(supported_anims); ++i ) {
         if (supported_anims[i].is) {
             if (!supported_anims[i].is(src))
@@ -291,9 +312,26 @@ IMG_Animation *IMG_LoadAnimationTyped_IO(SDL_IOStream *src, bool closeio, const 
         SDL_Log("IMGLIB: Loading image as %s\n", supported_anims[i].type);
 #endif
         anim = supported_anims[i].load(src);
+        if (!anim) {
+#ifdef DEBUG_IMGLIB
+            SDL_Log("IMGLIB: Failed to load animation as %s. Reason: %s\n", supported_anims[i].type, SDL_GetError());
+#endif
+            if ( loader_error_save ) {
+                SDL_free(loader_error_save);
+            }
+
+            loader_error_save = SDL_strdup(SDL_GetError());
+            continue;
+        }
         if (closeio)
             SDL_CloseIO(src);
         return anim;
+    }
+
+    if ( loader_error_save ) {
+        SDL_SetError("%s", loader_error_save);
+        SDL_free(loader_error_save);
+        return NULL;
     }
 
     /* Create a single frame animation from an image */
