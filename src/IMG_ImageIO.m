@@ -365,12 +365,7 @@ static bool Internal_isType (SDL_IOStream *rw_ops, CFStringRef uti_string_to_tes
     }
 
     Sint64 start = SDL_TellIO(rw_ops);
-    CFDictionaryRef hint_dictionary = CreateHintDictionary(uti_string_to_test);
-    CGImageSourceRef image_source = CreateCGImageSourceFromIOStream(rw_ops, hint_dictionary);
-
-    if (hint_dictionary != NULL) {
-        CFRelease(hint_dictionary);
-    }
+    CGImageSourceRef image_source = CreateCGImageSourceFromIOStream(rw_ops, NULL);
 
     if (NULL == image_source) {
         // reset the file pointer
