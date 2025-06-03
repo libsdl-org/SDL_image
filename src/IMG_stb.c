@@ -169,6 +169,18 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
                 int i;
                 Uint8 *palette_bytes = (Uint8 *)palette_colors;
 
+                /* Reduce palette->ncolors to minimum possible value */
+                int palette_ncolors = 1;
+                for (i = 0; i < w * h; i++) {
+                    int cur_best = pixels[i] + 1;
+                    if (palette_ncolors < cur_best) {
+                        palette_ncolors = cur_best;
+                    }
+                }
+                if (palette_ncolors < palette->ncolors) {
+                    palette->ncolors = palette_ncolors;
+                }
+
                 for (i = 0; i < palette->ncolors; i++) {
                     palette->colors[i].r = *palette_bytes++;
                     palette->colors[i].g = *palette_bytes++;
@@ -191,6 +203,8 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
                 SDL_FreeSurface(surface);
                 surface = converted;
             } else if (has_colorkey) {
+                /* remove redundant pixel alpha before setting colorkey */
+                palette->colors[colorkey_index].a = SDL_ALPHA_OPAQUE;
                 SDL_SetColorKey(surface, SDL_TRUE, colorkey_index);
             }
         }
