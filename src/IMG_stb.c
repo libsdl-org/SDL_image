@@ -174,6 +174,8 @@ SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src)
             if (has_alpha) {
                 SDL_SetSurfaceBlendMode(surface, SDL_BLENDMODE_BLEND);
             } else if (has_colorkey) {
+                /* remove redundant pixel alpha before setting colorkey */
+                palette->colors[colorkey_index].a = SDL_ALPHA_OPAQUE;
                 SDL_SetSurfaceColorKey(surface, true, colorkey_index);
             }
 
