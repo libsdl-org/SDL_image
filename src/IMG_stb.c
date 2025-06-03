@@ -191,6 +191,8 @@ SDL_Surface *IMG_LoadSTB_RW(SDL_RWops *src)
                 SDL_FreeSurface(surface);
                 surface = converted;
             } else if (has_colorkey) {
+                /* remove redundant pixel alpha before setting colorkey */
+                palette->colors[colorkey_index].a = SDL_ALPHA_OPAQUE;
                 SDL_SetColorKey(surface, SDL_TRUE, colorkey_index);
             }
         }
