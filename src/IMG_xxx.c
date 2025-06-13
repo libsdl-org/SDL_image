@@ -76,19 +76,15 @@ SDL_Surface *IMG_LoadXXX_IO(SDL_IOStream *src)
 
 #else
 
-#if defined(_MSC_VER) && _MSC_VER >= 1300
-#pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
-#endif
-
 bool IMG_isXXX(SDL_IOStream *src)
 {
-    (void) src;
+    (void)src;
     return false;
 }
 
 SDL_Surface *IMG_LoadXXX_IO(SDL_IOStream *src)
 {
-    (void) src;
+    (void)src;
     return NULL;
 }
 

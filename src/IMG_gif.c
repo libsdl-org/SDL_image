@@ -742,6 +742,7 @@ IMG_Animation *IMG_LoadGIFAnimation_IO(SDL_IOStream *src)
 /* Load a GIF type animation from an SDL datasource */
 IMG_Animation *IMG_LoadGIFAnimation_IO(SDL_IOStream *src)
 {
+    (void)src;
     return NULL;
 }
 
@@ -789,19 +790,18 @@ SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
 }
 
 #else
-#if defined(_MSC_VER) && _MSC_VER >= 1300
-#pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
-#endif
 
 /* See if an image is contained in a data source */
 bool IMG_isGIF(SDL_IOStream *src)
 {
+    (void)src;
     return false;
 }
 
 /* Load a GIF type image from an SDL datasource */
 SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
 {
+    (void)src;
     return NULL;
 }
 

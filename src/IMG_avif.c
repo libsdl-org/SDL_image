@@ -707,10 +707,6 @@ done:
 /* We don't have any way to save AVIF files */
 #undef SDL_IMAGE_SAVE_AVIF
 
-#if defined(_MSC_VER) && _MSC_VER >= 1300
-#pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
-#endif
-
 /* See if an image is contained in a data source */
 bool IMG_isAVIF(SDL_IOStream *src)
 {

@@ -148,19 +148,18 @@ done:
 }
 
 #else
-#if defined(_MSC_VER) && _MSC_VER >= 1300
-#pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
-#endif
 
 /* See if an image is contained in a data source */
 bool IMG_isXV(SDL_IOStream *src)
 {
+    (void)src;
     return false;
 }
 
 /* Load a XXX type image from an SDL datasource */
 SDL_Surface *IMG_LoadXV_IO(SDL_IOStream *src)
 {
+    (void)src;
     return NULL;
 }
 
