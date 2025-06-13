@@ -543,19 +543,18 @@ SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 #endif /* WANT_LIBPNG */
 
 #else
-#if defined(_MSC_VER) && _MSC_VER >= 1300
-#pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
-#endif
 
 /* See if an image is contained in a data source */
 bool IMG_isPNG(SDL_IOStream *src)
 {
+    (void)src;
     return false;
 }
 
 /* Load a PNG type image from an SDL datasource */
 SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 {
+    (void)src;
     return NULL;
 }
 
