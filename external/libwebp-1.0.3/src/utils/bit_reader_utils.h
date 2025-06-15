@@ -58,7 +58,7 @@ extern "C" {
 // BITS can be any multiple of 8 from 8 to 56 (inclusive).
 // Pick values that fit natural register size.
 
-#if defined(__i386__) || defined(_M_IX86)      // x86 32bit
+#if defined(__i386__) || defined(_M_IX86) || defined(__386__) // x86 32bit
 #define BITS 24
 #elif defined(__x86_64__) || defined(_M_X64)   // x86 64bit
 #define BITS 56

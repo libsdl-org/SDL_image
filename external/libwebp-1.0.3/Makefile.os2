@@ -1,0 +1,42 @@
+LIBDECODER = webpdec.lib
+LIBDEMUXER = webpdemux.lib
+
+VERSION = 1.0.3
+
+CFLAGS = -zq -bt=os2 -ei -5s -fp5 -fpi87 -sg -s -bm -d0 -sg -oeatxh -wx
+#CFLAGS += -DWEBP_USE_THREAD=1
+#CFLAGS += -DWEBP_USE_SSE2=1 -DWEBP_USE_SSE41=1
+CFLAGS += -DNDEBUG
+
+DEMUX_SRCS=anim_decode.c demux.c
+UTIL_SRCS=bit_reader_utils.c color_cache_utils.c filters_utils.c huffman_utils.c quant_levels_dec_utils.c random_utils.c rescaler_utils.c thread_utils.c utils.c
+DEC_SRCS =alpha_dec.c buffer_dec.c frame_dec.c idec_dec.c io_dec.c quant_dec.c tree_dec.c vp8_dec.c vp8l_dec.c webp_dec.c
+DSP_SRCS =alpha_processing.c cpu.c dec_clip_tables.c dec.c filters.c lossless.c rescaler.c upsampling.c yuv.c
+#DSP_SRCS+= alpha_processing_sse2.c dec_sse2.c filters_sse2.c lossless_sse2.c rescaler_sse2.c upsampling_sse2.c yuv_sse2.c
+#DSP_SRCS+= alpha_processing_sse41.c dec_sse41.c upsampling_sse41.c yuv_sse41.c
+SRCS = $(DEC_SRCS) $(DSP_SRCS) $(UTIL_SRCS)
+
+OBJS = $(SRCS:.c=.obj)
+DEMUX_OBJS = $(DEMUX_SRCS:.c=.obj)
+
+all: $(LIBDECODER) $(LIBDEMUXER)
+
+$(LIBDECODER): $(OBJS)
+  @echo * Create library: $(LIBDECODER)...
+  wlib -q -b -n -c -pa -s -t -zld -ii -io $@ $(OBJS)
+
+$(LIBDEMUXER): $(DEMUX_OBJS)
+  @echo * Create library: $(LIBDEMUXER)...
+  wlib -q -b -n -c -pa -s -t -zld -ii -io $@ $(DEMUX_OBJS)
+
+.c: src/dec;src/demux;src/dsp;src/utils
+.c.obj:
+  wcc386 $(CFLAGS) -fo=$^@ $<
+
+clean: .SYMBOLIC
+  @if exist *.obj rm *.obj
+  @if exist *.err rm *.err
+
+distclean: clean .SYMBOLIC
+  @if exist $(LIBDECODER) rm $(LIBDECODER)
+  @if exist $(LIBDEMUXER) rm $(LIBDEMUXER)

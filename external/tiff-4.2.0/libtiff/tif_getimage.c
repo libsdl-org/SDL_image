@@ -2942,6 +2942,13 @@ TIFFReadRGBAStripExt(TIFF* tif, uint32 row, uint32 * raster, int stop_on_error)
     }
 
     if (TIFFRGBAImageOK(tif, emsg) && TIFFRGBAImageBegin(&img, tif, stop_on_error, emsg)) {
+        if (row >= img.height)
+        {
+            TIFFErrorExt(tif->tif_clientdata, TIFFFileName(tif),
+                          "Invalid row passed to TIFFReadRGBAStrip().");
+            TIFFRGBAImageEnd(&img);
+            return (0);
+        }
 
         img.row_offset = row;
         img.col_offset = 0;
@@ -3016,6 +3023,14 @@ TIFFReadRGBATileExt(TIFF* tif, uint32 col, uint32 row, uint32 * raster, int stop
 	|| !TIFFRGBAImageBegin(&img, tif, stop_on_error, emsg)) {
 	    TIFFErrorExt(tif->tif_clientdata, TIFFFileName(tif), "%s", emsg);
 	    return( 0 );
+    }
+
+    if (col >= img.width || row >= img.height)
+    {
+        TIFFErrorExt(tif->tif_clientdata, TIFFFileName(tif),
+                      "Invalid row/col passed to TIFFReadRGBATile().");
+        TIFFRGBAImageEnd(&img);
+        return (0);
     }
 
     /*

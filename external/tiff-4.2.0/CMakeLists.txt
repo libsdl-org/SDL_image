@@ -23,10 +23,10 @@
 # LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
 # OF THIS SOFTWARE.
 
-cmake_minimum_required(VERSION 2.8.11) # b/c of use of BUILD_INTERFACE generator expression
+cmake_minimum_required(VERSION 2.8.11...3.10)  # b/c of use of BUILD_INTERFACE generator expression
 
 # Default policy is from 2.8.9
-cmake_policy(VERSION 2.8.9)
+# cmake_policy(VERSION 2.8.9)
 # Set MacOSX @rpath usage globally.
 if (POLICY CMP0020)
   cmake_policy(SET CMP0020 NEW)

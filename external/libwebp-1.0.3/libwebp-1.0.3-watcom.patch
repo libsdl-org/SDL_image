@@ -1,0 +1,110 @@
+diff -up libwebp-1.0.3/src/dsp/dec.c~ libwebp-1.0.3/src/dsp/dec.c
+--- libwebp-1.0.3/src/dsp/dec.c~
++++ libwebp-1.0.3/src/dsp/dec.c
+@@ -255,13 +255,12 @@ VP8PredFunc VP8PredLuma16[NUM_B_DC_MODES
+ #if !WEBP_NEON_OMIT_C_CODE
+ static void VE4_C(uint8_t* dst) {    // vertical
+   const uint8_t* top = dst - BPS;
+-  const uint8_t vals[4] = {
+-    AVG3(top[-1], top[0], top[1]),
+-    AVG3(top[ 0], top[1], top[2]),
+-    AVG3(top[ 1], top[2], top[3]),
+-    AVG3(top[ 2], top[3], top[4])
+-  };
++  uint8_t vals[4];
+   int i;
++  vals[0] = AVG3(top[-1], top[0], top[1]);
++  vals[1] = AVG3(top[ 0], top[1], top[2]);
++  vals[2] = AVG3(top[ 1], top[2], top[3]);
++  vals[3] = AVG3(top[ 2], top[3], top[4]);
+   for (i = 0; i < 4; ++i) {
+     memcpy(dst + i * BPS, vals, sizeof(vals));
+   }
+diff -up libwebp-1.0.3/src/utils/bit_reader_utils.h~ libwebp-1.0.3/src/utils/bit_reader_utils.h
+index 0f8db2c..bf2c4cf 100644
+--- libwebp-1.0.3/src/utils/bit_reader_utils.h~
++++ libwebp-1.0.3/src/utils/bit_reader_utils.h
+@@ -58,7 +58,7 @@ extern "C" {
+ // BITS can be any multiple of 8 from 8 to 56 (inclusive).
+ // Pick values that fit natural register size.
+ 
+-#if defined(__i386__) || defined(_M_IX86)      // x86 32bit
++#if defined(__i386__) || defined(_M_IX86) || defined(__386__) // x86 32bit
+ #define BITS 24
+ #elif defined(__x86_64__) || defined(_M_X64)   // x86 64bit
+ #define BITS 56
+diff -up libwebp-1.0.3/src/utils/endian_inl_utils.h~ libwebp-1.0.3/src/utils/endian_inl_utils.h
+--- libwebp-1.0.3/src/utils/endian_inl_utils.h~
++++ libwebp-1.0.3/src/utils/endian_inl_utils.h
+@@ -39,6 +39,13 @@
+ #endif
+ #endif  // !HAVE_CONFIG_H
+ 
++#if defined(__WATCOMC__) && defined(__386__)
++extern __inline uint16_t BSwap16(uint16_t);
++#pragma aux BSwap16 = \
++  "xchg al, ah" \
++  parm   [ax]   \
++  modify [ax];
++#else /* not watcom: */
+ static WEBP_INLINE uint16_t BSwap16(uint16_t x) {
+ #if defined(HAVE_BUILTIN_BSWAP16)
+   return __builtin_bswap16(x);
+@@ -49,7 +56,15 @@ static WEBP_INLINE uint16_t BSwap16(uint16_t x) {
+   return (x >> 8) | ((x & 0xff) << 8);
+ #endif  // HAVE_BUILTIN_BSWAP16
+ }
++#endif
+ 
++#if defined(__WATCOMC__) && defined(__386__)
++extern __inline uint32_t BSwap32(uint32_t);
++#pragma aux BSwap32 = \
++  "bswap eax"  \
++  parm   [eax] \
++  modify [eax];
++#else /* not watcom: */
+ static WEBP_INLINE uint32_t BSwap32(uint32_t x) {
+ #if defined(WEBP_USE_MIPS32_R2)
+   uint32_t ret;
+@@ -72,7 +87,17 @@ static WEBP_INLINE uint32_t BSwap32(uint32_t x) {
+   return (x >> 24) | ((x >> 8) & 0xff00) | ((x << 8) & 0xff0000) | (x << 24);
+ #endif  // HAVE_BUILTIN_BSWAP32
+ }
++#endif
+ 
++#if defined(__WATCOMC__) && defined(__386__)
++extern __inline uint64_t BSwap64(uint64_t);
++#pragma aux BSwap64 = \
++  "bswap eax"     \
++  "bswap edx"     \
++  "xchg eax,edx"  \
++  parm [eax edx]  \
++  modify [eax edx];
++#else
+ static WEBP_INLINE uint64_t BSwap64(uint64_t x) {
+ #if defined(HAVE_BUILTIN_BSWAP64)
+   return __builtin_bswap64(x);
+@@ -89,5 +114,6 @@ static WEBP_INLINE uint64_t BSwap64(uint64_t x) {
+   return x;
+ #endif  // HAVE_BUILTIN_BSWAP64
+ }
++#endif
+ 
+ #endif  // WEBP_UTILS_ENDIAN_INL_UTILS_H_
+diff -up libwebp-1.0.3/src/utils/utils.h~ libwebp-1.0.3/src/utils/utils.h
+--- libwebp-1.0.3/src/utils/utils.h~
++++ libwebp-1.0.3/src/utils/utils.h
+@@ -124,6 +124,13 @@ static WEBP_INLINE int BitsLog2Floor(uint32_t n) {
+   _BitScanReverse(&first_set_bit, n);
+   return first_set_bit;
+ }
++#elif defined(__WATCOMC__) && defined(__386__)
++extern __inline int BitsLog2Floor(uint32_t);
++#pragma aux BitsLog2Floor = \
++    "bsr eax, eax" \
++    parm [eax] nomemory \
++    value [eax] \
++    modify exact [eax] nomemory;
+ #else   // default: use the C-version.
+ // Returns 31 ^ clz(n) = log2(n). This is the default C-implementation, either
+ // based on table or not. Can be used as fallback if clz() is not available.

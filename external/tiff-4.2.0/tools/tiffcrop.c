@@ -528,7 +528,7 @@ static int rotateContigSamples24bits(uint16, uint16, uint16, uint32,
 static int rotateContigSamples32bits(uint16, uint16, uint16, uint32, 
                                      uint32,   uint32, uint8 *, uint8 *);
 static int rotateImage(uint16, struct image_data *, uint32 *, uint32 *,
- 		       unsigned char **, int);
+ 		       unsigned char **, size_t *, int);
 static int mirrorImage(uint16, uint16, uint16, uint32, uint32,
 		       unsigned char *);
 static int invertImage(uint16, uint16, uint16, uint32, uint32,
@@ -2472,8 +2472,13 @@ main(int argc, char* argv[])
         {  /* Whole image or sections not based on output page size */
         if (crop.selections > 0)
           {
-	  writeSelections(in, &out, &crop, &image, &dump, seg_buffs,
-                          mp, argv[argc - 1], &next_page, total_pages);
+	  if (writeSelections(in, &out, &crop, &image, &dump, seg_buffs,
+	                      mp, argv[argc - 1], &next_page, total_pages))
+	      {
+	         TIFFError("main",
+	                   "Unable to write new image selections");
+	         exit(EXIT_FAILURE);
+	      }
           }
 	else  /* One file all images and sections */
           {
@@ -5997,9 +6002,7 @@ loadImage(TIFF* in, struct image_data *image, struct dump_opts *dump, unsigned c
   uint32   tw = 0, tl = 0;       /* Tile width and length */
   tmsize_t tile_rowsize = 0;
   unsigned char *read_buff = NULL;
-  unsigned char *new_buff  = NULL;
   int      readunit = 0;
-  static   tmsize_t  prev_readsize = 0;
 
   TIFFGetFieldDefaulted(in, TIFFTAG_BITSPERSAMPLE, &bps);
   TIFFGetFieldDefaulted(in, TIFFTAG_SAMPLESPERPIXEL, &spp);
@@ -6294,37 +6297,19 @@ loadImage(TIFF* in, struct image_data *image, struct dump_opts *dump, unsigned c
   read_buff = *read_ptr;
   /* +3 : add a few guard bytes since reverseSamples16bits() can read a bit */
   /* outside buffer */
-  if (!read_buff)
+  if (read_buff)
   {
+    _TIFFfree(read_buff);
+  }
     if( buffsize > 0xFFFFFFFFU - 3 )
     {
-        TIFFError("loadImage", "Unable to allocate/reallocate read buffer");
+        TIFFError("loadImage", "Required read buffer size too large");
         return (-1);
     }
     read_buff = (unsigned char *)limitMalloc(buffsize + NUM_BUFF_OVERSIZE_BYTES);
-  }
-  else
-    {
-    if (prev_readsize < buffsize)
-    {
-      if( buffsize > 0xFFFFFFFFU - 3 )
-      {
-          TIFFError("loadImage", "Unable to allocate/reallocate read buffer");
-          return (-1);
-      }
-      new_buff = _TIFFrealloc(read_buff, buffsize + NUM_BUFF_OVERSIZE_BYTES);
-      if (!new_buff)
-        {
-	free (read_buff);
-        read_buff = (unsigned char *)limitMalloc(buffsize + NUM_BUFF_OVERSIZE_BYTES);
-        }
-      else
-        read_buff = new_buff;
-      }
-    }
   if (!read_buff)
     {
-    TIFFError("loadImage", "Unable to allocate/reallocate read buffer");
+    TIFFError("loadImage", "Unable to allocate read buffer");
     return (-1);
     }
 
@@ -6332,7 +6317,6 @@ loadImage(TIFF* in, struct image_data *image, struct dump_opts *dump, unsigned c
   read_buff[buffsize+1] = 0;
   read_buff[buffsize+2] = 0;
 
-  prev_readsize = buffsize;
   *read_ptr = read_buff;
 
   /* N.B. The read functions used copy separate plane data into a buffer as interleaved
@@ -6426,7 +6410,6 @@ static int  correct_orientation(struct image_data *image, unsigned char **work_b
 
   if (image->adjustments & ROTATE_ANY)
     {
-    uint32 width, length;
     if (image->adjustments & ROTATECW_90)
       rotation = (uint16) 90;
     else
@@ -6445,13 +6428,14 @@ static int  correct_orientation(struct image_data *image, unsigned char **work_b
       /* Dummy variable in order not to switch two times the
        * image->width,->length within rotateImage(),
        * but switch xres, yres there. */
-      width = image->width;
-      length = image->length;
-      if (rotateImage(rotation, image, &width, &length, work_buff_ptr, TRUE))
+     {uint32 width = image->width;
+      uint32 length = image->length;
+      if (rotateImage(rotation, image, &width, &length, work_buff_ptr, NULL, TRUE))
       {
       TIFFError ("correct_orientation", "Unable to rotate image");
       return (-1);
       }
+     }
     image->orientation = ORIENTATION_TOPLEFT;
     }
 
@@ -7670,16 +7654,19 @@ processCropSelections(struct image_data *image, struct crop_mask *crop,
 
     if (crop->crop_mode & CROP_ROTATE) /* rotate should be last as it can reallocate the buffer */
       {
+      /* rotateImage() set up a new buffer and calculates its size
+       * individually. Therefore, seg_buffs size  needs to be updated
+       * accordingly. */
+      size_t rot_buf_size = 0;
       if (rotateImage(crop->rotation, image, &crop->combined_width, 
-                      &crop->combined_length, &crop_buff, FALSE))
+                      &crop->combined_length, &crop_buff, &rot_buf_size, FALSE))
         {
         TIFFError("processCropSelections", 
                   "Failed to rotate composite regions by %d degrees", crop->rotation);
         return (-1);
         }
       seg_buffs[0].buffer = crop_buff;
-      seg_buffs[0].size = (((crop->combined_width * image->bps + 7 ) / 8)
-                            * image->spp) * crop->combined_length; 
+      seg_buffs[0].size = rot_buf_size;
       }
     }
   else  /* Separated Images */
@@ -7776,8 +7763,9 @@ processCropSelections(struct image_data *image, struct crop_mask *crop,
 
       if (crop->crop_mode & CROP_ROTATE) /* rotate should be last as it can reallocate the buffer */
         {
+	size_t rot_buf_size = 0;
 	if (rotateImage(crop->rotation, image, &crop->regionlist[i].width, 
-			&crop->regionlist[i].length, &crop_buff, FALSE))
+			&crop->regionlist[i].length, &crop_buff, &rot_buf_size, FALSE))
           {
           TIFFError("processCropSelections", 
                     "Failed to rotate crop region by %d degrees", crop->rotation);
@@ -7788,8 +7776,7 @@ processCropSelections(struct image_data *image, struct crop_mask *crop,
         crop->combined_width = total_width;
         crop->combined_length = total_length;
         seg_buffs[i].buffer = crop_buff;
-        seg_buffs[i].size = (((crop->regionlist[i].width * image->bps + 7 ) / 8)
-                               * image->spp) * crop->regionlist[i].length; 
+        seg_buffs[i].size = rot_buf_size;
         }
       }
     }
@@ -7914,7 +7901,7 @@ createCroppedImage(struct image_data *image, struct crop_mask *crop,
   if (crop->crop_mode & CROP_ROTATE) /* rotate should be last as it can reallocate the buffer */
     {
     if (rotateImage(crop->rotation, image, &crop->combined_width, 
-                    &crop->combined_length, crop_buff_ptr, TRUE))
+                    &crop->combined_length, crop_buff_ptr, NULL, TRUE))
       {
       TIFFError("createCroppedImage", 
                 "Failed to rotate image or cropped selection by %d degrees", crop->rotation);
@@ -8577,13 +8564,14 @@ rotateContigSamples32bits(uint16 rotation, uint16 spp, uint16 bps, uint32 width,
 /* Rotate an image by a multiple of 90 degrees clockwise */
 static int
 rotateImage(uint16 rotation, struct image_data *image, uint32 *img_width, 
-            uint32 *img_length, unsigned char **ibuff_ptr, int rot_image_params)
+            uint32 *img_length, unsigned char **ibuff_ptr, size_t *rot_buf_size, int rot_image_params)
   {
   int      shift_width;
   uint32   bytes_per_pixel, bytes_per_sample;
   uint32   row, rowsize, src_offset, dst_offset;
   uint32   i, col, width, length;
-  uint32   colsize, buffsize, col_offset, pix_offset;
+  uint32   colsize, col_offset, pix_offset;
+  tmsize_t buffsize;
   unsigned char *ibuff;
   unsigned char *src;
   unsigned char *dst;
@@ -8596,12 +8584,41 @@ rotateImage(uint16 rotation, struct image_data *image, uint32 *img_width,
   spp = image->spp;
   bps = image->bps;
 
+  if ((spp != 0 && bps != 0 &&
+       width > (uint32)((TIFF_UINT32_MAX - 7) / spp / bps)) ||
+      (spp != 0 && bps != 0 &&
+       length > (uint32)((TIFF_UINT32_MAX - 7) / spp / bps)))
+  {
+      TIFFError("rotateImage", "Integer overflow detected.");
+      return (-1);
+  }
+
   rowsize = ((bps * spp * width) + 7) / 8;
   colsize = ((bps * spp * length) + 7) / 8;
   if ((colsize * width) > (rowsize * length))
-    buffsize = (colsize + 1) * width;
-  else
-    buffsize = (rowsize + 1) * length;
+    {
+        if (((tmsize_t)colsize + 1) != 0 &&
+            (tmsize_t)width > ((TIFF_TMSIZE_T_MAX - NUM_BUFF_OVERSIZE_BYTES) /
+                               ((tmsize_t)colsize + 1)))
+        {
+            TIFFError("rotateImage",
+                      "Integer overflow when calculating buffer size.");
+            return (-1);
+        }
+        buffsize = ((tmsize_t)colsize + 1) * width;
+    }
+    else
+    {
+        if (((tmsize_t)rowsize + 1) != 0 &&
+            (tmsize_t)length > ((TIFF_TMSIZE_T_MAX - NUM_BUFF_OVERSIZE_BYTES) /
+                                ((tmsize_t)rowsize + 1)))
+        {
+            TIFFError("rotateImage",
+                      "Integer overflow when calculating buffer size.");
+            return (-1);
+        }
+        buffsize = (rowsize + 1) * length;
+    }
 
   bytes_per_sample = (bps + 7) / 8;
   bytes_per_pixel  = ((bps * spp) + 7) / 8;
@@ -8624,10 +8641,13 @@ rotateImage(uint16 rotation, struct image_data *image, uint32 *img_width,
   /* Add 3 padding bytes for extractContigSamplesShifted32bits */
   if (!(rbuff = (unsigned char *)limitMalloc(buffsize + NUM_BUFF_OVERSIZE_BYTES)))
     {
-    TIFFError("rotateImage", "Unable to allocate rotation buffer of %1u bytes", buffsize + NUM_BUFF_OVERSIZE_BYTES);
+    TIFFError("rotateImage", "Unable to allocate rotation buffer of " TIFF_SSIZE_FORMAT
+                  " bytes ", buffsize + NUM_BUFF_OVERSIZE_BYTES);
     return (-1);
     }
   _TIFFmemset(rbuff, '\0', buffsize + NUM_BUFF_OVERSIZE_BYTES);
+  if (rot_buf_size != NULL)
+	  *rot_buf_size = buffsize;
 
   ibuff = *ibuff_ptr;
   switch (rotation)

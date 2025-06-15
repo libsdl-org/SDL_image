@@ -255,13 +255,12 @@ VP8PredFunc VP8PredLuma16[NUM_B_DC_MODES];
 #if !WEBP_NEON_OMIT_C_CODE
 static void VE4_C(uint8_t* dst) {    // vertical
   const uint8_t* top = dst - BPS;
-  const uint8_t vals[4] = {
-    AVG3(top[-1], top[0], top[1]),
-    AVG3(top[ 0], top[1], top[2]),
-    AVG3(top[ 1], top[2], top[3]),
-    AVG3(top[ 2], top[3], top[4])
-  };
+  uint8_t vals[4];
   int i;
+  vals[0] = AVG3(top[-1], top[0], top[1]);
+  vals[1] = AVG3(top[ 0], top[1], top[2]);
+  vals[2] = AVG3(top[ 1], top[2], top[3]);
+  vals[3] = AVG3(top[ 2], top[3], top[4]);
   for (i = 0; i < 4; ++i) {
     memcpy(dst + i * BPS, vals, sizeof(vals));
   }
@@ -807,10 +806,10 @@ WEBP_DSP_INIT_FUNC(VP8DspInit) {
 
   // If defined, use CPUInfo() to overwrite some pointers with faster versions.
   if (VP8GetCPUInfo != NULL) {
-#if defined(WEBP_USE_SSE2)
+#if defined(WEBP_HAVE_SSE2)
     if (VP8GetCPUInfo(kSSE2)) {
       VP8DspInitSSE2();
-#if defined(WEBP_USE_SSE41)
+#if defined(WEBP_HAVE_SSE41)
       if (VP8GetCPUInfo(kSSE4_1)) {
         VP8DspInitSSE41();
       }
@@ -834,7 +833,7 @@ WEBP_DSP_INIT_FUNC(VP8DspInit) {
 #endif
   }
 
-#if defined(WEBP_USE_NEON)
+#if defined(WEBP_HAVE_NEON)
   if (WEBP_NEON_OMIT_C_CODE ||
       (VP8GetCPUInfo != NULL && VP8GetCPUInfo(kNEON))) {
     VP8DspInitNEON();

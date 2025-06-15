@@ -13256,12 +13256,14 @@ done
  ;;
       esac
       ;;
+    aarch64*|arm64*)
+
+$as_echo "#define WEBP_HAVE_NEON 1" >>confdefs.h
+
+      ;;
   esac
 
 fi
-
-
-
 
 
 

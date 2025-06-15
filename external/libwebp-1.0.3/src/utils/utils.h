@@ -124,6 +124,13 @@ static WEBP_INLINE int BitsLog2Floor(uint32_t n) {
   _BitScanReverse(&first_set_bit, n);
   return first_set_bit;
 }
+#elif defined(__WATCOMC__) && defined(__386__)
+extern __inline int BitsLog2Floor(uint32_t);
+#pragma aux BitsLog2Floor = \
+    "bsr eax, eax" \
+    parm [eax] nomemory \
+    value [eax] \
+    modify exact [eax] nomemory;
 #else   // default: use the C-version.
 // Returns 31 ^ clz(n) = log2(n). This is the default C-implementation, either
 // based on table or not. Can be used as fallback if clz() is not available.

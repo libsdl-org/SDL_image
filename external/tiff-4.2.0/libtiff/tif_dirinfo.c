@@ -808,7 +808,7 @@ _TIFFFindOrRegisterField(TIFF *tif, uint32 tag, TIFFDataType dt)
 	fld = TIFFFindField(tif, tag, dt);
 	if (fld == NULL) {
 		fld = _TIFFCreateAnonField(tif, tag, dt);
-		if (!_TIFFMergeFields(tif, fld, 1))
+		if (fld == NULL || !_TIFFMergeFields(tif, fld, 1))
 			return NULL;
 	}
 
