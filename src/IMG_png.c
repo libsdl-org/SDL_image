@@ -766,15 +766,61 @@ static int IMG_SavePNG_RW_miniz(SDL_Surface *surface, SDL_RWops *dst)
         return IMG_SetError("Passed NULL dst");
     }
 
-    if (surface->format->format == png_format) {
-        png = tdefl_write_image_to_png_file_in_memory(surface->pixels, surface->w, surface->h, surface->format->BytesPerPixel, surface->pitch, &size);
-    } else {
-        SDL_Surface *cvt = SDL_ConvertSurfaceFormat(surface, png_format, 0);
-        if (cvt) {
-            png = tdefl_write_image_to_png_file_in_memory(cvt->pixels, cvt->w, cvt->h, cvt->format->BytesPerPixel, cvt->pitch, &size);
-            SDL_FreeSurface(cvt);
+    /* miniz only supports RGB and RGBA, it does not support palette.
+     * So we:
+     * - pick RGBA if surface has per-pixel alpha or if a palette entry has alpha.
+     * - pick RGB in all other cases.
+     * Just like the libpng implementation, global alpha and colorkey gets
+     * ignored here for consistency.
+     */
+    int do_rgba = SDL_ISPIXELFORMAT_ALPHA(surface->format->format);
+    if (!do_rgba && SDL_ISPIXELFORMAT_INDEXED(surface->format->format)) {
+        SDL_Palette *pal = surface->format->palette;
+        if (pal) {
+            for (int i = 0; i < pal->ncolors; i++) {
+                if (pal->colors[i].a != SDL_ALPHA_OPAQUE) {
+                    do_rgba = 1;
+                    break;
+                }
+            }
         }
     }
+
+    Uint32 cvt_fmt = do_rgba ? png_format : SDL_PIXELFORMAT_RGB24;
+    SDL_Surface *cvt = NULL;
+    Uint8 *pixels = surface->pixels;
+    int bpp = surface->format->BytesPerPixel;
+    int pitch = surface->pitch;
+    if (surface->format->format != cvt_fmt) {
+        cvt = SDL_ConvertSurfaceFormat(surface, cvt_fmt, 0);
+        pixels = cvt ? cvt->pixels : NULL;
+        bpp = cvt ? cvt->format->BytesPerPixel : 0;
+        pitch = cvt ? cvt->pitch : 0;
+    }
+    if (pixels) {
+        int w = surface->w;
+        int h = surface->h;
+        int tightened_pitch = bpp * w;
+        if (pitch != tightened_pitch) {
+            /* There is extra padding that we need to get rid of, if we don't
+             * do this the miniz backend is going to generate corrupt PNGs */
+            Uint8 *tightened_pixels = SDL_malloc(tightened_pitch * h);
+            if (tightened_pixels) {
+                for (int y = 0; y < h; y++) {
+                    SDL_memcpy(tightened_pixels + y * tightened_pitch, pixels + y * pitch, tightened_pitch);
+                }
+                png = tdefl_write_image_to_png_file_in_memory(tightened_pixels, w, h, bpp, tightened_pitch, &size);
+                SDL_free(tightened_pixels);
+            }
+        }
+        else {
+            png = tdefl_write_image_to_png_file_in_memory(pixels, w, h, bpp, pitch, &size);
+        }
+    }
+    if (cvt) {
+        SDL_FreeSurface(cvt);
+    }
+
     if (png) {
         if (SDL_RWwrite(dst, png, size, 1)) {
             result = 0;
