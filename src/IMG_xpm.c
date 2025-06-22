@@ -1208,30 +1208,30 @@ SDL_Surface *IMG_ReadXPMFromArrayToRGB888(char **xpm)
 }
 
 #else  /* not LOAD_XPM */
-#if defined(_MSC_VER) && _MSC_VER >= 1300
-#pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
-#endif
 
 /* See if an image is contained in a data source */
 bool IMG_isXPM(SDL_IOStream *src)
 {
+    (void)src;
     return false;
 }
-
 
 /* Load a XPM type image from an SDL datasource */
 SDL_Surface *IMG_LoadXPM_IO(SDL_IOStream *src)
 {
+    (void)src;
     return NULL;
 }
 
 SDL_Surface *IMG_ReadXPMFromArray(char **xpm)
 {
+    (void)xpm;
     return NULL;
 }
 
 SDL_Surface *IMG_ReadXPMFromArrayToRGB888(char **xpm)
 {
+    (void)xpm;
     return NULL;
 }
 

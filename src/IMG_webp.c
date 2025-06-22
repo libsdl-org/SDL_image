@@ -429,15 +429,11 @@ error:
 }
 
 #else
-#if defined(_MSC_VER) && _MSC_VER >= 1300
-#pragma warning(disable : 4100) /* warning C4100: 'op' : unreferenced formal parameter */
-#endif
 
 /* See if an image is contained in a data source */
 bool IMG_isWEBP(SDL_IOStream *src)
 {
     (void)src;
-
     return false;
 }
 
@@ -445,14 +441,12 @@ bool IMG_isWEBP(SDL_IOStream *src)
 SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
 {
     (void)src;
-
     return NULL;
 }
 
 IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
 {
     (void)src;
-
     return NULL;
 }
 
