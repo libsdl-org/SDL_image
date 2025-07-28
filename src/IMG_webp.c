@@ -316,10 +316,6 @@ IMG_Animation *IMG_LoadWEBPAnimation_IO_Internal(SDL_IOStream *src, int maxFrame
         return NULL;
     }
 
-    if (maxFrames < 0) {
-        maxFrames = 0; /* no limit */
-    }
-
     start = SDL_TellIO(src);
 
     if (!IMG_InitWEBP()) {
