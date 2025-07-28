@@ -194,7 +194,7 @@ SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
         goto error;
     }
 
-    raw_data = (uint8_t*) SDL_malloc(raw_data_size);
+    raw_data = (uint8_t *)SDL_malloc(raw_data_size);
     if (raw_data == NULL) {
         error = "Failed to allocate enough buffer for WEBP";
         goto error;
@@ -219,18 +219,6 @@ SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
         goto error;
     }
 
-    if (features.has_alpha) {
-       format = SDL_PIXELFORMAT_RGBA32;
-    } else {
-       format = SDL_PIXELFORMAT_RGB24;
-    }
-
-    surface = SDL_CreateSurface(features.width, features.height, format);
-    if (surface == NULL) {
-        error = "Failed to allocate SDL_Surface";
-        goto error;
-    }
-
     // Special casing for animated WebP images to extract a single frame.
     if (features.has_animation) {
         if (SDL_SeekIO(src, 0, SDL_IO_SEEK_SET) != 0) {
@@ -241,14 +229,11 @@ SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
             if (animation && animation->count > 0) {
                 SDL_Surface *surf = animation->frames[0];
                 if (surf) {
-                    if (SDL_BlitSurface(surf, NULL, surface, NULL)) {
-                        IMG_FreeAnimation(animation);
-                    } else {
-                        error = "Failed to blit first frame of animated WebP";
-                        // TODO: Maybe get the error from SDL_BlitSurface with SDL_GetError(), then combine it with the error message so it contains all required information?
-                        IMG_FreeAnimation(animation);
-                        goto error;
+                    ++surf->refcount;
+                    if (raw_data) {
+                        SDL_free(raw_data);
                     }
+                    return surf;
                 } else {
                     error = "Failed to load first frame of animated WebP";
                     IMG_FreeAnimation(animation);
@@ -260,12 +245,24 @@ SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
                 goto error;
             }
         }
+    }
+
+    if (features.has_alpha) {
+        format = SDL_PIXELFORMAT_RGBA32;
     } else {
-        if (features.has_alpha) {
-            ret = lib.WebPDecodeRGBAInto(raw_data, raw_data_size, (uint8_t *)surface->pixels, surface->pitch * surface->h, surface->pitch);
-        } else {
-            ret = lib.WebPDecodeRGBInto(raw_data, raw_data_size, (uint8_t *)surface->pixels, surface->pitch * surface->h, surface->pitch);
-        }
+        format = SDL_PIXELFORMAT_RGB24;
+    }
+
+    surface = SDL_CreateSurface(features.width, features.height, format);
+    if (surface == NULL) {
+        error = "Failed to allocate SDL_Surface";
+        goto error;
+    }
+
+    if (features.has_alpha) {
+        ret = lib.WebPDecodeRGBAInto(raw_data, raw_data_size, (uint8_t *)surface->pixels, surface->pitch * surface->h, surface->pitch);
+    } else {
+        ret = lib.WebPDecodeRGBInto(raw_data, raw_data_size, (uint8_t *)surface->pixels, surface->pitch * surface->h, surface->pitch);
     }
 
     if (!ret) {
@@ -278,7 +275,6 @@ SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
     }
 
     return surface;
-
 
 error:
     if (raw_data) {
