@@ -231,10 +231,41 @@ SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
         goto error;
     }
 
-    if (features.has_alpha) {
-        ret = lib.WebPDecodeRGBAInto(raw_data, raw_data_size, (uint8_t *)surface->pixels, surface->pitch * surface->h,  surface->pitch);
+    // Special casing for animated WebP images to extract a single frame.
+    if (features.has_animation) {
+        if (SDL_SeekIO(src, 0, SDL_IO_SEEK_SET) != 0) {
+            error = "Failed to seek IO to read animated WebP";
+            goto error;
+        } else {
+            IMG_Animation *animation = IMG_LoadWEBPAnimation_IO(src);
+            if (animation && animation->count > 0) {
+                SDL_Surface *surf = animation->frames[0];
+                if (surf) {
+                    if (SDL_BlitSurface(surf, NULL, surface, NULL)) {
+                        IMG_FreeAnimation(animation);
+                    } else {
+                        error = "Failed to blit first frame of animated WebP";
+                        // TODO: Maybe get the error from SDL_BlitSurface with SDL_GetError(), then combine it with the error message so it contains all required information?
+                        IMG_FreeAnimation(animation);
+                        goto error;
+                    }
+                } else {
+                    error = "Failed to load first frame of animated WebP";
+                    IMG_FreeAnimation(animation);
+                    goto error;
+                }
+            } else {
+                IMG_FreeAnimation(animation);
+                error = "Received an animated WebP but the animation data was invalid";
+                goto error;
+            }
+        }
     } else {
-        ret = lib.WebPDecodeRGBInto(raw_data, raw_data_size, (uint8_t *)surface->pixels, surface->pitch * surface->h,  surface->pitch);
+        if (features.has_alpha) {
+            ret = lib.WebPDecodeRGBAInto(raw_data, raw_data_size, (uint8_t *)surface->pixels, surface->pitch * surface->h, surface->pitch);
+        } else {
+            ret = lib.WebPDecodeRGBInto(raw_data, raw_data_size, (uint8_t *)surface->pixels, surface->pitch * surface->h, surface->pitch);
+        }
     }
 
     if (!ret) {
