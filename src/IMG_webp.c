@@ -357,7 +357,7 @@ static IMG_Animation *IMG_LoadWEBPAnimation_IO_Internal(SDL_IOStream *src, int m
     anim->w = features.width;
     anim->h = features.height;
     uint32_t fc = lib.WebPDemuxGetI(demuxer, WEBP_FF_FRAME_COUNT);
-    anim->count = maxFrames > 0 ? SDL_min(maxFrames, fc) : fc;
+    anim->count = maxFrames > 0 ? SDL_min((unsigned)maxFrames, fc) : fc;
     anim->frames = (SDL_Surface **)SDL_calloc(anim->count, sizeof(*anim->frames));
     anim->delays = (int *)SDL_calloc(anim->count, sizeof(*anim->delays));
     if (!anim->frames || !anim->delays) {
@@ -387,10 +387,9 @@ static IMG_Animation *IMG_LoadWEBPAnimation_IO_Internal(SDL_IOStream *src, int m
 
     SDL_zero(iter);
 
-    int frame_idx = 0;
     if (lib.WebPDemuxGetFrame(demuxer, 1, &iter)) {
         do {
-            frame_idx = (iter.frame_num - 1);
+            int frame_idx = (iter.frame_num - 1);
             if (frame_idx < 0 || frame_idx >= anim->count) {
                 continue;
             }
@@ -427,7 +426,7 @@ static IMG_Animation *IMG_LoadWEBPAnimation_IO_Internal(SDL_IOStream *src, int m
             anim->delays[frame_idx] = iter.duration;
             dispose_method = iter.dispose_method;
 
-        } while ((maxFrames > 0 ? frame_idx + 1 < maxFrames : true) && lib.WebPDemuxNextFrame(&iter));
+        } while (lib.WebPDemuxNextFrame(&iter));
 
         lib.WebPDemuxReleaseIterator(&iter);
     }
