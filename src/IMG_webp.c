@@ -233,6 +233,7 @@ SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
                     if (raw_data) {
                         SDL_free(raw_data);
                     }
+                    IMG_FreeAnimation(animation);
                     return surf;
                 } else {
                     error = "Failed to load first frame of animated WebP";
