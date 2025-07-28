@@ -166,6 +166,8 @@ bool IMG_isWEBP(SDL_IOStream *src)
     return webp_getinfo(src, NULL);
 }
 
+static IMG_Animation *IMG_LoadWEBPAnimation_IO_Internal(SDL_IOStream *src, int maxFrames);
+
 SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
 {
     Sint64 start;
@@ -194,7 +196,7 @@ SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
         goto error;
     }
 
-    raw_data = (uint8_t*) SDL_malloc(raw_data_size);
+    raw_data = (uint8_t *)SDL_malloc(raw_data_size);
     if (raw_data == NULL) {
         error = "Failed to allocate enough buffer for WEBP";
         goto error;
@@ -219,10 +221,39 @@ SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
         goto error;
     }
 
+    // Special casing for animated WebP images to extract a single frame.
+    if (features.has_animation) {
+        if (SDL_SeekIO(src, start, SDL_IO_SEEK_SET) < 0) {
+            error = "Failed to seek IO to read animated WebP";
+            goto error;
+        } else {
+            IMG_Animation *animation = IMG_LoadWEBPAnimation_IO_Internal(src, 1);
+            if (animation && animation->count > 0) {
+                SDL_Surface *surf = animation->frames[0];
+                if (surf) {
+                    ++surf->refcount;
+                    if (raw_data) {
+                        SDL_free(raw_data);
+                    }
+                    IMG_FreeAnimation(animation);
+                    return surf;
+                } else {
+                    error = "Failed to load first frame of animated WebP";
+                    IMG_FreeAnimation(animation);
+                    goto error;
+                }
+            } else {
+                IMG_FreeAnimation(animation);
+                error = "Received an animated WebP but the animation data was invalid";
+                goto error;
+            }
+        }
+    }
+
     if (features.has_alpha) {
-       format = SDL_PIXELFORMAT_RGBA32;
+        format = SDL_PIXELFORMAT_RGBA32;
     } else {
-       format = SDL_PIXELFORMAT_RGB24;
+        format = SDL_PIXELFORMAT_RGB24;
     }
 
     surface = SDL_CreateSurface(features.width, features.height, format);
@@ -232,9 +263,9 @@ SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
     }
 
     if (features.has_alpha) {
-        ret = lib.WebPDecodeRGBAInto(raw_data, raw_data_size, (uint8_t *)surface->pixels, surface->pitch * surface->h,  surface->pitch);
+        ret = lib.WebPDecodeRGBAInto(raw_data, raw_data_size, (uint8_t *)surface->pixels, surface->pitch * surface->h, surface->pitch);
     } else {
-        ret = lib.WebPDecodeRGBInto(raw_data, raw_data_size, (uint8_t *)surface->pixels, surface->pitch * surface->h,  surface->pitch);
+        ret = lib.WebPDecodeRGBInto(raw_data, raw_data_size, (uint8_t *)surface->pixels, surface->pitch * surface->h, surface->pitch);
     }
 
     if (!ret) {
@@ -247,7 +278,6 @@ SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
     }
 
     return surface;
-
 
 error:
     if (raw_data) {
@@ -266,7 +296,7 @@ error:
     return NULL;
 }
 
-IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
+static IMG_Animation *IMG_LoadWEBPAnimation_IO_Internal(SDL_IOStream *src, int maxFrames)
 {
     Sint64 start;
     const char *error = NULL;
@@ -298,7 +328,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
         goto error;
     }
 
-    raw_data = (uint8_t*) SDL_malloc(raw_data_size);
+    raw_data = (uint8_t *)SDL_malloc(raw_data_size);
     if (raw_data == NULL) {
         goto error;
     }
@@ -326,7 +356,8 @@ IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
     }
     anim->w = features.width;
     anim->h = features.height;
-    anim->count = lib.WebPDemuxGetI(demuxer, WEBP_FF_FRAME_COUNT);
+    uint32_t fc = lib.WebPDemuxGetI(demuxer, WEBP_FF_FRAME_COUNT);
+    anim->count = maxFrames > 0 ? SDL_min((unsigned)maxFrames, fc) : fc;
     anim->frames = (SDL_Surface **)SDL_calloc(anim->count, sizeof(*anim->frames));
     anim->delays = (int *)SDL_calloc(anim->count, sizeof(*anim->delays));
     if (!anim->frames || !anim->delays) {
@@ -355,6 +386,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
 #endif
 
     SDL_zero(iter);
+
     if (lib.WebPDemuxGetFrame(demuxer, 1, &iter)) {
         do {
             int frame_idx = (iter.frame_num - 1);
@@ -426,6 +458,11 @@ error:
     }
     SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
     return NULL;
+}
+
+IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
+{
+    return IMG_LoadWEBPAnimation_IO_Internal(src, 0);
 }
 
 #else
