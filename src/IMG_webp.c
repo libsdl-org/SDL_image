@@ -221,7 +221,7 @@ SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
 
     // Special casing for animated WebP images to extract a single frame.
     if (features.has_animation) {
-        if (SDL_SeekIO(src, start, SDL_IO_SEEK_SET) != 0) {
+        if (SDL_SeekIO(src, start, SDL_IO_SEEK_SET) < 0) {
             error = "Failed to seek IO to read animated WebP";
             goto error;
         } else {
