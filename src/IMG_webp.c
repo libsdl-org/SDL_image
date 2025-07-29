@@ -594,6 +594,7 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
 
     if (converted_surface_locked) {
         SDL_UnlockSurface(converted_surface);
+        converted_surface_locked = false;
     }
 
     lib.WebPMemoryWriterInit(&writer);
