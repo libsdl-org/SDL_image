@@ -681,8 +681,7 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
     (void)dst;
     (void)closeio;
     (void)quality;
-    SDL_SetError("SDL_image was not built with WEBP save support");
-    return false;
+    return SDL_SetError("SDL_image was not built with WEBP save support");
 }
 
 bool IMG_SaveWEBP(SDL_Surface *surface, const char *file, float quality)
