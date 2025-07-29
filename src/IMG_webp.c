@@ -121,7 +121,7 @@ static bool IMG_InitWEBP(void)
         FUNCTION_LOADER_LIBWEBP(WebPPictureImportRGBA, int (*)(WebPPicture *, const uint8_t *, int))
 
         FUNCTION_LOADER_LIBWEBP(WebPMemoryWriterInit, void (*)(WebPMemoryWriter *))
-    FUNCTION_LOADER_LIBWEBP(WebPMemoryWrite, int (*)(const uint8_t*, size_t, const WebPPicture*)) 
+        FUNCTION_LOADER_LIBWEBP(WebPMemoryWrite, int (*)(const uint8_t*, size_t, const WebPPicture*)) 
         FUNCTION_LOADER_LIBWEBP(WebPMemoryWriterClear, void (*)(WebPMemoryWriter *))
     }
     ++lib.loaded;
