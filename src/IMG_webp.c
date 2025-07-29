@@ -579,7 +579,6 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
         converted_surface = surface;
     }
 
-    // Not adding surfaceFlags check here because if it already contains the locked state, MUSTLOCK will prevent entering into the scope automatically.
     if (SDL_MUSTLOCK(converted_surface)) {
         if (!SDL_LockSurface(converted_surface)) {
             error = SDL_GetError();
