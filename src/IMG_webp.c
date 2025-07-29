@@ -579,7 +579,7 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
     }
 
     if (SDL_MUSTLOCK(converted_surface)) {
-        if (SDL_LockSurface(converted_surface)) {
+        if (!SDL_LockSurface(converted_surface)) {
             error = SDL_GetError();
             goto cleanup;
         }
