@@ -65,7 +65,7 @@ static struct {
     void (*WebPPictureFree)(WebPPicture *);
     int (*WebPPictureImportRGBA)(WebPPicture *, const uint8_t *, int);
     void (*WebPMemoryWriterInit)(WebPMemoryWriter *);
-    int (*WebPMemoryWrite)(const uint8_t *, size_t, const WebPMemoryWriter *);
+    int (*WebPMemoryWrite)(const uint8_t *, size_t, const WebPPicture *);
     void (*WebPMemoryWriterClear)(WebPMemoryWriter *);
 } lib;
 
@@ -121,7 +121,7 @@ static bool IMG_InitWEBP(void)
         FUNCTION_LOADER_LIBWEBP(WebPPictureImportRGBA, int (*)(WebPPicture *, const uint8_t *, int))
 
         FUNCTION_LOADER_LIBWEBP(WebPMemoryWriterInit, void (*)(WebPMemoryWriter *))
-        FUNCTION_LOADER_LIBWEBP(WebPMemoryWrite, int (*)(const uint8_t *, size_t, const WebPMemoryWriter *))
+    FUNCTION_LOADER_LIBWEBP(WebPMemoryWrite, int (*)(const uint8_t*, size_t, const WebPPicture*)) 
         FUNCTION_LOADER_LIBWEBP(WebPMemoryWriterClear, void (*)(WebPMemoryWriter *))
     }
     ++lib.loaded;
