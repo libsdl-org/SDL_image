@@ -41,6 +41,7 @@
 #endif
 #include <webp/decode.h>
 #include <webp/demux.h>
+#include <webp/encode.h>
 
 static struct {
     int loaded;
@@ -55,6 +56,17 @@ static struct {
     void (*WebPDemuxReleaseIterator)(WebPIterator *iter);
     uint32_t (*WebPDemuxGetI)(const WebPDemuxer* dmux, WebPFormatFeature feature);
     void (*WebPDemuxDelete)(WebPDemuxer* dmux);
+
+    // Encoding functions
+    int (*WebPConfigInitInternal)(WebPConfig *, WebPPreset, float, int);
+    int (*WebPValidateConfig)(const WebPConfig *);
+    int (*WebPPictureInitInternal)(WebPPicture *, int);
+    int (*WebPEncode)(const WebPConfig *, WebPPicture *);
+    void (*WebPPictureFree)(WebPPicture *);
+    int (*WebPPictureImportRGBA)(WebPPicture *, const uint8_t *, int);
+    void (*WebPMemoryWriterInit)(WebPMemoryWriter *);
+    int (*WebPMemoryWrite)(const uint8_t *, size_t, const WebPPicture *);
+    void (*WebPMemoryWriterClear)(WebPMemoryWriter *);
 } lib;
 
 #if defined(LOAD_WEBP_DYNAMIC) && defined(LOAD_WEBPDEMUX_DYNAMIC)
@@ -99,6 +111,18 @@ static bool IMG_InitWEBP(void)
         FUNCTION_LOADER_LIBWEBPDEMUX(WebPDemuxReleaseIterator, void (*)(WebPIterator *iter))
         FUNCTION_LOADER_LIBWEBPDEMUX(WebPDemuxGetI, uint32_t (*)(const WebPDemuxer* dmux, WebPFormatFeature feature))
         FUNCTION_LOADER_LIBWEBPDEMUX(WebPDemuxDelete, void (*)(WebPDemuxer* dmux))
+
+        // Encoding functions
+        FUNCTION_LOADER_LIBWEBP(WebPConfigInitInternal, int (*)(WebPConfig *, WebPPreset, float, int))
+        FUNCTION_LOADER_LIBWEBP(WebPValidateConfig, int (*)(const WebPConfig *))
+        FUNCTION_LOADER_LIBWEBP(WebPPictureInitInternal, int (*)(WebPPicture *, int))
+        FUNCTION_LOADER_LIBWEBP(WebPEncode, int (*)(const WebPConfig *, WebPPicture *))
+        FUNCTION_LOADER_LIBWEBP(WebPPictureFree, void (*)(WebPPicture *))
+        FUNCTION_LOADER_LIBWEBP(WebPPictureImportRGBA, int (*)(WebPPicture *, const uint8_t *, int))
+
+        FUNCTION_LOADER_LIBWEBP(WebPMemoryWriterInit, void (*)(WebPMemoryWriter *))
+        FUNCTION_LOADER_LIBWEBP(WebPMemoryWrite, int (*)(const uint8_t*, size_t, const WebPPicture*)) 
+        FUNCTION_LOADER_LIBWEBP(WebPMemoryWriterClear, void (*)(WebPMemoryWriter *))
     }
     ++lib.loaded;
 
@@ -465,6 +489,173 @@ IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
     return IMG_LoadWEBPAnimation_IO_Internal(src, 0);
 }
 
+
+static const char *GetWebPEncodingErrorStringInternal(WebPEncodingError error_code)
+{
+    switch (error_code) {
+    case VP8_ENC_OK:
+        return "OK";
+    case VP8_ENC_ERROR_OUT_OF_MEMORY:
+        return "Out of memory";
+    case VP8_ENC_ERROR_BITSTREAM_OUT_OF_MEMORY:
+        return "Bitstream out of memory";
+    case VP8_ENC_ERROR_NULL_PARAMETER:
+        return "Null parameter";
+    case VP8_ENC_ERROR_INVALID_CONFIGURATION:
+        return "Invalid configuration";
+    case VP8_ENC_ERROR_BAD_DIMENSION:
+        return "Bad dimension";
+    case VP8_ENC_ERROR_PARTITION0_OVERFLOW:
+        return "Partition 0 overflow";
+    case VP8_ENC_ERROR_PARTITION_OVERFLOW:
+        return "Partition overflow";
+    case VP8_ENC_ERROR_BAD_WRITE:
+        return "Bad write";
+    case VP8_ENC_ERROR_FILE_TOO_BIG:
+        return "File too big";
+    case VP8_ENC_ERROR_USER_ABORT:
+        return "User abort";
+    default:
+        return "Unknown WebP encoding error";
+    }
+}
+
+bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, float quality)
+{
+    WebPConfig config;
+    WebPPicture pic;
+    WebPMemoryWriter writer;
+    SDL_Surface *converted_surface = NULL;
+    bool ret = true;
+    const char *error = NULL;
+    bool pic_initialized = false;
+    bool memorywriter_initialized = false;
+    bool converted_surface_locked = false;
+
+    if (!surface || !dst) {
+        error = "Invalid input surface or destination stream.";
+        goto cleanup;
+    }
+
+    if (!IMG_InitWEBP()) {
+        error = SDL_GetError();
+        goto cleanup;
+    }
+
+    if (!lib.WebPConfigInitInternal(&config, WEBP_PRESET_DEFAULT, quality, WEBP_ENCODER_ABI_VERSION)) {
+        error = "Failed to initialize WebPConfig.";
+        goto cleanup;
+    }
+
+    quality = SDL_clamp(quality, 0.0f, 100.0f);
+
+    config.lossless = quality == 100.0f;
+    config.quality = quality;
+
+    // TODO: Take a look if the method 4 fits here for us.
+    config.method = 4;
+
+    if (!lib.WebPValidateConfig(&config)) {
+        error = "Invalid WebP configuration.";
+        goto cleanup;
+    }
+
+    if (!lib.WebPPictureInitInternal(&pic, WEBP_ENCODER_ABI_VERSION)) {
+        error = "Failed to initialize WebPPicture.";
+        goto cleanup;
+    }
+    pic_initialized = true;
+
+    pic.width = surface->w;
+    pic.height = surface->h;
+
+    if (surface->format != SDL_PIXELFORMAT_RGBA32) {
+        converted_surface = SDL_ConvertSurface(surface, SDL_PIXELFORMAT_RGBA32);
+        if (!converted_surface) {
+            error = SDL_GetError();
+            goto cleanup;
+        }
+    } else {
+        converted_surface = surface;
+    }
+
+    if (SDL_MUSTLOCK(converted_surface)) {
+        if (!SDL_LockSurface(converted_surface)) {
+            error = SDL_GetError();
+            goto cleanup;
+        }
+        converted_surface_locked = true;
+    }
+
+    if (!lib.WebPPictureImportRGBA(&pic, (const uint8_t *)converted_surface->pixels, converted_surface->pitch)) {
+        error = "Failed to import RGBA pixels into WebPPicture.";
+        goto cleanup;
+    }
+
+    if (converted_surface_locked) {
+        SDL_UnlockSurface(converted_surface);
+        converted_surface_locked = false;
+    }
+
+    lib.WebPMemoryWriterInit(&writer);
+    memorywriter_initialized = true;
+    pic.writer = (WebPWriterFunction)lib.WebPMemoryWrite;
+    pic.custom_ptr = &writer;
+
+    if (!lib.WebPEncode(&config, &pic)) {
+        error = GetWebPEncodingErrorStringInternal(pic.error_code);
+        goto cleanup;
+    }
+
+    if (writer.size > 0) {
+        if (SDL_WriteIO(dst, writer.mem, writer.size) != writer.size) {
+            error = "Failed to write all WebP data to destination.";
+            goto cleanup;
+        }
+    } else {
+        error = "No WebP data generated.";
+        goto cleanup;
+    }
+
+cleanup:
+    if (converted_surface_locked) {
+        SDL_UnlockSurface(converted_surface);
+    }
+
+    if (converted_surface && converted_surface != surface) {
+        SDL_DestroySurface(converted_surface);
+    }
+
+    if (pic_initialized) {
+        lib.WebPPictureFree(&pic);
+    }
+
+    if (memorywriter_initialized) {
+        lib.WebPMemoryWriterClear(&writer);
+    }
+
+    if (error) {
+        SDL_SetError("%s", error);
+        ret = false;
+    }
+
+    if (closeio) {
+        SDL_CloseIO(dst);
+    }
+
+    return ret;
+}
+
+bool IMG_SaveWEBP(SDL_Surface *surface, const char *file, float quality)
+{
+    SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
+    if (!dst) {
+        return false;
+    }
+
+   return IMG_SaveWEBP_IO(surface, dst, true, quality);
+}
+
 #else
 
 /* See if an image is contained in a data source */
@@ -485,6 +676,23 @@ IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
 {
     (void)src;
     return NULL;
+}
+
+bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, float quality)
+{
+    (void)surface;
+    (void)dst;
+    (void)closeio;
+    (void)quality;
+    return SDL_SetError("SDL_image was not built with WEBP save support");
+}
+
+bool IMG_SaveWEBP(SDL_Surface *surface, const char *file, float quality)
+{
+    (void)surface;
+    (void)file;
+    (void)quality;
+    return SDL_SetError("SDL_image was not built with WEBP save support");
 }
 
 #endif /* LOAD_WEBP */
