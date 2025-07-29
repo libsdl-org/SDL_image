@@ -530,11 +530,14 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
     const char *error = NULL;
     bool pic_initialized = false;
     bool memorywriter_initialized = false;
+    SDL_SurfaceFlags surfaceFlags;
 
     if (!surface || !dst) {
         error = "Invalid input surface or destination stream.";
         goto cleanup;
     }
+
+    surfaceFlags = surface->flags;
 
     if (!IMG_InitWEBP()) {
         error = SDL_GetError();
@@ -578,6 +581,7 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
         converted_surface = surface;
     }
 
+    // Not adding surfaceFlags check here because if it already contains the locked state, MUSTLOCK will prevent entering into the scope automatically.
     if (SDL_MUSTLOCK(converted_surface)) {
         if (!SDL_LockSurface(converted_surface)) {
             error = SDL_GetError();
@@ -590,7 +594,7 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
         goto cleanup;
     }
 
-    if ((converted_surface->flags & SDL_SURFACE_LOCKED) == SDL_SURFACE_LOCKED) {
+    if ((surfaceFlags & SDL_SURFACE_LOCKED) != SDL_SURFACE_LOCKED && (converted_surface->flags & SDL_SURFACE_LOCKED) == SDL_SURFACE_LOCKED) {
         SDL_UnlockSurface(converted_surface);
     }
 
@@ -615,7 +619,7 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
     }
 
 cleanup:
-    if (converted_surface && (converted_surface->flags & SDL_SURFACE_LOCKED) == SDL_SURFACE_LOCKED) {
+    if (converted_surface && (surfaceFlags & SDL_SURFACE_LOCKED) != SDL_SURFACE_LOCKED && (converted_surface->flags & SDL_SURFACE_LOCKED) == SDL_SURFACE_LOCKED) {
         SDL_UnlockSurface(converted_surface);
     }
 
