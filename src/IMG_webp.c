@@ -675,4 +675,23 @@ IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
     return NULL;
 }
 
+bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, float quality)
+{
+    (void)surface;
+    (void)dst;
+    (void)closeio;
+    (void)quality;
+    SDL_SetError("SDL_image was not built with WEBP save support");
+    return false;
+}
+
+bool IMG_SaveWEBP(SDL_Surface *surface, const char *file, float quality)
+{
+    (void)surface;
+    (void)file;
+    (void)quality;
+    SDL_SetError("SDL_image was not built with WEBP save support");
+    return false;
+}
+
 #endif /* LOAD_WEBP */
