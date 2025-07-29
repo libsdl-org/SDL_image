@@ -1968,6 +1968,51 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *f
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality);
 
 /**
+ * Save an SDL_Surface into WEBP image data, via an SDL_IOStream.
+ *
+ * If you just want to save to a filename, you can use IMG_SaveWEBP() instead.
+ *
+ * If `closeio` is true, `dst` will be closed before returning, whether this
+ * function succeeds or not.
+ *
+ * \param surface the SDL surface to save.
+ * \param dst the SDL_IOStream to save the image data to.
+ * \param closeio true to close/free the SDL_IOStream before returning, false
+ *                to leave it open.
+ * \param quality between 0 and 100. For lossy, 0 gives the smallest size and
+ *                100 the largest. For lossless, this parameter is the amount
+ *                of effort put into the compression: 0 is the fastest but
+ *                gives larger files compared to the slowest, but best, 100.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.2.18.
+ *
+ * \sa IMG_SaveWEBP
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, float quality);
+
+/**
+ * Save an SDL_Surface into a WEBP image file.
+ *
+ * If the file already exists, it will be overwritten.
+ *
+ * \param surface the SDL surface to save.
+ * \param file path on the filesystem to write the new file to.
+ * \param quality between 0 and 100. For lossy, 0 gives the smallest size and
+ *                100 the largest. For lossless, this parameter is the amount
+ *                of effort put into the compression: 0 is the fastest but
+ *                gives larger files compared to the slowest, but best, 100.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.2.18.
+ *
+ * \sa IMG_SaveWEBP_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBP(SDL_Surface *surface, const char *file, float quality);
+
+/**
  * Animated image support
  *
  * Currently only animated GIFs and WEBP images are supported.
