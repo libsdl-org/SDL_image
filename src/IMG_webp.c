@@ -530,14 +530,12 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
     const char *error = NULL;
     bool pic_initialized = false;
     bool memorywriter_initialized = false;
-    SDL_SurfaceFlags surfaceFlags;
+    bool converted_surface_locked = false;
 
     if (!surface || !dst) {
         error = "Invalid input surface or destination stream.";
         goto cleanup;
     }
-
-    surfaceFlags = surface->flags;
 
     if (!IMG_InitWEBP()) {
         error = SDL_GetError();
@@ -577,10 +575,6 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
             error = SDL_GetError();
             goto cleanup;
         }
-
-        // Reset previous flag state here because we created a new surface; the states belong to us.
-        //Mimicking that SDL_SURFACE_LOCKED flag is not set on the original surface.
-        surfaceFlags &= ~SDL_SURFACE_LOCKED;
     } else {
         converted_surface = surface;
     }
@@ -591,6 +585,7 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
             error = SDL_GetError();
             goto cleanup;
         }
+        converted_surface_locked = true;
     }
 
     if (!lib.WebPPictureImportRGBA(&pic, (const uint8_t *)converted_surface->pixels, converted_surface->pitch)) {
@@ -598,7 +593,7 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
         goto cleanup;
     }
 
-    if ((surfaceFlags & SDL_SURFACE_LOCKED) != SDL_SURFACE_LOCKED && (converted_surface->flags & SDL_SURFACE_LOCKED) == SDL_SURFACE_LOCKED) {
+    if (converted_surface_locked && (converted_surface->flags & SDL_SURFACE_LOCKED) == SDL_SURFACE_LOCKED) {
         SDL_UnlockSurface(converted_surface);
     }
 
@@ -623,7 +618,7 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
     }
 
 cleanup:
-    if (converted_surface && (surfaceFlags & SDL_SURFACE_LOCKED) != SDL_SURFACE_LOCKED && (converted_surface->flags & SDL_SURFACE_LOCKED) == SDL_SURFACE_LOCKED) {
+    if (converted_surface && converted_surface_locked && (converted_surface->flags & SDL_SURFACE_LOCKED) == SDL_SURFACE_LOCKED) {
         SDL_UnlockSurface(converted_surface);
     }
 
