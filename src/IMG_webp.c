@@ -577,6 +577,10 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
             error = SDL_GetError();
             goto cleanup;
         }
+
+        // Reset previous flag state here because we created a new surface; the states belong to us.
+        //Mimicking that SDL_SURFACE_LOCKED flag is not set on the original surface.
+        surfaceFlags &= ~SDL_SURFACE_LOCKED;
     } else {
         converted_surface = surface;
     }
