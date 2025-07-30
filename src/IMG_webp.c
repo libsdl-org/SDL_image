@@ -531,7 +531,7 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
     bool pic_initialized = false;
     bool memorywriter_initialized = false;
     bool converted_surface_locked = false;
-    Sint64 start;
+    Sint64 start = -1;
 
     if (!surface || !dst) {
         error = "Invalid input surface or destination stream.";
@@ -638,7 +638,7 @@ cleanup:
     }
 
     if (error) {
-        if (!closeio) {
+        if (!closeio && start != -1) {
             SDL_SeekIO(dst, start, SDL_IO_SEEK_SET);
         }
         SDL_SetError("%s", error);
