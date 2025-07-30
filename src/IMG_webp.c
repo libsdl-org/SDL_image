@@ -190,6 +190,85 @@ bool IMG_isWEBP(SDL_IOStream *src)
     return webp_getinfo(src, NULL);
 }
 
+bool IMG_IsWEBPAnimated_IO(SDL_IOStream *src, bool closeio)
+{
+    const char *error = NULL;
+    WebPBitstreamFeatures features;
+    size_t raw_data_size;
+    uint8_t *raw_data = NULL;
+    Sint64 start;
+    bool result = false;
+
+    SDL_memset(&features, 0, sizeof(features));
+
+    if (!src) {
+        SDL_SetError("Invalid source stream for checking animated WebP.");
+        goto cleanup;
+    }
+
+    if (!IMG_InitWEBP()) {
+        goto cleanup;
+    }
+
+    start = SDL_TellIO(src);
+
+    raw_data_size = -1;
+    if (!webp_getinfo(src, &raw_data_size)) {
+        error = "Invalid WEBP";
+        goto cleanup;
+    }
+
+    raw_data = (uint8_t *)SDL_malloc(raw_data_size);
+    if (raw_data == NULL) {
+        error = "Failed to allocate enough buffer for WEBP";
+        goto cleanup;
+    }
+
+    if (SDL_ReadIO(src, raw_data, raw_data_size) != raw_data_size) {
+        error = "Failed to read WEBP";
+        goto cleanup;
+    }
+
+    if (lib.WebPGetFeaturesInternal(raw_data, raw_data_size, &features, WEBP_DECODER_ABI_VERSION) == VP8_STATUS_OK) {
+        result = features.has_animation;
+    } else {
+        error = "WebPGetFeatures has failed";
+    }
+
+cleanup:
+    if (raw_data) {
+        SDL_free(raw_data);
+    }
+
+    if (closeio && !error) {
+        SDL_CloseIO(src);
+    } else if (!closeio && error) {
+        SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
+    }
+
+    if (error) {
+        SDL_SetError("%s", error);
+        return false;
+    }
+
+    return result;
+}
+
+bool IMG_IsWEBPAnimated(const char* file)
+{
+    if (!file) {
+        SDL_SetError("Invalid file path for checking animated WebP.");
+        return false;
+    }
+
+    SDL_IOStream *src = SDL_IOFromFile(file, "rb");
+    if (!src) {
+        return false;
+    }
+
+    return IMG_IsWEBPAnimated_IO(src, true);
+}
+
 static IMG_Animation *IMG_LoadWEBPAnimation_IO_Internal(SDL_IOStream *src, int maxFrames);
 
 SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
