@@ -2027,6 +2027,41 @@ typedef struct IMG_Animation
 } IMG_Animation;
 
 /**
+ * Detect if a WEBP image is animated.
+ *
+ * This function attempts to determine if a WEBP file is animated, reading
+ * from an SDL_IOStream.
+ *
+ * If `closeio` is true, `src` will be closed before returning, only when
+ * this function succeeds. If it fails, `src` will not be closed; instead, it
+ * will be reset to the position it was at when this function was called.
+ *
+ * \param src an SDL_IOStream to provide image data.
+ * \param closeio true to close/free the SDL_IOStream before returning, false
+ *                to leave it open.
+ * \returns true if this is animated WEBP data, false otherwise.
+ *
+ * \since This function is available since SDL_image 3.2.18.
+ *
+ * \sa IMG_IsWEBPAnimated
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_IsWEBPAnimated_IO(SDL_IOStream *src, bool closeio);
+/**
+ * Detect if a WEBP image is animated.
+ *
+ * This function attempts to determine if a WEBP file is animated, reading
+ * from a file path.
+ *
+ * \param file a path on the filesystem to check for an animated WEBP image.
+ * \returns true if this is animated WEBP data, false otherwise.
+ *
+ * \since This function is available since SDL_image 3.2.18.
+ *
+ * \sa IMG_IsWEBPAnimated_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_IsWEBPAnimated(const char* file);
+
+/**
  * Load an animation from a file.
  *
  * When done with the returned animation, the app should dispose of it with a
