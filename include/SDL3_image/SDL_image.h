@@ -2013,6 +2013,38 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStr
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBP(SDL_Surface *surface, const char *file, float quality);
 
 /**
+ * Save an SDL_Surface into TGA image data, via an SDL_IOStream.
+ *
+ * If you just want to save to a filename, you can use IMG_SaveTGA() instead.
+ *
+ * \param surface the SDL surface to save.
+ * \param dst the SDL_IOStream to save the image data to.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.2.18.
+ *
+ * \sa IMG_SaveTGA
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst);
+
+/**
+ * Save an SDL_Surface into a TGA image file.
+ *
+ * If the file already exists, it will be overwritten.
+ *
+ * \param surface the SDL surface to save.
+ * \param file path on the filesystem to write new file to.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.2.18.
+ *
+ * \sa IMG_SaveTGA_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA(SDL_Surface *surface, const char *file);
+
+/**
  * Animated image support
  *
  * Currently only animated GIFs and WEBP images are supported.
