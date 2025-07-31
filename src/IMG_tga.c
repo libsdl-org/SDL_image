@@ -342,6 +342,7 @@ bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst)
     struct TGAheader hdr;
     bool retval = false;
     SDL_Palette *surface_palette = NULL;
+    SDL_Surface *temp_surface = NULL;
 
     if (!surface || !dst) {
         SDL_SetError("Invalid parameters to IMG_SaveTGA_IO");
@@ -445,8 +446,7 @@ bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst)
             }
         }
     }
-
-    SDL_Surface *temp_surface = NULL;
+    
     Uint8 *pixels_to_write = (Uint8 *)surface->pixels;
     int pitch_to_write = surface->pitch;
     int bytes_per_pixel = pixelFormatDetails->bytes_per_pixel;
