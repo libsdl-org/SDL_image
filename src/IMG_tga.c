@@ -335,6 +335,187 @@ error:
     return NULL;
 }
 
+bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst)
+{
+    Sint64 start;
+    const char *error = NULL;
+    struct TGAheader hdr;
+    bool retval = false;
+    SDL_Palette *surface_palette = NULL;
+    SDL_Surface *temp_surface = NULL;
+
+    if (!surface || !dst) {
+        SDL_SetError("Invalid parameters to IMG_SaveTGA_IO");
+        return false;
+    }
+
+    start = SDL_TellIO(dst);
+
+    SDL_zero(hdr);
+
+    hdr.infolen = 0;
+    hdr.has_cmap = 0;
+    hdr.type = TGA_TYPE_RGB;
+    SETLE16(hdr.cmap_start, 0);
+    SETLE16(hdr.cmap_len, 0);
+    hdr.cmap_bits = 0;
+    SETLE16(hdr.xorigin, 0);
+    SETLE16(hdr.yorigin, 0);
+    SETLE16(hdr.width, surface->w);
+    SETLE16(hdr.height, surface->h);
+    hdr.flags = TGA_ORIGIN_UPPER;
+
+    const SDL_PixelFormatDetails* pixelFormatDetails = SDL_GetPixelFormatDetails(surface->format);
+    if (!pixelFormatDetails) {
+        error = "Failed to get SDL_PixelFormatDetails for surface format";
+        goto error;
+    }
+
+    surface_palette = SDL_GetSurfacePalette(surface);
+
+    switch (surface->format) {
+    case SDL_PIXELFORMAT_INDEX8:
+        hdr.has_cmap = 1;
+        hdr.type = TGA_TYPE_INDEXED;
+        hdr.pixel_bits = 8;
+        if (surface_palette) {
+            SETLE16(hdr.cmap_len, surface_palette->ncolors);
+        } else {
+            SETLE16(hdr.cmap_len, 0);
+        }
+        hdr.cmap_bits = 24;
+        break;
+    case SDL_PIXELFORMAT_BGR24:
+    case SDL_PIXELFORMAT_RGB24:
+        hdr.type = TGA_TYPE_RGB;
+        hdr.pixel_bits = 24;
+        break;
+    case SDL_PIXELFORMAT_BGRA32:
+    case SDL_PIXELFORMAT_RGBA32:
+    case SDL_PIXELFORMAT_XRGB8888:
+        hdr.type = TGA_TYPE_RGB;
+        hdr.pixel_bits = 32;
+        hdr.flags |= 0x08;
+        break;
+    case SDL_PIXELFORMAT_XRGB1555:
+    case SDL_PIXELFORMAT_ARGB1555:
+        hdr.type = TGA_TYPE_RGB;
+        hdr.pixel_bits = 16;
+        if (surface->format == SDL_PIXELFORMAT_ARGB1555) {
+            hdr.flags |= 0x01;
+        }
+        break;
+    default:
+        error = "Unsupported SDL_Surface format for TGA saving. Supported formats are INDEX8, BGR24, RGB24, BGRA32, RGBA32, XRGB8888, XRGB1555, ARGB1555.";
+        goto error;
+    }
+
+    if (SDL_WriteIO(dst, &hdr, sizeof(hdr)) != sizeof(hdr)) {
+        error = "Error writing TGA header";
+        goto error;
+    }
+
+    if (hdr.has_cmap && surface_palette) {
+        SDL_Color *colors = surface_palette->colors;
+        int ncolors = LE16(hdr.cmap_len);
+        Uint8 color_entry[4];
+        for (int i = 0; i < ncolors; ++i) {
+            switch (hdr.cmap_bits) {
+            case 24:
+                color_entry[0] = colors[i].b;
+                color_entry[1] = colors[i].g;
+                color_entry[2] = colors[i].r;
+                if (SDL_WriteIO(dst, color_entry, 3) != 3) {
+                    error = "Error writing TGA colormap entry (24-bit)";
+                    goto error;
+                }
+                break;
+            case 32:
+                color_entry[0] = colors[i].b;
+                color_entry[1] = colors[i].g;
+                color_entry[2] = colors[i].r;
+                color_entry[3] = colors[i].a;
+                if (SDL_WriteIO(dst, color_entry, 4) != 4) {
+                    error = "Error writing TGA colormap entry (32-bit)";
+                    goto error;
+                }
+                break;
+            default:
+                error = "Unsupported TGA colormap bit depth for saving";
+                goto error;
+            }
+        }
+    }
+    
+    Uint8 *pixels_to_write = (Uint8 *)surface->pixels;
+    int pitch_to_write = surface->pitch;
+    int bytes_per_pixel = pixelFormatDetails->bytes_per_pixel;
+    Uint32 target_format = SDL_PIXELFORMAT_UNKNOWN;
+
+    switch (surface->format) {
+    case SDL_PIXELFORMAT_RGB24:
+        target_format = SDL_PIXELFORMAT_BGR24;
+        break;
+    case SDL_PIXELFORMAT_RGBA32:
+    case SDL_PIXELFORMAT_XRGB8888:
+        target_format = SDL_PIXELFORMAT_BGRA32;
+        break;
+    case SDL_PIXELFORMAT_XRGB1555:
+    case SDL_PIXELFORMAT_ARGB1555:
+        target_format = SDL_PIXELFORMAT_XRGB1555;
+        break;
+    default:
+        break;
+    }
+
+    if (target_format != SDL_PIXELFORMAT_UNKNOWN && target_format != surface->format) {
+        temp_surface = SDL_ConvertSurface(surface, target_format);
+        if (!temp_surface) {
+            error = "Failed to convert surface format for TGA saving";
+            goto error;
+        }
+        pixels_to_write = (Uint8 *)temp_surface->pixels;
+        pitch_to_write = temp_surface->pitch;
+        const SDL_PixelFormatDetails *tempPixelFormatDetails = SDL_GetPixelFormatDetails(temp_surface->format);
+        if (tempPixelFormatDetails) {
+            bytes_per_pixel = tempPixelFormatDetails->bytes_per_pixel;
+        } else {
+            error = "Failed to get SDL_PixelFormatDetails for converted surface format";
+            goto error;
+        }
+    }
+
+    for (int y = 0; y < surface->h; ++y) {
+        if (SDL_WriteIO(dst, pixels_to_write + y * pitch_to_write, (size_t)surface->w * bytes_per_pixel) != (size_t)(surface->w * bytes_per_pixel)) {
+            error = "Error writing TGA pixel data";
+            goto error;
+        }
+    }
+
+    retval = true;
+
+error:
+    if (temp_surface) {
+        SDL_DestroySurface(temp_surface);
+    }
+    if (!retval) {
+        SDL_SeekIO(dst, start, SDL_IO_SEEK_SET);
+        SDL_SetError("%s", error);
+    }
+    return retval;
+}
+
+bool IMG_SaveTGA(SDL_Surface *surface, const char *file)
+{
+    SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
+    if (!dst) {
+        return false;
+    }
+    bool retval = IMG_SaveTGA_IO(surface, dst);
+    SDL_CloseIO(dst);
+    return retval;
+}
+
 #else
 
 /* dummy TGA load routine */
@@ -342,6 +523,20 @@ SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
 {
     (void)src;
     return NULL;
+}
+
+bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst)
+{
+    (void)surface;
+    (void)dst;
+    return SDL_SetError("TGA support not enabled");
+}
+
+bool IMG_SaveTGA(SDL_Surface *surface, const char *file)
+{
+    (void)surface;
+    (void)file;
+    return SDL_SetError("TGA support not enabled");
 }
 
 #endif /* LOAD_TGA */
