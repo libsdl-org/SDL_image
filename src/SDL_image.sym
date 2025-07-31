@@ -59,5 +59,10 @@ SDL3_image_0.0.0 {
     IMG_isXCF;
     IMG_isXPM;
     IMG_isXV;
+    IMG_CreateAnimationStream;
+    IMG_CreateAnimationStream_IO;
+    IMG_CreateAnimationStreamWithProperties;
+    IMG_AddAnimationFrame;
+    IMG_CloseAnimationStream;
   local: *;
 };

@@ -256,6 +256,7 @@ set(BUILD_SHARED_LIBS ${SDLIMAGE_BUILD_SHARED_LIBS})
 add_library(${sdl3_image_target_name}
     src/IMG.c
     src/IMG_WIC.c
+    src/IMG_anim.c
     src/IMG_avif.c
     src/IMG_bmp.c
     src/IMG_gif.c
@@ -983,17 +984,19 @@ if(SDLIMAGE_WEBP)
         target_include_directories(${sdl3_image_target_name} PRIVATE external/libwebp/src)
         add_library(WebP::webp ALIAS webp)
         add_library(WebP::webpdemux ALIAS webpdemux)
+        add_library(WebP::libwebpmux ALIAS libwebpmux)
         if(SDLIMAGE_WEBP_SHARED OR NOT SDLIMAGE_BUILD_SHARED_LIBS)
-            list(APPEND INSTALL_EXTRA_TARGETS webp webpdemux)
+            list(APPEND INSTALL_EXTRA_TARGETS webp webpdemux libwebpmux)
             if(NOT SDLIMAGE_WEBP_SHARED)
                 list(APPEND INSTALL_EXTRA_TARGETS sharpyuv)
             endif()
         endif()
         set_target_properties(webp PROPERTIES EXPORT_NAME "external_libwebp")
         set_target_properties(webpdemux PROPERTIES EXPORT_NAME "external_webpdemux")
+        set_target_properties(libwebpmux PROPERTIES EXPORT_NAME "external_libwebpmux")
         set_target_properties(sharpyuv PROPERTIES EXPORT_NAME "external_sharpyuv")
         add_library(SDL3_image::external_libwebp ALIAS webp)
-    elseif(SDLIMAGE_WEBP_SHARED AND DEFINED SDLIMAGE_DYNAMIC_WEBP AND EXISTS "${SDLIMAGE_DYNAMIC_WEBP}" AND DEFINED SDLIMAGE_DYNAMIC_WEBPDEMUX AND EXISTS "${SDLIMAGE_DYNAMIC_WEBPDEMUX}")
+    elseif(SDLIMAGE_WEBP_SHARED AND DEFINED SDLIMAGE_DYNAMIC_WEBP AND EXISTS "${SDLIMAGE_DYNAMIC_WEBP}" AND DEFINED SDLIMAGE_DYNAMIC_WEBPDEMUX AND EXISTS "${SDLIMAGE_DYNAMIC_WEBPDEMUX}" AND DEFINED SDLIMAGE_DYNAMIC_WEBPMUX AND EXISTS "${SDLIMAGE_DYNAMIC_WEBPMUX}")
         message(STATUS "${PROJECT_NAME}: Using libwebp from CMake variable")
         set(SDLIMAGE_WEBP_ENABLED TRUE)
     else()
@@ -1002,7 +1005,7 @@ if(SDLIMAGE_WEBP)
             message(STATUS "${PROJECT_NAME}: Using system libwebp")
             set(SDLIMAGE_WEBP_ENABLED TRUE)
             if(NOT SDLIMAGE_WEBP_SHARED)
-              list(APPEND PC_REQUIRES libwebp libwebpdemux)
+              list(APPEND PC_REQUIRES libwebp libwebpdemux libwebpmux)
               list(APPEND INSTALL_EXTRA_CMAKE_MODULES cmake/Findwebp.cmake)
             endif()
         else()
@@ -1012,7 +1015,7 @@ if(SDLIMAGE_WEBP)
     if(SDLIMAGE_WEBP_ENABLED)
         target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_WEBP)
         if(SDLIMAGE_WEBP_SHARED)
-           if(NOT DEFINED SDLIMAGE_DYNAMIC_WEBP AND NOT DEFINED SDLIMAGE_DYNAMIC_WEBPDEMUX)
+           if(NOT DEFINED SDLIMAGE_DYNAMIC_WEBP AND NOT DEFINED SDLIMAGE_DYNAMIC_WEBPDEMUX AND NOT DEFINED SDLIMAGE_DYNAMIC_WEBPMUX)
                 target_include_directories(${sdl3_image_target_name} PRIVATE
                     $<TARGET_PROPERTY:WebP::webp,INCLUDE_DIRECTORIES>
                     $<TARGET_PROPERTY:WebP::webp,INTERFACE_INCLUDE_DIRECTORIES>
@@ -1020,19 +1023,25 @@ if(SDLIMAGE_WEBP)
                     $<TARGET_PROPERTY:WebP::webpdemux,INCLUDE_DIRECTORIES>
                     $<TARGET_PROPERTY:WebP::webpdemux,INTERFACE_INCLUDE_DIRECTORIES>
                     $<TARGET_PROPERTY:WebP::webpdemux,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:WebP::libwebpmux,INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:WebP::libwebpmux,INTERFACE_INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:WebP::libwebpmux,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
                 )
                 if(SDLIMAGE_WEBP_VENDORED)
-                    add_dependencies(${sdl3_image_target_name} WebP::webp WebP::webpdemux)
+                    add_dependencies(${sdl3_image_target_name} WebP::webp WebP::webpdemux WebP::libwebpmux)
                 endif()
             endif()
             target_get_dynamic_library(SDLIMAGE_DYNAMIC_WEBPDEMUX WebP::webpdemux)
             message(STATUS "Dynamic libwebpdemux: ${SDLIMAGE_DYNAMIC_WEBPDEMUX}")
             target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_WEBPDEMUX_DYNAMIC=\"${SDLIMAGE_DYNAMIC_WEBPDEMUX}\"")
+            target_get_dynamic_library(SDLIMAGE_DYNAMIC_WEBPMUX WebP::libwebpmux)
+            message(STATUS "Dynamic libwebpmux: ${SDLIMAGE_DYNAMIC_WEBPMUX}")
+            target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_WEBPMUX_DYNAMIC=\"${SDLIMAGE_DYNAMIC_WEBPMUX}\"")
             target_get_dynamic_library(SDLIMAGE_DYNAMIC_WEBP WebP::webp)
             message(STATUS "Dynamic libwebp: ${SDLIMAGE_DYNAMIC_WEBP}")
             target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_WEBP_DYNAMIC=\"${SDLIMAGE_DYNAMIC_WEBP}\"")
         else()
-            target_link_libraries(${sdl3_image_target_name} PRIVATE WebP::webp WebP::webpdemux)
+            target_link_libraries(${sdl3_image_target_name} PRIVATE WebP::webp WebP::webpdemux WebP::libwebpmux)
         endif()
     endif()
 endif()

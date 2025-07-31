@@ -63,6 +63,7 @@
         "-DSDLIMAGE_DYNAMIC_TIF=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libtiff-6.dll",
         "-DSDLIMAGE_DYNAMIC_WEBP=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libwebp-7.dll",
         "-DSDLIMAGE_DYNAMIC_WEBPDEMUX=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libwebpdemux-2.dll"
+        "-DSDLIMAGE_DYNAMIC_WEBPMUX=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libwebpmux-3.dll"
       ],
       "shared-static": "args"
     },
@@ -106,6 +107,7 @@
           "VisualC/external/optional/@<@ARCH@>@/libtiff-6.dll",
           "VisualC/external/optional/@<@ARCH@>@/libwebp-7.dll",
           "VisualC/external/optional/@<@ARCH@>@/libwebpdemux-2.dll",
+          "VisualC/external/optional/@<@ARCH@>@/libwebpmux-3.dll",
           "VisualC/external/optional/@<@ARCH@>@/LICENSE.aom.txt",
           "VisualC/external/optional/@<@ARCH@>@/LICENSE.avif.txt",
           "VisualC/external/optional/@<@ARCH@>@/LICENSE.dav1d.txt",
@@ -124,6 +126,7 @@
           "VisualC/external/optional/@<@ARCH@>@/libtiff-6.dll",
           "VisualC/external/optional/@<@ARCH@>@/libwebp-7.dll",
           "VisualC/external/optional/@<@ARCH@>@/libwebpdemux-2.dll",
+          "VisualC/external/optional/@<@ARCH@>@/libwebpmux-3.dll",
           "VisualC/external/optional/@<@ARCH@>@/LICENSE.aom.txt",
           "VisualC/external/optional/@<@ARCH@>@/LICENSE.avif.txt",
           "VisualC/external/optional/@<@ARCH@>@/LICENSE.dav1d.txt",
@@ -171,6 +174,7 @@
           "bin/tiff.dll",
           "bin/libwebp.dll",
           "bin/libwebpdemux.dll",
+          "bin/libwebpmux.dll",
           "share/licenses/SDL3_image/optional/LICENSE.aom.txt",
           "share/licenses/SDL3_image/optional/LICENSE.avif.txt",
           "share/licenses/SDL3_image/optional/LICENSE.dav1d.txt",
@@ -191,6 +195,7 @@
           "bin/tiff.dll",
           "bin/libwebp.dll",
           "bin/libwebpdemux.dll",
+          "bin/libwebpmux.dll",
           "share/licenses/SDL3_image/optional/LICENSE.aom.txt",
           "share/licenses/SDL3_image/optional/LICENSE.avif.txt",
           "share/licenses/SDL3_image/optional/LICENSE.dav1d.txt",

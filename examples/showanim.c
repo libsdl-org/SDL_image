@@ -50,6 +50,26 @@ static void draw_background(SDL_Renderer *renderer, int w, int h)
     }
 }
 
+static void SaveAnimation(IMG_Animation *anim, const char *file)
+{
+    int i;
+    Uint64 pts = 0;
+    IMG_AnimationStream *stream = IMG_CreateAnimationStream(file);
+    if (!stream) {
+        SDL_Log("Couldn't save anim: %s\n", SDL_GetError());
+        return;
+    }
+
+    for (i = 0; i < anim->count; ++i) {
+        if (!IMG_AddAnimationFrame(stream, anim->frames[i], pts)) {
+            SDL_Log("Couldn't add anim frame: %s\n", SDL_GetError());
+            break;
+        }
+        pts += anim->delays[i];
+    }
+    IMG_CloseAnimationStream(stream);
+}
+
 int main(int argc, char *argv[])
 {
     SDL_Window *window;
@@ -61,12 +81,13 @@ int main(int argc, char *argv[])
     int once = 0;
     int current_frame, delay;
     SDL_Event event;
+    const char *saveFile = NULL;
 
     (void)argc;
 
     /* Check command line usage */
     if ( ! argv[1] ) {
-        SDL_Log("Usage: %s [-fullscreen] <image_file> ...\n", argv[0]);
+        SDL_Log("Usage: %s [-fullscreen] [-save file] <image_file> ...\n", argv[0]);
         return(1);
     }
 
@@ -98,6 +119,12 @@ int main(int argc, char *argv[])
             continue;
         }
 
+        if (SDL_strcmp(argv[i], "-save") == 0 && argv[i + 1]) {
+            ++i;
+            saveFile = argv[i];
+            continue;
+        }
+
         /* Open the image file */
         anim = IMG_LoadAnimation(argv[i]);
         if (!anim) {
@@ -106,6 +133,10 @@ int main(int argc, char *argv[])
         }
         w = anim->w;
         h = anim->h;
+
+        if (saveFile) {
+            SaveAnimation(anim, saveFile);
+        }
 
         textures = (SDL_Texture **)SDL_calloc(anim->count, sizeof(*textures));
         if (!textures) {

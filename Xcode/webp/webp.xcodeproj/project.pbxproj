@@ -30,6 +30,11 @@
 		F313F59B2ADDAF99008B58D6 /* sharpyuv_gamma.c in Sources */ = {isa = PBXBuildFile; fileRef = F313F58F2ADDAF99008B58D6 /* sharpyuv_gamma.c */; };
 		F313F59E2ADDAF99008B58D6 /* sharpyuv_sse2.c in Sources */ = {isa = PBXBuildFile; fileRef = F313F5922ADDAF99008B58D6 /* sharpyuv_sse2.c */; };
 		F34123CB2D41B08D00D6C2B7 /* lossless_sse41.c in Sources */ = {isa = PBXBuildFile; fileRef = F34123CA2D41B08D00D6C2B7 /* lossless_sse41.c */; };
+		F382FBEA2E3D80DA004C6137 /* mux.h in Headers */ = {isa = PBXBuildFile; fileRef = F382FBE92E3D80DA004C6137 /* mux.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F382FBF32E3D8160004C6137 /* anim_encode.c in Sources */ = {isa = PBXBuildFile; fileRef = F382FBEB2E3D8160004C6137 /* anim_encode.c */; };
+		F382FBF42E3D8160004C6137 /* muxedit.c in Sources */ = {isa = PBXBuildFile; fileRef = F382FBED2E3D8160004C6137 /* muxedit.c */; };
+		F382FBF52E3D8160004C6137 /* muxinternal.c in Sources */ = {isa = PBXBuildFile; fileRef = F382FBEF2E3D8160004C6137 /* muxinternal.c */; };
+		F382FBF62E3D8160004C6137 /* muxread.c in Sources */ = {isa = PBXBuildFile; fileRef = F382FBF02E3D8160004C6137 /* muxread.c */; };
 		F3D87C46281EA2CB005DA540 /* webp_dec.c in Sources */ = {isa = PBXBuildFile; fileRef = F3D87C3C281EA2CB005DA540 /* webp_dec.c */; };
 		F3D87C47281EA2CB005DA540 /* frame_dec.c in Sources */ = {isa = PBXBuildFile; fileRef = F3D87C3D281EA2CB005DA540 /* frame_dec.c */; };
 		F3D87C48281EA2CB005DA540 /* vp8_dec.c in Sources */ = {isa = PBXBuildFile; fileRef = F3D87C3E281EA2CB005DA540 /* vp8_dec.c */; };
@@ -158,6 +163,11 @@
 		F313F58F2ADDAF99008B58D6 /* sharpyuv_gamma.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sharpyuv_gamma.c; path = ../../external/libwebp/sharpyuv/sharpyuv_gamma.c; sourceTree = "<group>"; };
 		F313F5922ADDAF99008B58D6 /* sharpyuv_sse2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sharpyuv_sse2.c; path = ../../external/libwebp/sharpyuv/sharpyuv_sse2.c; sourceTree = "<group>"; };
 		F34123CA2D41B08D00D6C2B7 /* lossless_sse41.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = lossless_sse41.c; path = ../../external/libwebp/src/dsp/lossless_sse41.c; sourceTree = "<group>"; };
+		F382FBE92E3D80DA004C6137 /* mux.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = mux.h; path = "/Users/valve/projects/SDL_image-experimental/external/libwebp/src/webp/mux.h"; sourceTree = "<absolute>"; };
+		F382FBEB2E3D8160004C6137 /* anim_encode.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = anim_encode.c; path = "/Users/valve/projects/SDL_image-experimental/external/libwebp/src/mux/anim_encode.c"; sourceTree = "<absolute>"; };
+		F382FBED2E3D8160004C6137 /* muxedit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = muxedit.c; path = "/Users/valve/projects/SDL_image-experimental/external/libwebp/src/mux/muxedit.c"; sourceTree = "<absolute>"; };
+		F382FBEF2E3D8160004C6137 /* muxinternal.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = muxinternal.c; path = "/Users/valve/projects/SDL_image-experimental/external/libwebp/src/mux/muxinternal.c"; sourceTree = "<absolute>"; };
+		F382FBF02E3D8160004C6137 /* muxread.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = muxread.c; path = "/Users/valve/projects/SDL_image-experimental/external/libwebp/src/mux/muxread.c"; sourceTree = "<absolute>"; };
 		F3D87C3C281EA2CB005DA540 /* webp_dec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = webp_dec.c; path = ../../external/libwebp/src/dec/webp_dec.c; sourceTree = "<group>"; };
 		F3D87C3D281EA2CB005DA540 /* frame_dec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = frame_dec.c; path = ../../external/libwebp/src/dec/frame_dec.c; sourceTree = "<group>"; };
 		F3D87C3E281EA2CB005DA540 /* vp8_dec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vp8_dec.c; path = ../../external/libwebp/src/dec/vp8_dec.c; sourceTree = "<group>"; };
@@ -310,6 +320,7 @@
 				F3D87C5A281EA37D005DA540 /* alpha_processing_sse41.c */,
 				F3D87CFD281EA550005DA540 /* analysis_enc.c */,
 				F3E1F8102A78CAE800AC76D3 /* anim_decode.c */,
+				F382FBEB2E3D8160004C6137 /* anim_encode.c */,
 				F3D87CF0281EA54F005DA540 /* backward_references_cost_enc.c */,
 				F3D87CFB281EA550005DA540 /* backward_references_enc.c */,
 				F3D87CA6281EA3DF005DA540 /* bit_reader_utils.c */,
@@ -368,6 +379,9 @@
 				F3D87C60281EA37D005DA540 /* lossless_neon.c */,
 				F3D87C69281EA37D005DA540 /* lossless_sse2.c */,
 				F34123CA2D41B08D00D6C2B7 /* lossless_sse41.c */,
+				F382FBED2E3D8160004C6137 /* muxedit.c */,
+				F382FBEF2E3D8160004C6137 /* muxinternal.c */,
+				F382FBF02E3D8160004C6137 /* muxread.c */,
 				F3D87CF8281EA54F005DA540 /* near_lossless_enc.c */,
 				F3D87CF1281EA54F005DA540 /* picture_csp_enc.c */,
 				F3D87CEE281EA54F005DA540 /* picture_enc.c */,
@@ -438,6 +452,7 @@
 				F3E949F2281F144C00B8F4EA /* demux.h */,
 				F3E949F5281F144C00B8F4EA /* encode.h */,
 				F3E949F3281F144C00B8F4EA /* mux_types.h */,
+				F382FBE92E3D80DA004C6137 /* mux.h */,
 				F3E949F4281F144C00B8F4EA /* types.h */,
 			);
 			name = Headers;
@@ -462,6 +477,7 @@
 				F3E949FA281F144C00B8F4EA /* encode.h in Headers */,
 				F3E949F9281F144C00B8F4EA /* types.h in Headers */,
 				F3E949F7281F144C00B8F4EA /* demux.h in Headers */,
+				F382FBEA2E3D80DA004C6137 /* mux.h in Headers */,
 				F3E949FB281F144C00B8F4EA /* decode.h in Headers */,
 				F3E949F8281F144C00B8F4EA /* mux_types.h in Headers */,
 			);
@@ -652,6 +668,10 @@
 				F3D87D0B281EA550005DA540 /* token_enc.c in Sources */,
 				F3D87C46281EA2CB005DA540 /* webp_dec.c in Sources */,
 				F3D87CD3281EA510005DA540 /* enc_neon.c in Sources */,
+				F382FBF32E3D8160004C6137 /* anim_encode.c in Sources */,
+				F382FBF42E3D8160004C6137 /* muxedit.c in Sources */,
+				F382FBF52E3D8160004C6137 /* muxinternal.c in Sources */,
+				F382FBF62E3D8160004C6137 /* muxread.c in Sources */,
 				F3D87CB9281EA3DF005DA540 /* quant_levels_utils.c in Sources */,
 				F3D87CD5281EA510005DA540 /* lossless_enc_sse2.c in Sources */,
 				F3D87CE6281EA510005DA540 /* cost_mips_dsp_r2.c in Sources */,
