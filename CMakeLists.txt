@@ -279,6 +279,11 @@ add_library(SDL3_image::${sdl3_image_target_name} ALIAS ${sdl3_image_target_name
 if(NOT TARGET SDL3_image::SDL3_image)
     add_library(SDL3_image::SDL3_image ALIAS ${sdl3_image_target_name})
 endif()
+if("c_std_99" IN_LIST CMAKE_C_COMPILE_FEATURES)
+    target_compile_features(${sdl3_image_target_name} PRIVATE c_std_99)
+else()
+    message(WARNING "target_compile_features does not know c_std_99 for C compiler")
+endif()
 target_include_directories(${sdl3_image_target_name}
     PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
