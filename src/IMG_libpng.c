@@ -1994,7 +1994,7 @@ bool IMG_CreateAPNGAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID
     stream->AddFrame = SaveAPNGAnimationPushFrame;
     stream->Close = SaveAPNGAnimationEnd;
 
-    ctx->num_plays = (int)SDL_GetNumberProperty(props, "numplays", 0);
+    ctx->num_plays = (int)SDL_GetNumberProperty(props, IMG_PROP_ANIMATION_STREAM_CREATE_APNG_NUM_PLAYS, 0);
 
     stream->start = SDL_TellIO(stream->dst);
 
