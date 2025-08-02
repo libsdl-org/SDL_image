@@ -79,8 +79,9 @@ static struct {
     IMG_Animation *(SDLCALL *load)(SDL_IOStream *src);
 } supported_anims[] = {
     /* keep magicless formats first */
-    { "GIF", IMG_isGIF, IMG_LoadGIFAnimation_IO },
-    { "WEBP", IMG_isWEBP, IMG_LoadWEBPAnimation_IO },
+    { "GIF", IMG_isGIF, IMG_LoadGIFAnimation_IO     },
+    { "WEBP", IMG_isWEBP, IMG_LoadWEBPAnimation_IO  },
+    { "APNG", IMG_isPNG, IMG_LoadAPNGAnimation_IO   },
 };
 
 int IMG_Version(void)
