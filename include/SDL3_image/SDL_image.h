@@ -2275,6 +2275,7 @@ extern SDL_DECLSPEC IMG_AnimationStream * SDLCALL IMG_CreateAnimationStreamWithP
 #define IMG_PROP_ANIMATION_STREAM_CREATE_QUALITY_NUMBER                 "SDL_image.animation_stream.create.quality"
 #define IMG_PROP_ANIMATION_STREAM_CREATE_TIMEBASE_NUMERATOR_NUMBER      "SDL_image.animation_stream.create.timebase.numerator"
 #define IMG_PROP_ANIMATION_STREAM_CREATE_TIMEBASE_DENOMINATOR_NUMBER    "SDL_image.animation_stream.create.timebase.denominator"
+#define IMG_PROP_ANIMATION_STREAM_CREATE_APNG_NUM_PLAYS                 "SDL_image.animation_stream.create.apng.numplays"
 
 /**
  * Add a frame to a stream of images being saved.
