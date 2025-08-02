@@ -1002,7 +1002,7 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
             apng_ctx.actl.num_plays = SDL_Swap32BE(*(Uint32 *)(chunk_data + 4));
 
         } else if (SDL_memcmp(chunk_type, "PLTE", 4) == 0) {
-            int num_entries = chunk_length / 3;
+            int num_entries = (int)chunk_length / 3;
             if (num_entries > 0 && num_entries <= 256) {
                 if (palette_colors) {
                     SDL_free(palette_colors);
@@ -1037,7 +1037,7 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
             }
 
             SDL_memcpy(trans_alpha, chunk_data, chunk_length);
-            trans_count = chunk_length;
+            trans_count = (int)chunk_length;
 
             if (palette_colors && palette_count > 0) {
                 int num_trans = SDL_min(trans_count, palette_count);
