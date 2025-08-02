@@ -974,6 +974,12 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
             goto error;
         }
 
+        if (chunk_length > INT_MAX) {
+            SDL_SetError("APNG chunk too large to process.");
+            SDL_free(chunk_data);
+            goto error;
+        }
+
         if (SDL_memcmp(chunk_type, "IHDR", 4) == 0) {
             if (chunk_length != 13) {
                 SDL_SetError("Invalid IHDR chunk size");
