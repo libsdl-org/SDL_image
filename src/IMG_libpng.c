@@ -26,8 +26,8 @@
  * *                                                                           **
  *******************************************************************************/
 
-#include "IMG_anim.h"
 #include <SDL3_image/SDL_image.h>
+#include "IMG_anim.h"
 
 #ifdef SDL_IMAGE_LIBPNG
 #include <libpng/png.h>
