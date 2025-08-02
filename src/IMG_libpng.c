@@ -2014,8 +2014,7 @@ error:
 
 bool IMG_CreateAPNGAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID props)
 {
-    if (!stream) {
-        SDL_SetError("IMG_AnimationStream cannot be null.");
+    if (!IMG_InitPNG()) {
         return false;
     }
 
@@ -2025,15 +2024,6 @@ bool IMG_CreateAPNGAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID
     }
 
     stream->ctx = ctx;
-
-    if (ctx->png_write_ptr != NULL) {
-        // bogus call, already initialized
-        return false;
-    }
-
-    if (!IMG_InitPNG()) {
-        return false;
-    }
 
     stream->AddFrame = SaveAPNGAnimationPushFrame;
     stream->Close = SaveAPNGAnimationEnd;
