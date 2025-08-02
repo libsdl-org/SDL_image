@@ -63,9 +63,10 @@ static struct
     int loaded;
     void *handle_libpng;
 
-    // Uncomment this if you want to use zlib with libpng to decompress/compress manually if you'd prefer that in the future.
-    // 
-    //void *handle_zlib;
+    /* Uncomment this if you want to use zlib with libpng to decompress / compress manually if you'd prefer that in the future.
+    * 
+    * void *handle_zlib;
+    */
 
     png_infop (*png_create_info_struct)(png_structrp png_ptr);
     png_structp (*png_create_read_struct)(png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
@@ -133,24 +134,26 @@ static struct
         return false;                                               \
     }
 
-// Uncomment this if you want to use zlib with libpng to decompress/compress manually if you'd prefer that in the future.
-// 
-//#define FUNCTION_LOADER_ZLIB(FUNC, SIG)                             \
-//    lib.FUNC = (SIG)SDL_LoadFunction(lib.handle_zlib, #FUNC);       \
-//    if (lib.FUNC == NULL) {                                         \
-//        SDL_UnloadObject(lib.handle_zlib);                          \
-//        return false;                                               \
-//    }
+/* Uncomment this if you want to use zlib with libpng to decompress / compress manually if you'd prefer that in the future.
+* 
+#define FUNCTION_LOADER_ZLIB(FUNC, SIG)                             \
+    lib.FUNC = (SIG)SDL_LoadFunction(lib.handle_zlib, #FUNC);       \
+    if (lib.FUNC == NULL) {                                         \
+        SDL_UnloadObject(lib.handle_zlib);                          \
+        return false;                                               \
+    }
+ */
 
 static bool IMG_InitPNG(void)
 {
     if (lib.loaded == 0) {
-        // Uncomment this if you want to use zlib with libpng to decompress/compress manually if you'd prefer that in the future.
-        // 
-        //lib.handle_zlib = SDL_LoadObject(LOAD_ZLIB_DYNAMIC);
-        //if (lib.handle_zlib == NULL) {
-        //    return false;
-        //}
+        /* Uncomment this if you want to use zlib with libpng to decompress / compress manually if you'd prefer that in the future.
+         *
+        lib.handle_zlib = SDL_LoadObject(LOAD_ZLIB_DYNAMIC);
+        if (lib.handle_zlib == NULL) {
+            return false;
+        }
+        */
 
         lib.handle_libpng = SDL_LoadObject(LOAD_LIBPNG_DYNAMIC);
         if (lib.handle_libpng == NULL) {
