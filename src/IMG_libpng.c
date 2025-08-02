@@ -2103,4 +2103,19 @@ error:
     return false;
 }
 
+#else
+
+IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
+{
+    (void)src;
+    return SDL_SetError("SDL_image not built against libpng.");
+}
+
+bool IMG_CreateAPNGAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID props)
+{
+    (void)stream;
+    (void)props;
+    return SDL_SetError("SDL_image not built against libpng.");
+}
+
 #endif /* SDL_IMAGE_LIBPNG */
