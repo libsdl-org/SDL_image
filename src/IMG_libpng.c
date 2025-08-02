@@ -1095,6 +1095,11 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
 
                 // Allocate or reallocate buffer
                 png_size_t new_size = fctl->raw_idat_size + chunk_length;
+                if (new_size < fctl->raw_idat_size) {
+                    SDL_SetError("IDAT size would overflow");
+                    SDL_free(chunk_data);
+                    goto error;
+                }
                 png_bytep new_buffer = (png_bytep)SDL_realloc(fctl->raw_idat_data, new_size);
 
                 if (!new_buffer) {
@@ -1135,6 +1140,11 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
             if (matching_fctl_index >= 0) {
                 apng_fcTL_chunk *fctl = &apng_ctx.fctl_frames[matching_fctl_index];
                 png_size_t new_size = fctl->raw_idat_size + (chunk_length - 4);
+                if (new_size < fctl->raw_idat_size) {
+                    SDL_SetError("fdAT size would overflow");
+                    SDL_free(chunk_data);
+                    goto error;
+                }
                 png_bytep new_buffer = (png_bytep)SDL_realloc(fctl->raw_idat_data, new_size);
 
                 if (!new_buffer) {
