@@ -2206,12 +2206,12 @@ extern SDL_DECLSPEC IMG_AnimationStream * SDLCALL IMG_CreateAnimationStream(cons
 /**
  * Create an animation stream and save it to an IOStream.
  *
- * If `closeio` is true, `src` will be closed before returning, if this
- * function fails, or when the animation stream is closed, if this function
+ * If `closeio` is true, `dst` will be closed before returning if this
+ * function fails, or when the animation stream is closed if this function
  * succeeds.
  *
  * \param dst an SDL_IOStream that will be used to save the stream.
- * \param closeio true to close/free the SDL_IOStream when done, false to
+ * \param closeio true to close the SDL_IOStream when done, false to
  *                leave it open.
  * \param type a filename extension that represent this data ("WEBP", etc).
  * \returns a new IMG_AnimationStream, or NULL on failure; call SDL_GetError()
@@ -2291,6 +2291,8 @@ extern SDL_DECLSPEC IMG_AnimationStream * SDLCALL IMG_CreateAnimationStreamWithP
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_CreateAnimationStream
+ * \sa IMG_CreateAnimationStream_IO
+ * \sa IMG_CreateAnimationStreamWithProperties
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_AddAnimationFrame(IMG_AnimationStream *stream, SDL_Surface *surface, Uint64 pts);
 
@@ -2307,6 +2309,8 @@ extern SDL_DECLSPEC bool SDLCALL IMG_AddAnimationFrame(IMG_AnimationStream *stre
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_CreateAnimationStream
+ * \sa IMG_CreateAnimationStream_IO
+ * \sa IMG_CreateAnimationStreamWithProperties
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_CloseAnimationStream(IMG_AnimationStream *stream);
 
