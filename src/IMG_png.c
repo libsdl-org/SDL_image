@@ -23,6 +23,8 @@
 
 #include <SDL3_image/SDL_image.h>
 
+#if !defined(SDL_IMAGE_LIBPNG)
+
 /* We'll have PNG save support by default */
 #if !defined(SDL_IMAGE_SAVE_PNG)
 #  define SDL_IMAGE_SAVE_PNG 1
@@ -818,3 +820,5 @@ bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
     }
     return result;
 }
+
+#endif /* SDL_IMAGE_LIBPNG */
