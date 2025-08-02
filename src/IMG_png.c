@@ -812,8 +812,7 @@ static int IMG_SavePNG_RW_miniz(SDL_Surface *surface, SDL_RWops *dst)
                 png = tdefl_write_image_to_png_file_in_memory(tightened_pixels, w, h, bpp, tightened_pitch, &size);
                 SDL_free(tightened_pixels);
             }
-        }
-        else {
+        } else {
             png = tdefl_write_image_to_png_file_in_memory(pixels, w, h, bpp, pitch, &size);
         }
     }
