@@ -1730,7 +1730,7 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
         pts_source_timebase_den = 1; // Fallback to prevent division by zero, though accuracy is lost.
     }
 
-    double raw_delay_num = (double)delta_pts * pts_source_timebase_num * delay_den / pts_source_timebase_den;
+    double raw_delay_num = SDL_min((double)delta_pts * pts_source_timebase_num * delay_den / pts_source_timebase_den, UINT16_MAX);
     png_uint_16 delay_num = (png_uint_16)SDL_round(raw_delay_num);
     if (delay_num == 0 && delta_pts > 0) {
         delay_num = 1;
