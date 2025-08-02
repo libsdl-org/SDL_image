@@ -99,7 +99,7 @@
     <CustomBuild Include="external\optional\x64\zlib.dll">
       <Filter>x64</Filter>
     </CustomBuild>
-    <CustomBuild Include="external\optional\x64\libpng18.dll">
+    <CustomBuild Include="external\optional\x64\libpng16.dll">
       <Filter>x64</Filter>
     </CustomBuild>
     <CustomBuild Include="external\optional\x64\libavif-16.dll">
@@ -159,3 +159,4 @@
   </ItemGroup>
 
 </Project>
+
