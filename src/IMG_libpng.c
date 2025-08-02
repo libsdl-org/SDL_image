@@ -19,7 +19,6 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-
 /*                    This is a PNG image file framework                        */
 /********************************************************************************
  * *                                                                           **
@@ -27,8 +26,8 @@
  * *                                                                           **
  *******************************************************************************/
 
-#include <SDL3_image/SDL_image.h>
 #include "IMG_anim.h"
+#include <SDL3_image/SDL_image.h>
 
 #ifdef SDL_IMAGE_LIBPNG
 #include <libpng/png.h>
@@ -64,9 +63,9 @@ static struct
     void *handle_libpng;
 
     /* Uncomment this if you want to use zlib with libpng to decompress / compress manually if you'd prefer that in the future.
-    * 
-    * void *handle_zlib;
-    */
+     *
+     * void *handle_zlib;
+     */
 
     png_infop (*png_create_info_struct)(png_structrp png_ptr);
     png_structp (*png_create_read_struct)(png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
@@ -110,7 +109,7 @@ static struct
     void (*png_set_IHDR)(png_structrp png_ptr, png_inforp info_ptr, png_uint_32 width, png_uint_32 height, int bit_depth, int color_type, int interlace_type, int compression_type, int filter_type);
     void (*png_write_info)(png_structrp png_ptr, png_inforp info_ptr);
     void (*png_set_rows)(png_structrp png_ptr, png_inforp info_ptr, png_bytepp row_pointers);
-    void (*png_set_PLTE)(png_structrp png_ptr, png_inforp info_ptr, png_const_colorp palette, int num_palette); 
+    void (*png_set_PLTE)(png_structrp png_ptr, png_inforp info_ptr, png_const_colorp palette, int num_palette);
     void (*png_set_tRNS)(png_structrp png_ptr, png_inforp info_ptr, png_const_bytep trans_alpha, int num_trans, png_const_color_16p trans_color);
 
     void (*png_write_image)(png_structrp png_ptr, png_bytepp image);
@@ -127,15 +126,15 @@ static struct
     void (*png_write_flush)(png_structrp png_ptr);
 } lib;
 
-#define FUNCTION_LOADER_LIBPNG(FUNC, SIG)                           \
-    lib.FUNC = (SIG)SDL_LoadFunction(lib.handle_libpng, #FUNC);     \
-    if (lib.FUNC == NULL) {                                         \
-        SDL_UnloadObject(lib.handle_libpng);                        \
-        return false;                                               \
+#define FUNCTION_LOADER_LIBPNG(FUNC, SIG)                       \
+    lib.FUNC = (SIG)SDL_LoadFunction(lib.handle_libpng, #FUNC); \
+    if (lib.FUNC == NULL) {                                     \
+        SDL_UnloadObject(lib.handle_libpng);                    \
+        return false;                                           \
     }
 
 /* Uncomment this if you want to use zlib with libpng to decompress / compress manually if you'd prefer that in the future.
-* 
+*
 #define FUNCTION_LOADER_ZLIB(FUNC, SIG)                             \
     lib.FUNC = (SIG)SDL_LoadFunction(lib.handle_zlib, #FUNC);       \
     if (lib.FUNC == NULL) {                                         \
@@ -167,7 +166,7 @@ static bool IMG_InitPNG(void)
         FUNCTION_LOADER_LIBPNG(png_get_io_ptr, png_voidp(*)(png_const_structrp png_ptr))
         FUNCTION_LOADER_LIBPNG(png_get_channels, png_byte(*)(png_const_structrp png_ptr, png_const_inforp info_ptr))
 
-        FUNCTION_LOADER_LIBPNG(png_error, void(*)(png_const_structrp png_ptr, png_const_charp error_message))
+        FUNCTION_LOADER_LIBPNG(png_error, void (*)(png_const_structrp png_ptr, png_const_charp error_message))
 
         FUNCTION_LOADER_LIBPNG(png_get_PLTE, png_uint_32(*)(png_const_structrp png_ptr, png_inforp info_ptr, png_colorp * palette, int *num_palette))
         FUNCTION_LOADER_LIBPNG(png_get_tRNS, png_uint_32(*)(png_const_structrp png_ptr, png_inforp info_ptr, png_bytep * trans, int *num_trans, png_color_16p *trans_values))
@@ -215,7 +214,7 @@ static bool IMG_InitPNG(void)
         FUNCTION_LOADER_LIBPNG(png_get_image_width, png_uint_32(*)(png_const_structrp png_ptr, png_const_inforp info_ptr))
         FUNCTION_LOADER_LIBPNG(png_get_image_height, png_uint_32(*)(png_const_structrp png_ptr, png_const_inforp info_ptr))
         FUNCTION_LOADER_LIBPNG(png_set_expand_gray_1_2_4_to_8, void (*)(png_structrp png_ptr))
-            
+
         FUNCTION_LOADER_LIBPNG(png_write_flush, void (*)(png_structrp png_ptr))
     }
     ++lib.loaded;
@@ -268,7 +267,7 @@ bool IMG_isPNG(SDL_IOStream *stream)
     }
 
     if (!IMG_InitPNG()) {
-       return false;
+        return false;
     }
 
     png_byte header[sizeof(png_sig)];
@@ -388,25 +387,6 @@ static bool LIBPNG_LoadPNG_IO_Internal(SDL_IOStream *src, struct png_op_vars *va
     }
 
     lib.png_read_image(vars->png_ptr, vars->row_pointers);
-
-    if (SDL_ISPIXELFORMAT_INDEXED(vars->surface->format)) {
-        SDL_Palette *palette = SDL_CreateSurfacePalette(vars->surface);
-        if (palette) {
-            int png_num_palette;
-            png_colorp png_palette;
-            lib.png_get_PLTE(vars->png_ptr, vars->info_ptr, &png_palette, &png_num_palette);
-            if (png_num_palette > 0) {
-                int num_colors_to_copy = SDL_min(png_num_palette, palette->ncolors);
-                for (int i = 0; i < num_colors_to_copy; ++i) {
-                    palette->colors[i].r = png_palette[i].red;
-                    palette->colors[i].g = png_palette[i].green;
-                    palette->colors[i].b = png_palette[i].blue;
-                    palette->colors[i].a = 255;
-                }
-            }
-        }
-    }
-
     return true;
 }
 
@@ -589,10 +569,9 @@ bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
     return result;
 }
 
-bool IMG_SavePNG(SDL_Surface* surface, const char* file)
+bool IMG_SavePNG(SDL_Surface *surface, const char *file)
 {
-    if (!surface || !file)
-    {
+    if (!surface || !file) {
         SDL_SetError("Surface or file name is NULL");
         return false;
     }
@@ -641,7 +620,7 @@ typedef struct
 } apng_read_context;
 
 static SDL_Surface *decompress_png_frame_data(png_bytep compressed_data, png_size_t compressed_size,
-                                                   int width, int height, int png_color_type, int bit_depth)
+                                              int width, int height, int png_color_type, int bit_depth)
 {
     /*
      * Usually you'd directly decompress zlib but then we have to do defiltering and deinterlacing ourselves.
@@ -1411,7 +1390,7 @@ struct IMG_AnimationStreamContext
     int num_plays;
 };
 
-static void write_png_chunk(SDL_IOStream *stream, const char *chunk_type_str, png_bytep data, png_size_t size)
+static bool write_png_chunk(SDL_IOStream *stream, const char *chunk_type_str, png_bytep data, png_size_t size)
 {
     png_byte crc_data[4];
     png_uint_32 crc;
@@ -1424,20 +1403,20 @@ static void write_png_chunk(SDL_IOStream *stream, const char *chunk_type_str, pn
     custom_png_save_uint_32(size_bytes, (png_uint_32)size);
     if (SDL_WriteIO(stream, size_bytes, 4) != 4) {
         SDL_SetError("Failed to write chunk size for %s chunk", chunk_type_str);
-        return;
+        return false;
     }
 
     // Write chunk type
     if (SDL_WriteIO(stream, chunk_type, 4) != 4) {
         SDL_SetError("Failed to write chunk type for %s chunk", chunk_type_str);
-        return;
+        return false;
     }
 
     // Write chunk data (if any)
     if (data && size > 0) {
         if (SDL_WriteIO(stream, data, size) != size) {
             SDL_SetError("Failed to write chunk data for %s chunk", chunk_type_str);
-            return;
+            return false;
         }
     }
 
@@ -1450,8 +1429,10 @@ static void write_png_chunk(SDL_IOStream *stream, const char *chunk_type_str, pn
     custom_png_save_uint_32(crc_data, crc);
     if (SDL_WriteIO(stream, crc_data, 4) != 4) {
         SDL_SetError("Failed to write chunk CRC for %s chunk", chunk_type_str);
-        return;
+        return false;
     }
+
+    return true;
 }
 
 static png_bytep compress_surface_to_png_data(SDL_Surface *surface, png_size_t *compressed_size, int compression_level, int png_color_type)
@@ -1491,7 +1472,7 @@ static png_bytep compress_surface_to_png_data(SDL_Surface *surface, png_size_t *
         goto error;
     }
 
-    //png_io_context temp_io_context = { mem_stream };
+    // png_io_context temp_io_context = { mem_stream };
     lib.png_set_write_fn(temp_png_ptr, mem_stream, png_write_data, png_flush_data);
     lib.png_set_compression_level(temp_png_ptr, compression_level);
     lib.png_set_filter(temp_png_ptr, 0, PNG_FILTER_TYPE_DEFAULT);
@@ -1652,8 +1633,7 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
     png_bytep full_zlib_data = NULL;
     png_size_t full_zlib_size = 0;
 
-    if (stream->ctx->current_frame_index == 0)
-    {
+    if (stream->ctx->current_frame_index == 0) {
         png_byte pngColorType;
         png_byte bit_depth;
 
@@ -1661,7 +1641,7 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
         if (stream->ctx->output_pixel_format != SDL_PIXELFORMAT_RGBA32 && stream->ctx->output_pixel_format != SDL_PIXELFORMAT_INDEX8) {
             stream->ctx->output_pixel_format = SDL_PIXELFORMAT_RGBA32;
         }
-        
+
         if (stream->ctx->output_pixel_format == SDL_PIXELFORMAT_INDEX8) {
             pngColorType = PNG_COLOR_TYPE_PALETTE; // Use palette for paletted output
         } else {
@@ -1688,9 +1668,7 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
         ihdr_data[10] = PNG_COMPRESSION_TYPE_BASE;
         ihdr_data[11] = PNG_FILTER_TYPE_BASE;
         ihdr_data[12] = PNG_INTERLACE_NONE;
-        write_png_chunk(stream->dst, "IHDR", ihdr_data, 13);
-
-        if (SDL_GetError()[0] != '\0') {
+        if (!write_png_chunk(stream->dst, "IHDR", ihdr_data, 13)) {
             goto error;
         }
 
@@ -1702,15 +1680,13 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
         custom_png_save_uint_32(actl_data, 0);     // Placeholder for num_frames
         custom_png_save_uint_32(actl_data + 4, 0); // num_plays (0 for infinite loop)
 
-        write_png_chunk(stream->dst, "acTL", actl_data, 8);
-        if (SDL_GetError()[0] != '\0') {
+        if (!write_png_chunk(stream->dst, "acTL", actl_data, 8)) {
             goto error;
         }
 
         current_frame_for_processing = frame;
     } else {
-        if (frame->w != stream->ctx->apng_width || frame->h != stream->ctx->apng_height)
-        {
+        if (frame->w != stream->ctx->apng_width || frame->h != stream->ctx->apng_height) {
             current_frame_for_processing = frame;
             // The current API is unspecified about deciding whether to fail or resize subsequent frames according to the first frame so,
             // we will fail here as default, if API changes in the future requires us to resize the subsequent frames, please uncomment the code below.
@@ -1805,47 +1781,42 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
                 plte_data[i * 3 + 1] = stream->ctx->apng_palette_ptr->colors[i].g;
                 plte_data[i * 3 + 2] = stream->ctx->apng_palette_ptr->colors[i].b;
             }
-            write_png_chunk(stream->dst, "PLTE", plte_data, (size_t)stream->ctx->apng_palette_ptr->ncolors * 3);
-            SDL_free(plte_data);
-            if (SDL_GetError()[0] != '\0') {
+            if (!write_png_chunk(stream->dst, "PLTE", plte_data, (size_t)stream->ctx->apng_palette_ptr->ncolors * 3)) {
                 goto error;
             }
+            SDL_free(plte_data);
 
             // Write tRNS chunk (based on hex dump, first entry transparent)
             png_byte tRNS_data[1];
             tRNS_data[0] = 0x00;
-            write_png_chunk(stream->dst, "tRNS", tRNS_data, 1);
-            if (SDL_GetError()[0] != '\0') {
+            if (!write_png_chunk(stream->dst, "tRNS", tRNS_data, 1)) {
                 goto error;
             }
         }
 
         png_byte software_text[] = "Software\0SDL3";
-        write_png_chunk(stream->dst, "tEXt", software_text, sizeof(software_text) - 1); // -1 for null terminator
-        if (SDL_GetError()[0] != '\0') {
+        if (!write_png_chunk(stream->dst, "tEXt", software_text, sizeof(software_text) - 1)) { // -1 for null terminator
             goto error;
         }
 
         png_byte comment_text[] = "Comment\0SDL3 APNG Animation Writer";
-        write_png_chunk(stream->dst, "tEXt", comment_text, sizeof(comment_text) - 1); // -1 for null terminator
-        if (SDL_GetError()[0] != '\0') {
+        if (!write_png_chunk(stream->dst, "tEXt", comment_text, sizeof(comment_text) - 1)) { // -1 for null terminator
             goto error;
         }
 
         // Now, write the fcTL for the first animated frame (sequence 0)
         png_byte fctl_data[26];
-        custom_png_save_uint_32(fctl_data, 0);                                           // Sequence number for the first animated frame is fixed at 0.
-        custom_png_save_uint_32(fctl_data + 4, (png_uint_32)stream->ctx->apng_width);    // Frame width
-        custom_png_save_uint_32(fctl_data + 8, (png_uint_32)stream->ctx->apng_height);   // Frame height
-        custom_png_save_uint_32(fctl_data + 12, 0);                                      // x_offset
-        custom_png_save_uint_32(fctl_data + 16, 0);                                      // y_offset
+        custom_png_save_uint_32(fctl_data, 0);                                         // Sequence number for the first animated frame is fixed at 0.
+        custom_png_save_uint_32(fctl_data + 4, (png_uint_32)stream->ctx->apng_width);  // Frame width
+        custom_png_save_uint_32(fctl_data + 8, (png_uint_32)stream->ctx->apng_height); // Frame height
+        custom_png_save_uint_32(fctl_data + 12, 0);                                    // x_offset
+        custom_png_save_uint_32(fctl_data + 16, 0);                                    // y_offset
 
         custom_png_save_uint_16(fctl_data + 20, delay_num);
         custom_png_save_uint_16(fctl_data + 22, delay_den);
         fctl_data[24] = PNG_DISPOSE_OP_NONE; // dispose_op
         fctl_data[25] = PNG_BLEND_OP_SOURCE; // blend_op
-        write_png_chunk(stream->dst, "fcTL", fctl_data, 26);
-        if (SDL_GetError()[0] != '\0') {
+        if (!write_png_chunk(stream->dst, "fcTL", fctl_data, 26)) {
             goto error;
         }
 
@@ -1857,8 +1828,7 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
         }
 
         // Write IDAT chunk: This is the default image, NOT part of the animation sequence
-        write_png_chunk(stream->dst, "IDAT", full_zlib_data, full_zlib_size);
-        if (SDL_GetError()[0] != '\0') {
+        if (!write_png_chunk(stream->dst, "IDAT", full_zlib_data, full_zlib_size)) {
             goto error;
         }
         SDL_free(full_zlib_data);
@@ -1877,19 +1847,18 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
 
         // Write fcTL chunk for this frame
         png_byte fctl_data[26];
-        custom_png_save_uint_32(fctl_data, (png_uint_32)stream->ctx->current_frame_index);   // Sequence number for this fcTL
-        custom_png_save_uint_32(fctl_data + 4, (png_uint_32)stream->ctx->apng_width);        // Frame width
-        custom_png_save_uint_32(fctl_data + 8, (png_uint_32)stream->ctx->apng_height);       // Frame height
-        custom_png_save_uint_32(fctl_data + 12, 0);                                          // x_offset
-        custom_png_save_uint_32(fctl_data + 16, 0);                                          // y_offset
+        custom_png_save_uint_32(fctl_data, (png_uint_32)stream->ctx->current_frame_index); // Sequence number for this fcTL
+        custom_png_save_uint_32(fctl_data + 4, (png_uint_32)stream->ctx->apng_width);      // Frame width
+        custom_png_save_uint_32(fctl_data + 8, (png_uint_32)stream->ctx->apng_height);     // Frame height
+        custom_png_save_uint_32(fctl_data + 12, 0);                                        // x_offset
+        custom_png_save_uint_32(fctl_data + 16, 0);                                        // y_offset
 
         custom_png_save_uint_16(fctl_data + 20, delay_num);
         custom_png_save_uint_16(fctl_data + 22, delay_den);
         fctl_data[24] = PNG_DISPOSE_OP_NONE;
         fctl_data[25] = PNG_BLEND_OP_SOURCE;
 
-        write_png_chunk(stream->dst, "fcTL", fctl_data, 26);
-        if (SDL_GetError()[0] != '\0') {
+        if (!write_png_chunk(stream->dst, "fcTL", fctl_data, 26)) {
             goto error;
         }
 
@@ -1909,8 +1878,7 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
         }
         SDL_memcpy(fdat_data, fdat_prefix, 4);
         SDL_memcpy(fdat_data + 4, full_zlib_data, full_zlib_size);
-        write_png_chunk(stream->dst, "fdAT", fdat_data, 4 + full_zlib_size);
-        if (SDL_GetError()[0] != '\0') {
+        if (!write_png_chunk(stream->dst, "fdAT", fdat_data, 4 + full_zlib_size)) {
             goto error;
         }
         SDL_free(fdat_data);
@@ -1975,8 +1943,7 @@ static bool SaveAPNGAnimationEnd(IMG_AnimationStream *stream)
     custom_png_save_uint_32(actl_data + 4, stream->ctx->num_plays);
 
     // Re-write the updated acTL chunk. write_png_chunk will recalculate its CRC.
-    write_png_chunk(stream->dst, "acTL", actl_data, 8);
-    if (SDL_GetError()[0] != '\0') {
+    if (!write_png_chunk(stream->dst, "acTL", actl_data, 8)) {
         goto error;
     }
 
@@ -1986,8 +1953,7 @@ static bool SaveAPNGAnimationEnd(IMG_AnimationStream *stream)
     }
 
     // Write the IEND chunk to finalize the PNG file
-    write_png_chunk(stream->dst, "IEND", NULL, 0);
-    if (SDL_GetError()[0] != '\0') {
+    if (!write_png_chunk(stream->dst, "IEND", NULL, 0)) {
         goto error;
     }
 
