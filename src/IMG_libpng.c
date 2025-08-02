@@ -1057,7 +1057,7 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
                 apng_ctx.fctl_frames = (apng_fcTL_chunk *)SDL_realloc(apng_ctx.fctl_frames, sizeof(apng_fcTL_chunk) * apng_ctx.fctl_capacity);
                 if (!apng_ctx.fctl_frames) {
                     SDL_SetError("Out of memory for fcTL chunks in apng_read_user_chunk_callback");
-                    return 0;
+                    goto error;
                 }
             }
             apng_fcTL_chunk *fctl = &apng_ctx.fctl_frames[apng_ctx.fctl_count];
