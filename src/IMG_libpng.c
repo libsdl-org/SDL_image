@@ -1872,11 +1872,7 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
         SDL_free(full_zlib_data);
         full_zlib_data = NULL;
 
-        if (SDL_GetError()[0] != '\0') {
-            goto error;
-        }
-
-        stream->ctx->current_frame_index += 2; // Increment by 2 (one for fcTL and one ofr fdAT) for the next fcTL sequence number
+        stream->ctx->current_frame_index += 2; // Increment by 2 (one for fcTL and one for fdAT) for the next fcTL sequence number
     }
 
     if (current_frame_for_processing && current_frame_for_processing != frame) {
