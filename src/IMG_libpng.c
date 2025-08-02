@@ -913,8 +913,10 @@ static bool read_png_chunk(SDL_IOStream *stream, char *type, png_bytep *data, pn
 IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
 {
     Sint64 start_pos;
-    png_structp png_ptr = NULL;
-    png_infop info_ptr = NULL;
+    SDL_Color *palette_colors = NULL;
+    int palette_count;
+    png_bytep trans_alpha = NULL;
+    int trans_count;
     IMG_Animation *animation = NULL;
     apng_read_context apng_ctx;
     unsigned char header[8];
@@ -922,8 +924,8 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
     png_bytep decompressed_frame_data = NULL;
     png_size_t decompressed_frame_size = 0;
     int total_frame_count = 0;
-    int png_color_type = -1; // Store the color type from IHDR
-    int bit_depth = -1;      // Store bit depth from IHDR
+    int png_color_type = -1;
+    int bit_depth = -1;
     int interlace_method = -1, compression_method = -1, filter_method = -1;
     bool found_iend = false;
     int width = -1, height = -1;
@@ -955,14 +957,14 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
     // Here we manually process all chunks because libpng was consuming fdAT (which is mandatory as it contains frame data) somehow even if we specified custom read function and specify unknown chunks to be sent, via png_set_keep_unknown_chunks.
 
     /*
-    * SPEC - CHUNK SEQUENCE NUMBERS
-    * Decoders must treat out-of-order APNG chunks as an error. APNG-aware PNG editors should restore them to correct order using the sequence numbers.
-    *
-    * TODO:
-    * I am kinda confused as to why "editors" are separated in this spec. If I got it right (the spec), SDL is a core library that can either be used by an editor or a normal app, so in this case, which qualifies us for?
-    * Here I simply assume that we should rather try to fix the order to output a correct animation.
-    * Our decoder simply pushes the chunks into a list then correctly gathers them by searching for the correct sequence with for loop.
-    */
+     * SPEC - CHUNK SEQUENCE NUMBERS
+     * Decoders must treat out-of-order APNG chunks as an error. APNG-aware PNG editors should restore them to correct order using the sequence numbers.
+     *
+     * TODO:
+     * I am kinda confused as to why "editors" are separated in this spec. If I got it right (the spec), SDL is a core library that can either be used by an editor or a normal app, so in this case, which qualifies us for?
+     * Here I simply assume that we should rather try to fix the order to output a correct animation.
+     * Our decoder simply pushes the chunks into a list then correctly gathers them by searching for the correct sequence with for loop.
+     */
     while (!found_iend) {
         char chunk_type[5] = { 0 };
         png_bytep chunk_data = NULL;
@@ -999,6 +1001,50 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
             apng_ctx.actl.num_frames = SDL_Swap32BE(*(Uint32 *)chunk_data);
             apng_ctx.actl.num_plays = SDL_Swap32BE(*(Uint32 *)(chunk_data + 4));
 
+        } else if (SDL_memcmp(chunk_type, "PLTE", 4) == 0) {
+            int num_entries = chunk_length / 3;
+            if (num_entries > 0 && num_entries <= 256) {
+                if (palette_colors) {
+                    SDL_free(palette_colors);
+                }
+
+                palette_colors = (SDL_Color *)SDL_malloc(num_entries * sizeof(SDL_Color));
+                if (!palette_colors) {
+                    SDL_SetError("Out of memory for palette data");
+                    SDL_free(chunk_data);
+                    goto error;
+                }
+
+                for (int i = 0; i < num_entries; i++) {
+                    palette_colors[i].r = chunk_data[i * 3];
+                    palette_colors[i].g = chunk_data[i * 3 + 1];
+                    palette_colors[i].b = chunk_data[i * 3 + 2];
+                    palette_colors[i].a = 0xFF; // Default opaque
+                }
+
+                palette_count = num_entries;
+            }
+        } else if (SDL_memcmp(chunk_type, "tRNS", 4) == 0) {
+            if (trans_alpha) {
+                SDL_free(trans_alpha);
+            }
+
+            trans_alpha = (png_bytep)SDL_malloc(chunk_length);
+            if (!trans_alpha) {
+                SDL_SetError("Out of memory for transparency data");
+                SDL_free(chunk_data);
+                goto error;
+            }
+
+            SDL_memcpy(trans_alpha, chunk_data, chunk_length);
+            trans_count = chunk_length;
+
+            if (palette_colors && palette_count > 0) {
+                int num_trans = SDL_min(trans_count, palette_count);
+                for (int i = 0; i < num_trans; i++) {
+                    palette_colors[i].a = trans_alpha[i];
+                }
+            }
         } else if (SDL_memcmp(chunk_type, "fcTL", 4) == 0) {
             if (chunk_length != 26) {
                 SDL_SetError("Invalid fcTL chunk size");
@@ -1227,41 +1273,16 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
 
         // If it's a paletted frame, set its palette and tRNS from the main PNG info_ptr
         if (sdl_pixel_format == SDL_PIXELFORMAT_INDEX8) {
-            png_colorp palette_colors;
-            int num_palette;
-            if (lib.png_get_PLTE(png_ptr, info_ptr, &palette_colors, &num_palette)) {
-                SDL_Color *sdl_colors = (SDL_Color *)SDL_malloc(sizeof(SDL_Color) * num_palette);
-                if (!sdl_colors) {
-                    SDL_SetError("Out of memory for SDL palette colors");
-                    goto error;
-                }
-                for (int p = 0; p < num_palette; ++p) {
-                    sdl_colors[p].r = palette_colors[p].red;
-                    sdl_colors[p].g = palette_colors[p].green;
-                    sdl_colors[p].b = palette_colors[p].blue;
-                    sdl_colors[p].a = 0xFF; // Default to opaque
-                }
-
-                png_bytep trans_alpha;
-                int num_trans;
-                if (lib.png_get_tRNS(png_ptr, info_ptr, &trans_alpha, &num_trans, NULL)) {
-                    for (int t = 0; t < num_trans; ++t) {
-                        if (t < num_palette) {
-                            sdl_colors[t].a = trans_alpha[t];
-                        }
-                    }
-                }
-
-                SDL_Palette *frame_palette = SDL_CreatePalette(num_palette);
+            if (palette_colors && palette_count > 0) {
+                SDL_Palette *frame_palette = SDL_CreatePalette(palette_count);
                 if (!frame_palette) {
                     SDL_SetError("Failed to create palette for frame surface: %s", SDL_GetError());
-                    SDL_free(sdl_colors);
                     goto error;
                 }
-                SDL_SetPaletteColors(frame_palette, sdl_colors, 0, num_palette);
-                SDL_free(sdl_colors);
+
+                SDL_SetPaletteColors(frame_palette, palette_colors, 0, palette_count);
                 SDL_SetSurfacePalette(temp_frame_surface, frame_palette);
-                SDL_DestroyPalette(frame_palette); // Surface takes ownership, so destroy our reference
+                SDL_DestroyPalette(frame_palette); // Surface takes ownership
             }
         }
 
@@ -1296,7 +1317,6 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
         decompressed_frame_data = NULL;
     }
 
-    lib.png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
     if (apng_ctx.fctl_frames) {
         for (int i = 0; i < apng_ctx.fctl_count; ++i) {
             if (apng_ctx.fctl_frames[i].raw_idat_data) {
@@ -1315,9 +1335,6 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
     return animation;
 
 error:
-    if (png_ptr) {
-        lib.png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-    }
     if (apng_ctx.fctl_frames) {
         for (int i = 0; i < apng_ctx.fctl_count; ++i) {
             if (apng_ctx.fctl_frames[i].raw_idat_data) {
@@ -1352,6 +1369,14 @@ error:
     if (decompressed_frame_data) {
         SDL_free(decompressed_frame_data);
     }
+
+    if (palette_colors) {
+        SDL_free(palette_colors);
+    }
+    if (trans_alpha) {
+        SDL_free(trans_alpha);
+    }
+
     SDL_SeekIO(src, start_pos, SDL_IO_SEEK_SET);
     return NULL;
 }
