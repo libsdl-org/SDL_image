@@ -2108,7 +2108,8 @@ error:
 IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
 {
     (void)src;
-    return SDL_SetError("SDL_image not built against libpng.");
+    SDL_SetError("SDL_image not built against libpng.");
+    return NULL;
 }
 
 bool IMG_CreateAPNGAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID props)
