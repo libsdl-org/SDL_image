@@ -313,6 +313,11 @@ static bool LIBPNG_LoadPNG_IO_Internal(SDL_IOStream *src, struct png_op_vars *va
     int bit_depth, color_type, interlace_type;
     Uint32 format;
     unsigned char header[8];
+    png_colorp png_palette = NULL;
+    int num_palette = 0;
+    png_bytep trans = NULL;
+    int num_trans = 0;
+    png_color_16p trans_values = NULL;
 
     if (SDL_ReadIO(src, header, sizeof(header)) != sizeof(header)) {
         vars->error = "Failed to read PNG header from SDL_IOStream";
@@ -346,35 +351,79 @@ static bool LIBPNG_LoadPNG_IO_Internal(SDL_IOStream *src, struct png_op_vars *va
     lib.png_get_IHDR(vars->png_ptr, vars->info_ptr, &width, &height, &bit_depth,
                      &color_type, &interlace_type, NULL, NULL);
 
-    if (bit_depth == 16) {
-        lib.png_set_strip_16(vars->png_ptr);
-    }
-    if (color_type == PNG_COLOR_TYPE_PALETTE) {
-        lib.png_set_palette_to_rgb(vars->png_ptr);
-    }
+    // For grayscale with bit depth < 8, expand to 8 bits
     if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) {
-        lib.png_set_expand(vars->png_ptr);
+        lib.png_set_expand_gray_1_2_4_to_8(vars->png_ptr);
     }
-    if (lib.png_get_valid(vars->png_ptr, vars->info_ptr, PNG_INFO_tRNS)) {
-        lib.png_set_tRNS_to_alpha(vars->png_ptr);
+
+    // Only convert non-palette formats to RGB/RGBA
+    if (color_type != PNG_COLOR_TYPE_PALETTE) {
+        if (color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
+            lib.png_set_gray_to_rgb(vars->png_ptr);
+        }
+
+        if (lib.png_get_valid(vars->png_ptr, vars->info_ptr, PNG_INFO_tRNS)) {
+            lib.png_set_tRNS_to_alpha(vars->png_ptr);
+        } else if (!(color_type & PNG_COLOR_MASK_ALPHA)) {
+            lib.png_set_filler(vars->png_ptr, 0xFF, PNG_FILLER_AFTER);
+        }
     }
-    if (color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
-        lib.png_set_gray_to_rgb(vars->png_ptr);
-    }
-    if (!(color_type & PNG_COLOR_MASK_ALPHA)) {
-        lib.png_set_filler(vars->png_ptr, 0xFF, PNG_FILLER_AFTER);
-    }
+
     lib.png_set_packing(vars->png_ptr);
 
     lib.png_read_update_info(vars->png_ptr, vars->info_ptr);
     lib.png_get_IHDR(vars->png_ptr, vars->info_ptr, &width, &height, &bit_depth,
                      &color_type, &interlace_type, NULL, NULL);
 
-    format = SDL_PIXELFORMAT_RGBA32;
+    if (color_type == PNG_COLOR_TYPE_PALETTE) {
+        format = SDL_PIXELFORMAT_INDEX8;
+    } else if (bit_depth == 16) {
+        format = SDL_PIXELFORMAT_RGBA64;
+        // Fallback to 8-bit RGBA if 16-bit not supported
+        int bpp;
+        Uint32 rmask, gmask, bmask, amask;
+        if (!SDL_GetMasksForPixelFormat(format, &bpp, &rmask, &gmask, &bmask, &amask)) {
+            lib.png_set_strip_16(vars->png_ptr);
+            lib.png_read_update_info(vars->png_ptr, vars->info_ptr);
+            format = SDL_PIXELFORMAT_RGBA32;
+        }
+    } else {
+        format = SDL_PIXELFORMAT_RGBA32;
+    }
+
     vars->surface = SDL_CreateSurface(width, height, format);
     if (vars->surface == NULL) {
         vars->error = SDL_GetError();
         return false;
+    }
+
+    // For palette images, set up the palette
+    if (color_type == PNG_COLOR_TYPE_PALETTE) {
+        if (lib.png_get_PLTE(vars->png_ptr, vars->info_ptr, &png_palette, &num_palette)) {
+            SDL_Palette *palette = SDL_CreatePalette(num_palette);
+            if (!palette) {
+                vars->error = "Failed to create palette for PNG image";
+                return false;
+            }
+
+            for (int i = 0; i < num_palette; i++) {
+                SDL_Color color;
+                color.r = png_palette[i].red;
+                color.g = png_palette[i].green;
+                color.b = png_palette[i].blue;
+                color.a = 255;
+                SDL_SetPaletteColors(palette, &color, i, 1);
+            }
+
+            if (lib.png_get_tRNS(vars->png_ptr, vars->info_ptr, &trans, &num_trans, &trans_values)) {
+                for (int i = 0; i < num_trans && i < num_palette; i++) {
+                    palette->colors[i].a = trans[i];
+                }
+            }
+
+            SDL_SetSurfacePalette(vars->surface, palette);
+            SDL_DestroyPalette(palette);
+        }
     }
 
     vars->row_pointers = (png_bytep *)SDL_malloc(sizeof(png_bytep) * height);
@@ -387,6 +436,17 @@ static bool LIBPNG_LoadPNG_IO_Internal(SDL_IOStream *src, struct png_op_vars *va
     }
 
     lib.png_read_image(vars->png_ptr, vars->row_pointers);
+
+    if (format == SDL_PIXELFORMAT_RGBA64) {
+#if SDL_BYTEORDER != SDL_BIG_ENDIAN
+        Uint16 *pixels = (Uint16 *)vars->surface->pixels;
+        int num_pixels = width * height * 4;
+        for (int i = 0; i < num_pixels; i++) {
+            pixels[i] = SDL_Swap16(pixels[i]);
+        }
+#endif
+    }
+
     return true;
 }
 
