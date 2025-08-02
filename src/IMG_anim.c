@@ -23,7 +23,7 @@
 
 #include "IMG_anim.h"
 #include "IMG_webp.h"
-
+#include "IMG_libpng.h"
 
 IMG_AnimationStream *IMG_CreateAnimationStream(const char *file)
 {
@@ -134,7 +134,9 @@ IMG_AnimationStream *IMG_CreateAnimationStreamWithProperties(SDL_PropertiesID pr
     bool result = false;
     if (SDL_strcasecmp(type, "webp") == 0) {
         result = IMG_CreateWEBPAnimationStream(stream, props);
-    } else {
+    } else if (SDL_strcasecmp(type, "png") == 0){
+    result = IMG_CreateAPNGAnimationStream(stream, props);
+    }else {
         SDL_SetError("Unrecognized output type");
     }
     if (result) {
