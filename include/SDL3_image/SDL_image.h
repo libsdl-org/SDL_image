@@ -2187,10 +2187,12 @@ typedef struct IMG_AnimationStream IMG_AnimationStream;
 /**
  * Create an animation stream and save it to a file.
  *
- * The file type is determined from the file extension, e.g. "file.webp" will be encoded using WEBP.
+ * The file type is determined from the file extension, e.g. "file.webp" will
+ * be encoded using WEBP.
  *
  * \param file the file where the animation will be saved.
- * \returns a new IMG_AnimationStream, or NULL on failure; call SDL_GetError() for more information.
+ * \returns a new IMG_AnimationStream, or NULL on failure; call SDL_GetError()
+ *          for more information.
  *
  * \since This function is available since SDL_image 3.4.0.
  *
@@ -2204,13 +2206,16 @@ extern SDL_DECLSPEC IMG_AnimationStream * SDLCALL IMG_CreateAnimationStream(cons
 /**
  * Create an animation stream and save it to an IOStream.
  *
- * If `closeio` is true, `src` will be closed before returning, if this function fails, or when the animation stream is closed, if this function succeeds.
+ * If `closeio` is true, `src` will be closed before returning, if this
+ * function fails, or when the animation stream is closed, if this function
+ * succeeds.
  *
  * \param dst an SDL_IOStream that will be used to save the stream.
- * \param closeio true to close/free the SDL_IOStream when done, false
- *                to leave it open.
+ * \param closeio true to close/free the SDL_IOStream when done, false to
+ *                leave it open.
  * \param type a filename extension that represent this data ("WEBP", etc).
- * \returns a new IMG_AnimationStream, or NULL on failure; call SDL_GetError() for more information.
+ * \returns a new IMG_AnimationStream, or NULL on failure; call SDL_GetError()
+ *          for more information.
  *
  * \since This function is available since SDL_image 3.4.0.
  *
@@ -2226,16 +2231,33 @@ extern SDL_DECLSPEC IMG_AnimationStream * SDLCALL IMG_CreateAnimationStream_IO(S
  *
  * These are the supported properties:
  *
- * - `IMG_PROP_ANIMATION_STREAM_CREATE_FILENAME_STRING`: the file to save, if an SDL_IOStream isn't being used. This is required if `IMG_PROP_ANIMATION_STREAM_CREATE_IOSTREAM_POINTER` isn't set.
- * - `IMG_PROP_ANIMATION_STREAM_CREATE_IOSTREAM_POINTER`: an SDL_IOStream that will be used to save the stream. This should not be closed until the animation stream is closed. This is required if `IMG_PROP_ANIMATION_STREAM_CREATE_FILENAME_STRING` isn't set.
- * - `IMG_PROP_ANIMATION_STREAM_CREATE_IOSTREAM_AUTOCLOSE_BOOLEAN`: true if closing the animation stream should also close the associated SDL_IOStream.
- * - `IMG_PROP_ANIMATION_STREAM_CREATE_TYPE_STRING`: the output file type, e.g. "webp", defaults to the file extension if `IMG_PROP_ANIMATION_STREAM_CREATE_FILENAME_STRING` is set.
- * - `IMG_PROP_ANIMATION_STREAM_CREATE_QUALITY_NUMBER`: the compression quality, in the range of 0 to 100. The higher the number, the higher the quality and file size. This defaults to a balanced value for compression and quality.
- * - `IMG_PROP_ANIMATION_STREAM_CREATE_TIMEBASE_NUMERATOR_NUMBER`: the numerator of the fraction used to multiply the pts to convert it to seconds. This defaults to 1.
- * - `IMG_PROP_ANIMATION_STREAM_CREATE_TIMEBASE_DENOMINATOR_NUMBER`: the denominator of the fraction used to multiply the pts to convert it to seconds. This defaults to 1000.
+ * - `IMG_PROP_ANIMATION_STREAM_CREATE_FILENAME_STRING`: the file to save, if
+ *   an SDL_IOStream isn't being used. This is required if
+ *   `IMG_PROP_ANIMATION_STREAM_CREATE_IOSTREAM_POINTER` isn't set.
+ * - `IMG_PROP_ANIMATION_STREAM_CREATE_IOSTREAM_POINTER`: an SDL_IOStream that
+ *   will be used to save the stream. This should not be closed until the
+ *   animation stream is closed. This is required if
+ *   `IMG_PROP_ANIMATION_STREAM_CREATE_FILENAME_STRING` isn't set.
+ * - `IMG_PROP_ANIMATION_STREAM_CREATE_IOSTREAM_AUTOCLOSE_BOOLEAN`: true if
+ *   closing the animation stream should also close the associated
+ *   SDL_IOStream.
+ * - `IMG_PROP_ANIMATION_STREAM_CREATE_TYPE_STRING`: the output file type,
+ *   e.g. "webp", defaults to the file extension if
+ *   `IMG_PROP_ANIMATION_STREAM_CREATE_FILENAME_STRING` is set.
+ * - `IMG_PROP_ANIMATION_STREAM_CREATE_QUALITY_NUMBER`: the compression
+ *   quality, in the range of 0 to 100. The higher the number, the higher the
+ *   quality and file size. This defaults to a balanced value for compression
+ *   and quality.
+ * - `IMG_PROP_ANIMATION_STREAM_CREATE_TIMEBASE_NUMERATOR_NUMBER`: the
+ *   numerator of the fraction used to multiply the pts to convert it to
+ *   seconds. This defaults to 1.
+ * - `IMG_PROP_ANIMATION_STREAM_CREATE_TIMEBASE_DENOMINATOR_NUMBER`: the
+ *   denominator of the fraction used to multiply the pts to convert it to
+ *   seconds. This defaults to 1000.
  *
  * \param props the properties of the animation stream.
- * \returns a new IMG_AnimationStream, or NULL on failure; call SDL_GetError() for more information.
+ * \returns a new IMG_AnimationStream, or NULL on failure; call SDL_GetError()
+ *          for more information.
  *
  * \since This function is available since SDL_image 3.4.0.
  *
@@ -2259,7 +2281,10 @@ extern SDL_DECLSPEC IMG_AnimationStream * SDLCALL IMG_CreateAnimationStreamWithP
  *
  * \param stream the stream receiving images.
  * \param surface the surface to add as the next frame in the animation.
- * \param pts the presentation timestamp of the frame, usually in milliseconds but can be other units if the `IMG_PROP_ANIMATION_STREAM_CREATE_TIMEBASE_DENOMINATOR_NUMBER` property is set when creating the stream.
+ * \param pts the presentation timestamp of the frame, usually in milliseconds
+ *            but can be other units if the
+ *            `IMG_PROP_ANIMATION_STREAM_CREATE_TIMEBASE_DENOMINATOR_NUMBER`
+ *            property is set when creating the stream.
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
@@ -2272,7 +2297,8 @@ extern SDL_DECLSPEC bool SDLCALL IMG_AddAnimationFrame(IMG_AnimationStream *stre
 /**
  * Close an animation stream, finishing any encoding.
  *
- * Calling this function frees the animation stream, and returns the final status of the encoding process.
+ * Calling this function frees the animation stream, and returns the final
+ * status of the encoding process.
  *
  * \param stream the stream to close.
  * \returns true on success or false on failure; call SDL_GetError() for more
