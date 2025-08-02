@@ -2275,6 +2275,7 @@ extern SDL_DECLSPEC IMG_AnimationStream * SDLCALL IMG_CreateAnimationStreamWithP
 #define IMG_PROP_ANIMATION_STREAM_CREATE_QUALITY_NUMBER                 "SDL_image.animation_stream.create.quality"
 #define IMG_PROP_ANIMATION_STREAM_CREATE_TIMEBASE_NUMERATOR_NUMBER      "SDL_image.animation_stream.create.timebase.numerator"
 #define IMG_PROP_ANIMATION_STREAM_CREATE_TIMEBASE_DENOMINATOR_NUMBER    "SDL_image.animation_stream.create.timebase.denominator"
+#define IMG_PROP_ANIMATION_STREAM_CREATE_APNG_NUM_PLAYS                 "SDL_image.animation_stream.create.apng.numplays"
 
 /**
  * Add a frame to a stream of images being saved.
@@ -2313,6 +2314,29 @@ extern SDL_DECLSPEC bool SDLCALL IMG_AddAnimationFrame(IMG_AnimationStream *stre
  * \sa IMG_CreateAnimationStreamWithProperties
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_CloseAnimationStream(IMG_AnimationStream *stream);
+
+/**
+ * Load an APNG animation directly from an SDL_IOStream.
+ *
+ * If you know you definitely have an APNG image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally, it's
+ * better to use the abstract interfaces; also, there is only an SDL_IOStream
+ * interface available here.
+ *
+ * When done with the returned animation, the app should dispose of it with a
+ * call to IMG_FreeAnimation().
+ *
+ * \param src an SDL_IOStream from which data will be read.
+ * \returns a new IMG_Animation, or NULL on error.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_LoadAnimation
+ * \sa IMG_LoadAnimation_IO
+ * \sa IMG_LoadAnimationTyped_IO
+ * \sa IMG_FreeAnimation
+ */
+extern SDL_DECLSPEC IMG_Animation *SDLCALL IMG_LoadAPNGAnimation_IO(SDL_IOStream *src);
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
