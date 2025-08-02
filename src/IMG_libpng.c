@@ -1881,7 +1881,12 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
         png_byte fdat_prefix[4];
         custom_png_save_uint_32(fdat_prefix, (png_uint_32)(stream->ctx->current_frame_index + 1)); // Sequence number for fdAT
 
-        png_bytep fdat_data = (png_bytep)SDL_malloc(4 + full_zlib_size);
+        png_bytep fdat_data = NULL;
+        if (full_zlib_size > SDL_SIZE_MAX - 4) {
+            SDL_SetError("fdAT data size would overflow");
+            goto error;
+        }
+        fdat_data = (png_bytep)SDL_malloc(4 + full_zlib_size);
         if (!fdat_data) {
             SDL_SetError("Out of memory for fdAT data");
             goto error;
