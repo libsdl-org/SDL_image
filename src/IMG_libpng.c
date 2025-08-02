@@ -1658,19 +1658,19 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
         png_byte bit_depth;
 
         stream->ctx->output_pixel_format = frame->format;
-        if (stream->ctx->output_pixel_format != SDL_PIXELFORMAT_RGBA32 && stream->ctx->output_pixel_format != SDL_PIXELFORMAT_INDEX8)
+        if (stream->ctx->output_pixel_format != SDL_PIXELFORMAT_RGBA32 && stream->ctx->output_pixel_format != SDL_PIXELFORMAT_INDEX8) {
             stream->ctx->output_pixel_format = SDL_PIXELFORMAT_RGBA32;
-
-        if (stream->ctx->output_pixel_format == SDL_PIXELFORMAT_INDEX8)
+        }
+        
+        if (stream->ctx->output_pixel_format == SDL_PIXELFORMAT_INDEX8) {
             pngColorType = PNG_COLOR_TYPE_PALETTE; // Use palette for paletted output
-        else {
+        } else {
             stream->ctx->output_pixel_format = SDL_PIXELFORMAT_RGBA32;
             pngColorType = PNG_COLOR_TYPE_RGBA; // Use RGBA for other formats
         }
 
         const SDL_PixelFormatDetails *pfd = SDL_GetPixelFormatDetails(stream->ctx->output_pixel_format);
-        if (pfd)
-        {
+        if (pfd) {
             bit_depth = pfd->bits_per_pixel / pfd->bytes_per_pixel;
         } else {
             bit_depth = 8;
