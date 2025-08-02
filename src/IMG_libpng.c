@@ -1871,6 +1871,9 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
         SDL_memcpy(fdat_data, fdat_prefix, 4);
         SDL_memcpy(fdat_data + 4, full_zlib_data, full_zlib_size);
         write_png_chunk(stream->dst, "fdAT", fdat_data, 4 + full_zlib_size);
+        if (SDL_GetError()[0] != '\0') {
+            goto error;
+        }
         SDL_free(fdat_data);
         fdat_data = NULL;
         SDL_free(full_zlib_data);
