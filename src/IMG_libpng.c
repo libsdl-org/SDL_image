@@ -1674,7 +1674,7 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
             // The current API is unspecified about deciding whether to fail or resize subsequent frames according to the first frame so,
             // we will fail here as default, if API changes in the future requires us to resize the subsequent frames, please uncomment the code below.
 
-            SDL_SetError("Frame %i doesn't match the first frame's width (current=%i | expected=%i) and/or height (current=%i | expected=%i)", stream->ctx->current_frame_index, frame->w, stream->ctx->apng_width, frame->h, stream->ctx->apng_height);
+            SDL_SetError("Frame %i doesn't match the first frame's width (current=%i | expected=%i) and height (current=%i | expected=%i)", stream->ctx->current_frame_index, frame->w, stream->ctx->apng_width, frame->h, stream->ctx->apng_height);
             goto error;
 
             //    current_frame_for_processing = SDL_CreateSurface(stream->ctx->apng_width, stream->ctx->apng_height, SDL_PIXELFORMAT_RGBA32);
