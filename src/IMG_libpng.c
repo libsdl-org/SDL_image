@@ -437,15 +437,15 @@ static bool LIBPNG_LoadPNG_IO_Internal(SDL_IOStream *src, struct png_op_vars *va
 
     lib.png_read_image(vars->png_ptr, vars->row_pointers);
 
-    if (format == SDL_PIXELFORMAT_RGBA64) {
 #if SDL_BYTEORDER != SDL_BIG_ENDIAN
+    if (format == SDL_PIXELFORMAT_RGBA64) {
         Uint16 *pixels = (Uint16 *)vars->surface->pixels;
         int num_pixels = width * height * 4;
         for (int i = 0; i < num_pixels; i++) {
             pixels[i] = SDL_Swap16(pixels[i]);
         }
-#endif
     }
+#endif
 
     return true;
 }
