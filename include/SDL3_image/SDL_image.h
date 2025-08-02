@@ -2211,8 +2211,8 @@ extern SDL_DECLSPEC IMG_AnimationStream * SDLCALL IMG_CreateAnimationStream(cons
  * succeeds.
  *
  * \param dst an SDL_IOStream that will be used to save the stream.
- * \param closeio true to close the SDL_IOStream when done, false to
- *                leave it open.
+ * \param closeio true to close the SDL_IOStream when done, false to leave it
+ *                open.
  * \param type a filename extension that represent this data ("WEBP", etc).
  * \returns a new IMG_AnimationStream, or NULL on failure; call SDL_GetError()
  *          for more information.
