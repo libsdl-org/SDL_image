@@ -60,12 +60,14 @@ typedef png_infop png_noconst16_inforp;
 static struct
 {
     int loaded;
+    #ifdef LOAD_LIBPNG_DYNAMIC
     void *handle_libpng;
 
-    /* Uncomment this if you want to use zlib with libpng to decompress / compress manually if you'd prefer that in the future.
+    /* Uncomment this if you want to use zlib with libpng to decompress / compress manually if you'd prefer that.
      *
      * void *handle_zlib;
      */
+    #endif
 
     png_infop (*png_create_info_struct)(png_structrp png_ptr);
     png_structp (*png_create_read_struct)(png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
@@ -126,27 +128,35 @@ static struct
     void (*png_write_flush)(png_structrp png_ptr);
 } lib;
 
-#define FUNCTION_LOADER_LIBPNG(FUNC, SIG)                       \
-    lib.FUNC = (SIG)SDL_LoadFunction(lib.handle_libpng, #FUNC); \
-    if (lib.FUNC == NULL) {                                     \
-        SDL_UnloadObject(lib.handle_libpng);                    \
-        return false;                                           \
-    }
+#ifdef LOAD_LIBPNG_DYNAMIC
+    #define FUNCTION_LOADER_LIBPNG(FUNC, SIG)                       \
+        lib.FUNC = (SIG)SDL_LoadFunction(lib.handle_libpng, #FUNC); \
+        if (lib.FUNC == NULL) {                                     \
+            SDL_UnloadObject(lib.handle_libpng);                    \
+            return false;                                           \
+        }
 
-/* Uncomment this if you want to use zlib with libpng to decompress / compress manually if you'd prefer that in the future.
-*
-#define FUNCTION_LOADER_ZLIB(FUNC, SIG)                             \
-    lib.FUNC = (SIG)SDL_LoadFunction(lib.handle_zlib, #FUNC);       \
-    if (lib.FUNC == NULL) {                                         \
-        SDL_UnloadObject(lib.handle_zlib);                          \
-        return false;                                               \
-    }
- */
+    /* Uncomment this if you want to use zlib with libpng to decompress / compress manually if you'd prefer that.
+    *
+    #define FUNCTION_LOADER_ZLIB(FUNC, SIG)                             \
+        lib.FUNC = (SIG)SDL_LoadFunction(lib.handle_zlib, #FUNC);       \
+        if (lib.FUNC == NULL) {                                         \
+            SDL_UnloadObject(lib.handle_zlib);                          \
+            return false;                                               \
+        }
+     */
+#else
+    #define FUNCTION_LOADER_LIBPNG(FUNC, SIG)               \
+        lib.FUNC = FUNC;                                    \
+        if (lib.FUNC == NULL) {                             \
+            return SDL_SetError("Missing png.framework");   \
+        }
+#endif
 
 static bool IMG_InitPNG(void)
 {
     if (lib.loaded == 0) {
-        /* Uncomment this if you want to use zlib with libpng to decompress / compress manually if you'd prefer that in the future.
+        /* Uncomment this if you want to use zlib with libpng to decompress / compress manually if you'd prefer that.
          *
         lib.handle_zlib = SDL_LoadObject(LOAD_ZLIB_DYNAMIC);
         if (lib.handle_zlib == NULL) {
@@ -154,10 +164,12 @@ static bool IMG_InitPNG(void)
         }
         */
 
+#ifdef LOAD_LIBPNG_DYNAMIC
         lib.handle_libpng = SDL_LoadObject(LOAD_LIBPNG_DYNAMIC);
         if (lib.handle_libpng == NULL) {
             return false;
         }
+#endif
 
         FUNCTION_LOADER_LIBPNG(png_create_info_struct, png_infop(*)(png_structrp png_ptr))
         FUNCTION_LOADER_LIBPNG(png_create_read_struct, png_structp(*)(png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn))
