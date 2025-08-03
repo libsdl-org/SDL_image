@@ -71,6 +71,7 @@ LOCAL_MODULE := SDL3_image
 
 LOCAL_SRC_FILES :=  \
     src/IMG.c           \
+    src/IMG_anim.c      \
     src/IMG_avif.c      \
     src/IMG_bmp.c       \
     src/IMG_gif.c       \
