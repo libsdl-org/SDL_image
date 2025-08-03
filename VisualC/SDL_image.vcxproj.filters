@@ -96,11 +96,17 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="external\optional\x64\zlib.dll">
+    <CustomBuild Include="external\optional\x64\libpng16-16.dll">
       <Filter>x64</Filter>
     </CustomBuild>
-    <CustomBuild Include="external\optional\x64\libpng16.dll">
+    <CustomBuild Include="external\optional\x64\LICENSE.libpng.txt">
       <Filter>x64</Filter>
+    </CustomBuild>
+    <CustomBuild Include="external\optional\x86\libpng16-16.dll">
+      <Filter>x86</Filter>
+    </CustomBuild>
+    <CustomBuild Include="external\optional\x86\LICENSE.libpng.txt">
+      <Filter>x86</Filter>
     </CustomBuild>
     <CustomBuild Include="external\optional\x64\libavif-16.dll">
       <Filter>x64</Filter>
@@ -159,4 +165,5 @@
   </ItemGroup>
 
 </Project>
+
 
