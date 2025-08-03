@@ -846,11 +846,11 @@ if(SDLIMAGE_PNG)
             LOAD_PNG
             SDL_IMAGE_SAVE_PNG=$<BOOL:${SDLIMAGE_PNG_SAVE}>
         )
-    if(NOT(SDLIMAGE_BACKEND_STB OR SDLIMAGE_BACKEND_WIC OR SDLIMAGE_BACKEND_IMAGEIO))
-          target_compile_definitions(${sdl3_image_target_name} PRIVATE
-              SDL_IMAGE_LIBPNG
-                                    )
-    endif()
+        if(NOT(SDLIMAGE_BACKEND_STB OR SDLIMAGE_BACKEND_WIC OR SDLIMAGE_BACKEND_IMAGEIO))
+            target_compile_definitions(${sdl3_image_target_name} PRIVATE
+                SDL_IMAGE_LIBPNG
+            )
+        endif()
     else()
         # Variable is used by test suite
         set(SDLIMAGE_PNG_SAVE OFF)
