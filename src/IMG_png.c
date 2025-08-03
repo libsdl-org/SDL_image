@@ -23,7 +23,7 @@
 
 #include <SDL3_image/SDL_image.h>
 
-#if !defined(SDL_IMAGE_LIBPNG_TEST)
+#if !defined(SDL_IMAGE_LIBPNG)
 
 /* We'll have PNG save support by default */
 #if !defined(SDL_IMAGE_SAVE_PNG)
