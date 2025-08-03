@@ -1287,7 +1287,7 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
             animation->delays[i] = (int)(((float)fctl->delay_num / fctl->delay_den) * 1000.0f);
         }
 
-        // 1. Apply dispose_op from the *previous* frame (if applicable)
+        // Apply dispose_op from the *previous* frame (if applicable)
         // The dispose_op of frame N specifies how to dispose of frame N's area *before* rendering frame N+1.
         // So, when rendering frame 'i', we apply the dispose_op of frame 'i-1'.
         if (i > 0) {
@@ -1320,7 +1320,7 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
             }
         }
 
-        // 2. Save current canvas state to prev_canvas_copy *before* rendering the current frame,
+        // Save current canvas state to prev_canvas_copy *before* rendering the current frame,
         //    if the *current* frame's dispose_op is PNG_DISPOSE_OP_PREVIOUS.
         if (fctl->dispose_op == PNG_DISPOSE_OP_PREVIOUS) {
             if (!apng_ctx.prev_canvas_copy) { // Should already be created, but defensive
@@ -1359,7 +1359,6 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
             }
         }
 
-        // 4. Apply blend_op and blit
         SDL_Rect dest_rect = { (int)fctl->x_offset, (int)fctl->y_offset, (int)fctl->width, (int)fctl->height };
         switch (fctl->blend_op) {
         case PNG_BLEND_OP_SOURCE:
@@ -1376,14 +1375,12 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
 
         SDL_BlitSurface(temp_frame_surface, NULL, apng_ctx.canvas, &dest_rect);
 
-        // 5. Store the final rendered frame
         animation->frames[i] = SDL_DuplicateSurface(apng_ctx.canvas);
         if (!animation->frames[i]) {
             SDL_SetError("Failed to duplicate canvas for frame %d: %s", i, SDL_GetError());
             goto error;
         }
 
-        // 6. Clean up for current iteration
         SDL_DestroySurface(temp_frame_surface);
         temp_frame_surface = NULL;
         SDL_free(decompressed_frame_data);
