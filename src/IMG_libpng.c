@@ -30,7 +30,7 @@
 #include "IMG_anim.h"
 
 #ifdef SDL_IMAGE_LIBPNG
-#include <libpng/png.h>
+#include <png.h>
 
 #ifndef PNG_DISPOSE_OP_NONE
 #define PNG_DISPOSE_OP_NONE 0
@@ -795,6 +795,13 @@ static SDL_Surface *decompress_png_frame_data(png_bytep compressed_data, png_siz
     }
 
     Sint64 data_size = SDL_TellIO(state.mem_stream);
+    if (data_size < 0) {
+        goto error;
+    }
+    if ((Uint64)data_size >= SIZE_MAX) {
+        SDL_SetError("data size >= sizeof(size_t)");
+        goto error;
+    }
     void *buffer = NULL;
 
     if (SDL_SeekIO(state.mem_stream, 0, SDL_IO_SEEK_SET) < 0) {
@@ -808,7 +815,7 @@ static SDL_Surface *decompress_png_frame_data(png_bytep compressed_data, png_siz
         goto error;
     }
 
-    if (SDL_ReadIO(state.mem_stream, buffer, data_size) != data_size) {
+    if (SDL_ReadIO(state.mem_stream, buffer, data_size) != (size_t)data_size) {
         SDL_SetError("Failed to read from memory stream");
         SDL_free(buffer);
         goto error;
@@ -1623,7 +1630,7 @@ static png_bytep compress_surface_to_png_data(SDL_Surface *surface, png_size_t *
         SDL_SetError("Failed to seek memory stream to beginning: %s", SDL_GetError());
         goto error;
     }
-    if (SDL_ReadIO(state.mem_stream, state.mem_buffer_ptr, (size_t)mem_buffer_size) != mem_buffer_size) {
+    if (SDL_ReadIO(state.mem_stream, state.mem_buffer_ptr, (size_t)mem_buffer_size) != (size_t)mem_buffer_size) {
         SDL_SetError("Failed to read all data from memory stream: %s", SDL_GetError());
         goto error;
     }
