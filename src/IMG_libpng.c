@@ -153,7 +153,7 @@ static struct
      */
 #else
     #define FUNCTION_LOADER_LIBPNG(FUNC, SIG)               \
-        lib.FUNC = (void *)FUNC;                            \
+        lib.FUNC = FUNC;                                    \
         if (lib.FUNC == NULL) {                             \
             return SDL_SetError("Missing png.framework");   \
         }
@@ -1476,6 +1476,7 @@ error:
     return NULL;
 }
 
+#if defined(SDL_IMAGE_SAVE_PNG)
 struct IMG_AnimationStreamContext
 {
     png_structp png_write_ptr;
@@ -2089,8 +2090,14 @@ error:
     return false;
 }
 
+#endif /* SDL_IMAGE_SAVE_PNG */
+
 bool IMG_CreateAPNGAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID props)
 {
+#if !defined(SDL_IMAGE_SAVE_PNG)
+    return SDL_SetError("SDL was not built with SDL_IMAGE_SAVE_PNG feature.");
+    #else
+
     if (!IMG_InitPNG()) {
         return false;
     }
@@ -2152,6 +2159,7 @@ error:
     }
     SDL_free(ctx);
     return false;
+#endif /* !defined(SDL_IMAGE_SAVE_PNG) */
 }
 
 #else
