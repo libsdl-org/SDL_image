@@ -141,7 +141,7 @@ static bool IMG_SavePNG_IO_miniz(SDL_Surface *surface, SDL_IOStream *dst)
     }
     return result;
 }
-#endif /* LOAD_PNG_DYNAMIC || !WANT_LIBPNG */
+#endif /* LOAD_PNG_DYNAMIC */
 
 #endif /* SDL_IMAGE_SAVE_PNG */
 
