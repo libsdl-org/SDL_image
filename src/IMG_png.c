@@ -163,14 +163,10 @@ bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
         return SDL_SetError("Passed NULL dst");
     }
 
-#if SDL_IMAGE_SAVE_PNG
-
-#if defined(LOAD_PNG_DYNAMIC)
+#if defined(SDL_IMAGE_SAVE_PNG) && defined(LOAD_PNG_DYNAMIC)
     if (!result) {
         result = IMG_SavePNG_IO_miniz(surface, dst);
     }
-#endif
-
 #else
     result = SDL_SetError("SDL_image built without PNG save support");
 #endif
