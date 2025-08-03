@@ -886,7 +886,9 @@ static SDL_Surface *decompress_png_frame_data(png_bytep compressed_data, png_siz
     SDL_CloseIO(state->mem_stream);
     SDL_free(buffer);
 
-    return state->surface;
+    SDL_Surface* retval = state->surface;
+    SDL_free(state);
+    return retval;
 
 error:
     if (state->row_pointers) {
