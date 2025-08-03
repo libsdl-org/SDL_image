@@ -53,6 +53,11 @@
 #define APNG_DEFAULT_DENOMINATOR 100
 #endif
 
+// We will have the PNG saving feature by default
+#ifndef SDL_IMAGE_SAVE_PNG
+    #define SDL_IMAGE_SAVE_PNG 1
+#endif
+
 typedef png_structp png_noconst15_structrp;
 typedef png_infop png_noconst15_inforp;
 typedef png_infop png_noconst16_inforp;
@@ -505,6 +510,7 @@ SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
     }
 }
 
+#if SDL_IMAGE_SAVE_PNG
 static bool LIBPNG_SavePNG_IO_Internal(struct png_op_vars *vars, SDL_Surface *surface, SDL_IOStream *dst)
 {
     Uint8 transparent_table[256];
@@ -598,12 +604,13 @@ static bool LIBPNG_SavePNG_IO_Internal(struct png_op_vars *vars, SDL_Surface *su
 
     return true;
 }
+#endif // SDL_IMAGE_SAVE_PNG
 
 bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
-    struct png_op_vars vars;
-    bool result = false;
-
+#if !defined(SDL_IMAGE_SAVE_PNG)
+    return false;
+#else
     if (!surface || !dst) {
         SDL_SetError("Surface or SDL_IOStream is NULL");
         return false;
@@ -612,6 +619,9 @@ bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
     if (!IMG_InitPNG()) {
         return false;
     }
+
+    struct png_op_vars vars;
+    bool result = false;
 
     SDL_zero(vars);
 
@@ -639,6 +649,7 @@ bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
     }
 
     return result;
+#endif
 }
 
 bool IMG_SavePNG(SDL_Surface *surface, const char *file)
