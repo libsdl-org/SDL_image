@@ -35,9 +35,7 @@
 #define LOAD_PNG_DYNAMIC 1
 #endif
 
-#ifdef LOAD_PNG
-
-#if defined(USE_STBIMAGE)
+#if defined(LOAD_PNG) && defined(USE_STBIMAGE)
 
 extern SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src);
 
@@ -72,8 +70,6 @@ SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 {
     return IMG_LoadSTB_IO(src);
 }
-
-#endif /* USE_STBIMAGE */
 
 #else
 
