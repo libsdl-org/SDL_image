@@ -690,22 +690,31 @@ static SDL_Surface *decompress_png_frame_data(png_bytep compressed_data, png_siz
      * (if any) for us.
      */
 
-    SDL_IOStream *mem_stream = NULL;
-    SDL_IOStream *read_stream = NULL;
-    png_structp png_ptr = NULL;
-    png_infop info_ptr = NULL;
-    SDL_Surface *surface = NULL;
-    png_bytep *row_pointers = NULL;
+    struct DecompressionState
+    {
+        SDL_IOStream *mem_stream;
+        SDL_IOStream *read_stream;
+        png_structp png_ptr;
+        png_infop info_ptr;
+        SDL_Surface *surface;
+        png_bytep *row_pointers;
+    };
 
-    // Create a memory stream to hold our synthetic PNG
-    mem_stream = SDL_IOFromDynamicMem();
-    if (!mem_stream) {
-        SDL_SetError("Failed to create memory stream");
+    struct DecompressionState *state = SDL_calloc(1, sizeof(struct DecompressionState));
+    if (!state) {
+        SDL_SetError("Out of memory for decompression state");
         return NULL;
     }
 
+    // Create a memory stream to hold our synthetic PNG
+    state->mem_stream = SDL_IOFromDynamicMem();
+    if (!state->mem_stream) {
+        SDL_SetError("Failed to create memory stream");
+        goto error;
+    }
+
     // Write PNG signature
-    if (SDL_WriteIO(mem_stream, png_sig, 8) != 8) {
+    if (SDL_WriteIO(state->mem_stream, png_sig, 8) != 8) {
         SDL_SetError("Failed to write PNG signature");
         goto error;
     }
@@ -716,7 +725,7 @@ static SDL_Surface *decompress_png_frame_data(png_bytep compressed_data, png_siz
         png_byte ihdr_header[8] = { 0, 0, 0, 13, 'I', 'H', 'D', 'R' };
 
         // Write IHDR length and type
-        if (SDL_WriteIO(mem_stream, ihdr_header, 8) != 8) {
+        if (SDL_WriteIO(state->mem_stream, ihdr_header, 8) != 8) {
             SDL_SetError("Failed to write IHDR header");
             goto error;
         }
@@ -730,7 +739,7 @@ static SDL_Surface *decompress_png_frame_data(png_bytep compressed_data, png_siz
         ihdr_data[11] = PNG_COMPRESSION_TYPE_DEFAULT;
         ihdr_data[12] = PNG_FILTER_TYPE_DEFAULT;
 
-        if (SDL_WriteIO(mem_stream, ihdr_data, 13) != 13) {
+        if (SDL_WriteIO(state->mem_stream, ihdr_data, 13) != 13) {
             SDL_SetError("Failed to write IHDR data");
             goto error;
         }
@@ -740,7 +749,7 @@ static SDL_Surface *decompress_png_frame_data(png_bytep compressed_data, png_siz
         crc = SDL_crc32(crc, ihdr_data, 13);
         png_byte crc_bytes[4];
         custom_png_save_uint_32(crc_bytes, crc);
-        if (SDL_WriteIO(mem_stream, crc_bytes, 4) != 4) {
+        if (SDL_WriteIO(state->mem_stream, crc_bytes, 4) != 4) {
             SDL_SetError("Failed to write IHDR CRC");
             goto error;
         }
@@ -752,13 +761,13 @@ static SDL_Surface *decompress_png_frame_data(png_bytep compressed_data, png_siz
         custom_png_save_uint_32(idat_header, (png_uint_32)compressed_size);
 
         // Write IDAT length and type
-        if (SDL_WriteIO(mem_stream, idat_header, 8) != 8) {
+        if (SDL_WriteIO(state->mem_stream, idat_header, 8) != 8) {
             SDL_SetError("Failed to write IDAT header");
             goto error;
         }
 
         // Write compressed data
-        if (SDL_WriteIO(mem_stream, compressed_data, compressed_size) != compressed_size) {
+        if (SDL_WriteIO(state->mem_stream, compressed_data, compressed_size) != compressed_size) {
             SDL_SetError("Failed to write IDAT data");
             goto error;
         }
@@ -768,7 +777,7 @@ static SDL_Surface *decompress_png_frame_data(png_bytep compressed_data, png_siz
         crc = SDL_crc32(crc, compressed_data, compressed_size);
         png_byte crc_bytes[4];
         custom_png_save_uint_32(crc_bytes, crc);
-        if (SDL_WriteIO(mem_stream, crc_bytes, 4) != 4) {
+        if (SDL_WriteIO(state->mem_stream, crc_bytes, 4) != 4) {
             SDL_SetError("Failed to write IDAT CRC");
             goto error;
         }
@@ -782,16 +791,16 @@ static SDL_Surface *decompress_png_frame_data(png_bytep compressed_data, png_siz
             0xAE, 0x42, 0x60, 0x82 // CRC (precomputed for empty IEND)
         };
 
-        if (SDL_WriteIO(mem_stream, iend_chunk, 12) != 12) {
+        if (SDL_WriteIO(state->mem_stream, iend_chunk, 12) != 12) {
             SDL_SetError("Failed to write IEND chunk");
             goto error;
         }
     }
 
-    Sint64 data_size = SDL_TellIO(mem_stream);
+    Sint64 data_size = SDL_TellIO(state->mem_stream);
     void *buffer = NULL;
 
-    if (SDL_SeekIO(mem_stream, 0, SDL_IO_SEEK_SET) < 0) {
+    if (SDL_SeekIO(state->mem_stream, 0, SDL_IO_SEEK_SET) < 0) {
         SDL_SetError("Failed to rewind memory stream");
         goto error;
     }
@@ -802,99 +811,101 @@ static SDL_Surface *decompress_png_frame_data(png_bytep compressed_data, png_siz
         goto error;
     }
 
-    if (SDL_ReadIO(mem_stream, buffer, data_size) != data_size) {
+    if (SDL_ReadIO(state->mem_stream, buffer, data_size) != data_size) {
         SDL_SetError("Failed to read from memory stream");
         SDL_free(buffer);
         goto error;
     }
 
-    read_stream = SDL_IOFromConstMem(buffer, data_size);
-    if (!read_stream) {
+    state->read_stream = SDL_IOFromConstMem(buffer, data_size);
+    if (!state->read_stream) {
         SDL_SetError("Failed to create read stream");
         SDL_free(buffer);
         goto error;
     }
 
     // Now we have a proper PNG file in memory, use libpng to read it
-    png_ptr = lib.png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-    if (!png_ptr) {
+    state->png_ptr = lib.png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if (!state->png_ptr) {
         SDL_SetError("Failed to create PNG read struct");
         SDL_free(buffer);
         goto error;
     }
 
-    info_ptr = lib.png_create_info_struct(png_ptr);
-    if (!info_ptr) {
+    state->info_ptr = lib.png_create_info_struct(state->png_ptr);
+    if (!state->info_ptr) {
         SDL_SetError("Failed to create PNG info struct");
         SDL_free(buffer);
         goto error;
     }
 
-    if (setjmp(*lib.png_set_longjmp_fn(png_ptr, longjmp, sizeof(jmp_buf)))) {
+    if (setjmp(*lib.png_set_longjmp_fn(state->png_ptr, longjmp, sizeof(jmp_buf)))) {
         SDL_SetError("Error during PNG read");
         SDL_free(buffer);
         goto error;
     }
 
-    lib.png_set_read_fn(png_ptr, read_stream, png_read_data);
-    lib.png_read_info(png_ptr, info_ptr);
+    lib.png_set_read_fn(state->png_ptr, state->read_stream, png_read_data);
+    lib.png_read_info(state->png_ptr, state->info_ptr);
 
     if (png_color_type == PNG_COLOR_TYPE_PALETTE) {
-        lib.png_set_palette_to_rgb(png_ptr);
+        lib.png_set_palette_to_rgb(state->png_ptr);
     }
 
     if (bit_depth == 16) {
-        lib.png_set_strip_16(png_ptr);
+        lib.png_set_strip_16(state->png_ptr);
     }
 
     if (!(png_color_type & PNG_COLOR_MASK_ALPHA)) {
-        lib.png_set_filler(png_ptr, 0xFF, PNG_FILLER_AFTER);
+        lib.png_set_filler(state->png_ptr, 0xFF, PNG_FILLER_AFTER);
     }
 
-    lib.png_read_update_info(png_ptr, info_ptr);
+    lib.png_read_update_info(state->png_ptr, state->info_ptr);
 
-    surface = SDL_CreateSurface(width, height, SDL_PIXELFORMAT_RGBA32);
-    if (!surface) {
+    state->surface = SDL_CreateSurface(width, height, SDL_PIXELFORMAT_RGBA32);
+    if (!state->surface) {
         SDL_free(buffer);
         goto error;
     }
 
-    row_pointers = (png_bytep *)SDL_malloc(height * sizeof(png_bytep));
-    if (!row_pointers) {
+    state->row_pointers = (png_bytep *)SDL_malloc(height * sizeof(png_bytep));
+    if (!state->row_pointers) {
         SDL_free(buffer);
         goto error;
     }
 
     for (int y = 0; y < height; y++) {
-        row_pointers[y] = (png_bytep)((Uint8 *)surface->pixels + y * (size_t)surface->pitch);
+        state->row_pointers[y] = (png_bytep)((Uint8 *)state->surface->pixels + y * (size_t)state->surface->pitch);
     }
 
-    lib.png_read_image(png_ptr, row_pointers);
+    lib.png_read_image(state->png_ptr, state->row_pointers);
 
-    SDL_free(row_pointers);
-    lib.png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-    SDL_CloseIO(read_stream);
-    SDL_CloseIO(mem_stream);
+    SDL_free(state->row_pointers);
+    lib.png_destroy_read_struct(&state->png_ptr, &state->info_ptr, NULL);
+    SDL_CloseIO(state->read_stream);
+    SDL_CloseIO(state->mem_stream);
     SDL_free(buffer);
 
-    return surface;
+    return state->surface;
 
 error:
-    if (row_pointers) {
-        SDL_free(row_pointers);
+    if (state->row_pointers) {
+        SDL_free(state->row_pointers);
     }
-    if (png_ptr) {
-        lib.png_destroy_read_struct(&png_ptr, info_ptr ? &info_ptr : NULL, NULL);
+    if (state->png_ptr) {
+        lib.png_destroy_read_struct(&state->png_ptr, state->info_ptr ? &state->info_ptr : NULL, NULL);
     }
-    if (surface) {
-        SDL_DestroySurface(surface);
+    if (state->surface) {
+        SDL_DestroySurface(state->surface);
     }
-    if (read_stream) {
-        SDL_CloseIO(read_stream);
+    if (state->read_stream) {
+        SDL_CloseIO(state->read_stream);
     }
-    if (mem_stream) {
-        SDL_CloseIO(mem_stream);
+    if (state->mem_stream) {
+        SDL_CloseIO(state->mem_stream);
     }
+
+    SDL_free(state);
     return NULL;
 }
 
@@ -953,7 +964,7 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
 {
     Sint64 start_pos;
     SDL_Color *palette_colors = NULL;
-    int palette_count;
+    int palette_count = -1;
     png_bytep trans_alpha = NULL;
     int trans_count;
     IMG_Animation *animation = NULL;
@@ -961,11 +972,9 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
     unsigned char header[8];
     SDL_Surface *temp_frame_surface = NULL;
     png_bytep decompressed_frame_data = NULL;
-    png_size_t decompressed_frame_size = 0;
     int total_frame_count = 0;
     int png_color_type = -1;
     int bit_depth = -1;
-    int interlace_method = -1, compression_method = -1, filter_method = -1;
     bool found_iend = false;
     int width = -1, height = -1;
 
@@ -1031,9 +1040,10 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
             height = SDL_Swap32BE(*(Uint32 *)(chunk_data + 4));
             bit_depth = *(Uint32 *)(chunk_data + 8);
             png_color_type = *(Uint32 *)(chunk_data + 9);
-            compression_method = *(Uint32 *)(chunk_data + 10);
-            filter_method = *(Uint32 *)(chunk_data + 11);
-            interlace_method = *(Uint32 *)(chunk_data + 12);
+            // Note: We don't use the rest of the IHDR data here, but you could extract more info if needed.
+            //compression_method = *(Uint32 *)(chunk_data + 10);
+            //filter_method = *(Uint32 *)(chunk_data + 11);
+            //interlace_method = *(Uint32 *)(chunk_data + 12);
 
         } else if (SDL_memcmp(chunk_type, "acTL", 4) == 0) {
             if (chunk_length != 8) {
@@ -1089,6 +1099,9 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
                 for (int i = 0; i < num_trans; i++) {
                     palette_colors[i].a = trans_alpha[i];
                 }
+            } else {
+                SDL_SetError("No palette colors available for paletted frame. This either shows the tRNS was found earlier than PLTE in a corrupted APNG file");
+                goto error;
             }
         } else if (SDL_memcmp(chunk_type, "fcTL", 4) == 0) {
             if (chunk_length != 26) {
@@ -1338,6 +1351,9 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
                 SDL_SetPaletteColors(frame_palette, palette_colors, 0, palette_count);
                 SDL_SetSurfacePalette(temp_frame_surface, frame_palette);
                 SDL_DestroyPalette(frame_palette); // Surface takes ownership
+            } else {
+                SDL_SetError("No palette colors available for paletted frame");
+                goto error;
             }
         }
 
