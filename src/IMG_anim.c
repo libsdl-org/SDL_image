@@ -24,6 +24,7 @@
 #include "IMG_anim.h"
 #include "IMG_webp.h"
 #include "IMG_libpng.h"
+#include "IMG_gif.h"
 
 IMG_AnimationStream *IMG_CreateAnimationStream(const char *file)
 {
