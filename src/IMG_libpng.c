@@ -32,6 +32,7 @@
 
 #ifdef SDL_IMAGE_LIBPNG
 #include <png.h>
+#include <limits.h>
 
 #ifndef PNG_DISPOSE_OP_NONE
 #define PNG_DISPOSE_OP_NONE 0
@@ -59,9 +60,38 @@
     #define SDL_IMAGE_SAVE_PNG 1
 #endif
 
+/* Check for the older version of libpng */
+#if (PNG_LIBPNG_VER_MAJOR == 1)
+#if (PNG_LIBPNG_VER_MINOR < 5)
+#define LIBPNG_VERSION_12
+typedef png_bytep png_const_bytep;
+typedef png_color *png_const_colorp;
+typedef png_color_16 *png_const_color_16p;
+#endif
+#if (PNG_LIBPNG_VER_MINOR < 4)
+typedef png_structp png_const_structp;
+typedef png_infop png_const_infop;
+#endif
+#if (PNG_LIBPNG_VER_MINOR < 6)
+typedef png_structp png_structrp;
+typedef png_infop png_inforp;
+typedef png_const_structp png_const_structrp;
+typedef png_const_infop png_const_inforp;
+/* noconst15: version < 1.6 doesn't have const, >= 1.6 adds it */
+/* noconst16: version < 1.6 does have const, >= 1.6 removes it */
 typedef png_structp png_noconst15_structrp;
-typedef png_infop png_noconst15_inforp;
-typedef png_infop png_noconst16_inforp;
+typedef png_inforp png_noconst15_inforp;
+typedef png_const_inforp png_noconst16_inforp;
+#else
+typedef png_const_structp png_noconst15_structrp;
+typedef png_const_inforp png_noconst15_inforp;
+typedef png_inforp png_noconst16_inforp;
+#endif
+#else
+typedef png_const_structp png_noconst15_structrp;
+typedef png_const_inforp png_noconst15_inforp;
+typedef png_inforp png_noconst16_inforp;
+#endif
 
 static struct
 {
@@ -75,16 +105,16 @@ static struct
      */
     #endif
 
-    png_infop (*png_create_info_struct)(png_structrp png_ptr);
+    png_infop (*png_create_info_struct)(png_noconst15_structrp png_ptr);
     png_structp (*png_create_read_struct)(png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
     void (*png_destroy_read_struct)(png_structpp png_ptr_ptr, png_infopp info_ptr_ptr, png_infopp end_info_ptr_ptr);
-    png_uint_32 (*png_get_IHDR)(png_const_structrp png_ptr, png_const_inforp info_ptr, png_uint_32 *width, png_uint_32 *height, int *bit_depth, int *color_type, int *interlace_method, int *compression_method, int *filter_method);
-    png_voidp (*png_get_io_ptr)(png_const_structrp png_ptr);
+    png_uint_32 (*png_get_IHDR)(png_noconst15_structrp png_ptr, png_noconst15_inforp info_ptr, png_uint_32 *width, png_uint_32 *height, int *bit_depth, int *color_type, int *interlace_method, int *compression_method, int *filter_method);
+    png_voidp (*png_get_io_ptr)(png_noconst15_structrp png_ptr);
     png_byte (*png_get_channels)(png_const_structrp png_ptr, png_const_inforp info_ptr);
 
     void (*png_error)(png_const_structrp png_ptr, png_const_charp error_message);
 
-    png_uint_32 (*png_get_PLTE)(png_const_structrp png_ptr, png_inforp info_ptr, png_colorp *palette, int *num_palette);
+    png_uint_32 (*png_get_PLTE)(png_const_structrp png_ptr, png_noconst16_inforp info_ptr, png_colorp *palette, int *num_palette);
     png_uint_32 (*png_get_tRNS)(png_const_structrp png_ptr, png_inforp info_ptr, png_bytep *trans, int *num_trans, png_color_16p *trans_values);
     png_uint_32 (*png_get_valid)(png_const_structrp png_ptr, png_const_inforp info_ptr, png_uint_32 flag);
     void (*png_read_image)(png_structrp png_ptr, png_bytepp image);
@@ -97,7 +127,9 @@ static struct
     void (*png_set_strip_16)(png_structrp png_ptr);
     int (*png_set_interlace_handling)(png_structrp png_ptr);
     int (*png_sig_cmp)(png_const_bytep sig, png_size_t start, png_size_t num_to_check);
+#ifndef LIBPNG_VERSION_12
     jmp_buf *(*png_set_longjmp_fn)(png_structrp, png_longjmp_ptr, size_t);
+#endif
     void (*png_set_palette_to_rgb)(png_structrp png_ptr);
     void (*png_set_tRNS_to_alpha)(png_structrp png_ptr);
     void (*png_set_filler)(png_structrp png_ptr, png_uint_32 filler, int flags);
@@ -114,9 +146,9 @@ static struct
     png_structp (*png_create_write_struct)(png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
     void (*png_destroy_write_struct)(png_structpp png_ptr_ptr, png_infopp info_ptr_ptr);
     void (*png_set_write_fn)(png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr write_data_fn, png_flush_ptr output_flush_fn);
-    void (*png_set_IHDR)(png_structrp png_ptr, png_inforp info_ptr, png_uint_32 width, png_uint_32 height, int bit_depth, int color_type, int interlace_type, int compression_type, int filter_type);
-    void (*png_write_info)(png_structrp png_ptr, png_inforp info_ptr);
-    void (*png_set_rows)(png_structrp png_ptr, png_inforp info_ptr, png_bytepp row_pointers);
+    void (*png_set_IHDR)(png_noconst15_structrp png_ptr, png_inforp info_ptr, png_uint_32 width, png_uint_32 height, int bit_depth, int color_type, int interlace_type, int compression_type, int filter_type);
+    void (*png_write_info)(png_structrp png_ptr, png_noconst15_inforp info_ptr);
+    void (*png_set_rows)(png_noconst15_structrp png_ptr, png_inforp info_ptr, png_bytepp row_pointers);
     void (*png_set_PLTE)(png_structrp png_ptr, png_inforp info_ptr, png_const_colorp palette, int num_palette);
     void (*png_set_tRNS)(png_structrp png_ptr, png_inforp info_ptr, png_const_bytep trans_alpha, int num_trans, png_const_color_16p trans_color);
 
@@ -177,16 +209,16 @@ static bool IMG_InitPNG(void)
         }
 #endif
 
-        FUNCTION_LOADER_LIBPNG(png_create_info_struct, png_infop(*)(png_structrp png_ptr))
+        FUNCTION_LOADER_LIBPNG(png_create_info_struct, png_infop(*)(png_noconst15_structrp png_ptr))
         FUNCTION_LOADER_LIBPNG(png_create_read_struct, png_structp(*)(png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn))
         FUNCTION_LOADER_LIBPNG(png_destroy_read_struct, void (*)(png_structpp png_ptr_ptr, png_infopp info_ptr_ptr, png_infopp end_info_ptr_ptr))
-        FUNCTION_LOADER_LIBPNG(png_get_IHDR, png_uint_32(*)(png_const_structrp png_ptr, png_const_inforp info_ptr, png_uint_32 * width, png_uint_32 * height, int *bit_depth, int *color_type, int *interlace_method, int *compression_method, int *filter_method))
-        FUNCTION_LOADER_LIBPNG(png_get_io_ptr, png_voidp(*)(png_const_structrp png_ptr))
+        FUNCTION_LOADER_LIBPNG(png_get_IHDR, png_uint_32(*)(png_noconst15_structrp png_ptr, png_noconst15_inforp info_ptr, png_uint_32 * width, png_uint_32 * height, int *bit_depth, int *color_type, int *interlace_method, int *compression_method, int *filter_method))
+        FUNCTION_LOADER_LIBPNG(png_get_io_ptr, png_voidp(*)(png_noconst15_structrp png_ptr))
         FUNCTION_LOADER_LIBPNG(png_get_channels, png_byte(*)(png_const_structrp png_ptr, png_const_inforp info_ptr))
 
         FUNCTION_LOADER_LIBPNG(png_error, void (*)(png_const_structrp png_ptr, png_const_charp error_message))
 
-        FUNCTION_LOADER_LIBPNG(png_get_PLTE, png_uint_32(*)(png_const_structrp png_ptr, png_inforp info_ptr, png_colorp * palette, int *num_palette))
+        FUNCTION_LOADER_LIBPNG(png_get_PLTE, png_uint_32(*)(png_const_structrp png_ptr, png_noconst16_inforp info_ptr, png_colorp * palette, int *num_palette))
         FUNCTION_LOADER_LIBPNG(png_get_tRNS, png_uint_32(*)(png_const_structrp png_ptr, png_inforp info_ptr, png_bytep * trans, int *num_trans, png_color_16p *trans_values))
         FUNCTION_LOADER_LIBPNG(png_get_valid, png_uint_32(*)(png_const_structrp png_ptr, png_const_inforp info_ptr, png_uint_32 flag))
         FUNCTION_LOADER_LIBPNG(png_read_image, void (*)(png_structrp png_ptr, png_bytepp image))
@@ -199,7 +231,9 @@ static bool IMG_InitPNG(void)
         FUNCTION_LOADER_LIBPNG(png_set_strip_16, void (*)(png_structrp png_ptr))
         FUNCTION_LOADER_LIBPNG(png_set_interlace_handling, int (*)(png_structrp png_ptr))
         FUNCTION_LOADER_LIBPNG(png_sig_cmp, int (*)(png_const_bytep sig, png_size_t start, png_size_t num_to_check))
+#ifndef LIBPNG_VERSION_12
         FUNCTION_LOADER_LIBPNG(png_set_longjmp_fn, jmp_buf * (*)(png_structrp, png_longjmp_ptr, size_t))
+#endif
         FUNCTION_LOADER_LIBPNG(png_set_palette_to_rgb, void (*)(png_structrp png_ptr))
         FUNCTION_LOADER_LIBPNG(png_set_tRNS_to_alpha, void (*)(png_structrp png_ptr))
         FUNCTION_LOADER_LIBPNG(png_set_filler, void (*)(png_structrp png_ptr, png_uint_32 filler, int flags))
@@ -216,9 +250,9 @@ static bool IMG_InitPNG(void)
         FUNCTION_LOADER_LIBPNG(png_create_write_struct, png_structp(*)(png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn))
         FUNCTION_LOADER_LIBPNG(png_destroy_write_struct, void (*)(png_structpp png_ptr_ptr, png_infopp info_ptr_ptr))
         FUNCTION_LOADER_LIBPNG(png_set_write_fn, void (*)(png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr write_data_fn, png_flush_ptr output_flush_fn))
-        FUNCTION_LOADER_LIBPNG(png_set_IHDR, void (*)(png_structrp png_ptr, png_inforp info_ptr, png_uint_32 width, png_uint_32 height, int bit_depth, int color_type, int interlace_type, int compression_type, int filter_type))
-        FUNCTION_LOADER_LIBPNG(png_write_info, void (*)(png_structrp png_ptr, png_inforp info_ptr))
-        FUNCTION_LOADER_LIBPNG(png_set_rows, void (*)(png_structrp png_ptr, png_inforp info_ptr, png_bytepp row_pointers))
+        FUNCTION_LOADER_LIBPNG(png_set_IHDR, void (*)(png_noconst15_structrp png_ptr, png_inforp info_ptr, png_uint_32 width, png_uint_32 height, int bit_depth, int color_type, int interlace_type, int compression_type, int filter_type))
+        FUNCTION_LOADER_LIBPNG(png_write_info, void (*)(png_structrp png_ptr, png_noconst15_inforp info_ptr))
+        FUNCTION_LOADER_LIBPNG(png_set_rows, void (*)(png_noconst15_structrp png_ptr, png_inforp info_ptr, png_bytepp row_pointers))
         FUNCTION_LOADER_LIBPNG(png_set_PLTE, void (*)(png_structrp png_ptr, png_inforp info_ptr, png_const_colorp palette, int num_palette))
         FUNCTION_LOADER_LIBPNG(png_set_tRNS, void (*)(png_structrp png_ptr, png_inforp info_ptr, png_const_bytep trans_alpha, int num_trans, png_const_color_16p trans_color))
 
@@ -356,8 +390,12 @@ static bool LIBPNG_LoadPNG_IO_Internal(SDL_IOStream *src, struct png_load_vars *
         vars->error = "Couldn't create image information for PNG file";
         return false;
     }
-
-    if (setjmp(*lib.png_set_longjmp_fn(vars->png_ptr, longjmp, sizeof(jmp_buf)))) {
+#ifndef LIBPNG_VERSION_12
+    if (setjmp(*lib.png_set_longjmp_fn(vars->png_ptr, longjmp, sizeof(jmp_buf))))
+#else
+    if (setjmp(vars->png_ptr->jmpbuf))
+#endif
+    {
         vars->error = "Error during PNG read operation";
         return false;
     }
@@ -545,7 +583,12 @@ static bool LIBPNG_SavePNG_IO_Internal(struct png_save_vars *vars, SDL_Surface *
         return false;
     }
 
-    if (setjmp(*lib.png_set_longjmp_fn(vars->png_ptr, longjmp, sizeof(jmp_buf)))) {
+#ifndef LIBPNG_VERSION_12
+    if (setjmp(*lib.png_set_longjmp_fn(vars->png_ptr, longjmp, sizeof(jmp_buf))))
+#else
+    if (setjmp(vars->png_ptr->jmpbuf))
+#endif
+    {
         vars->error = "Error during PNG write operation";
         return false;
     }
@@ -878,7 +921,12 @@ static SDL_Surface *decompress_png_frame_data(DecompressionContext* context, png
         goto error;
     }
 
-    if (setjmp(*lib.png_set_longjmp_fn(context->png_ptr, longjmp, sizeof(jmp_buf)))) {
+#ifndef LIBPNG_VERSION_12
+    if (setjmp(*lib.png_set_longjmp_fn(context->png_ptr, longjmp, sizeof(jmp_buf))))
+#else
+    if (setjmp(context->png_ptr->jmpbuf))
+#endif
+    {
         SDL_SetError("Error during PNG read");
         SDL_free(buffer);
         goto error;
@@ -1216,7 +1264,7 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
                 goto error;
             }
 
-            png_uint_32 sequence_number = SDL_Swap32BE(*(Uint32 *)chunk_data);
+            Uint32 sequence_number = SDL_Swap32BE(*(Uint32 *)chunk_data);
 
             // Find matching fcTL by sequence number (fdAT sequence - 1 matches fcTL sequence)
             int matching_fctl_index = -1;
@@ -1587,7 +1635,12 @@ static png_bytep compress_surface_to_png_data(CompressionContext* context, SDL_S
         goto error;
     }
 
-    if (setjmp(*lib.png_set_longjmp_fn(context->temp_png_ptr, longjmp, sizeof(jmp_buf)))) {
+#ifndef LIBPNG_VERSION_12
+    if (setjmp(*lib.png_set_longjmp_fn(context->temp_png_ptr, longjmp, sizeof(jmp_buf))))
+#else
+    if (setjmp(context->temp_png_ptr->jmpbuf))
+#endif
+    {
         SDL_SetError("Error during temporary PNG write operation for compression");
         goto error;
     }
@@ -2147,7 +2200,12 @@ bool IMG_CreateAPNGAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID
         goto error;
     }
 
-    if (setjmp(*lib.png_set_longjmp_fn(ctx->png_write_ptr, longjmp, sizeof(jmp_buf)))) {
+#ifndef LIBPNG_VERSION_12
+    if (setjmp(*lib.png_set_longjmp_fn(ctx->png_write_ptr, longjmp, sizeof(jmp_buf))))
+#else
+    if (setjmp(ctx->png_write_ptr->jmpbuf))
+#endif
+    {
         SDL_SetError("Error during APNG write setup");
         goto error;
     }
