@@ -22,6 +22,7 @@
 /* This is a GIF image file loading framework */
 
 #include <SDL3_image/SDL_image.h>
+#include "IMG_anim.h"
 
 // We will have the saving GIF feature by default
 #if !defined(SAVE_GIF)
