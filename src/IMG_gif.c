@@ -2247,7 +2247,7 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Sur
     }
 
     size_t pixel_buffer_size = (size_t)surface->w * surface->h;
-    if (pixel_buffer_size == 0 || pixel_buffer_size / surface->w != surface->h) {
+    if (pixel_buffer_size == 0 || pixel_buffer_size / (size_t)surface->w != (size_t)surface->h) {
         SDL_SetError("Surface dimensions too large for GIF encoding");
         return false;
     }
