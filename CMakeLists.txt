@@ -275,6 +275,7 @@ add_library(${sdl3_image_target_name}
     src/IMG_xcf.c
     src/IMG_xpm.c
     src/IMG_xv.c
+    src/IMG_libpng.c
 )
 add_library(SDL3_image::${sdl3_image_target_name} ALIAS ${sdl3_image_target_name})
 if(NOT TARGET SDL3_image::SDL3_image)
@@ -834,7 +835,7 @@ if(SDLIMAGE_PNG)
                 endif()
                 target_get_dynamic_library(SDLIMAGE_DYNAMIC_PNG PNG::PNG)
                 message(STATUS "Dynamic libpng: ${SDLIMAGE_DYNAMIC_PNG}")
-                target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_PNG_DYNAMIC=\"${SDLIMAGE_DYNAMIC_PNG}\"")
+                target_compile_definitions(${sdl3_image_target_name} PRIVATE "LOAD_LIBPNG_DYNAMIC=\"${SDLIMAGE_DYNAMIC_PNG}\"")
             else()
                 target_link_libraries(${sdl3_image_target_name} PRIVATE PNG::PNG)
             endif()
@@ -845,6 +846,11 @@ if(SDLIMAGE_PNG)
             LOAD_PNG
             SDL_IMAGE_SAVE_PNG=$<BOOL:${SDLIMAGE_PNG_SAVE}>
         )
+        if(NOT(SDLIMAGE_BACKEND_STB OR SDLIMAGE_BACKEND_WIC OR SDLIMAGE_BACKEND_IMAGEIO))
+            target_compile_definitions(${sdl3_image_target_name} PRIVATE
+                SDL_IMAGE_LIBPNG
+            )
+        endif()
     else()
         # Variable is used by test suite
         set(SDLIMAGE_PNG_SAVE OFF)

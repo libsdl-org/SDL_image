@@ -61,6 +61,9 @@
     <ClCompile Include="..\src\IMG_stb.c">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\IMG_libpng.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\IMG_anim.c">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -83,6 +86,9 @@
     <ClInclude Include="..\include\SDL3_image\SDL_image.h">
       <Filter>Public Headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\IMG_libpng.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\version.rc">
@@ -90,6 +96,18 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="external\optional\x64\libpng16-16.dll">
+      <Filter>x64</Filter>
+    </CustomBuild>
+    <CustomBuild Include="external\optional\x64\LICENSE.libpng.txt">
+      <Filter>x64</Filter>
+    </CustomBuild>
+    <CustomBuild Include="external\optional\x86\libpng16-16.dll">
+      <Filter>x86</Filter>
+    </CustomBuild>
+    <CustomBuild Include="external\optional\x86\LICENSE.libpng.txt">
+      <Filter>x86</Filter>
+    </CustomBuild>
     <CustomBuild Include="external\optional\x64\libavif-16.dll">
       <Filter>x64</Filter>
     </CustomBuild>
@@ -145,4 +163,7 @@
       <Filter>x86</Filter>
     </CustomBuild>
   </ItemGroup>
+
 </Project>
+
+
