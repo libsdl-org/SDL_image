@@ -1528,7 +1528,7 @@ static void buildColorMapLUT(uint8_t lut[32][32][32], const uint8_t palette[][3]
     }
 }
 
-static int mapSurfaceToExistingPalette(SDL_Surface *psurf, const uint8_t lut[32][32][32], const uint8_t palette[][3], uint16_t numPaletteColors, uint8_t *indexedPixels, int transparentIndex, int quality)
+static int mapSurfaceToExistingPalette(SDL_Surface *psurf, const uint8_t lut[32][32][32], const uint8_t palette[][3], uint16_t numPaletteColors, uint8_t *indexedPixels, int transparentIndex)
 {
     SDL_Surface *surf = psurf;
     bool surface_converted = false;
@@ -2290,7 +2290,7 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Sur
             goto error;
         }
         // For subsequent frames, map pixels to the existing global palette using the fast LUT.
-        if (mapSurfaceToExistingPalette(surface, ctx->colorMapLUT, ctx->globalColorTable, numColors, indexedPixels, ctx->transparentColorIndex, stream->quality) != 0) {
+        if (mapSurfaceToExistingPalette(surface, ctx->colorMapLUT, ctx->globalColorTable, numColors, indexedPixels, ctx->transparentColorIndex) != 0) {
             goto error;
         }
     }
