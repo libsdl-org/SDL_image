@@ -1601,7 +1601,7 @@ static int mapSurfaceToExistingPalette(SDL_Surface *psurf, const uint8_t lut[32]
     return 0;
 }
 
-static int quantizeSurfaceToIndexedPixels(SDL_Surface *psurf, uint8_t palette[][3], uint16_t numPaletteColors, uint8_t *indexedPixels, int quality)
+static int quantizeSurfaceToIndexedPixels(SDL_Surface *psurf, uint8_t palette[][3], uint16_t numPaletteColors, uint8_t *indexedPixels)
 {
     if (!psurf || !palette || !indexedPixels || numPaletteColors == 0 || (numPaletteColors & (numPaletteColors - 1)) != 0) {
         SDL_SetError("Invalid arguments for quantizeSurfaceToIndexedPixels: numPaletteColors must be a power of 2.");
@@ -2261,7 +2261,7 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Sur
         ctx->width = (uint16_t)surface->w;
         ctx->height = (uint16_t)surface->h;
 
-        if (quantizeSurfaceToIndexedPixels(surface, ctx->globalColorTable, numColors, indexedPixels, stream->quality) != 0) {
+        if (quantizeSurfaceToIndexedPixels(surface, ctx->globalColorTable, numColors, indexedPixels) != 0) {
             goto error;
         }
 
