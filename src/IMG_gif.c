@@ -188,6 +188,7 @@ static bool NormalizeFrames(Frame_t *frames, int count)
         SDL_DestroySurface(frames[i].image);
         frames[i].image = SDL_DuplicateSurface(image);
         if (!frames[i].image) {
+            SDL_DestroySurface( image );
             return false;
         }
 
