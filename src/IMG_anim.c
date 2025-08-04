@@ -136,6 +136,8 @@ IMG_AnimationStream *IMG_CreateAnimationStreamWithProperties(SDL_PropertiesID pr
         result = IMG_CreateWEBPAnimationStream(stream, props);
     } else if (SDL_strcasecmp(type, "png") == 0) {
         result = IMG_CreateAPNGAnimationStream(stream, props);
+    } else if (SDL_strcasecmp(type, "gif") == 0) {
+        result = IMG_CreateGIFAnimationStream(stream, props);
     } else {
         SDL_SetError("Unrecognized output type");
     }
