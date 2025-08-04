@@ -79,6 +79,7 @@ LOCAL_SRC_FILES :=  \
     src/IMG_jxl.c       \
     src/IMG_lbm.c       \
     src/IMG_pcx.c       \
+    src/IMG_libpng.c    \
     src/IMG_png.c       \
     src/IMG_pnm.c       \
     src/IMG_qoi.c       \
@@ -135,7 +136,7 @@ endif
 ifeq ($(SUPPORT_PNG),true)
     LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(PNG_LIBRARY_PATH)             \
                         $(LOCAL_PATH)/$(PNG_LIBRARY_PATH)/android
-    LOCAL_CFLAGS += -DLOAD_PNG
+    LOCAL_CFLAGS += -DLOAD_PNG -DSDL_IMAGE_LIBPNG
     LOCAL_STATIC_LIBRARIES += png
     LOCAL_LDLIBS += -lz
 ifeq ($(SUPPORT_SAVE_PNG),true)
