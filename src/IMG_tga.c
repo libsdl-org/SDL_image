@@ -27,6 +27,11 @@
 
 #include <SDL3_image/SDL_image.h>
 
+// We will have TGA saving feature by default.
+#ifndef SAVE_TGA
+#define SAVE_TGA 1
+#endif /* SAVE_TGA */
+
 #ifdef LOAD_TGA
 
 /*
@@ -335,6 +340,19 @@ error:
     return NULL;
 }
 
+#else
+
+/* dummy TGA load routine */
+SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
+{
+    (void)src;
+    return NULL;
+}
+
+#endif /* LOAD_TGA */
+
+#if SAVE_TGA
+
 bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst)
 {
     Sint64 start;
@@ -518,13 +536,6 @@ bool IMG_SaveTGA(SDL_Surface *surface, const char *file)
 
 #else
 
-/* dummy TGA load routine */
-SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
-{
-    (void)src;
-    return NULL;
-}
-
 bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst)
 {
     (void)surface;
@@ -539,6 +550,6 @@ bool IMG_SaveTGA(SDL_Surface *surface, const char *file)
     return SDL_SetError("TGA support not enabled");
 }
 
-#endif /* LOAD_TGA */
+#endif /* SAVE_TGA */
 
 #endif /* !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND) */
