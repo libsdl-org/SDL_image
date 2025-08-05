@@ -89,6 +89,9 @@
     <ClInclude Include="..\src\IMG_libpng.h">
       <Filter>Sources</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\IMG_gif.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\version.rc">
@@ -165,5 +168,6 @@
   </ItemGroup>
 
 </Project>
+
 
 

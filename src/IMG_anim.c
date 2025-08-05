@@ -24,6 +24,7 @@
 #include "IMG_anim.h"
 #include "IMG_webp.h"
 #include "IMG_libpng.h"
+#include "IMG_gif.h"
 
 IMG_AnimationStream *IMG_CreateAnimationStream(const char *file)
 {
@@ -136,6 +137,8 @@ IMG_AnimationStream *IMG_CreateAnimationStreamWithProperties(SDL_PropertiesID pr
         result = IMG_CreateWEBPAnimationStream(stream, props);
     } else if (SDL_strcasecmp(type, "png") == 0) {
         result = IMG_CreateAPNGAnimationStream(stream, props);
+    } else if (SDL_strcasecmp(type, "gif") == 0) {
+        result = IMG_CreateGIFAnimationStream(stream, props);
     } else {
         SDL_SetError("Unrecognized output type");
     }
