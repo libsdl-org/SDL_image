@@ -2467,4 +2467,4 @@ bool IMG_SaveGIF(SDL_Surface *surface, const char *file)
     return SDL_SetError("GIF saving is not enabled in this build.");
 }
 
-#endif
+#endif /* SAVE_GIF */
