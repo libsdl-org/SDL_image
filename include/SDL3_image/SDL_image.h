@@ -2045,6 +2045,43 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStre
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA(SDL_Surface *surface, const char *file);
 
 /**
+ * Save an SDL_Surface into a GIF image file.
+ *
+ * If the file already exists, it will be overwritten.
+ *
+ * \param surface the SDL surface to save.
+ * \param file path on the filesystem to write new file to.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveGIF_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF(SDL_Surface *surface, const char *file);
+
+/**
+ * Save an SDL_Surface into GIF image data, via an SDL_IOStream.
+ *
+ * If you just want to save to a filename, you can use IMG_SaveGIF() instead.
+ *
+ * If `closeio` is true, `dst` will be closed before returning, whether this
+ * function succeeds or not.
+ *
+ * \param surface the SDL surface to save.
+ * \param dst the SDL_IOStream to save the image data to.
+ * \param closeio true to close/free the SDL_IOStream before returning, false
+ *                to leave it open.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveGIF
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
+
+/**
  * Animated image support
  *
  * Currently only animated GIFs and WEBP images are supported.
@@ -2336,43 +2373,6 @@ extern SDL_DECLSPEC bool SDLCALL IMG_CloseAnimationStream(IMG_AnimationStream *s
  * \sa IMG_FreeAnimation
  */
 extern SDL_DECLSPEC IMG_Animation *SDLCALL IMG_LoadAPNGAnimation_IO(SDL_IOStream *src);
-
-/**
- * Save an SDL_Surface into a GIF image file.
- *
- * If the file already exists, it will be overwritten.
- *
- * \param surface the SDL surface to save.
- * \param file path on the filesystem to write the new file to.
- * \returns true on success or false on failure; call SDL_GetError() for more
- *          information.
- *
- * \since This function is available since SDL_image 3.4.0.
- *
- * \sa IMG_SaveGIF_IO
- */
-extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF(SDL_Surface *surface, const char *file);
-
-/**
- * Save an SDL_Surface into GIF image data, via an SDL_IOStream.
- *
- * If you just want to save to a filename, you can use IMG_SaveGIF() instead.
- *
- * If `closeio` is true, `dst` will be closed before returning, whether this
- * function succeeds or not.
- *
- * \param surface the SDL surface to save.
- * \param dst the SDL_IOStream to save the image data to.
- * \param closeio true to close/free the SDL_IOStream before returning, false
- *                to leave it open.
- * \returns true on success or false on failure; call SDL_GetError() for more
- *          information.
- *
- * \since This function is available since SDL_image 3.4.0.
- *
- * \sa IMG_SaveGIF
- */
-extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
