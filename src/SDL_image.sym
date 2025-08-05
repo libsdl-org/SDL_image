@@ -41,8 +41,6 @@ SDL3_image_0.0.0 {
     IMG_SavePNG_IO;
     IMG_SaveAVIF;
     IMG_SaveAVIF_IO;
-    IMG_SaveGIF;
-    IMG_SaveGIF_IO;
     IMG_isAVIF;
     IMG_isBMP;
     IMG_isCUR;
@@ -67,5 +65,7 @@ SDL3_image_0.0.0 {
     IMG_AddAnimationFrame;
     IMG_CloseAnimationStream;
     IMG_LoadAPNGAnimation_IO;
+    IMG_SaveGIF;
+    IMG_SaveGIF_IO;
   local: *;
 };
