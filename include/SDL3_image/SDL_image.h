@@ -2016,9 +2016,14 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBP(SDL_Surface *surface, const char *
  * Save an SDL_Surface into TGA image data, via an SDL_IOStream.
  *
  * If you just want to save to a filename, you can use IMG_SaveTGA() instead.
+ * 
+ * If `closeio` is true, `dst` will be closed before returning, whether this
+ * function succeeds or not.
  *
  * \param surface the SDL surface to save.
  * \param dst the SDL_IOStream to save the image data to.
+ * \param closeio true to close/free the SDL_IOStream before returning, false
+ *                to leave it open.
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
@@ -2026,7 +2031,7 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBP(SDL_Surface *surface, const char *
  *
  * \sa IMG_SaveTGA
  */
-extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst);
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
 
 /**
  * Save an SDL_Surface into a TGA image file.
