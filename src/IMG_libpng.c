@@ -665,7 +665,7 @@ static bool LIBPNG_SavePNG_IO_Internal(struct png_save_vars *vars, SDL_Surface *
 
 bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
-#if !defined(SDL_IMAGE_SAVE_PNG)
+#if !SDL_IMAGE_SAVE_PNG
     return false;
 #else
     if (!surface || !dst) {
@@ -1537,7 +1537,7 @@ error:
     return NULL;
 }
 
-#if defined(SDL_IMAGE_SAVE_PNG)
+#if SDL_IMAGE_SAVE_PNG
 struct IMG_AnimationStreamContext
 {
     png_structp png_write_ptr;
@@ -2160,7 +2160,7 @@ error:
 
 bool IMG_CreateAPNGAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID props)
 {
-#if !defined(SDL_IMAGE_SAVE_PNG)
+#if !SDL_IMAGE_SAVE_PNG
     return SDL_SetError("SDL was not built with SDL_IMAGE_SAVE_PNG feature.");
 #else
 
@@ -2230,7 +2230,7 @@ error:
     }
     SDL_free(ctx);
     return false;
-#endif /* !defined(SDL_IMAGE_SAVE_PNG) */
+#endif /* !SDL_IMAGE_SAVE_PNG */
 }
 
 #else
