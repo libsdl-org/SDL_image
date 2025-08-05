@@ -93,7 +93,7 @@ SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 
 static const Uint32 png_format = SDL_PIXELFORMAT_RGBA32;
 
-#if defined(LOAD_PNG_DYNAMIC)
+#if LOAD_PNG_DYNAMIC
 /* Replace C runtime functions with SDL C runtime functions for building on Windows */
 #define MINIZ_NO_STDIO
 #define MINIZ_NO_TIME
@@ -163,7 +163,7 @@ bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
         return SDL_SetError("Passed NULL dst");
     }
 
-#if defined(SDL_IMAGE_SAVE_PNG) && defined(LOAD_PNG_DYNAMIC)
+#if SDL_IMAGE_SAVE_PNG && LOAD_PNG_DYNAMIC
     if (!result) {
         result = IMG_SavePNG_IO_miniz(surface, dst);
     }

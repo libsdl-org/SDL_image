@@ -821,7 +821,7 @@ SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
 
 #endif /* !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND) */
 
-#if defined(SAVE_GIF)
+#if SAVE_GIF
 #pragma pack(push,1)
 // GIF Header (6 bytes) + Logical Screen Descriptor (7 bytes)
 // Total 13 bytes
@@ -1297,7 +1297,7 @@ static void Octree_InsertColor(Octree *octree, OctreeNode *node, uint8_t r, uint
     if (b & (1 << (7 - level)))
         index |= 1;
 
-    if (!node->children[index]) {   
+    if (!node->children[index]) {
         node->children[index] = OctreeNode_Create(level + 1, node);
         if (!node->children[index]) {
             // If allocation fails, revert to leaf node
@@ -2369,7 +2369,7 @@ static bool AnimationStream_End(struct IMG_AnimationStream *stream)
 
 bool IMG_CreateGIFAnimationStream(struct IMG_AnimationStream *stream, SDL_PropertiesID props)
 {
-#if !defined(SAVE_GIF)
+#if !SAVE_GIF
     return SDL_SetError("GIF animation saving is not enabled in this build.");
 #else
     IMG_AnimationStreamContext *ctx;
@@ -2417,7 +2417,7 @@ bool IMG_CreateGIFAnimationStream(struct IMG_AnimationStream *stream, SDL_Proper
     stream->Close = AnimationStream_End;
 
     return true;
-#endif /*!defined(SAVE_GIF)*/
+#endif /*!SAVE_GIF*/
 }
 
 #ifdef SAVE_GIF
