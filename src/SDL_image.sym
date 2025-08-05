@@ -69,5 +69,6 @@ SDL3_image_0.0.0 {
     IMG_AddAnimationFrame;
     IMG_CloseAnimationStream;
     IMG_LoadAPNGAnimation_IO;
+    IMG_LoadAVIFAnimation_IO;
   local: *;
 };
