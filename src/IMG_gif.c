@@ -2422,22 +2422,19 @@ bool IMG_CreateGIFAnimationStream(struct IMG_AnimationStream *stream, SDL_Proper
 
 #ifdef SAVE_GIF
 
-bool IMG_SaveGIF_IO(SDL_Surface* surface, SDL_IOStream* dst, bool closeio)
+bool IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
-    IMG_AnimationStream* stream = IMG_CreateAnimationStream_IO(dst, closeio, "gif");
+    IMG_AnimationStream *stream = IMG_CreateAnimationStream_IO(dst, closeio, "gif");
     if (!stream) {
-        SDL_SetError("Failed to create GIF animation stream.");
         return false;
     }
 
     if (!IMG_AddAnimationFrame(stream, surface, 0)) {
-        SDL_SetError("Failed to add frame to GIF animation stream.");
         IMG_CloseAnimationStream(stream);
         return false;
     }
 
     if (!IMG_CloseAnimationStream(stream)) {
-        SDL_SetError("Failed to close GIF animation stream.");
         return false;
     }
 
@@ -2446,25 +2443,25 @@ bool IMG_SaveGIF_IO(SDL_Surface* surface, SDL_IOStream* dst, bool closeio)
 
 bool IMG_SaveGIF(SDL_Surface *surface, const char *file)
 {
-    SDL_IOStream* dst = SDL_IOFromFile(file, "wb");
+    SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
     return IMG_SaveGIF_IO(surface, dst, true);
 }
 
 #else
 
-bool IMG_SaveGIF_IO(SDL_Surface* surface, SDL_IOStream* dst, bool closeio)
+bool IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
     (void)surface;
     (void)dst;
     (void)closeio;
-    return SDL_SetError("GIF saving is not enabled in this build.");
+    return SDL_SetError("SDL_image built without GIF save support");
 }
 
 bool IMG_SaveGIF(SDL_Surface *surface, const char *file)
 {
     (void)surface;
     (void)file;
-    return SDL_SetError("GIF saving is not enabled in this build.");
+    return SDL_SetError("SDL_image built without GIF save support");
 }
 
 #endif /* SAVE_GIF */
