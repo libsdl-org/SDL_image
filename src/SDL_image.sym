@@ -35,8 +35,6 @@ SDL3_image_0.0.0 {
     IMG_Load_IO;
     IMG_ReadXPMFromArray;
     IMG_ReadXPMFromArrayToRGB888;
-    IMG_SaveTGA;
-    IMG_SaveTGA_IO;
     IMG_SaveJPG;
     IMG_SaveJPG_IO;
     IMG_SavePNG;
@@ -61,13 +59,15 @@ SDL3_image_0.0.0 {
     IMG_isXCF;
     IMG_isXPM;
     IMG_isXV;
+    IMG_SaveTGA;
+    IMG_SaveTGA_IO;
+    IMG_SaveGIF;
+    IMG_SaveGIF_IO;
     IMG_CreateAnimationStream;
     IMG_CreateAnimationStream_IO;
     IMG_CreateAnimationStreamWithProperties;
     IMG_AddAnimationFrame;
     IMG_CloseAnimationStream;
     IMG_LoadAPNGAnimation_IO;
-    IMG_SaveGIF;
-    IMG_SaveGIF_IO;
   local: *;
 };
