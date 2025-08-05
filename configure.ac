@@ -846,6 +846,9 @@ AC_SUBST([CMAKE_LIBS])
 AC_SUBST([PC_LIBS])
 AC_SUBST([PC_REQUIRES])
 
+PC_LIBNAME=SDL2_image
+AC_SUBST([PC_LIBNAME])
+
 AM_CONDITIONAL([BUILD_TESTS], [test "x$enable_tests" = xyes])
 AM_CONDITIONAL([INSTALL_TESTS], [test "x$enable_installed_tests" = xyes])
 
