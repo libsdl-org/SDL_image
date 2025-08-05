@@ -857,6 +857,7 @@ typedef struct
 } ImageDescriptor;
 
 // Netscape Application Extension (19 bytes + 1 byte terminator)
+#pragma pack(push,1)
 typedef struct
 {
     uint8_t blockSeparator;                // 0x21
@@ -869,6 +870,7 @@ typedef struct
     uint16_t loopCount;                    // 0 for infinite loop
     uint8_t blockTerminator;               // 0x00
 } NetscapeExtension;
+#pragma pack(pop)
 
 
 // Function to write a byte to the SDL_IOStream
@@ -886,7 +888,7 @@ static bool writeWord(SDL_IOStream *io, uint16_t word)
     return SDL_WriteIO(io, bytes, 2) == 2;
 }
 
-typedef struct IMG_AnimationStreamContext
+struct IMG_AnimationStreamContext
 {
     uint16_t width;
     uint16_t height;
@@ -897,7 +899,7 @@ typedef struct IMG_AnimationStreamContext
     bool firstFrame;
     uint8_t colorMapLUT[32][32][32];
     bool lut_initialized;
-} IMG_AnimationStreamContext;
+};
 
 #define LZW_MAX_CODES 4096
 #define LZW_MAX_BITS  12
@@ -1494,7 +1496,7 @@ static int count_set_bits(uint32_t n)
     return count;
 }
 
-static void buildColorMapLUT(uint8_t lut[32][32][32], const uint8_t palette[][3], uint16_t numColors, bool hasTransparency)
+static void buildColorMapLUT(uint8_t lut[32][32][32], uint8_t palette[][3], uint16_t numColors, bool hasTransparency)
 {
     const int color_count = hasTransparency ? numColors - 1 : numColors;
 
@@ -1528,7 +1530,7 @@ static void buildColorMapLUT(uint8_t lut[32][32][32], const uint8_t palette[][3]
     }
 }
 
-static int mapSurfaceToExistingPalette(SDL_Surface *psurf, const uint8_t lut[32][32][32], uint8_t *indexedPixels, int transparentIndex)
+static int mapSurfaceToExistingPalette(SDL_Surface *psurf, uint8_t lut[32][32][32], uint8_t *indexedPixels, int transparentIndex)
 {
     SDL_Surface *surf = psurf;
     bool surface_converted = false;
@@ -2015,12 +2017,12 @@ static int writeGifHeader(SDL_IOStream *io, uint16_t width, uint16_t height,
     return 0;
 }
 
-static int writeColorTable(SDL_IOStream *io, const uint8_t colors[][3], uint16_t numColors)
+static int writeColorTable(SDL_IOStream *io, uint8_t colors[][3], uint16_t numColors)
 {
     if (!io || !colors || numColors == 0)
         return -1;
 
-    if (SDL_WriteIO(io, colors, numColors * 3) != numColors * 3) {
+    if (SDL_WriteIO(io, colors, numColors * 3) != numColors * 3u) {
         SDL_SetError("Failed to write color table data");
         return -1;
     }
