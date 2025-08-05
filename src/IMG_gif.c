@@ -819,6 +819,8 @@ SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
 
 #endif /* LOAD_GIF */
 
+#endif /* !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND) */
+
 #if defined(SAVE_GIF)
 #pragma pack(push,1)
 // GIF Header (6 bytes) + Logical Screen Descriptor (7 bytes)
@@ -2432,5 +2434,3 @@ bool IMG_CreateGIFAnimationStream(struct IMG_AnimationStream *stream, SDL_Proper
     return true;
 #endif /*!defined(SAVE_GIF)*/
 }
-
-#endif /* !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND) */
