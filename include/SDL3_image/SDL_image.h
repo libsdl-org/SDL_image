@@ -1986,7 +1986,7 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStre
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL_image 3.2.18.
+ * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveWEBP
  */
@@ -2006,7 +2006,7 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStr
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL_image 3.2.18.
+ * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveWEBP_IO
  */
@@ -2027,7 +2027,7 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBP(SDL_Surface *surface, const char *
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL_image 3.2.18.
+ * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveTGA
  */
@@ -2043,7 +2043,7 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStre
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL_image 3.2.18.
+ * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveTGA_IO
  */
