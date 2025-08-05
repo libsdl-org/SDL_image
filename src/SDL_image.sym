@@ -35,6 +35,8 @@ SDL3_image_0.0.0 {
     IMG_Load_IO;
     IMG_ReadXPMFromArray;
     IMG_ReadXPMFromArrayToRGB888;
+    IMG_SaveTGA;
+    IMG_SaveTGA_IO;
     IMG_SaveJPG;
     IMG_SaveJPG_IO;
     IMG_SavePNG;
