@@ -2223,11 +2223,6 @@ static int writeGifTrailer(SDL_IOStream *io)
 
 static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Surface *surface, Uint64 pts)
 {
-    if (!stream || !stream->ctx || !surface) {
-        SDL_SetError("Invalid arguments for AnimationStream_AddFrame.");
-        return false;
-    }
-
     IMG_AnimationStreamContext *ctx = stream->ctx;
     SDL_IOStream *io = stream->dst;
     uint8_t *indexedPixels = NULL;
