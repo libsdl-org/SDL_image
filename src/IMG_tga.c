@@ -19,26 +19,18 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#if !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
-
 /* This is a Targa image file loading framework */
 
 #include <SDL3/SDL_endian.h>
 
 #include <SDL3_image/SDL_image.h>
 
-#ifdef LOAD_TGA
+// We will have TGA saving feature by default.
+#ifndef SAVE_TGA
+#define SAVE_TGA 1
+#endif /* SAVE_TGA */
 
-/*
- * A TGA loader for the SDL library
- * Supports: Reading 8, 15, 16, 24 and 32bpp images, with alpha or colourkey,
- *           uncompressed or RLE encoded.
- *
- * 2000-06-10 Mattias Engdegård <f91-men@nada.kth.se>: initial version
- * 2000-06-26 Mattias Engdegård <f91-men@nada.kth.se>: read greyscale TGAs
- * 2000-08-09 Mattias Engdegård <f91-men@nada.kth.se>: alpha inversion removed
- */
-
+#if defined(LOAD_TGA) || defined(SAVE_TGA)
 struct TGAheader {
     Uint8 infolen;      /* length of info field */
     Uint8 has_cmap;     /* 1 if image has colormap, 0 otherwise */
@@ -79,6 +71,20 @@ enum tga_type {
 /* read/write unaligned little-endian 16-bit ints */
 #define LE16(p) ((p)[0] + ((p)[1] << 8))
 #define SETLE16(p, v) ((p)[0] = (v), (p)[1] = (v) >> 8)
+#endif /* defined(LOAD_TGA) || defined(SAVE_TGA) */
+
+#if !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)
+#ifdef LOAD_TGA
+
+/*
+ * A TGA loader for the SDL library
+ * Supports: Reading 8, 15, 16, 24 and 32bpp images, with alpha or colourkey,
+ *           uncompressed or RLE encoded.
+ *
+ * 2000-06-10 Mattias Engdegård <f91-men@nada.kth.se>: initial version
+ * 2000-06-26 Mattias Engdegård <f91-men@nada.kth.se>: read greyscale TGAs
+ * 2000-08-09 Mattias Engdegård <f91-men@nada.kth.se>: alpha inversion removed
+ */
 
 /* Load a TGA type image from an SDL datasource */
 SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
@@ -335,7 +341,22 @@ error:
     return NULL;
 }
 
-bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst)
+#else
+
+/* dummy TGA load routine */
+SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
+{
+    (void)src;
+    return NULL;
+}
+
+#endif /* LOAD_TGA */
+
+#endif /* !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND) */
+
+#if SAVE_TGA
+
+bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
     Sint64 start;
     const char *error = NULL;
@@ -345,6 +366,11 @@ bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst)
     SDL_Surface *temp_surface = NULL;
 
     if (!surface || !dst) {
+
+        if (closeio && dst) {
+            SDL_CloseIO(dst);
+        }
+
         SDL_SetError("Invalid parameters to IMG_SaveTGA_IO");
         return false;
     }
@@ -365,7 +391,7 @@ bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst)
     SETLE16(hdr.height, surface->h);
     hdr.flags = TGA_ORIGIN_UPPER;
 
-    const SDL_PixelFormatDetails* pixelFormatDetails = SDL_GetPixelFormatDetails(surface->format);
+    const SDL_PixelFormatDetails *pixelFormatDetails = SDL_GetPixelFormatDetails(surface->format);
     if (!pixelFormatDetails) {
         error = "Failed to get SDL_PixelFormatDetails for surface format";
         goto error;
@@ -446,7 +472,7 @@ bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst)
             }
         }
     }
-    
+
     Uint8 *pixels_to_write = (Uint8 *)surface->pixels;
     int pitch_to_write = surface->pitch;
     int bytes_per_pixel = pixelFormatDetails->bytes_per_pixel;
@@ -502,6 +528,9 @@ error:
         SDL_SeekIO(dst, start, SDL_IO_SEEK_SET);
         SDL_SetError("%s", error);
     }
+    if (closeio && dst) {
+        SDL_CloseIO(dst);
+    }
     return retval;
 }
 
@@ -511,24 +540,18 @@ bool IMG_SaveTGA(SDL_Surface *surface, const char *file)
     if (!dst) {
         return false;
     }
-    bool retval = IMG_SaveTGA_IO(surface, dst);
+    bool retval = IMG_SaveTGA_IO(surface, dst, true);
     SDL_CloseIO(dst);
     return retval;
 }
 
 #else
 
-/* dummy TGA load routine */
-SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
-{
-    (void)src;
-    return NULL;
-}
-
-bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst)
+bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
     (void)surface;
     (void)dst;
+    (void)closeio;
     return SDL_SetError("TGA support not enabled");
 }
 
@@ -539,6 +562,4 @@ bool IMG_SaveTGA(SDL_Surface *surface, const char *file)
     return SDL_SetError("TGA support not enabled");
 }
 
-#endif /* LOAD_TGA */
-
-#endif /* !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND) */
+#endif /* SAVE_TGA */
