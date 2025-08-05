@@ -2419,3 +2419,49 @@ bool IMG_CreateGIFAnimationStream(struct IMG_AnimationStream *stream, SDL_Proper
     return true;
 #endif /*!defined(SAVE_GIF)*/
 }
+
+#ifdef SAVE_GIF
+
+bool IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
+{
+    IMG_AnimationStream *stream = IMG_CreateAnimationStream_IO(dst, closeio, "gif");
+    if (!stream) {
+        return false;
+    }
+
+    if (!IMG_AddAnimationFrame(stream, surface, 0)) {
+        IMG_CloseAnimationStream(stream);
+        return false;
+    }
+
+    if (!IMG_CloseAnimationStream(stream)) {
+        return false;
+    }
+
+    return true;
+}
+
+bool IMG_SaveGIF(SDL_Surface *surface, const char *file)
+{
+    SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
+    return IMG_SaveGIF_IO(surface, dst, true);
+}
+
+#else
+
+bool IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
+{
+    (void)surface;
+    (void)dst;
+    (void)closeio;
+    return SDL_SetError("SDL_image built without GIF save support");
+}
+
+bool IMG_SaveGIF(SDL_Surface *surface, const char *file)
+{
+    (void)surface;
+    (void)file;
+    return SDL_SetError("SDL_image built without GIF save support");
+}
+
+#endif /* SAVE_GIF */
