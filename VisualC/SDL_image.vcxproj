@@ -227,6 +227,7 @@
     <ClInclude Include="..\include\SDL3_image\SDL_image.h" />
     <ClInclude Include="..\src\IMG_libpng.h" />
     <ClInclude Include="..\src\IMG_gif.h" />
+    <ClInclude Include="..\src\IMG_avif.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="external\optional\x64\libavif-16.dll">
@@ -434,4 +435,5 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>
+
 
