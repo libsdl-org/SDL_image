@@ -820,6 +820,7 @@ SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
 #endif /* LOAD_GIF */
 
 #if defined(SAVE_GIF)
+#pragma pack(push,1)
 // GIF Header (6 bytes) + Logical Screen Descriptor (7 bytes)
 // Total 13 bytes
 typedef struct
@@ -857,7 +858,6 @@ typedef struct
 } ImageDescriptor;
 
 // Netscape Application Extension (19 bytes + 1 byte terminator)
-#pragma pack(push,1)
 typedef struct
 {
     uint8_t blockSeparator;                // 0x21
