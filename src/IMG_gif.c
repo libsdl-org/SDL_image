@@ -2382,16 +2382,6 @@ bool IMG_CreateGIFAnimationStream(struct IMG_AnimationStream *stream, SDL_Proper
     int transparent_index = -1;
     uint16_t num_global_colors = 256;
 
-    if (!stream) {
-        SDL_SetError("Invalid IMG_AnimationStream pointer.");
-        return false;
-    }
-
-    if (!stream->dst) {
-        SDL_SetError("SDL_IOStream (stream->dst) is NULL. It must be provided by the caller.");
-        return false;
-    }
-
     loop_count = (int)SDL_GetNumberProperty(props, "loop_count", 0);
 
     transparent_index = (int)SDL_GetNumberProperty(props, "transparent_color_index", -1);
