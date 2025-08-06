@@ -1157,7 +1157,9 @@ static int lzwCompress(const uint8_t *indexedPixels, uint16_t width, uint16_t he
 }
 
 #if SAVE_GIF_OCTREE
-#define OCTREE_MAX_LEVELS 8
+#ifndef OCTREE_MAX_LEVELS
+    #define OCTREE_MAX_LEVELS 8
+#endif /* OCTREE_MAX_LEVELS */
 
 typedef struct OctreeNode
 {
