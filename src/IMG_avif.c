@@ -935,8 +935,7 @@ IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
             }
 
              SetHDRProperties(frame_surface, image);
-        }
-        else if (image->transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_SMPTE2084) {
+        } else if (image->transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_SMPTE2084) {
             if (image->matrixCoefficients == AVIF_MATRIX_COEFFICIENTS_IDENTITY &&
                 image->yuvFormat == AVIF_PIXEL_FORMAT_YUV444) {
                 if (image->depth == 10) {
