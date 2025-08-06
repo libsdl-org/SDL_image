@@ -129,6 +129,7 @@ option(SDLIMAGE_XPM "Support loading XPM images" ON)
 option(SDLIMAGE_XV "Support loading XV images" ON)
 
 cmake_dependent_option(SDLIMAGE_AVIF_SAVE "Add AVIF save support" ON SDLIMAGE_AVIF OFF)
+cmake_dependent_option(SDLIMAGE_BMP_SAVE "Add BMP save support" ON SDLIMAGE_BMP OFF)
 cmake_dependent_option(SDLIMAGE_GIF_SAVE "Add GIF save support" ON SDLIMAGE_GIF OFF)
 cmake_dependent_option(SDLIMAGE_JPG_SAVE "Add JPEG save support" ON SDLIMAGE_JPG OFF)
 cmake_dependent_option(SDLIMAGE_PNG_SAVE "Add PNG save support" ON SDLIMAGE_PNG OFF)
@@ -595,7 +596,15 @@ list(APPEND SDLIMAGE_BACKENDS BMP)
 set(SDLIMAGE_BMP_ENABLED FALSE)
 if(SDLIMAGE_BMP)
     set(SDLIMAGE_BMP_ENABLED TRUE)
-    target_compile_definitions(${sdl3_image_target_name} PRIVATE LOAD_BMP)
+    if(SDLIMAGE_BMP_ENABLED)
+        target_compile_definitions(${sdl3_image_target_name} PRIVATE
+            LOAD_BMP
+            SAVE_BMP=$<BOOL:${SDLIMAGE_BMP_SAVE}>
+        )
+    else()
+        # Variable is used by test suite
+        set(SDLIMAGE_BMP_SAVE OFF)
+    endif()
 endif()
 
 list(APPEND SDLIMAGE_BACKENDS GIF)

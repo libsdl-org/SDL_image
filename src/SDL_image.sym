@@ -70,5 +70,7 @@ SDL3_image_0.0.0 {
     IMG_CloseAnimationStream;
     IMG_LoadAPNGAnimation_IO;
     IMG_LoadAVIFAnimation_IO;
+    IMG_SaveBMP;
+    IMG_SaveBMP_IO;
   local: *;
 };

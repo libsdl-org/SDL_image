@@ -181,7 +181,7 @@ int main(int argc, char *argv[])
                 if (ext && SDL_strcasecmp(ext, ".avif") == 0) {
                     saved = IMG_SaveAVIF(surface, saveFile, 90);
                 } else if (ext && SDL_strcasecmp(ext, ".bmp") == 0) {
-                    saved = SDL_SaveBMP(surface, saveFile);
+                    saved = IMG_SaveBMP(surface, saveFile);
                 } else if (ext && SDL_strcasecmp(ext, ".jpg") == 0) {
                     saved = IMG_SaveJPG(surface, saveFile, 90);
                 } else if (ext && SDL_strcasecmp(ext, ".png") == 0) {

@@ -1890,6 +1890,43 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIF(SDL_Surface *surface, const char *
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality);
 
 /**
+ * Save an SDL_Surface into a BMP image file.
+ *
+ * If the file already exists, it will be overwritten.
+ *
+ * \param surface the SDL surface to save.
+ * \param file path on the filesystem to write new file to.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveBMP_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveBMP(SDL_Surface *surface, const char *file);
+
+/**
+ * Save an SDL_Surface into BMP image data, via an SDL_IOStream.
+ *
+ * If you just want to save to a filename, you can use IMG_SaveBMP() instead.
+ *
+ * If `closeio` is true, `dst` will be closed before returning, whether this
+ * function succeeds or not.
+ *
+ * \param surface the SDL surface to save.
+ * \param dst the SDL_IOStream to save the image data to.
+ * \param closeio true to close/free the SDL_IOStream before returning, false
+ *                to leave it open.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveBMP
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveBMP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
+
+/**
  * Save an SDL_Surface into a GIF image file.
  *
  * If the file already exists, it will be overwritten.
