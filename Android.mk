@@ -10,6 +10,7 @@ USE_STBIMAGE ?= true
 # Enable this if you want to support loading AVIF images
 # The library path should be a relative path to this directory.
 SUPPORT_AVIF ?= false
+SUPPORT_SAVE_AVIF ?= true
 AVIF_LIBRARY_PATH := external/libavif
 DAV1D_LIBRARY_PATH := external/dav1d
 
@@ -33,6 +34,7 @@ PNG_LIBRARY_PATH := external/libpng
 # Enable this if you want to support loading WebP images
 # The library path should be a relative path to this directory.
 SUPPORT_WEBP ?= false
+SUPPORT_SAVE_WEBP ?= true
 WEBP_LIBRARY_PATH := external/libwebp
 
 
@@ -95,9 +97,9 @@ LOCAL_SRC_FILES :=  \
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/include
 
-LOCAL_CFLAGS := -DLOAD_BMP -DLOAD_GIF -DLOAD_LBM -DLOAD_PCX -DLOAD_PNM \
-                -DLOAD_SVG -DLOAD_TGA -DLOAD_XCF -DLOAD_XPM -DLOAD_XV  \
-                -DLOAD_QOI
+LOCAL_CFLAGS := -DLOAD_BMP -DLOAD_GIF -DSAVE_GIF -DLOAD_LBM -DLOAD_PCX \
+                -DLOAD_PNM -DLOAD_SVG -DLOAD_TGA -DSAVE_TGA -DLOAD_XCF \
+                -DLOAD_XPM -DLOAD_XV -DLOAD_QOI
 LOCAL_LDLIBS :=
 LOCAL_LDFLAGS := -Wl,--no-undefined -Wl,--version-script=$(LOCAL_PATH)/src/SDL_image.sym
 LOCAL_STATIC_LIBRARIES :=
@@ -112,6 +114,11 @@ ifeq ($(SUPPORT_AVIF),true)
     LOCAL_CFLAGS += -DLOAD_AVIF
     LOCAL_STATIC_LIBRARIES += avif
     LOCAL_WHOLE_STATIC_LIBRARIES += dav1d dav1d-8bit dav1d-16bit
+ifeq ($(SUPPORT_SAVE_AVIF),true)
+    LOCAL_CFLAGS += -DSAVE_AVIF=1
+else
+    LOCAL_CFLAGS += -DSAVE_AVIF=0
+endif
 endif
 
 ifeq ($(SUPPORT_JPG),true)
@@ -120,9 +127,9 @@ ifeq ($(SUPPORT_JPG),true)
     LOCAL_CFLAGS += -DLOAD_JPG
     LOCAL_STATIC_LIBRARIES += jpeg
 ifeq ($(SUPPORT_SAVE_JPG),true)
-    LOCAL_CFLAGS += -DSDL_IMAGE_SAVE_JPG=1
+    LOCAL_CFLAGS += -DSAVE_JPG=1
 else
-    LOCAL_CFLAGS += -DSDL_IMAGE_SAVE_JPG=0
+    LOCAL_CFLAGS += -DSAVE_JPG=0
 endif
 endif
 
@@ -140,9 +147,9 @@ ifeq ($(SUPPORT_PNG),true)
     LOCAL_STATIC_LIBRARIES += png
     LOCAL_LDLIBS += -lz
 ifeq ($(SUPPORT_SAVE_PNG),true)
-    LOCAL_CFLAGS += -DSDL_IMAGE_SAVE_PNG=1
+    LOCAL_CFLAGS += -DSAVE_PNG=1
 else
-    LOCAL_CFLAGS += -DSDL_IMAGE_SAVE_PNG=0
+    LOCAL_CFLAGS += -DSAVE_PNG=0
 endif
 endif
 
@@ -151,6 +158,11 @@ ifeq ($(SUPPORT_WEBP),true)
     LOCAL_CFLAGS += -DLOAD_WEBP
     LOCAL_STATIC_LIBRARIES += webpdemux
     LOCAL_STATIC_LIBRARIES += webp
+ifeq ($(SUPPORT_SAVE_WEBP),true)
+    LOCAL_CFLAGS += -DSAVE_WEBP=1
+else
+    LOCAL_CFLAGS += -DSAVE_WEBP=0
+endif
 endif
 
 LOCAL_EXPORT_C_INCLUDES += $(LOCAL_PATH)/include

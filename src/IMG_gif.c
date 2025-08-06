@@ -27,7 +27,7 @@
 // We will have the saving GIF feature by default
 #if !defined(SAVE_GIF)
 #define SAVE_GIF 1
-#endif /*!defined(SAVE_GIF)*/
+#endif
 
 // By default, non-indexed surfaces will be converted to indexed pixels using octree quantization.
 #if defined(SAVE_GIF)

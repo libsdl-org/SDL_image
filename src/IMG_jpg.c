@@ -28,8 +28,8 @@
 
 
 /* We'll have JPG save support by default */
-#ifndef SDL_IMAGE_SAVE_JPG
-#define SDL_IMAGE_SAVE_JPG    1
+#ifndef SAVE_JPG
+#define SAVE_JPG    1
 #endif
 
 #if defined(USE_STBIMAGE)
@@ -681,7 +681,7 @@ SDL_Surface *IMG_LoadJPG_IO(SDL_IOStream *src)
 #endif /* LOAD_JPG */
 
 /* Use tinyjpeg as a fallback if we don't have a hard dependency on libjpeg */
-#if SDL_IMAGE_SAVE_JPG && (defined(LOAD_JPG_DYNAMIC) || !defined(WANT_JPEGLIB))
+#if SAVE_JPG && (defined(LOAD_JPG_DYNAMIC) || !defined(WANT_JPEGLIB))
 
 #ifdef assert
 #undef assert
@@ -755,7 +755,7 @@ static bool IMG_SaveJPG_IO_tinyjpeg(SDL_Surface *surface, SDL_IOStream *dst, int
     return result;
 }
 
-#endif /* SDL_IMAGE_SAVE_JPG && (defined(LOAD_JPG_DYNAMIC) || !defined(WANT_JPEGLIB)) */
+#endif /* SAVE_JPG && (defined(LOAD_JPG_DYNAMIC) || !defined(WANT_JPEGLIB)) */
 
 bool IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality)
 {
@@ -777,7 +777,7 @@ bool IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int q
         return SDL_SetError("Passed NULL dst");
     }
 
-#if SDL_IMAGE_SAVE_JPG
+#if SAVE_JPG
 #ifdef USE_JPEGLIB
     if (!result) {
         result = IMG_SaveJPG_IO_jpeglib(surface, dst, quality);

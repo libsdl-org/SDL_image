@@ -26,8 +26,8 @@
 #if !defined(SDL_IMAGE_LIBPNG)
 
 /* We'll have PNG save support by default */
-#if !defined(SDL_IMAGE_SAVE_PNG)
-#define SDL_IMAGE_SAVE_PNG 1
+#if !defined(SAVE_PNG)
+#define SAVE_PNG 1
 #endif
 
 #if defined(LOAD_PNG) && defined(USE_STBIMAGE)
@@ -84,7 +84,7 @@ SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 
 #endif /* LOAD_PNG */
 
-#if SDL_IMAGE_SAVE_PNG
+#if SAVE_PNG
 
 static const Uint32 png_format = SDL_PIXELFORMAT_RGBA32;
 
@@ -136,7 +136,7 @@ static bool IMG_SavePNG_IO_miniz(SDL_Surface *surface, SDL_IOStream *dst)
     return result;
 }
 
-#endif /* SDL_IMAGE_SAVE_PNG */
+#endif /* SAVE_PNG */
 
 bool IMG_SavePNG(SDL_Surface *surface, const char *file)
 {
@@ -156,7 +156,7 @@ bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
         return SDL_SetError("Passed NULL dst");
     }
 
-#if SDL_IMAGE_SAVE_PNG
+#if SAVE_PNG
     if (!result) {
         result = IMG_SavePNG_IO_miniz(surface, dst);
     }

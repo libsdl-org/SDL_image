@@ -56,8 +56,8 @@
 #endif
 
 // We will have the PNG saving feature by default
-#ifndef SDL_IMAGE_SAVE_PNG
-    #define SDL_IMAGE_SAVE_PNG 1
+#ifndef SAVE_PNG
+#define SAVE_PNG 1
 #endif
 
 /* Check for the older version of libpng */
@@ -550,7 +550,7 @@ SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
     }
 }
 
-#if SDL_IMAGE_SAVE_PNG
+#if SAVE_PNG
 
 struct png_save_vars
 {
@@ -661,11 +661,11 @@ static bool LIBPNG_SavePNG_IO_Internal(struct png_save_vars *vars, SDL_Surface *
 
     return true;
 }
-#endif // SDL_IMAGE_SAVE_PNG
+#endif // SAVE_PNG
 
 bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
-#if !SDL_IMAGE_SAVE_PNG
+#if !SAVE_PNG
     return false;
 #else
     if (!surface || !dst) {
@@ -1537,7 +1537,7 @@ error:
     return NULL;
 }
 
-#if SDL_IMAGE_SAVE_PNG
+#if SAVE_PNG
 struct IMG_AnimationStreamContext
 {
     png_structp png_write_ptr;
@@ -2156,11 +2156,11 @@ error:
     return false;
 }
 
-#endif /* SDL_IMAGE_SAVE_PNG */
+#endif /* SAVE_PNG */
 
 bool IMG_CreateAPNGAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID props)
 {
-#if !SDL_IMAGE_SAVE_PNG
+#if !SAVE_PNG
     return SDL_SetError("SDL_image built without PNG save support");
 #else
 
@@ -2230,7 +2230,7 @@ error:
     }
     SDL_free(ctx);
     return false;
-#endif /* !SDL_IMAGE_SAVE_PNG */
+#endif /* !SAVE_PNG */
 }
 
 #else

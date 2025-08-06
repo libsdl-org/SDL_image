@@ -26,6 +26,15 @@
 #include "IMG_anim.h"
 #include "IMG_webp.h"
 
+// We will have the saving WEBP feature by default
+#if !defined(SAVE_WEBP)
+#ifdef LOAD_WEBP
+#define SAVE_WEBP 1
+#else
+#define SAVE_WEBP 0
+#endif
+#endif
+
 #ifdef LOAD_WEBP
 
 /*=============================================================================
@@ -36,8 +45,6 @@
               murlock42@gmail.com
 
 =============================================================================*/
-
-#include <SDL3/SDL_endian.h>
 
 #ifdef macintosh
 #define MACOS
@@ -542,6 +549,8 @@ IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
     return IMG_LoadWEBPAnimation_IO_Internal(src, 0);
 }
 
+#if SAVE_WEBP
+
 static const char *GetWebPEncodingErrorStringInternal(WebPEncodingError error_code)
 {
     switch (error_code) {
@@ -866,7 +875,11 @@ done:
     return true;
 }
 
-#else
+#endif // SAVE_WEBP
+
+#endif // LOAD_WEBP
+
+#if !LOAD_WEBP
 
 /* See if an image is contained in a data source */
 bool IMG_isWEBP(SDL_IOStream *src)
@@ -879,14 +892,20 @@ bool IMG_isWEBP(SDL_IOStream *src)
 SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
 {
     (void)src;
+    SDL_SetError("SDL_image was not built with WEBP support");
     return NULL;
 }
 
 IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
 {
     (void)src;
+    SDL_SetError("SDL_image was not built with WEBP support");
     return NULL;
 }
+
+#endif // !LOAD_WEBP
+
+#if !SAVE_WEBP
 
 bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, float quality)
 {
@@ -912,4 +931,4 @@ bool IMG_CreateWEBPAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID
     return SDL_SetError("SDL_image was not built with WEBP save support");
 }
 
-#endif /* LOAD_WEBP */
+#endif // !SAVE_WEBP
