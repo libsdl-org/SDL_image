@@ -567,7 +567,7 @@ if(SDLIMAGE_AVIF)
     if(SDLIMAGE_AVIF_ENABLED)
         target_compile_definitions(${sdl3_image_target_name} PRIVATE
             LOAD_AVIF
-            SDL_IMAGE_SAVE_AVIF=$<BOOL:${SDLIMAGE_AVIF_SAVE}>
+            SAVE_AVIF=$<BOOL:${SDLIMAGE_AVIF_SAVE}>
         )
         if(SDLIMAGE_AVIF_SHARED)
             if(NOT DEFINED SDLIMAGE_DYNAMIC_AVIF)
