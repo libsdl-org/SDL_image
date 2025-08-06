@@ -386,20 +386,20 @@ bool IMG_SaveTyped_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, con
     }
 
     if (SDL_strcasecmp(type, "avif") == 0) {
-        result = IMG_SaveAVIF_IO(surface, dst, false, 75);
+        result = IMG_SaveAVIF_IO(surface, dst, false, 90);
     } else if (SDL_strcasecmp(type, "bmp") == 0) {
         result = IMG_SaveBMP_IO(surface, dst, false);
     } else if (SDL_strcasecmp(type, "gif") == 0) {
         result = IMG_SaveGIF_IO(surface, dst, false);
     } else if (SDL_strcasecmp(type, "jpg") == 0 ||
                SDL_strcasecmp(type, "jpeg") == 0) {
-        result = IMG_SaveJPG_IO(surface, dst, false, 75);
+        result = IMG_SaveJPG_IO(surface, dst, false, 90);
     } else if (SDL_strcasecmp(type, "png") == 0) {
         result = IMG_SavePNG_IO(surface, dst, false);
     } else if (SDL_strcasecmp(type, "tga") == 0) {
         result = IMG_SaveTGA_IO(surface, dst, false);
     } else if (SDL_strcasecmp(type, "webp") == 0) {
-        result = IMG_SaveWEBP_IO(surface, dst, false, 75.0f);
+        result = IMG_SaveWEBP_IO(surface, dst, false, 90.0f);
     } else {
         result = SDL_SetError("Unsupported image format");
     }
