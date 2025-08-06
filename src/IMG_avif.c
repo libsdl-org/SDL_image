@@ -544,6 +544,7 @@ static bool IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int
     maxCLL = (Uint16)SDL_GetNumberProperty(props, SDL_PROP_SURFACE_MAXCLL_NUMBER, 0);
     maxFALL = (Uint16)SDL_GetNumberProperty(props, SDL_PROP_SURFACE_MAXFALL_NUMBER, 0);
 
+    SDL_zero(rgb);
     image = lib.avifImageCreate(surface->w, surface->h, 10, AVIF_PIXEL_FORMAT_YUV444);
     if (!image) {
         SDL_SetError("Couldn't create AVIF YUV image");
@@ -555,7 +556,6 @@ static bool IMG_SaveAVIF_IO_libavif(SDL_Surface *surface, SDL_IOStream *dst, int
     image->clli.maxCLL = maxCLL;
     image->clli.maxPALL = maxFALL;
 
-    SDL_zero(rgb);
     lib.avifRGBImageSetDefaults(&rgb, image);
 
     if (SDL_ISPIXELFORMAT_10BIT(surface->format)) {
