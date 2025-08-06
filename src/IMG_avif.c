@@ -870,7 +870,6 @@ IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
         goto done;
     }
 
-    bool hasAlpha = (bool)decoder->alphaPresent;
     for (i = 0; i < animation->count; ++i) {
         avifImage *image;
         avifRGBImage rgb;
@@ -890,13 +889,8 @@ IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
             rgb.height = image->height;
             rgb.depth = 16;
 
-            if (hasAlpha) {
-                rgb.format = AVIF_RGB_FORMAT_RGBA;
-                frame_surface = SDL_CreateSurface(image->width, image->height, SDL_PIXELFORMAT_RGBA64);
-            } else {
-                rgb.format = AVIF_RGB_FORMAT_RGB;
-                frame_surface = SDL_CreateSurface(image->width, image->height, SDL_PIXELFORMAT_RGB48);
-            }
+            rgb.format = AVIF_RGB_FORMAT_RGBA;
+            frame_surface = SDL_CreateSurface(image->width, image->height, SDL_PIXELFORMAT_RGBA64);
 
             if (!frame_surface) {
                 SDL_SetError("Couldn't create 16-bit surface for AVIF frame");
@@ -906,7 +900,7 @@ IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
 
             rgb.pixels = (uint8_t *)frame_surface->pixels;
             rgb.rowBytes = (uint32_t)frame_surface->pitch;
-            rgb.ignoreAlpha = !hasAlpha;
+            rgb.ignoreAlpha = false;
             
             result = lib.avifImageYUVToRGB(image, &rgb);
             
@@ -938,7 +932,7 @@ IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
                 rgb.width = image->width;
                 rgb.height = image->height;
                 rgb.depth = 16;
-                rgb.format = AVIF_RGB_FORMAT_RGB;
+                rgb.format = AVIF_RGB_FORMAT_RGBA;
                 rgb.rowBytes = (uint32_t)image->width * 3 * sizeof(Uint16);
                 rgb.pixels = (uint8_t *)SDL_malloc(image->height * rgb.rowBytes);
                 if (!rgb.pixels) {
@@ -967,8 +961,7 @@ IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
         }
 
         if (!frame_surface) {
-            Uint32 pixelFormat = hasAlpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGB24;
-            frame_surface = SDL_CreateSurface(image->width, image->height, pixelFormat);
+            frame_surface = SDL_CreateSurface(image->width, image->height, SDL_PIXELFORMAT_RGBA32);
             if (!frame_surface) {
                 error = true;
                 goto done;
@@ -979,21 +972,13 @@ IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
             rgb.height = frame_surface->h;
             rgb.depth = 8;
 
-            if (hasAlpha) {
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
-                rgb.format = AVIF_RGB_FORMAT_ABGR;
+            rgb.format = AVIF_RGB_FORMAT_ABGR;
 #else
-                rgb.format = AVIF_RGB_FORMAT_RGBA;
+            rgb.format = AVIF_RGB_FORMAT_RGBA;
 #endif
-            } else {
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-                rgb.format = AVIF_RGB_FORMAT_BGR;
-#else
-                rgb.format = AVIF_RGB_FORMAT_RGB;
-#endif
-            }
 
-            rgb.ignoreAlpha = !hasAlpha;
+            rgb.ignoreAlpha = false;
 
             rgb.pixels = (uint8_t *)frame_surface->pixels;
             rgb.rowBytes = (uint32_t)frame_surface->pitch;
@@ -1072,11 +1057,11 @@ IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
 
 #if SDL_IMAGE_SAVE_AVIF
 
-typedef struct IMG_AnimationStreamContext
+struct IMG_AnimationStreamContext
 {
     avifEncoder *encoder;
     bool first_frame_added;
-} IMG_AnimationStreamContext;
+};
 
 static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Surface *surface, Uint64 pts)
 {
