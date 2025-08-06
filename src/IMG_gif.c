@@ -34,7 +34,7 @@
     #ifndef SAVE_GIF_OCTREE
         #define SAVE_GIF_OCTREE 1
     #endif /* SAVE_GIF_OCTREE */
-#endif
+#endif /* SAVE_GIF */
 
 #ifdef LOAD_GIF
 
