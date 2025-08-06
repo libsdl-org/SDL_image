@@ -31,7 +31,9 @@
 
 // By default, non-indexed surfaces will be converted to indexed pixels using octree quantization.
 #if SAVE_GIF
-#define SAVE_GIF_OCTREE 1
+    #ifndef SAVE_GIF_OCTREE
+        #define SAVE_GIF_OCTREE 1
+    #endif /* SAVE_GIF_OCTREE */
 #endif
 
 #ifdef LOAD_GIF
