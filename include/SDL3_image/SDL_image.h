@@ -1849,6 +1849,63 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArray(char **xpm);
 extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArrayToRGB888(char **xpm);
 
 /**
+ * Save an SDL_Surface into an image file.
+ *
+ * If the file already exists, it will be overwritten.
+ *
+ * For formats that accept a quality, a default quality of 75 will be used.
+ *
+ * \param surface the SDL surface to save.
+ * \param file path on the filesystem to write new file to.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_SaveTyped_IO
+ * \sa IMG_SaveAVIF
+ * \sa IMG_SaveBMP
+ * \sa IMG_SaveGIF
+ * \sa IMG_SaveJPG
+ * \sa IMG_SavePNG
+ * \sa IMG_SaveTGA
+ * \sa IMG_SaveWEBP
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_Save(SDL_Surface *surface, const char *file);
+
+/**
+ * Save an SDL_Surface into formatted image data, via an SDL_IOStream.
+ *
+ * If you just want to save to a filename, you can use IMG_Save() instead.
+ *
+ * If `closeio` is true, `dst` will be closed before returning, whether this
+ * function succeeds or not.
+ *
+ * For formats that accept a quality, a default quality of 75 will be used.
+ *
+ * \param surface the SDL surface to save.
+ * \param dst the SDL_IOStream to save the image data to.
+ * \param closeio true to close/free the SDL_IOStream before returning, false
+ *                to leave it open.
+ * \param type a filename extension that represent this data ("BMP", "GIF",
+ *             "PNG", etc).
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_Save
+ * \sa IMG_SaveAVIF_IO
+ * \sa IMG_SaveBMP_IO
+ * \sa IMG_SaveGIF_IO
+ * \sa IMG_SaveJPG_IO
+ * \sa IMG_SavePNG_IO
+ * \sa IMG_SaveTGA_IO
+ * \sa IMG_SaveWEBP_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveTyped_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, const char *type);
+
+/**
  * Save an SDL_Surface into a AVIF image file.
  *
  * If the file already exists, it will be overwritten.
@@ -1863,6 +1920,12 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArrayToRGB888(char **xp
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SaveAVIF_IO
+ * \sa IMG_SaveBMP
+ * \sa IMG_SaveGIF
+ * \sa IMG_SaveJPG
+ * \sa IMG_SavePNG
+ * \sa IMG_SaveTGA
+ * \sa IMG_SaveWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIF(SDL_Surface *surface, const char *file, int quality);
 
@@ -1886,6 +1949,12 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIF(SDL_Surface *surface, const char *
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SaveAVIF
+ * \sa IMG_SaveBMP_IO
+ * \sa IMG_SaveGIF_IO
+ * \sa IMG_SaveJPG_IO
+ * \sa IMG_SavePNG_IO
+ * \sa IMG_SaveTGA_IO
+ * \sa IMG_SaveWEBP_IO
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality);
 
@@ -1902,6 +1971,12 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStr
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveBMP_IO
+ * \sa IMG_SaveAVIF
+ * \sa IMG_SaveGIF
+ * \sa IMG_SaveJPG
+ * \sa IMG_SavePNG
+ * \sa IMG_SaveTGA
+ * \sa IMG_SaveWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveBMP(SDL_Surface *surface, const char *file);
 
@@ -1923,6 +1998,12 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveBMP(SDL_Surface *surface, const char *f
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveBMP
+ * \sa IMG_SaveAVIF_IO
+ * \sa IMG_SaveGIF_IO
+ * \sa IMG_SaveJPG_IO
+ * \sa IMG_SavePNG_IO
+ * \sa IMG_SaveTGA_IO
+ * \sa IMG_SaveWEBP_IO
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveBMP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
 
@@ -1939,6 +2020,12 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveBMP_IO(SDL_Surface *surface, SDL_IOStre
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveGIF_IO
+ * \sa IMG_SaveAVIF
+ * \sa IMG_SaveBMP
+ * \sa IMG_SaveJPG
+ * \sa IMG_SavePNG
+ * \sa IMG_SaveTGA
+ * \sa IMG_SaveWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF(SDL_Surface *surface, const char *file);
 
@@ -1960,6 +2047,12 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF(SDL_Surface *surface, const char *f
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveGIF
+ * \sa IMG_SaveAVIF_IO
+ * \sa IMG_SaveBMP_IO
+ * \sa IMG_SaveJPG_IO
+ * \sa IMG_SavePNG_IO
+ * \sa IMG_SaveTGA_IO
+ * \sa IMG_SaveWEBP_IO
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
 
@@ -1978,6 +2071,12 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStre
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SaveJPG_IO
+ * \sa IMG_SaveAVIF
+ * \sa IMG_SaveBMP
+ * \sa IMG_SaveGIF
+ * \sa IMG_SavePNG
+ * \sa IMG_SaveTGA
+ * \sa IMG_SaveWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality);
 
@@ -2001,6 +2100,12 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *f
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SaveJPG
+ * \sa IMG_SaveAVIF_IO
+ * \sa IMG_SaveBMP_IO
+ * \sa IMG_SaveGIF_IO
+ * \sa IMG_SavePNG_IO
+ * \sa IMG_SaveTGA_IO
+ * \sa IMG_SaveWEBP_IO
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality);
 
@@ -2017,6 +2122,12 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStre
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SavePNG_IO
+ * \sa IMG_SaveAVIF
+ * \sa IMG_SaveBMP
+ * \sa IMG_SaveGIF
+ * \sa IMG_SaveJPG
+ * \sa IMG_SaveTGA
+ * \sa IMG_SaveWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
 
@@ -2038,6 +2149,12 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *f
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SavePNG
+ * \sa IMG_SaveAVIF_IO
+ * \sa IMG_SaveBMP_IO
+ * \sa IMG_SaveGIF_IO
+ * \sa IMG_SaveJPG_IO
+ * \sa IMG_SaveTGA_IO
+ * \sa IMG_SaveWEBP_IO
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
 
@@ -2054,6 +2171,12 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStre
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveTGA_IO
+ * \sa IMG_SaveAVIF
+ * \sa IMG_SaveBMP
+ * \sa IMG_SaveGIF
+ * \sa IMG_SaveJPG
+ * \sa IMG_SavePNG
+ * \sa IMG_SaveWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA(SDL_Surface *surface, const char *file);
 
@@ -2075,6 +2198,12 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA(SDL_Surface *surface, const char *f
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveTGA
+ * \sa IMG_SaveAVIF_IO
+ * \sa IMG_SaveBMP_IO
+ * \sa IMG_SaveGIF_IO
+ * \sa IMG_SaveJPG_IO
+ * \sa IMG_SavePNG_IO
+ * \sa IMG_SaveWEBP_IO
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
 
@@ -2095,6 +2224,12 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStre
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveWEBP_IO
+ * \sa IMG_SaveAVIF
+ * \sa IMG_SaveBMP
+ * \sa IMG_SaveGIF
+ * \sa IMG_SaveJPG
+ * \sa IMG_SavePNG
+ * \sa IMG_SaveTGA
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBP(SDL_Surface *surface, const char *file, float quality);
 
@@ -2120,6 +2255,12 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBP(SDL_Surface *surface, const char *
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveWEBP
+ * \sa IMG_SaveAVIF_IO
+ * \sa IMG_SaveBMP_IO
+ * \sa IMG_SaveGIF_IO
+ * \sa IMG_SaveJPG_IO
+ * \sa IMG_SavePNG_IO
+ * \sa IMG_SaveTGA_IO
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, float quality);
 
