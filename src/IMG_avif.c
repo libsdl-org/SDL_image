@@ -1100,7 +1100,7 @@ IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
 
 #endif /* LOAD_AVIF */
 
-#if SDL_IMAGE_SAVE_AVIF
+#if SAVE_AVIF
 
 typedef struct IMG_AnimationStreamContext
 {
