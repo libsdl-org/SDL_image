@@ -25,8 +25,8 @@
 #include "IMG_anim.h"
 
 /* We'll have AVIF save support by default */
-#if !defined(SDL_IMAGE_SAVE_AVIF)
-#  define SDL_IMAGE_SAVE_AVIF 1
+#if !defined(SAVE_AVIF)
+#define SAVE_AVIF 1
 #endif
 
 #ifdef LOAD_AVIF
@@ -904,27 +904,11 @@ IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
                 goto done;
             }
 
-            bool lockedSurf = false;
-            if (SDL_MUSTLOCK(frame_surface)) {
-                if (!SDL_LockSurface(frame_surface)) {
-                    SDL_SetError("Couldn't lock 16-bit AVIF frame surface");
-                    SDL_DestroySurface(frame_surface);
-                    frame_surface = NULL;
-                    error = true;
-                    goto done;
-                }
-                lockedSurf = true;
-            }
-
             rgb.pixels = (uint8_t *)frame_surface->pixels;
             rgb.rowBytes = (uint32_t)frame_surface->pitch;
             rgb.ignoreAlpha = !hasAlpha;
             
             result = lib.avifImageYUVToRGB(image, &rgb);
-            
-            if (lockedSurf) {
-                SDL_UnlockSurface(frame_surface);
-            }
             
             if (result != AVIF_RESULT_OK) {
                 SDL_SetError("Couldn't convert 16-bit AVIF image to RGB: %s", lib.avifResultToString(result));
@@ -1011,23 +995,9 @@ IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
 
             rgb.ignoreAlpha = !hasAlpha;
 
-            bool lockedSurf = false;
-            if (SDL_MUSTLOCK(frame_surface)) {
-                if (!SDL_LockSurface(frame_surface)) {
-                    SDL_SetError("Couldn't lock AVIF frame surface for writing");
-                    error = true;
-                    goto done;
-                }
-                lockedSurf = true;
-            }
-
             rgb.pixels = (uint8_t *)frame_surface->pixels;
             rgb.rowBytes = (uint32_t)frame_surface->pitch;
             result = lib.avifImageYUVToRGB(image, &rgb);
-
-            if (lockedSurf) {
-                SDL_UnlockSurface(frame_surface);
-            }
 
             if (result != AVIF_RESULT_OK) {
                 SDL_SetError("Couldn't convert AVIF image to RGB: %s", lib.avifResultToString(result));
@@ -1338,17 +1308,6 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Sur
             }
             temp_is_copy = true;
             
-            if (SDL_MUSTLOCK(temp)) {
-                if (!SDL_LockSurface(temp)) {
-                    if (lockedSurf) {
-                        SDL_UnlockSurface(surface);
-                    }
-                    SDL_DestroySurface(temp);
-                    lib.avifImageDestroy(image);
-                    return SDL_SetError("Couldn't lock temporary surface");
-                }
-            }
-            
             rgb.format = format;
             rgb.pixels = (uint8_t *)temp->pixels;
             rgb.rowBytes = (uint32_t)temp->pitch;
@@ -1537,4 +1496,4 @@ bool IMG_CreateAVIFAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID
     return SDL_SetError("SDL_image built without AVIF animation encoding support");
 }
 
-#endif /* SDL_IMAGE_SAVE_AVIF */
+#endif /* SAVE_AVIF */
