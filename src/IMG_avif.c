@@ -933,7 +933,7 @@ IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
                 rgb.height = image->height;
                 rgb.depth = 16;
                 rgb.format = AVIF_RGB_FORMAT_RGBA;
-                rgb.rowBytes = (uint32_t)image->width * 3 * sizeof(Uint16);
+                rgb.rowBytes = (uint32_t)image->width * 4 * sizeof(Uint16);
                 rgb.pixels = (uint8_t *)SDL_malloc(image->height * rgb.rowBytes);
                 if (!rgb.pixels) {
                     SDL_SetError("Out of memory for AVIF RGB pixels");
