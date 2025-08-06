@@ -1853,7 +1853,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArrayToRGB888(char **xp
  *
  * If the file already exists, it will be overwritten.
  *
- * For formats that accept a quality, a default quality of 75 will be used.
+ * For formats that accept a quality, a default quality of 90 will be used.
  *
  * \param surface the SDL surface to save.
  * \param file path on the filesystem to write new file to.
@@ -1881,7 +1881,7 @@ extern SDL_DECLSPEC bool SDLCALL IMG_Save(SDL_Surface *surface, const char *file
  * If `closeio` is true, `dst` will be closed before returning, whether this
  * function succeeds or not.
  *
- * For formats that accept a quality, a default quality of 75 will be used.
+ * For formats that accept a quality, a default quality of 90 will be used.
  *
  * \param surface the SDL surface to save.
  * \param dst the SDL_IOStream to save the image data to.
