@@ -25,8 +25,8 @@
 #include "IMG_anim.h"
 
 /* We'll have AVIF save support by default */
-#if !defined(SDL_IMAGE_SAVE_AVIF)
-#define SDL_IMAGE_SAVE_AVIF 1
+#if !defined(SAVE_AVIF)
+#define SAVE_AVIF 1
 #endif
 
 #ifdef LOAD_AVIF
@@ -706,7 +706,7 @@ done:
 #else
 
 /* We don't have any way to save AVIF files */
-#undef SDL_IMAGE_SAVE_AVIF
+#undef SAVE_AVIF
 
 /* See if an image is contained in a data source */
 bool IMG_isAVIF(SDL_IOStream *src)
@@ -742,7 +742,7 @@ bool IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int 
         return SDL_SetError("Passed NULL dst");
     }
 
-#ifdef SDL_IMAGE_SAVE_AVIF
+#ifdef SAVE_AVIF
     if (!result) {
         result = IMG_SaveAVIF_IO_libavif(surface, dst, quality);
     }
@@ -766,9 +766,9 @@ static void SetHDRProperties(SDL_Surface *surface, const avifImage *image)
     const float DEFAULT_PQ_SDR_WHITE_POINT = 203.0f;
     const uint16_t DEFAULT_PQ_MAXCLL = 1000;
     uint16_t maxCLL = DEFAULT_PQ_MAXCLL;
-    
+
     SDL_PropertiesID props = SDL_GetSurfaceProperties(surface);
-    
+
     // Set colorspace first
     SDL_Colorspace colorspace = SDL_DEFINE_COLORSPACE(SDL_COLOR_TYPE_RGB,
                                                     SDL_COLOR_RANGE_FULL,
@@ -777,11 +777,11 @@ static void SetHDRProperties(SDL_Surface *surface, const avifImage *image)
                                                     image->matrixCoefficients,
                                                     SDL_CHROMA_LOCATION_NONE);
     SDL_SetSurfaceColorspace(surface, colorspace);
-    
+
     // Check if this is an HDR image by transfer function
     bool isHDR = (image->transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_SMPTE2084 ||
                  image->transferCharacteristics == AVIF_TRANSFER_CHARACTERISTICS_HLG);
-    
+
     if (isHDR) {
         // Use metadata if available
         if (image->clli.maxCLL > 0) {
@@ -791,14 +791,14 @@ static void SetHDRProperties(SDL_Surface *surface, const avifImage *image)
             // Default values based on common HDR mastering practices
             SDL_SetNumberProperty(props, SDL_PROP_SURFACE_MAXCLL_NUMBER, DEFAULT_PQ_MAXCLL);
         }
-        
+
         if (image->clli.maxPALL > 0) {
             SDL_SetNumberProperty(props, SDL_PROP_SURFACE_MAXFALL_NUMBER, image->clli.maxPALL);
         } else {
             // A reasonable default for MaxFALL
             SDL_SetNumberProperty(props, SDL_PROP_SURFACE_MAXFALL_NUMBER, DEFAULT_PQ_MAXCLL / 4);
         }
-        
+
         // HDR properties needed for proper tone mapping
         SDL_SetFloatProperty(props, SDL_PROP_SURFACE_SDR_WHITE_POINT_FLOAT, DEFAULT_PQ_SDR_WHITE_POINT);
         SDL_SetFloatProperty(props, SDL_PROP_SURFACE_HDR_HEADROOM_FLOAT, (float)maxCLL / DEFAULT_PQ_SDR_WHITE_POINT);
@@ -901,9 +901,9 @@ IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
             rgb.pixels = (uint8_t *)frame_surface->pixels;
             rgb.rowBytes = (uint32_t)frame_surface->pitch;
             rgb.ignoreAlpha = false;
-            
+
             result = lib.avifImageYUVToRGB(image, &rgb);
-            
+
             if (result != AVIF_RESULT_OK) {
                 SDL_SetError("Couldn't convert 16-bit AVIF image to RGB: %s", lib.avifResultToString(result));
                 SDL_DestroySurface(frame_surface);
@@ -1055,7 +1055,7 @@ IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
 
 #endif /* LOAD_AVIF */
 
-#if SDL_IMAGE_SAVE_AVIF
+#if SAVE_AVIF
 
 struct IMG_AnimationStreamContext
 {
@@ -1077,11 +1077,11 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Sur
     bool temp_is_copy = false;
     bool isLossless = stream->quality == 100;
     bool is10bit = SDL_ISPIXELFORMAT_10BIT(surface->format);
-    bool is16bit = (surface->format == SDL_PIXELFORMAT_RGB48 || 
+    bool is16bit = (surface->format == SDL_PIXELFORMAT_RGB48 ||
                    surface->format == SDL_PIXELFORMAT_BGR48 ||
-                   surface->format == SDL_PIXELFORMAT_RGBA64 || 
+                   surface->format == SDL_PIXELFORMAT_RGBA64 ||
                    surface->format == SDL_PIXELFORMAT_ARGB64 ||
-                   surface->format == SDL_PIXELFORMAT_BGRA64 || 
+                   surface->format == SDL_PIXELFORMAT_BGRA64 ||
                    surface->format == SDL_PIXELFORMAT_ABGR64);
     bool hasAlpha = SDL_ISPIXELFORMAT_ALPHA(surface->format);
 
@@ -1098,7 +1098,7 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Sur
 
     uint32_t depth = is16bit ? 16 : (is10bit ? 10 : 8);
     avifPixelFormat pixelFormat = (isLossless) ? AVIF_PIXEL_FORMAT_NONE : AVIF_PIXEL_FORMAT_YUV444;
-    
+
     image = lib.avifImageCreate(surface->w, surface->h, depth, pixelFormat);
     if (!image) {
         return SDL_SetError("Couldn't create AVIF image");
@@ -1113,7 +1113,7 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Sur
     } else {
         image->matrixCoefficients = AVIF_MATRIX_COEFFICIENTS_BT709;
     }
-    
+
     image->clli.maxCLL = maxCLL;
     image->clli.maxPALL = maxFALL;
 
@@ -1157,14 +1157,14 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Sur
             lib.avifImageDestroy(image);
             return SDL_SetError("Received a pixelformat that isn't 16 bit for 16 bit encoding");
         }
-        
+
         rgb.ignoreAlpha = !hasAlpha;
         rgb.pixels = (uint8_t *)surface->pixels;
         rgb.rowBytes = (uint32_t)surface->pitch;
-        
+
         if (!isLossless) {
             rc = lib.avifImageRGBToYUV(image, &rgb);
-            
+
             if (rc != AVIF_RESULT_OK) {
                 if (lockedSurf) {
                     SDL_UnlockSurface(surface);
@@ -1177,15 +1177,15 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Sur
         const Uint16 expand_alpha[] = {
             0, 0x155, 0x2aa, 0x3ff
         };
-        
+
         rgb.depth = 10;
         rgb.format = (SDL_PIXELORDER(surface->format) == SDL_PACKEDORDER_XRGB ||
-                      SDL_PIXELORDER(surface->format) == SDL_PACKEDORDER_ARGB) ? 
+                      SDL_PIXELORDER(surface->format) == SDL_PACKEDORDER_ARGB) ?
                       AVIF_RGB_FORMAT_RGBA : AVIF_RGB_FORMAT_BGRA;
         rgb.ignoreAlpha = !hasAlpha;
         rgb.rowBytes = (uint32_t)image->width * 4 * sizeof(Uint16);
         rgb.pixels = (uint8_t *)SDL_malloc(image->height * rgb.rowBytes);
-        
+
         if (!rgb.pixels) {
             if (lockedSurf) {
                 SDL_UnlockSurface(surface);
@@ -1193,24 +1193,24 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Sur
             lib.avifImageDestroy(image);
             return SDL_SetError("Out of memory for RGB pixels");
         }
-        
+
         // Convert 10-bit packed format to planar format for libavif
         int width, height;
         Uint16 *dst16 = (Uint16 *)rgb.pixels;
         Uint32 *src = (Uint32 *)surface->pixels;
         int srcskip = surface->pitch - (surface->w * sizeof(Uint32));
-        
+
         height = image->height;
         while (height--) {
             width = image->width;
             while (width--) {
                 Uint32 pixelvalue = *src++;
-                
+
                 // Extract 10-bit components
                 *dst16++ = (pixelvalue >> 20) & 0x3FF;  // R
                 *dst16++ = (pixelvalue >> 10) & 0x3FF;  // G
                 *dst16++ = (pixelvalue >> 0) & 0x3FF;   // B
-                
+
                 // Handle alpha - use full opacity for non-alpha formats
                 if (hasAlpha) {
                     *dst16++ = expand_alpha[(pixelvalue >> 30) & 0x3];  // A
@@ -1220,13 +1220,13 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Sur
             }
             src = (Uint32 *)(((Uint8 *)src) + srcskip);
         }
-        
+
         if (!isLossless) {
             rc = lib.avifImageRGBToYUV(image, &rgb);
-            
+
             SDL_free(rgb.pixels);
             rgb.pixels = NULL;
-            
+
             if (rc != AVIF_RESULT_OK) {
                 if (lockedSurf) {
                     SDL_UnlockSurface(surface);
@@ -1280,7 +1280,7 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Sur
             needsConversion = true;
             break;
         }
-        
+
         if (needsConversion) {
             Uint32 target_format = hasAlpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32;
             temp = SDL_ConvertSurface(surface, target_format);
@@ -1292,7 +1292,7 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Sur
                 return SDL_SetError("Couldn't convert surface to compatible format");
             }
             temp_is_copy = true;
-            
+
             rgb.format = format;
             rgb.pixels = (uint8_t *)temp->pixels;
             rgb.rowBytes = (uint32_t)temp->pitch;
@@ -1306,10 +1306,10 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Sur
         rgb.ignoreAlpha = !hasAlpha;
         rgb.alphaPremultiplied = AVIF_FALSE;
         rgb.chromaUpsampling = AVIF_CHROMA_UPSAMPLING_AUTOMATIC;
-        
+
         if (!isLossless) {
             rc = lib.avifImageRGBToYUV(image, &rgb);
-            
+
             if (rc != AVIF_RESULT_OK) {
                 if (temp_is_copy && temp) {
                     SDL_DestroySurface(temp);
@@ -1327,7 +1327,7 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Sur
     if (isLossless || !stream->ctx->first_frame_added) {
         addImageFlags = AVIF_ADD_IMAGE_FLAG_FORCE_KEYFRAME;
     }
-    
+
     if (isLossless) {
         if (is10bit && rgb.pixels) {
             // For 10-bit lossless that required conversion
@@ -1350,17 +1350,17 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Sur
     if (lockedSurf) {
         SDL_UnlockSurface(surface);
     }
-    
+
     lib.avifImageDestroy(image);
-    
+
     if (rc != AVIF_RESULT_OK) {
         return SDL_SetError("Failed to add image to avif encoder: %s", lib.avifResultToString(rc));
     }
-    
+
     if (!stream->ctx->first_frame_added) {
         stream->ctx->first_frame_added = true;
     }
-    
+
     return true;
 }
 
@@ -1447,7 +1447,7 @@ bool IMG_CreateAVIFAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID
         stream->ctx->encoder->keyframeInterval = keyFrameInterval;
         stream->ctx->encoder->minQuantizer = 8;
         stream->ctx->encoder->maxQuantizer = 63;
-        
+
         stream->ctx->encoder->minQuantizerAlpha = 0;
         stream->ctx->encoder->maxQuantizerAlpha = 63;
         stream->ctx->encoder->autoTiling = AVIF_TRUE;
@@ -1478,4 +1478,4 @@ bool IMG_CreateAVIFAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID
     return SDL_SetError("SDL_image built without AVIF animation encoding support");
 }
 
-#endif /* SDL_IMAGE_SAVE_AVIF */
+#endif /* SAVE_AVIF */
