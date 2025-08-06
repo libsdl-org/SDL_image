@@ -340,3 +340,73 @@ void IMG_FreeAnimation(IMG_Animation *anim)
     }
 }
 
+bool IMG_Save(SDL_Surface *surface, const char *file)
+{
+    if (!surface) {
+        return SDL_InvalidParamError("surface");
+    }
+
+    if (!file || !*file) {
+        return SDL_InvalidParamError("file");
+    }
+
+    const char *type = SDL_strrchr(file, '.');
+    if (type) {
+        // Skip the '.' in the file extension
+        ++type;
+    } else {
+        return SDL_SetError("Couldn't determine file type");
+    }
+
+    SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
+    if (!dst) {
+        return false;
+    }
+
+    return IMG_SaveTyped_IO(surface, dst, true, type);
+}
+
+bool IMG_SaveTyped_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, const char *type)
+{
+    bool result = false;
+
+    if (!surface) {
+        SDL_InvalidParamError("surface");
+        goto done;
+    }
+
+    if (!dst) {
+        SDL_InvalidParamError("dst");
+        goto done;
+    }
+
+    if (!type || !*type) {
+        SDL_InvalidParamError("type");
+        goto done;
+    }
+
+    if (SDL_strcasecmp(type, "avif") == 0) {
+        result = IMG_SaveAVIF_IO(surface, dst, false, 75);
+    } else if (SDL_strcasecmp(type, "bmp") == 0) {
+        result = IMG_SaveBMP_IO(surface, dst, false);
+    } else if (SDL_strcasecmp(type, "gif") == 0) {
+        result = IMG_SaveGIF_IO(surface, dst, false);
+    } else if (SDL_strcasecmp(type, "jpg") == 0 ||
+               SDL_strcasecmp(type, "jpeg") == 0) {
+        result = IMG_SaveJPG_IO(surface, dst, false, 75);
+    } else if (SDL_strcasecmp(type, "png") == 0) {
+        result = IMG_SavePNG_IO(surface, dst, false);
+    } else if (SDL_strcasecmp(type, "tga") == 0) {
+        result = IMG_SaveTGA_IO(surface, dst, false);
+    } else if (SDL_strcasecmp(type, "webp") == 0) {
+        result = IMG_SaveWEBP_IO(surface, dst, false, 75.0f);
+    } else {
+        result = SDL_SetError("Unsupported image format");
+    }
+
+done:
+    if (dst && closeio) {
+        SDL_CloseIO(dst);
+    }
+    return result;
+}
