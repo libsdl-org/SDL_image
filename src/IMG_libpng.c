@@ -2161,7 +2161,7 @@ error:
 bool IMG_CreateAPNGAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID props)
 {
 #if !SDL_IMAGE_SAVE_PNG
-    return SDL_SetError("SDL was not built with SDL_IMAGE_SAVE_PNG feature.");
+    return SDL_SetError("SDL_image built without PNG save support");
 #else
 
     if (!IMG_InitPNG()) {
