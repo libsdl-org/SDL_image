@@ -132,7 +132,11 @@ static const Format formats[] =
 #else
         false,
 #endif
-        SDL_IMAGE_SAVE_AVIF,
+#if defined(SAVE_AVIF) && SAVE_AVIF
+        true,
+#else
+        false,
+#endif
         IMG_isAVIF,
         IMG_LoadAVIF_IO,
     },
@@ -148,7 +152,11 @@ static const Format formats[] =
 #else
         false,
 #endif
-        false,      /* can save */
+#if defined(SAVE_BMP) && SAVE_BMP
+        true,
+#else
+        false,
+#endif
         IMG_isBMP,
         IMG_LoadBMP_IO,
     },
@@ -174,13 +182,17 @@ static const Format formats[] =
         "palette.bmp",
         23,
         42,
-        0,              /* lossless */
+        10,             /* lossless indexed, dithered rgba */
 #if USING_IMAGEIO || defined(LOAD_GIF)
         true,
 #else
         false,
 #endif
-        false,      /* can save */
+#if defined(SAVE_GIF) && SAVE_GIF
+        true,
+#else
+        false,
+#endif
         IMG_isGIF,
         IMG_LoadGIF_IO,
     },
@@ -212,7 +224,11 @@ static const Format formats[] =
 #else
         false,
 #endif
-        SDL_IMAGE_SAVE_JPG,
+#if defined(SAVE_JPG) && SAVE_JPG
+        true,
+#else
+        false,
+#endif
         IMG_isJPG,
         IMG_LoadJPG_IO,
     },
@@ -280,7 +296,11 @@ static const Format formats[] =
 #else
         false,
 #endif
-        SDL_IMAGE_SAVE_PNG,
+#if defined(SAVE_PNG) && SAVE_PNG
+        true,
+#else
+        false,
+#endif
         IMG_isPNG,
         IMG_LoadPNG_IO,
     },
@@ -376,7 +396,11 @@ static const Format formats[] =
 #else
         false,
 #endif
-        false,      /* can save */
+#if defined(SAVE_TGA) && SAVE_TGA
+        true,
+#else
+        false,
+#endif
         NULL,
         IMG_LoadTGA_IO,
     },
@@ -402,13 +426,17 @@ static const Format formats[] =
         "sample.bmp",
         23,
         42,
-        0,              /* lossless */
+        300,
 #ifdef LOAD_WEBP
         true,
 #else
         false,
 #endif
-        false,      /* can save */
+#if defined(SAVE_WEBP) && SAVE_WEBP
+        true,
+#else
+        false,
+#endif
         IMG_isWEBP,
         IMG_LoadWEBP_IO,
     },
@@ -795,33 +823,12 @@ FormatSaveTest(const Format *format,
     }
 
     SDL_ClearError();
-    if (SDL_strcmp (format->name, "AVIF") == 0) {
-        if (rw) {
-            dest = SDL_IOFromFile(filename, "wb");
-            result = IMG_SaveAVIF_IO(reference, dest, false, 90);
-            SDL_CloseIO(dest);
-        } else {
-            result = IMG_SaveAVIF(reference, filename, 90);
-        }
-    } else if (SDL_strcmp(format->name, "JPG") == 0) {
-        if (rw) {
-            dest = SDL_IOFromFile(filename, "wb");
-            result = IMG_SaveJPG_IO(reference, dest, false, 90);
-            SDL_CloseIO(dest);
-        } else {
-            result = IMG_SaveJPG(reference, filename, 90);
-        }
-    } else if (SDL_strcmp (format->name, "PNG") == 0) {
-        if (rw) {
-            dest = SDL_IOFromFile(filename, "wb");
-            result = IMG_SavePNG_IO(reference, dest, false);
-            SDL_CloseIO(dest);
-        } else {
-            result = IMG_SavePNG(reference, filename);
-        }
+    if (rw) {
+        dest = SDL_IOFromFile(filename, "wb");
+        result = IMG_SaveTyped_IO(reference, dest, false, format->name);
+        SDL_CloseIO(dest);
     } else {
-        SDLTest_AssertCheck(false, "How do I save %s?", format->name);
-        goto out;
+        result = IMG_Save(reference, filename);
     }
 
     SDLTest_AssertCheck(result, "Save %s (%s)", filename, SDL_GetError());
