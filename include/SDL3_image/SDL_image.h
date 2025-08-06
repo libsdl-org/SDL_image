@@ -1890,7 +1890,7 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIF(SDL_Surface *surface, const char *
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality);
 
 /**
- * Save an SDL_Surface into a PNG image file.
+ * Save an SDL_Surface into a GIF image file.
  *
  * If the file already exists, it will be overwritten.
  *
@@ -1899,16 +1899,16 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStr
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL_image 3.0.0.
+ * \since This function is available since SDL_image 3.4.0.
  *
- * \sa IMG_SavePNG_IO
+ * \sa IMG_SaveGIF_IO
  */
-extern SDL_DECLSPEC bool SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF(SDL_Surface *surface, const char *file);
 
 /**
- * Save an SDL_Surface into PNG image data, via an SDL_IOStream.
+ * Save an SDL_Surface into GIF image data, via an SDL_IOStream.
  *
- * If you just want to save to a filename, you can use IMG_SavePNG() instead.
+ * If you just want to save to a filename, you can use IMG_SaveGIF() instead.
  *
  * If `closeio` is true, `dst` will be closed before returning, whether this
  * function succeeds or not.
@@ -1920,11 +1920,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *f
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL_image 3.0.0.
+ * \since This function is available since SDL_image 3.4.0.
  *
- * \sa IMG_SavePNG
+ * \sa IMG_SaveGIF
  */
-extern SDL_DECLSPEC bool SDLCALL IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
 
 /**
  * Save an SDL_Surface into a JPEG image file.
@@ -1968,6 +1968,100 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *f
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality);
 
 /**
+ * Save an SDL_Surface into a PNG image file.
+ *
+ * If the file already exists, it will be overwritten.
+ *
+ * \param surface the SDL surface to save.
+ * \param file path on the filesystem to write new file to.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_SavePNG_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
+
+/**
+ * Save an SDL_Surface into PNG image data, via an SDL_IOStream.
+ *
+ * If you just want to save to a filename, you can use IMG_SavePNG() instead.
+ *
+ * If `closeio` is true, `dst` will be closed before returning, whether this
+ * function succeeds or not.
+ *
+ * \param surface the SDL surface to save.
+ * \param dst the SDL_IOStream to save the image data to.
+ * \param closeio true to close/free the SDL_IOStream before returning, false
+ *                to leave it open.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_SavePNG
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
+
+/**
+ * Save an SDL_Surface into a TGA image file.
+ *
+ * If the file already exists, it will be overwritten.
+ *
+ * \param surface the SDL surface to save.
+ * \param file path on the filesystem to write new file to.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveTGA_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA(SDL_Surface *surface, const char *file);
+
+/**
+ * Save an SDL_Surface into TGA image data, via an SDL_IOStream.
+ *
+ * If you just want to save to a filename, you can use IMG_SaveTGA() instead.
+ *
+ * If `closeio` is true, `dst` will be closed before returning, whether this
+ * function succeeds or not.
+ *
+ * \param surface the SDL surface to save.
+ * \param dst the SDL_IOStream to save the image data to.
+ * \param closeio true to close/free the SDL_IOStream before returning, false
+ *                to leave it open.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveTGA
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
+
+/**
+ * Save an SDL_Surface into a WEBP image file.
+ *
+ * If the file already exists, it will be overwritten.
+ *
+ * \param surface the SDL surface to save.
+ * \param file path on the filesystem to write the new file to.
+ * \param quality between 0 and 100. For lossy, 0 gives the smallest size and
+ *                100 the largest. For lossless, this parameter is the amount
+ *                of effort put into the compression: 0 is the fastest but
+ *                gives larger files compared to the slowest, but best, 100.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveWEBP_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBP(SDL_Surface *surface, const char *file, float quality);
+
+/**
  * Save an SDL_Surface into WEBP image data, via an SDL_IOStream.
  *
  * If you just want to save to a filename, you can use IMG_SaveWEBP() instead.
@@ -1993,103 +2087,7 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStre
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, float quality);
 
 /**
- * Save an SDL_Surface into a WEBP image file.
- *
- * If the file already exists, it will be overwritten.
- *
- * \param surface the SDL surface to save.
- * \param file path on the filesystem to write the new file to.
- * \param quality between 0 and 100. For lossy, 0 gives the smallest size and
- *                100 the largest. For lossless, this parameter is the amount
- *                of effort put into the compression: 0 is the fastest but
- *                gives larger files compared to the slowest, but best, 100.
- * \returns true on success or false on failure; call SDL_GetError() for more
- *          information.
- *
- * \since This function is available since SDL_image 3.4.0.
- *
- * \sa IMG_SaveWEBP_IO
- */
-extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBP(SDL_Surface *surface, const char *file, float quality);
-
-/**
- * Save an SDL_Surface into TGA image data, via an SDL_IOStream.
- *
- * If you just want to save to a filename, you can use IMG_SaveTGA() instead.
- *
- * If `closeio` is true, `dst` will be closed before returning, whether this
- * function succeeds or not.
- *
- * \param surface the SDL surface to save.
- * \param dst the SDL_IOStream to save the image data to.
- * \param closeio true to close/free the SDL_IOStream before returning, false
- *                to leave it open.
- * \returns true on success or false on failure; call SDL_GetError() for more
- *          information.
- *
- * \since This function is available since SDL_image 3.4.0.
- *
- * \sa IMG_SaveTGA
- */
-extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
-
-/**
- * Save an SDL_Surface into a TGA image file.
- *
- * If the file already exists, it will be overwritten.
- *
- * \param surface the SDL surface to save.
- * \param file path on the filesystem to write new file to.
- * \returns true on success or false on failure; call SDL_GetError() for more
- *          information.
- *
- * \since This function is available since SDL_image 3.4.0.
- *
- * \sa IMG_SaveTGA_IO
- */
-extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA(SDL_Surface *surface, const char *file);
-
-/**
- * Save an SDL_Surface into a GIF image file.
- *
- * If the file already exists, it will be overwritten.
- *
- * \param surface the SDL surface to save.
- * \param file path on the filesystem to write new file to.
- * \returns true on success or false on failure; call SDL_GetError() for more
- *          information.
- *
- * \since This function is available since SDL_image 3.4.0.
- *
- * \sa IMG_SaveGIF_IO
- */
-extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF(SDL_Surface *surface, const char *file);
-
-/**
- * Save an SDL_Surface into GIF image data, via an SDL_IOStream.
- *
- * If you just want to save to a filename, you can use IMG_SaveGIF() instead.
- *
- * If `closeio` is true, `dst` will be closed before returning, whether this
- * function succeeds or not.
- *
- * \param surface the SDL surface to save.
- * \param dst the SDL_IOStream to save the image data to.
- * \param closeio true to close/free the SDL_IOStream before returning, false
- *                to leave it open.
- * \returns true on success or false on failure; call SDL_GetError() for more
- *          information.
- *
- * \since This function is available since SDL_image 3.4.0.
- *
- * \sa IMG_SaveGIF
- */
-extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
-
-/**
  * Animated image support
- *
- * Currently only animated GIFs and WEBP images are supported.
  */
 typedef struct IMG_Animation
 {
@@ -2111,6 +2109,12 @@ typedef struct IMG_Animation
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_LoadAnimation_IO
+ * \sa IMG_LoadAnimationTyped_IO
+ * \sa IMG_LoadAPNGAnimation_IO
+ * \sa IMG_LoadAVIFAnimation_IO
+ * \sa IMG_LoadGIFAnimation_IO
+ * \sa IMG_LoadWEBPAnimation_IO
  * \sa IMG_FreeAnimation
  */
 extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation(const char *file);
@@ -2132,6 +2136,12 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation(const char *file);
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_LoadAnimation
+ * \sa IMG_LoadAnimationTyped_IO
+ * \sa IMG_LoadAPNGAnimation_IO
+ * \sa IMG_LoadAVIFAnimation_IO
+ * \sa IMG_LoadGIFAnimation_IO
+ * \sa IMG_LoadWEBPAnimation_IO
  * \sa IMG_FreeAnimation
  */
 extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation_IO(SDL_IOStream *src, bool closeio);
@@ -2162,6 +2172,10 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation_IO(SDL_IOStream *s
  *
  * \sa IMG_LoadAnimation
  * \sa IMG_LoadAnimation_IO
+ * \sa IMG_LoadAPNGAnimation_IO
+ * \sa IMG_LoadAVIFAnimation_IO
+ * \sa IMG_LoadGIFAnimation_IO
+ * \sa IMG_LoadWEBPAnimation_IO
  * \sa IMG_FreeAnimation
  */
 extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimationTyped_IO(SDL_IOStream *src, bool closeio, const char *type);
@@ -2178,8 +2192,64 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimationTyped_IO(SDL_IOStre
  * \sa IMG_LoadAnimation
  * \sa IMG_LoadAnimation_IO
  * \sa IMG_LoadAnimationTyped_IO
+ * \sa IMG_LoadAPNGAnimation_IO
+ * \sa IMG_LoadAVIFAnimation_IO
+ * \sa IMG_LoadGIFAnimation_IO
+ * \sa IMG_LoadWEBPAnimation_IO
  */
 extern SDL_DECLSPEC void SDLCALL IMG_FreeAnimation(IMG_Animation *anim);
+
+/**
+ * Load an APNG animation directly from an SDL_IOStream.
+ *
+ * If you know you definitely have an APNG image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally, it's
+ * better to use the abstract interfaces; also, there is only an SDL_IOStream
+ * interface available here.
+ *
+ * When done with the returned animation, the app should dispose of it with a
+ * call to IMG_FreeAnimation().
+ *
+ * \param src an SDL_IOStream from which data will be read.
+ * \returns a new IMG_Animation, or NULL on error.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_LoadAnimation
+ * \sa IMG_LoadAnimation_IO
+ * \sa IMG_LoadAnimationTyped_IO
+ * \sa IMG_LoadAVIFAnimation_IO
+ * \sa IMG_LoadGIFAnimation_IO
+ * \sa IMG_LoadWEBPAnimation_IO
+ * \sa IMG_FreeAnimation
+ */
+extern SDL_DECLSPEC IMG_Animation *SDLCALL IMG_LoadAPNGAnimation_IO(SDL_IOStream *src);
+
+/**
+ * Load an AVIF animation directly from an SDL_IOStream.
+ *
+ * If you know you definitely have an AVIF animation, you can call this
+ * function, which will skip SDL_image's file format detection routines.
+ * Generally it's better to use the abstract interfaces; also, there is only
+ * an SDL_IOStream interface available here.
+ *
+ * When done with the returned animation, the app should dispose of it with a
+ * call to IMG_FreeAnimation().
+ *
+ * \param src an SDL_IOStream that data will be read from.
+ * \returns a new IMG_Animation, or NULL on error.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_LoadAnimation
+ * \sa IMG_LoadAnimation_IO
+ * \sa IMG_LoadAnimationTyped_IO
+ * \sa IMG_LoadAPNGAnimation_IO
+ * \sa IMG_LoadGIFAnimation_IO
+ * \sa IMG_LoadWEBPAnimation_IO
+ * \sa IMG_FreeAnimation
+ */
+extern SDL_DECLSPEC IMG_Animation *SDLCALL IMG_LoadAVIFAnimation_IO(SDL_IOStream *src);
 
 /**
  * Load a GIF animation directly.
@@ -2197,6 +2267,9 @@ extern SDL_DECLSPEC void SDLCALL IMG_FreeAnimation(IMG_Animation *anim);
  * \sa IMG_LoadAnimation
  * \sa IMG_LoadAnimation_IO
  * \sa IMG_LoadAnimationTyped_IO
+ * \sa IMG_LoadAPNGAnimation_IO
+ * \sa IMG_LoadAVIFAnimation_IO
+ * \sa IMG_LoadWEBPAnimation_IO
  * \sa IMG_FreeAnimation
  */
 extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadGIFAnimation_IO(SDL_IOStream *src);
@@ -2217,6 +2290,9 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadGIFAnimation_IO(SDL_IOStream
  * \sa IMG_LoadAnimation
  * \sa IMG_LoadAnimation_IO
  * \sa IMG_LoadAnimationTyped_IO
+ * \sa IMG_LoadAPNGAnimation_IO
+ * \sa IMG_LoadAVIFAnimation_IO
+ * \sa IMG_LoadGIFAnimation_IO
  * \sa IMG_FreeAnimation
  */
 extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadWEBPAnimation_IO(SDL_IOStream *src);
@@ -2335,6 +2411,7 @@ extern SDL_DECLSPEC IMG_AnimationStream * SDLCALL IMG_CreateAnimationStreamWithP
  * \sa IMG_CreateAnimationStream
  * \sa IMG_CreateAnimationStream_IO
  * \sa IMG_CreateAnimationStreamWithProperties
+ * \sa IMG_CloseAnimationStream
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_AddAnimationFrame(IMG_AnimationStream *stream, SDL_Surface *surface, Uint64 pts);
 
@@ -2355,55 +2432,6 @@ extern SDL_DECLSPEC bool SDLCALL IMG_AddAnimationFrame(IMG_AnimationStream *stre
  * \sa IMG_CreateAnimationStreamWithProperties
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_CloseAnimationStream(IMG_AnimationStream *stream);
-
-/**
- * Load an APNG animation directly from an SDL_IOStream.
- *
- * If you know you definitely have an APNG image, you can call this function,
- * which will skip SDL_image's file format detection routines. Generally, it's
- * better to use the abstract interfaces; also, there is only an SDL_IOStream
- * interface available here.
- *
- * When done with the returned animation, the app should dispose of it with a
- * call to IMG_FreeAnimation().
- *
- * \param src an SDL_IOStream from which data will be read.
- * \returns a new IMG_Animation, or NULL on error.
- *
- * \since This function is available since SDL_image 3.4.0.
- *
- * \sa IMG_LoadAnimation
- * \sa IMG_LoadAnimation_IO
- * \sa IMG_LoadAnimationTyped_IO
- * \sa IMG_FreeAnimation
- */
-extern SDL_DECLSPEC IMG_Animation *SDLCALL IMG_LoadAPNGAnimation_IO(SDL_IOStream *src);
-
-/**
- * Load an AVIF animation directly from an SDL_IOStream.
- *
- * If you know you definitely have an AVIF animation, you can call this
- * function, which will skip SDL_image's file format detection routines.
- * Generally it's better to use the abstract interfaces; also, there is only
- * an SDL_IOStream interface available here.
- *
- * When done with the returned animation, the app should dispose of it with a
- * call to IMG_FreeAnimation().
- *
- * \param src an SDL_IOStream that data will be read from.
- * \returns a new IMG_Animation, or NULL on error.
- *
- * \since This function is available since SDL_image 3.4.0.
- *
- * \sa IMG_LoadAnimation
- * \sa IMG_LoadAnimation_IO
- * \sa IMG_LoadAnimationTyped_IO
- * \sa IMG_LoadGIFAnimation_IO
- * \sa IMG_LoadWEBPAnimation_IO
- * \sa IMG_LoadAPNGAnimation_IO
- * \sa IMG_FreeAnimation
- */
-extern SDL_DECLSPEC IMG_Animation *SDLCALL IMG_LoadAVIFAnimation_IO(SDL_IOStream *src);
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
