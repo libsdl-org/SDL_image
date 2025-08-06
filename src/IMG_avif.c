@@ -1425,8 +1425,7 @@ bool IMG_CreateAVIFAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID
 
     int availableLCores = SDL_GetNumLogicalCPUCores();
     int mThreads = (int)SDL_GetNumberProperty(props, "maxthreads", availableLCores / 2);
-    if (mThreads < 1 || mThreads > availableLCores)
-    {
+    if (mThreads < 1 || mThreads > availableLCores) {
         return SDL_SetError("Invalid maxthreads value: %i must be in between 1 and %i", mThreads, availableLCores);
     }
 
