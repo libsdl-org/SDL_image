@@ -2382,10 +2382,10 @@ extern SDL_DECLSPEC IMG_Animation *SDLCALL IMG_LoadAPNGAnimation_IO(SDL_IOStream
 /**
  * Load an AVIF animation directly from an SDL_IOStream.
  *
- * If you know you definitely have an AVIF animation, you can call this function,
- * which will skip SDL_image's file format detection routines. Generally it's
- * better to use the abstract interfaces; also, there is only an SDL_IOStream
- * interface available here.
+ * If you know you definitely have an AVIF animation, you can call this
+ * function, which will skip SDL_image's file format detection routines.
+ * Generally it's better to use the abstract interfaces; also, there is only
+ * an SDL_IOStream interface available here.
  *
  * When done with the returned animation, the app should dispose of it with a
  * call to IMG_FreeAnimation().
