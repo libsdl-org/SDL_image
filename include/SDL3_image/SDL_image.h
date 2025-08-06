@@ -1860,7 +1860,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArrayToRGB888(char **xp
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL_image 3.0.0.
+ * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveTyped_IO
  * \sa IMG_SaveAVIF
@@ -1892,7 +1892,7 @@ extern SDL_DECLSPEC bool SDLCALL IMG_Save(SDL_Surface *surface, const char *file
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \since This function is available since SDL_image 3.0.0.
+ * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_Save
  * \sa IMG_SaveAVIF_IO
