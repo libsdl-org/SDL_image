@@ -577,6 +577,7 @@ static xcf_level *read_xcf_level(SDL_IOStream *src, const xcf_header *h)
     if (!SDL_ReadU32BE (src, &l->width) ||
         !SDL_ReadU32BE (src, &l->height)) {
         free_xcf_level(l);
+        return NULL;
     }
 
     i = 0;
