@@ -443,6 +443,8 @@ static bool LIBPNG_LoadPNG_IO_Internal(SDL_IOStream *src, struct png_load_vars *
             lib.png_read_update_info(vars->png_ptr, vars->info_ptr);
             vars->format = SDL_PIXELFORMAT_RGBA32;
         }
+    } else if (vars->color_type == PNG_COLOR_TYPE_RGB) {
+        vars->format = SDL_PIXELFORMAT_RGB24;
     } else {
         vars->format = SDL_PIXELFORMAT_RGBA32;
     }
