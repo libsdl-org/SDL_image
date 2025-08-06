@@ -420,7 +420,8 @@ static bool LIBPNG_LoadPNG_IO_Internal(SDL_IOStream *src, struct png_load_vars *
 
         if (lib.png_get_valid(vars->png_ptr, vars->info_ptr, PNG_INFO_tRNS)) {
             lib.png_set_tRNS_to_alpha(vars->png_ptr);
-        } else if (!(vars->color_type & PNG_COLOR_MASK_ALPHA)) {
+        } else if (vars->color_type != PNG_COLOR_TYPE_RGB && !(vars->color_type & PNG_COLOR_MASK_ALPHA)) {
+            // Only add filler for non-RGB formats that don't have alpha
             lib.png_set_filler(vars->png_ptr, 0xFF, PNG_FILLER_AFTER);
         }
     }
