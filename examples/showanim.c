@@ -187,6 +187,7 @@ int main(int argc, char *argv[])
         for (j = 0; j < anim->count; ++j) {
             SDL_DestroyTexture(textures[j]);
         }
+        SDL_free(textures);
         IMG_FreeAnimation(anim);
     }
 
