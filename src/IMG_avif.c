@@ -25,8 +25,8 @@
 #include "IMG_anim.h"
 
 /* We'll have AVIF save support by default */
-#if !defined(SAVE_AVIF)
-#define SAVE_AVIF 1
+#if !defined(SDL_IMAGE_SAVE_AVIF)
+#define SDL_IMAGE_SAVE_AVIF 1
 #endif
 
 #ifdef LOAD_AVIF
@@ -1070,7 +1070,7 @@ IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
 
 #endif /* LOAD_AVIF */
 
-#if SAVE_AVIF
+#if SDL_IMAGE_SAVE_AVIF
 
 typedef struct IMG_AnimationStreamContext
 {
@@ -1496,4 +1496,4 @@ bool IMG_CreateAVIFAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID
     return SDL_SetError("SDL_image built without AVIF animation encoding support");
 }
 
-#endif /* SAVE_AVIF */
+#endif /* SDL_IMAGE_SAVE_AVIF */
