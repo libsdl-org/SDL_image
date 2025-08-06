@@ -19,6 +19,11 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+// We will have the saving BMP feature by default
+#if !defined(SAVE_BMP)
+#define SAVE_BMP 1
+#endif
+
 #if (!defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)) || !defined(BMP_USES_IMAGEIO)
 
 /* This is a BMP image file loading framework
@@ -516,3 +521,37 @@ SDL_Surface *IMG_LoadICO_IO(SDL_IOStream *src)
 #endif /* LOAD_BMP */
 
 #endif /* !defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND) */
+
+
+#if SAVE_BMP
+
+bool IMG_SaveBMP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
+{
+    return SDL_SaveBMP_IO(surface, dst, closeio);
+}
+
+bool IMG_SaveBMP(SDL_Surface *surface, const char *file)
+{
+    SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
+    return IMG_SaveBMP_IO(surface, dst, true);
+}
+
+#else // !SAVE_BMP
+
+bool IMG_SaveBMP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
+{
+    (void)surface;
+    (void)dst;
+    (void)closeio;
+    return SDL_SetError("SDL_image built without BMP save support");
+}
+
+bool IMG_SaveBMP(SDL_Surface *surface, const char *file)
+{
+    (void)surface;
+    (void)file;
+    return SDL_SetError("SDL_image built without BMP save support");
+}
+
+#endif // SAVE_BMP
+
