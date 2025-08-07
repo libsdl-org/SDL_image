@@ -321,6 +321,13 @@ function(sdl_add_warning_options TARGET)
     endif()
 endfunction()
 
+function(sdl_add_platform_link_options TARGET)
+    if(ANDROID)
+        target_link_options(${TARGET} PRIVATE "-Wl,-z,max-page-size=16384")
+        target_link_options(${TARGET} PRIVATE "-Wl,-z,common-page-size=16384")
+    endif()
+endfunction()
+
 function(sdl_no_deprecated_errors TARGET)
     check_c_compiler_flag(-Wno-error=deprecated-declarations HAVE_WNO_ERROR_DEPRECATED_DECLARATIONS)
         if(HAVE_WNO_ERROR_DEPRECATED_DECLARATIONS)
