@@ -47,7 +47,6 @@ set(TESTS_ENVIRONMENT
 foreach(prog ${ALL_TESTS})
     target_compile_definitions(${prog} PRIVATE $<TARGET_PROPERTY:SDL2_image,COMPILE_DEFINITIONS>)
     target_link_libraries(${prog} PRIVATE SDL2_image::${sdl2_image_export_name})
-    sdl_add_platform_link_options(${prog})
     if(TARGET SDL2::SDL2main)
         target_link_libraries(${prog} PRIVATE SDL2::SDL2main)
     endif()
