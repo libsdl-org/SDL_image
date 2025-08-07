@@ -185,7 +185,7 @@ static struct
      */
 #else
     #define FUNCTION_LOADER_LIBPNG(FUNC, SIG)               \
-        lib.FUNC = (void *)FUNC;                            \
+        lib.FUNC = FUNC;                                    \
         if (lib.FUNC == NULL) {                             \
             return SDL_SetError("Missing png.framework");   \
         }
