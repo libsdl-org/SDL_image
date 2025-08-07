@@ -295,7 +295,6 @@ if(SDLIMAGE_BUILD_SHARED_LIBS)
     target_link_libraries(${sdl3_image_target_name} PRIVATE SDL3::SDL3-shared)
 endif()
 sdl_add_warning_options(${sdl3_image_target_name} WARNING_AS_ERROR ${SDLIMAGE_WERROR})
-sdl_add_platform_link_options(${sdl3_image_target_name})
 if(WIN32 AND SDLIMAGE_BUILD_SHARED_LIBS)
     target_sources(${sdl3_image_target_name} PRIVATE
         src/version.rc
@@ -1211,7 +1210,6 @@ if(SDLIMAGE_SAMPLES)
 
     foreach(prog showanim showimage)
         sdl_add_warning_options(${prog} WARNING_AS_ERROR ${SDLIMAGE_WERROR})
-        sdl_add_platform_link_options(${prog})
         target_link_libraries(${prog} PRIVATE SDL3_image::${sdl3_image_target_name})
         target_link_libraries(${prog} PRIVATE ${sdl3_target_name})
 
