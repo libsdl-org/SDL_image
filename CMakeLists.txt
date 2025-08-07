@@ -232,6 +232,7 @@ add_library(SDL2_image
     src/IMG_xv.c
 )
 add_library(SDL2_image::${sdl2_image_export_name} ALIAS SDL2_image)
+sdl_add_platform_link_options(SDL2_image)
 target_include_directories(SDL2_image PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
@@ -983,6 +984,7 @@ if(SDL2IMAGE_SAMPLES)
 
     foreach(prog showanim showimage)
         # FIXME: mingw should be handled by SDL2::SDL2(-static) target
+        sdl_add_platform_link_options(${prog})
         if(MINGW)
             target_link_libraries(${prog} PRIVATE mingw32)
             target_link_options(${prog} PRIVATE -mwindows)
