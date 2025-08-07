@@ -1920,12 +1920,6 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveTyped_IO(SDL_Surface *surface, SDL_IOSt
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SaveAVIF_IO
- * \sa IMG_SaveBMP
- * \sa IMG_SaveGIF
- * \sa IMG_SaveJPG
- * \sa IMG_SavePNG
- * \sa IMG_SaveTGA
- * \sa IMG_SaveWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIF(SDL_Surface *surface, const char *file, int quality);
 
@@ -1949,12 +1943,6 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIF(SDL_Surface *surface, const char *
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SaveAVIF
- * \sa IMG_SaveBMP_IO
- * \sa IMG_SaveGIF_IO
- * \sa IMG_SaveJPG_IO
- * \sa IMG_SavePNG_IO
- * \sa IMG_SaveTGA_IO
- * \sa IMG_SaveWEBP_IO
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality);
 
@@ -2020,12 +2008,6 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveBMP_IO(SDL_Surface *surface, SDL_IOStre
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveGIF_IO
- * \sa IMG_SaveAVIF
- * \sa IMG_SaveBMP
- * \sa IMG_SaveJPG
- * \sa IMG_SavePNG
- * \sa IMG_SaveTGA
- * \sa IMG_SaveWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF(SDL_Surface *surface, const char *file);
 
@@ -2047,12 +2029,6 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF(SDL_Surface *surface, const char *f
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveGIF
- * \sa IMG_SaveAVIF_IO
- * \sa IMG_SaveBMP_IO
- * \sa IMG_SaveJPG_IO
- * \sa IMG_SavePNG_IO
- * \sa IMG_SaveTGA_IO
- * \sa IMG_SaveWEBP_IO
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
 
@@ -2071,12 +2047,6 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStre
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SaveJPG_IO
- * \sa IMG_SaveAVIF
- * \sa IMG_SaveBMP
- * \sa IMG_SaveGIF
- * \sa IMG_SavePNG
- * \sa IMG_SaveTGA
- * \sa IMG_SaveWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality);
 
@@ -2100,12 +2070,6 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *f
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SaveJPG
- * \sa IMG_SaveAVIF_IO
- * \sa IMG_SaveBMP_IO
- * \sa IMG_SaveGIF_IO
- * \sa IMG_SavePNG_IO
- * \sa IMG_SaveTGA_IO
- * \sa IMG_SaveWEBP_IO
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality);
 
@@ -2122,12 +2086,6 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStre
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SavePNG_IO
- * \sa IMG_SaveAVIF
- * \sa IMG_SaveBMP
- * \sa IMG_SaveGIF
- * \sa IMG_SaveJPG
- * \sa IMG_SaveTGA
- * \sa IMG_SaveWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *file);
 
@@ -2149,12 +2107,6 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SavePNG(SDL_Surface *surface, const char *f
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_SavePNG
- * \sa IMG_SaveAVIF_IO
- * \sa IMG_SaveBMP_IO
- * \sa IMG_SaveGIF_IO
- * \sa IMG_SaveJPG_IO
- * \sa IMG_SaveTGA_IO
- * \sa IMG_SaveWEBP_IO
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
 
@@ -2171,12 +2123,6 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStre
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveTGA_IO
- * \sa IMG_SaveAVIF
- * \sa IMG_SaveBMP
- * \sa IMG_SaveGIF
- * \sa IMG_SaveJPG
- * \sa IMG_SavePNG
- * \sa IMG_SaveWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA(SDL_Surface *surface, const char *file);
 
@@ -2198,12 +2144,6 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA(SDL_Surface *surface, const char *f
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveTGA
- * \sa IMG_SaveAVIF_IO
- * \sa IMG_SaveBMP_IO
- * \sa IMG_SaveGIF_IO
- * \sa IMG_SaveJPG_IO
- * \sa IMG_SavePNG_IO
- * \sa IMG_SaveWEBP_IO
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
 
@@ -2224,12 +2164,6 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStre
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveWEBP_IO
- * \sa IMG_SaveAVIF
- * \sa IMG_SaveBMP
- * \sa IMG_SaveGIF
- * \sa IMG_SaveJPG
- * \sa IMG_SavePNG
- * \sa IMG_SaveTGA
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBP(SDL_Surface *surface, const char *file, float quality);
 
@@ -2255,12 +2189,6 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBP(SDL_Surface *surface, const char *
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveWEBP
- * \sa IMG_SaveAVIF_IO
- * \sa IMG_SaveBMP_IO
- * \sa IMG_SaveGIF_IO
- * \sa IMG_SaveJPG_IO
- * \sa IMG_SavePNG_IO
- * \sa IMG_SaveTGA_IO
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, float quality);
 
