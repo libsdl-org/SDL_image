@@ -2557,7 +2557,7 @@ typedef struct IMG_AnimationDecoderFrames
 } IMG_AnimationDecoderFrames;
 
 /**
- * Create an animation decoder and save it to a file.
+ * Create a decoder to read a series of images from a file.
  *
  * The file type is determined from the file extension, e.g. "file.webp" will
  * be encoded using WEBP.
