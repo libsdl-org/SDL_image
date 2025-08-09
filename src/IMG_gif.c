@@ -214,168 +214,6 @@ static bool NormalizeFrames(Frame_t *frames, int count)
     return true;
 }
 
-static Anim_t *
-IMG_LoadGIF_IO_Internal(SDL_IOStream *src, bool load_anim)
-{
-    unsigned char buf[16];
-    unsigned char c;
-    unsigned char localColorMap[3][MAXCOLORMAPSIZE];
-    int grayScale;
-    int useGlobalColormap;
-    int bitPixel;
-    char version[4];
-    State_t *state = NULL;
-    Image *image = NULL;
-    Anim_t *anim;
-    Frame_t *frames, *frame;
-
-    if (src == NULL) {
-        return NULL;
-    }
-
-    anim = (Anim_t *)SDL_calloc(1, sizeof(*anim));
-    if (!anim) {
-        return NULL;
-    }
-
-    if (!ReadOK(src, buf, 6)) {
-        RWSetMsg("error reading magic number");
-        goto done;
-    }
-    if (SDL_strncmp((char *) buf, "GIF", 3) != 0) {
-        RWSetMsg("not a GIF file");
-        goto done;
-    }
-    SDL_memcpy(version, (char *) buf + 3, 3);
-    version[3] = '\0';
-
-    if ((SDL_strcmp(version, "87a") != 0) && (SDL_strcmp(version, "89a") != 0)) {
-        RWSetMsg("bad version number, not '87a' or '89a'");
-        goto done;
-    }
-    state = (State_t *)SDL_calloc(1, sizeof(State_t));
-    if (state == NULL) {
-        goto done;
-    }
-    state->Gif89.transparent = -1;
-    state->Gif89.delayTime = -1;
-    state->Gif89.inputFlag = -1;
-    state->Gif89.disposal = GIF_DISPOSE_NA;
-
-    if (!ReadOK(src, buf, 7)) {
-        RWSetMsg("failed to read screen descriptor");
-        goto done;
-    }
-    state->GifScreen.Width = LM_to_uint(buf[0], buf[1]);
-    state->GifScreen.Height = LM_to_uint(buf[2], buf[3]);
-    state->GifScreen.BitPixel = 2 << (buf[4] & 0x07);
-    state->GifScreen.ColorResolution = (((buf[4] & 0x70) >> 3) + 1);
-    state->GifScreen.Background = buf[5];
-    state->GifScreen.AspectRatio = buf[6];
-
-    if (BitSet(buf[4], LOCALCOLORMAP)) {    /* Global Colormap */
-        if (ReadColorMap(src, state->GifScreen.BitPixel,
-                         state->GifScreen.ColorMap, &state->GifScreen.GrayScale)) {
-            RWSetMsg("error reading global colormap");
-            goto done;
-        }
-    }
-    for ( ; ; ) {
-        if (!ReadOK(src, &c, 1)) {
-            RWSetMsg("EOF / read error on image data");
-            goto done;
-        }
-        if (c == ';') {     /* GIF terminator */
-            goto done;
-        }
-        if (c == '!') {     /* Extension */
-            if (!ReadOK(src, &c, 1)) {
-                RWSetMsg("EOF / read error on extension function code");
-                goto done;
-            }
-            DoExtension(src, c, state);
-            continue;
-        }
-        if (c != ',') {     /* Not a valid start character */
-            continue;
-        }
-
-        if (!ReadOK(src, buf, 9)) {
-            RWSetMsg("couldn't read left/top/width/height");
-            goto done;
-        }
-        useGlobalColormap = !BitSet(buf[8], LOCALCOLORMAP);
-
-        bitPixel = 1 << ((buf[8] & 0x07) + 1);
-
-        if (!useGlobalColormap) {
-            if (ReadColorMap(src, bitPixel, localColorMap, &grayScale)) {
-                RWSetMsg("error reading local colormap");
-                goto done;
-            }
-            image = ReadImage(src, LM_to_uint(buf[4], buf[5]),
-                      LM_to_uint(buf[6], buf[7]),
-                      bitPixel, localColorMap, grayScale,
-                      BitSet(buf[8], INTERLACE),
-                      0, state);
-        } else {
-            image = ReadImage(src, LM_to_uint(buf[4], buf[5]),
-                      LM_to_uint(buf[6], buf[7]),
-                      state->GifScreen.BitPixel, state->GifScreen.ColorMap,
-                      state->GifScreen.GrayScale, BitSet(buf[8], INTERLACE),
-                      0, state);
-        }
-
-        if (image) {
-            if (state->Gif89.transparent >= 0) {
-                SDL_SetSurfaceColorKey(image, true, state->Gif89.transparent);
-            }
-
-            frames = (Frame_t *)SDL_realloc(anim->frames, (anim->count + 1) * sizeof(*anim->frames));
-            if (!frames) {
-                goto done;
-            }
-            ++anim->count;
-            anim->frames = frames;
-            frame = &anim->frames[anim->count - 1];
-
-            frame->image = image;
-            frame->x = LM_to_uint(buf[0], buf[1]);
-            frame->y = LM_to_uint(buf[2], buf[3]);
-            frame->disposal = state->Gif89.disposal;
-            if (state->Gif89.delayTime < 2) {
-                frame->delay = 100; /* Default animation delay, matching browsers and Qt */
-            } else {
-                frame->delay = state->Gif89.delayTime * 10;
-            }
-
-            if (!load_anim) {
-                /* We only need one frame, we're done */
-                goto done;
-            }
-        }
-    }
-
-done:
-    if (anim->count > 1) {
-        /* Normalize the frames */
-        if (!NormalizeFrames(anim->frames, anim->count)) {
-            int i;
-            for (i = 0; i < anim->count; ++i) {
-                SDL_DestroySurface(anim->frames[i].image);
-            }
-            anim->count = 0;
-        }
-    }
-    if (anim->count == 0) {
-        SDL_free(anim->frames);
-        SDL_free(anim);
-        anim = NULL;
-    }
-    SDL_free(state);
-    return anim;
-}
-
 static int
 ReadColorMap(SDL_IOStream *src, int number,
              unsigned char buffer[3][MAXCOLORMAPSIZE], int *gray)
@@ -1180,12 +1018,31 @@ bool IMG_isGIF(SDL_IOStream *src)
 SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
 {
     SDL_Surface *image = NULL;
-    Anim_t *internal = IMG_LoadGIF_IO_Internal(src, false);
-    if (internal) {
-        image = internal->frames[0].image;
-        SDL_free(internal->frames);
-        SDL_free(internal);
+
+    IMG_AnimationDecoderStream* decoder = IMG_CreateAnimationDecoderStream_IO(src, false, "gif");
+    if (!decoder) {
+        return NULL;
     }
+
+    IMG_AnimationDecoderFrames *frames = IMG_CreateAnimationDecoderFrames();
+    if (!frames) {
+        return NULL;
+    }
+
+    if (!IMG_GetAnimationDecoderFrames(decoder, 1, frames)) {
+        IMG_FreeAnimationDecoderFrames(frames);
+        IMG_CloseAnimationDecoderStream(decoder);
+        return NULL;
+    }
+
+    image = frames->frames[0];
+    if (image) {
+        ++image->refcount;
+    }
+
+    IMG_FreeAnimationDecoderFrames(frames);
+    IMG_CloseAnimationDecoderStream(decoder);
+
     return image;
 }
 
