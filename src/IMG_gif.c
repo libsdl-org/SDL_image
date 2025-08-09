@@ -35,6 +35,11 @@
     #ifndef SAVE_GIF_OCTREE
         #define SAVE_GIF_OCTREE 1
     #endif
+
+    #ifndef SAVE_GIF_USE_LUT
+        // Whether to use LUT for subsequent frames (possible incorrect colors) or rebuild the palette for each frame (best for valid colors for each frame)
+        #define SAVE_GIF_USE_LUT 0
+    #endif
 #endif
 
 #ifdef LOAD_GIF
@@ -1081,8 +1086,11 @@ struct IMG_AnimationEncoderStreamContext
     int transparentColorIndex;
     uint16_t loopCount;
     bool firstFrame;
+
+#if SAVE_GIF_USE_LUT
     uint8_t colorMapLUT[32][32][32];
     bool lut_initialized;
+#endif
 };
 
 #define LZW_MAX_CODES 4096
@@ -1682,6 +1690,7 @@ static int count_set_bits(uint32_t n)
     return count;
 }
 
+#if SAVE_GIF_USE_LUT
 static void buildColorMapLUT(uint8_t lut[32][32][32], uint8_t palette[][3], uint16_t numColors, bool hasTransparency)
 {
     const int color_count = hasTransparency ? numColors - 1 : numColors;
@@ -1788,6 +1797,8 @@ static int mapSurfaceToExistingPalette(SDL_Surface *psurf, uint8_t lut[32][32][3
 
     return 0;
 }
+
+#endif
 
 static int quantizeSurfaceToIndexedPixels(SDL_Surface *psurf, uint8_t palette[][3], uint16_t numPaletteColors, uint8_t *indexedPixels)
 {
@@ -2414,6 +2425,11 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationEncoderStream *stream, 
     uint16_t numColors = ctx->numGlobalColors;
     uint8_t palette_bits_per_pixel = 0;
 
+#if !SAVE_GIF_USE_LUT
+    uint8_t localColorTable[256][3];
+    bool useLocalColorTable = !ctx->firstFrame;
+#endif
+
     if (!io) {
         SDL_SetError("SDL_IOStream pointer (stream->dst) is NULL.");
         return false;
@@ -2448,11 +2464,13 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationEncoderStream *stream, 
             goto error;
         }
 
+#if SAVE_GIF_USE_LUT
         // Build the fast lookup table for subsequent frames.
         if (!ctx->lut_initialized) {
             buildColorMapLUT(ctx->colorMapLUT, ctx->globalColorTable, numColors, (ctx->transparentColorIndex != -1));
             ctx->lut_initialized = true;
         }
+#endif
 
         uint8_t gct_size_field_value = (palette_bits_per_pixel > 0) ? (palette_bits_per_pixel - 1) : 0;
         if (writeGifHeader(io, ctx->width, ctx->height, true, 8, false, 0, 0, gct_size_field_value) != 0) {
@@ -2472,10 +2490,18 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationEncoderStream *stream, 
                          surface->w, surface->h, ctx->width, ctx->height);
             goto error;
         }
+        
+#if SAVE_GIF_USE_LUT
         // For subsequent frames, map pixels to the existing global palette using the fast LUT.
         if (mapSurfaceToExistingPalette(surface, ctx->colorMapLUT, indexedPixels, ctx->transparentColorIndex) != 0) {
             goto error;
         }
+#else
+        // For subsequent frames, create a new optimal palette
+        if (quantizeSurfaceToIndexedPixels(surface, localColorTable, numColors, indexedPixels) != 0) {
+            goto error;
+        }
+#endif
     }
 
     Uint64 delay_delta = (ctx->firstFrame) ? stream->first_pts : (pts - stream->last_pts);
@@ -2491,10 +2517,26 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationEncoderStream *stream, 
         goto error;
     }
 
+#if SAVE_GIF_USE_LUT
     // Write image descriptor, indicating we are NOT using a local color table.
     if (writeImageDescriptor(io, 0, 0, surface->w, surface->h, false, 0, 0, 0) != 0) {
         goto error;
     }
+#else
+    // Write image descriptor with local color table for non-first frames
+    if (writeImageDescriptor(io, 0, 0, surface->w, surface->h,
+                             useLocalColorTable, 0, 0,
+                             useLocalColorTable ? palette_bits_per_pixel - 1 : 0) != 0) {
+        goto error;
+    }
+
+    // Write local color table for non-first frames
+    if (useLocalColorTable) {
+        if (writeColorTable(io, localColorTable, numColors) != 0) {
+            goto error;
+        }
+    }
+#endif
 
     size_t compressedSize = 0;
     uint8_t lzwMinCodeSize = SDL_max(2, palette_bits_per_pixel);
