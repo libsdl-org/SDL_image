@@ -2560,7 +2560,7 @@ typedef struct IMG_AnimationDecoderFrames
  * Create a decoder to read a series of images from a file.
  *
  * The file type is determined from the file extension, e.g. "file.webp" will
- * be encoded using WEBP.
+ * be decoded using WEBP.
  *
  * \param file the file where the animation will be saved.
  * \returns a new IMG_AnimationDecoder, or NULL on failure; call SDL_GetError()
