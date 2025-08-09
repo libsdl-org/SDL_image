@@ -163,7 +163,7 @@ error:
     return NULL;
 }
 
-bool IMG_GetAnimationDecoderFrames(IMG_AnimationDecoderStream *stream, int framesToLoad, IMG_AnimationDecoderFrames* decoderFrames)
+bool IMG_GetAnimationDecoderFrames(IMG_AnimationDecoderStream *stream, int framesToLoad, IMG_AnimationDecoderFrames *decoderFrames)
 {
     if (!stream) {
         return SDL_InvalidParamError("stream");
@@ -172,7 +172,37 @@ bool IMG_GetAnimationDecoderFrames(IMG_AnimationDecoderStream *stream, int frame
         return SDL_InvalidParamError("decoderFrames");
     }
 
-    return stream->GetFrames(stream, framesToLoad, decoderFrames);
+    bool retval = stream->GetFrames(stream, framesToLoad, decoderFrames);
+
+    // Sanity check, all frames returned should be valid surfaces
+    if (retval) {
+        const char *err = SDL_GetError();
+        bool hasErr = err[0] != '\0';
+        if (decoderFrames->count < 1 && decoderFrames->frames) {
+            if (hasErr) {
+                SDL_SetError("Getting frames failed, returned decoder frames has corrupted data: %s", err);
+            } else {
+                SDL_SetError("Getting frames failed, returned decoder frames has corrupted data");
+            }
+            retval = false;
+        }
+
+        for (int i = 0; i < decoderFrames->count; ++i) {
+            if (!decoderFrames->frames[i]) {
+                if (hasErr) {
+                    SDL_SetError("Getting frames failed, returned decoder frames has corrupted data: %s", err);
+                } else {
+                    SDL_SetError("Getting frames failed, returned decoder frames has corrupted data");
+                }
+                retval = false;
+                break;
+            }
+        }
+
+        // TODO: should we allow delays to be NULL?
+    }
+
+    return retval;
 }
 
 bool IMG_CloseAnimationDecoderStream(IMG_AnimationDecoderStream *stream)
