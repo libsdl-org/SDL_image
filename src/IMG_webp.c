@@ -543,7 +543,7 @@ bool IMG_CreateWEBPAnimationDecoderStream(IMG_AnimationDecoderStream *stream, SD
 
     Sint64 stream_size = SDL_GetIOSize(stream->src);
     if (stream_size <= 0) {
-        SDL_SetError("Stream has no data (size: %lld)", stream_size);
+        SDL_SetError("Stream has no data (size: %lld)", (long long)stream_size);
         return false;
     }
 
