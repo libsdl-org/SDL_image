@@ -875,7 +875,7 @@ static bool IMG_CloseWEBPAnimationStream(IMG_AnimationEncoderStream *stream)
     }
 
     int timestamp = GetStreamPresentationTimestampMS(stream, stream->last_pts);
-     if (ctx->frames > 1) {
+    if (ctx->frames > 1) {
         timestamp += (timestamp / (ctx->frames - 1));
     }
     if (!lib.WebPAnimEncoderAdd(ctx->encoder, NULL, timestamp, &ctx->config)) {
