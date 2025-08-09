@@ -2409,7 +2409,7 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadWEBPAnimation_IO(SDL_IOStrea
 typedef struct IMG_AnimationEncoder IMG_AnimationEncoder;
 
 /**
- * Create an animation encoder and save it to a file.
+ * Create an encoder to save a series of images to a file.
  *
  * The file type is determined from the file extension, e.g. "file.webp" will
  * be encoded using WEBP.
