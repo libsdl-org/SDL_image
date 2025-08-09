@@ -27,7 +27,7 @@
 #include "IMG_gif.h"
 #include "IMG_avif.h"
 
-IMG_AnimationDecoderStream *IMG_CreateAnimationDecoderStream(const char *file)
+IMG_AnimationDecoder *IMG_CreateAnimationDecoder(const char *file)
 {
     if (!file) {
         SDL_InvalidParamError("file");
@@ -39,13 +39,13 @@ IMG_AnimationDecoderStream *IMG_CreateAnimationDecoderStream(const char *file)
         return NULL;
     }
 
-    SDL_SetStringProperty(props, IMG_PROP_ANIMATION_DECODER_STREAM_CREATE_FILENAME_STRING, file);
-    IMG_AnimationDecoderStream *stream = IMG_CreateAnimationDecoderStreamWithProperties(props);
+    SDL_SetStringProperty(props, IMG_PROP_ANIMATION_DECODER_CREATE_FILENAME_STRING, file);
+    IMG_AnimationDecoder *decoder = IMG_CreateAnimationDecoderWithProperties(props);
     SDL_DestroyProperties(props);
-    return stream;
+    return decoder;
 }
 
-IMG_AnimationDecoderStream *IMG_CreateAnimationDecoderStream_IO(SDL_IOStream *src, bool closeio, const char *type)
+IMG_AnimationDecoder *IMG_CreateAnimationDecoder_IO(SDL_IOStream *src, bool closeio, const char *type)
 {
     if (!src) {
         SDL_InvalidParamError("src");
@@ -62,27 +62,27 @@ IMG_AnimationDecoderStream *IMG_CreateAnimationDecoderStream_IO(SDL_IOStream *sr
         return NULL;
     }
 
-    SDL_SetPointerProperty(props, IMG_PROP_ANIMATION_DECODER_STREAM_CREATE_IOSTREAM_POINTER, src);
-    SDL_SetBooleanProperty(props, IMG_PROP_ANIMATION_DECODER_STREAM_CREATE_IOSTREAM_AUTOCLOSE_BOOLEAN, closeio);
-    SDL_SetStringProperty(props, IMG_PROP_ANIMATION_DECODER_STREAM_CREATE_TYPE_STRING, type);
-    IMG_AnimationDecoderStream *stream = IMG_CreateAnimationDecoderStreamWithProperties(props);
+    SDL_SetPointerProperty(props, IMG_PROP_ANIMATION_DECODER_CREATE_IOSTREAM_POINTER, src);
+    SDL_SetBooleanProperty(props, IMG_PROP_ANIMATION_DECODER_CREATE_IOSTREAM_AUTOCLOSE_BOOLEAN, closeio);
+    SDL_SetStringProperty(props, IMG_PROP_ANIMATION_DECODER_CREATE_TYPE_STRING, type);
+    IMG_AnimationDecoder *decoder = IMG_CreateAnimationDecoderWithProperties(props);
     SDL_DestroyProperties(props);
-    return stream;
+    return decoder;
 }
 
-IMG_AnimationDecoderStream *IMG_CreateAnimationDecoderStreamWithProperties(SDL_PropertiesID props)
+IMG_AnimationDecoder *IMG_CreateAnimationDecoderWithProperties(SDL_PropertiesID props)
 {
     if (!props) {
         SDL_InvalidParamError("props");
         return NULL;
     }
 
-    const char *file = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_DECODER_STREAM_CREATE_FILENAME_STRING, NULL);
-    SDL_IOStream *src = SDL_GetPointerProperty(props, IMG_PROP_ANIMATION_DECODER_STREAM_CREATE_IOSTREAM_POINTER, NULL);
-    bool closeio = SDL_GetBooleanProperty(props, IMG_PROP_ANIMATION_DECODER_STREAM_CREATE_IOSTREAM_AUTOCLOSE_BOOLEAN, false);
-    const char *type = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_DECODER_STREAM_CREATE_TYPE_STRING, NULL);
-    int timebase_numerator = (int)SDL_GetNumberProperty(props, IMG_PROP_ANIMATION_ENCODER_STREAM_CREATE_TIMEBASE_NUMERATOR_NUMBER, 1);
-    int timebase_denominator = (int)SDL_GetNumberProperty(props, IMG_PROP_ANIMATION_ENCODER_STREAM_CREATE_TIMEBASE_DENOMINATOR_NUMBER, 1000);
+    const char *file = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_DECODER_CREATE_FILENAME_STRING, NULL);
+    SDL_IOStream *src = SDL_GetPointerProperty(props, IMG_PROP_ANIMATION_DECODER_CREATE_IOSTREAM_POINTER, NULL);
+    bool closeio = SDL_GetBooleanProperty(props, IMG_PROP_ANIMATION_DECODER_CREATE_IOSTREAM_AUTOCLOSE_BOOLEAN, false);
+    const char *type = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_DECODER_CREATE_TYPE_STRING, NULL);
+    int timebase_numerator = (int)SDL_GetNumberProperty(props, IMG_PROP_ANIMATION_ENCODER_CREATE_TIMEBASE_NUMERATOR_NUMBER, 1);
+    int timebase_denominator = (int)SDL_GetNumberProperty(props, IMG_PROP_ANIMATION_ENCODER_CREATE_TIMEBASE_DENOMINATOR_NUMBER, 1000);
 
     if (!type || !*type) {
         if (file) {
@@ -121,58 +121,58 @@ IMG_AnimationDecoderStream *IMG_CreateAnimationDecoderStreamWithProperties(SDL_P
         closeio = true;
     }
 
-    IMG_AnimationDecoderStream *stream = (IMG_AnimationDecoderStream *)SDL_calloc(1, sizeof(*stream));
-    if (!stream) {
+    IMG_AnimationDecoder *decoder = (IMG_AnimationDecoder *)SDL_calloc(1, sizeof(*decoder));
+    if (!decoder) {
         goto error;
     }
 
-    stream->src = src;
-    stream->start = SDL_TellIO(src);
-    stream->closeio = closeio;
-    stream->timebase_numerator = timebase_numerator;
-    stream->timebase_denominator = timebase_denominator;
+    decoder->src = src;
+    decoder->start = SDL_TellIO(src);
+    decoder->closeio = closeio;
+    decoder->timebase_numerator = timebase_numerator;
+    decoder->timebase_denominator = timebase_denominator;
 
     bool result = false;
     if (SDL_strcasecmp(type, "webp") == 0) {
-        result = IMG_CreateWEBPAnimationDecoderStream(stream, props);
+        result = IMG_CreateWEBPAnimationDecoder(decoder, props);
     } else if (SDL_strcasecmp(type, "png") == 0) {
-        result = IMG_CreateAPNGAnimationDecoderStream(stream, props);
+        result = IMG_CreateAPNGAnimationDecoder(decoder, props);
     } else if (SDL_strcasecmp(type, "gif") == 0) {
-        result = IMG_CreateGIFAnimationDecoderStream(stream, props);
+        result = IMG_CreateGIFAnimationDecoder(decoder, props);
     } else if (SDL_strcasecmp(type, "avifs") == 0) {
-        result = IMG_CreateAVIFAnimationDecoderStream(stream, props);
+        result = IMG_CreateAVIFAnimationDecoder(decoder, props);
     } else {
         SDL_SetError("Unrecognized output type");
     }
 
     if (result) {
-        return stream;
+        return decoder;
     }
 
 error:
     if (src) {
         if (closeio) {
             SDL_CloseIO(src);
-        } else if (stream && stream->start >= 0) {
-            SDL_SeekIO(src, stream->start, SDL_IO_SEEK_SET);
+        } else if (decoder && decoder->start >= 0) {
+            SDL_SeekIO(src, decoder->start, SDL_IO_SEEK_SET);
         }
     }
-    if (stream) {
-        SDL_free(stream);
+    if (decoder) {
+        SDL_free(decoder);
     }
     return NULL;
 }
 
-bool IMG_GetAnimationDecoderFrames(IMG_AnimationDecoderStream *stream, int framesToLoad, IMG_AnimationDecoderFrames *decoderFrames)
+bool IMG_GetAnimationDecoderFrames(IMG_AnimationDecoder *decoder, int framesToLoad, IMG_AnimationDecoderFrames *decoderFrames)
 {
-    if (!stream) {
-        return SDL_InvalidParamError("stream");
+    if (!decoder) {
+        return SDL_InvalidParamError("decoder");
     }
     if (!decoderFrames) {
         return SDL_InvalidParamError("decoderFrames");
     }
 
-    bool retval = stream->GetFrames(stream, framesToLoad, decoderFrames);
+    bool retval = decoder->GetFrames(decoder, framesToLoad, decoderFrames);
 
     // Sanity check, all frames returned should be valid surfaces
     if (retval) {
@@ -205,27 +205,27 @@ bool IMG_GetAnimationDecoderFrames(IMG_AnimationDecoderStream *stream, int frame
     return retval;
 }
 
-bool IMG_CloseAnimationDecoderStream(IMG_AnimationDecoderStream *stream)
+bool IMG_CloseAnimationDecoder(IMG_AnimationDecoder *decoder)
 {
-    if (!stream) {
-        return SDL_InvalidParamError("stream");
+    if (!decoder) {
+        return SDL_InvalidParamError("decoder");
     }
 
-    bool result = stream->Close(stream);
-    if (stream->closeio) {
-        SDL_CloseIO(stream->src);
+    bool result = decoder->Close(decoder);
+    if (decoder->closeio) {
+        SDL_CloseIO(decoder->src);
     }
-    SDL_free(stream);
+    SDL_free(decoder);
     return result;
 }
 
-bool IMG_ResetAnimationDecoderStream(IMG_AnimationDecoderStream *stream)
+bool IMG_ResetAnimationDecoder(IMG_AnimationDecoder *decoder)
 {
-    if (!stream) {
-        return SDL_InvalidParamError("stream");
+    if (!decoder) {
+        return SDL_InvalidParamError("decoder");
     }
 
-    return stream->Reset(stream);
+    return decoder->Reset(decoder);
 }
 
 IMG_AnimationDecoderFrames *IMG_CreateAnimationDecoderFrames()
@@ -263,14 +263,14 @@ void IMG_FreeAnimationDecoderFrames(IMG_AnimationDecoderFrames *frames)
     SDL_free(frames);
 }
 
-int IMG_GetAnimationDecoderPresentationTimestampMS(IMG_AnimationDecoderStream *stream, Sint64 pts)
+int IMG_GetAnimationDecoderPresentationTimestampMS(IMG_AnimationDecoder *decoder, Sint64 pts)
 {
-    return (int)((pts * 1000 * stream->timebase_numerator) / stream->timebase_denominator);
+    return (int)((pts * 1000 * decoder->timebase_numerator) / decoder->timebase_denominator);
 }
 
 IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int maxFrames)
 {
-    IMG_AnimationDecoderStream *decoder = IMG_CreateAnimationDecoderStream_IO(src, false, format);
+    IMG_AnimationDecoder *decoder = IMG_CreateAnimationDecoder_IO(src, false, format);
     if (!decoder) {
         return NULL;
     }
