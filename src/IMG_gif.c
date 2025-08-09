@@ -500,7 +500,7 @@ IMG_Animation *IMG_LoadGIFAnimation_IO(SDL_IOStream *src)
     return IMG_DecodeAsAnimation(src, "gif", 0);
 }
 
-struct IMG_AnimationDecoderStreamContext
+struct IMG_AnimationDecoderContext
 {
     State_t state;                /* GIF decoding state */
     
@@ -537,10 +537,10 @@ struct IMG_AnimationDecoderStreamContext
     Sint64 last_pts;
 };
 
-static bool IMG_AnimationDecoderStreamReset_Internal(IMG_AnimationDecoderStream* stream)
+static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder* decoder)
 {
-    IMG_AnimationDecoderStreamContext* ctx = stream->ctx;
-    if (SDL_SeekIO(stream->src, stream->start, SDL_IO_SEEK_SET) < 0) {
+    IMG_AnimationDecoderContext* ctx = decoder->ctx;
+    if (SDL_SeekIO(decoder->src, decoder->start, SDL_IO_SEEK_SET) < 0) {
         return SDL_SetError("Failed to seek to beginning of GIF file");
     }
 
@@ -570,10 +570,10 @@ static bool IMG_AnimationDecoderStreamReset_Internal(IMG_AnimationDecoderStream*
     return true;
 }
 
-static bool IMG_AnimationDecoderStreamGetFrames_Internal(IMG_AnimationDecoderStream *stream, int framesToLoad, IMG_AnimationDecoderFrames *animationFrames)
+static bool IMG_AnimationDecoderGetFrames_Internal(IMG_AnimationDecoder *decoder, int framesToLoad, IMG_AnimationDecoderFrames *animationFrames)
 {
-    IMG_AnimationDecoderStreamContext *ctx = stream->ctx;
-    SDL_IOStream *src = stream->src;
+    IMG_AnimationDecoderContext *ctx = decoder->ctx;
+    SDL_IOStream *src = decoder->src;
     unsigned char c;
     int framesLoaded = 0;
 
@@ -823,10 +823,10 @@ static bool IMG_AnimationDecoderStreamGetFrames_Internal(IMG_AnimationDecoderStr
         if (ctx->current_frame == 0) {
             animationFrames->delays[framesLoaded] = 0;
         } else if (ctx->state.Gif89.delayTime < 2) {
-            animationFrames->delays[framesLoaded] = stream->ctx->last_pts += stream->timebase_denominator * stream->timebase_denominator * 10;
+            animationFrames->delays[framesLoaded] = decoder->ctx->last_pts += decoder->timebase_denominator * decoder->timebase_denominator * 10;
         } else {
              int millisecond_delay = ctx->state.Gif89.delayTime * 10;
-            animationFrames->delays[framesLoaded] = stream->ctx->last_pts += millisecond_delay * stream->timebase_denominator / (1000 * stream->timebase_numerator);
+            animationFrames->delays[framesLoaded] = decoder->ctx->last_pts += millisecond_delay * decoder->timebase_denominator / (1000 * decoder->timebase_numerator);
         }
 
         ctx->last_disposal = ctx->state.Gif89.disposal;
@@ -856,9 +856,9 @@ static bool IMG_AnimationDecoderStreamGetFrames_Internal(IMG_AnimationDecoderStr
     return true;
 }
 
-static bool IMG_AnimationDecoderStreamClose_Internal(IMG_AnimationDecoderStream* stream)
+static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder* decoder)
 {
-    IMG_AnimationDecoderStreamContext* ctx = stream->ctx;
+    IMG_AnimationDecoderContext* ctx = decoder->ctx;
     if (ctx->canvas) {
         SDL_DestroySurface(ctx->canvas);
     }
@@ -868,16 +868,16 @@ static bool IMG_AnimationDecoderStreamClose_Internal(IMG_AnimationDecoderStream*
     }
 
     SDL_free(ctx);
-    stream->ctx = NULL;
+    decoder->ctx = NULL;
     
     return true;
 }
 
-bool IMG_CreateGIFAnimationDecoderStream(IMG_AnimationDecoderStream* stream, SDL_PropertiesID decoderProps)
+bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_PropertiesID props)
 {
-    (void)decoderProps;
+    (void)props;
     
-    IMG_AnimationDecoderStreamContext* ctx = (IMG_AnimationDecoderStreamContext*)SDL_calloc(1, sizeof(IMG_AnimationDecoderStreamContext));
+    IMG_AnimationDecoderContext* ctx = (IMG_AnimationDecoderContext*)SDL_calloc(1, sizeof(IMG_AnimationDecoderContext));
     if (!ctx) {
         return SDL_SetError("Out of memory for GIF decoder context");
     }
@@ -897,10 +897,10 @@ bool IMG_CreateGIFAnimationDecoderStream(IMG_AnimationDecoderStream* stream, SDL
     ctx->last_disposal = GIF_DISPOSE_NONE;
     ctx->restore_frame = 0;
 
-    stream->ctx = ctx;
-    stream->Reset = IMG_AnimationDecoderStreamReset_Internal;
-    stream->GetFrames = IMG_AnimationDecoderStreamGetFrames_Internal;
-    stream->Close = IMG_AnimationDecoderStreamClose_Internal;
+    decoder->ctx = ctx;
+    decoder->Reset = IMG_AnimationDecoderReset_Internal;
+    decoder->GetFrames = IMG_AnimationDecoderGetFrames_Internal;
+    decoder->Close = IMG_AnimationDecoderClose_Internal;
     
     return true;
 }
@@ -914,10 +914,10 @@ IMG_Animation *IMG_LoadGIFAnimation_IO(SDL_IOStream *src)
     return NULL;
 }
 
-bool IMG_CreateGIFAnimationDecoderStream(IMG_AnimationDecoderStream *stream, SDL_PropertiesID decoderProps)
+bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props)
 {
-    (void)stream;
-    (void)decoderProps;
+    (void)decoder;
+    (void)props;
     return false;
 }
 
@@ -956,7 +956,7 @@ SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
 {
     SDL_Surface *image = NULL;
 
-    IMG_AnimationDecoderStream* decoder = IMG_CreateAnimationDecoderStream_IO(src, false, "gif");
+    IMG_AnimationDecoder* decoder = IMG_CreateAnimationDecoder_IO(src, false, "gif");
     if (!decoder) {
         return NULL;
     }
@@ -968,7 +968,7 @@ SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
 
     if (!IMG_GetAnimationDecoderFrames(decoder, 1, frames)) {
         IMG_FreeAnimationDecoderFrames(frames);
-        IMG_CloseAnimationDecoderStream(decoder);
+        IMG_CloseAnimationDecoder(decoder);
         return NULL;
     }
 
@@ -978,7 +978,7 @@ SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
     }
 
     IMG_FreeAnimationDecoderFrames(frames);
-    IMG_CloseAnimationDecoderStream(decoder);
+    IMG_CloseAnimationDecoder(decoder);
 
     return image;
 }
@@ -1072,7 +1072,7 @@ static bool writeWord(SDL_IOStream *io, uint16_t word)
     return SDL_WriteIO(io, bytes, 2) == 2;
 }
 
-struct IMG_AnimationEncoderStreamContext
+struct IMG_AnimationEncoderContext
 {
     uint16_t width;
     uint16_t height;
@@ -2406,10 +2406,10 @@ static int writeGifTrailer(SDL_IOStream *io)
     return 0;
 }
 
-static bool AnimationStream_AddFrame(struct IMG_AnimationEncoderStream *stream, SDL_Surface *surface, Uint64 pts)
+static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 pts)
 {
-    IMG_AnimationEncoderStreamContext *ctx = stream->ctx;
-    SDL_IOStream *io = stream->dst;
+    IMG_AnimationEncoderContext *ctx = encoder->ctx;
+    SDL_IOStream *io = encoder->dst;
     uint8_t *indexedPixels = NULL;
     uint8_t *compressedData = NULL;
     uint16_t numColors = ctx->numGlobalColors;
@@ -2491,9 +2491,9 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationEncoderStream *stream, 
         }
     }
 
-    Uint64 delay_delta = (ctx->firstFrame) ? stream->first_pts : (pts - stream->last_pts);
-    uint16_t delayTime = (uint16_t)((delay_delta * stream->timebase_numerator * 100) /
-                                    stream->timebase_denominator);
+    Uint64 delay_delta = (ctx->firstFrame) ? encoder->first_pts : (pts - encoder->last_pts);
+    uint16_t delayTime = (uint16_t)((delay_delta * encoder->timebase_numerator * 100) /
+                                    encoder->timebase_denominator);
 
     if (!ctx->firstFrame && delayTime < 2) {
         delayTime = 10; // A common default for very fast frames
@@ -2529,7 +2529,7 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationEncoderStream *stream, 
     uint8_t lzwMinCodeSize = SDL_max(2, palette_bits_per_pixel);
 
     if (lzwCompress(indexedPixels, surface->w, surface->h, lzwMinCodeSize,
-                    &compressedData, &compressedSize, stream->quality) != 0) {
+                    &compressedData, &compressedSize, encoder->quality) != 0) {
         goto error;
     }
 
@@ -2543,7 +2543,7 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationEncoderStream *stream, 
     if (ctx->firstFrame) {
         ctx->firstFrame = false;
     }
-    stream->last_pts = pts;
+    encoder->last_pts = pts;
     return true;
 
 error:
@@ -2552,15 +2552,10 @@ error:
     return false;
 }
 
-static bool AnimationStream_End(struct IMG_AnimationEncoderStream *stream)
+static bool AnimationEncoder_End(struct IMG_AnimationEncoder *encoder)
 {
-    if (!stream || !stream->ctx) {
-        SDL_SetError("Invalid arguments for AnimationStream_End.");
-        return false;
-    }
-
-    IMG_AnimationEncoderStreamContext *ctx = stream->ctx;
-    SDL_IOStream *io = stream->dst;
+    IMG_AnimationEncoderContext *ctx = encoder->ctx;
+    SDL_IOStream *io = encoder->dst;
     bool success = true;
 
     if (io) {
@@ -2574,18 +2569,18 @@ static bool AnimationStream_End(struct IMG_AnimationEncoderStream *stream)
     }
 
     SDL_free(ctx);
-    stream->ctx = NULL;
+    encoder->ctx = NULL;
 
     return success;
 }
 #endif /* SAVE_GIF */
 
-bool IMG_CreateGIFAnimationEncoderStream(struct IMG_AnimationEncoderStream *stream, SDL_PropertiesID props)
+bool IMG_CreateGIFAnimationEncoder(struct IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
 #if !SAVE_GIF
     return SDL_SetError("GIF animation saving is not enabled in this build.");
 #else
-    IMG_AnimationEncoderStreamContext *ctx;
+    IMG_AnimationEncoderContext *ctx;
     int loop_count;
     int transparent_index = -1;
     uint16_t num_global_colors = 256;
@@ -2607,16 +2602,16 @@ bool IMG_CreateGIFAnimationEncoderStream(struct IMG_AnimationEncoderStream *stre
         return false;
     }
 
-    ctx = (IMG_AnimationEncoderStreamContext *)SDL_calloc(1, sizeof(IMG_AnimationEncoderStreamContext));
+    ctx = (IMG_AnimationEncoderContext *)SDL_calloc(1, sizeof(IMG_AnimationEncoderContext));
     if (!ctx) {
         SDL_SetError("Failed to allocate animation stream context.");
         return false;
     }
 
-    if (stream->quality < 0)
-        stream->quality = 75;
-    else if (stream->quality > 100)
-        stream->quality = 100;
+    if (encoder->quality < 0)
+        encoder->quality = 75;
+    else if (encoder->quality > 100)
+        encoder->quality = 100;
 
     ctx->width = 0;
     ctx->height = 0;
@@ -2626,9 +2621,9 @@ bool IMG_CreateGIFAnimationEncoderStream(struct IMG_AnimationEncoderStream *stre
     ctx->firstFrame = true;
     ctx->use_lut = SDL_GetBooleanProperty(props, "use_lut", false);
 
-    stream->ctx = ctx;
-    stream->AddFrame = AnimationStream_AddFrame;
-    stream->Close = AnimationStream_End;
+    encoder->ctx = ctx;
+    encoder->AddFrame = AnimationEncoder_AddFrame;
+    encoder->Close = AnimationEncoder_End;
 
     return true;
 #endif /*!SAVE_GIF*/
@@ -2638,17 +2633,17 @@ bool IMG_CreateGIFAnimationEncoderStream(struct IMG_AnimationEncoderStream *stre
 
 bool IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
-    IMG_AnimationEncoderStream *stream = IMG_CreateAnimationEncoderStream_IO(dst, closeio, "gif");
-    if (!stream) {
+    IMG_AnimationEncoder *encoder = IMG_CreateAnimationEncoder_IO(dst, closeio, "gif");
+    if (!encoder) {
         return false;
     }
 
-    if (!IMG_AddAnimationEncoderFrame(stream, surface, 0)) {
-        IMG_CloseAnimationEncoderStream(stream);
+    if (!IMG_AddAnimationEncoderFrame(encoder, surface, 0)) {
+        IMG_CloseAnimationEncoder(encoder);
         return false;
     }
 
-    if (!IMG_CloseAnimationEncoderStream(stream)) {
+    if (!IMG_CloseAnimationEncoder(encoder)) {
         return false;
     }
 
