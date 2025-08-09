@@ -772,7 +772,7 @@ typedef struct
 } DecompressionContext;
 
 static SDL_Surface *decompress_png_frame_data(DecompressionContext* context, png_bytep compressed_data, png_size_t compressed_size,
-                                              int width, int height, int png_color_type, int bit_depth)
+                                              int width, int height, int png_color_type, int bit_depth, SDL_Color *palette_colors, int palette_count)
 {
     /*
      * Usually you'd directly decompress zlib but then we have to do defiltering and deinterlacing ourselves.
