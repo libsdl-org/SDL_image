@@ -1186,6 +1186,7 @@ bool IMG_CreateAVIFAnimationDecoderStream(IMG_AnimationDecoderStream* stream, SD
         int maxLCores = SDL_GetNumLogicalCPUCores();
         int maxThreads = (int)SDL_GetNumberProperty(decoderProps, "avif.maxthreads", maxLCores / 2);
         maxThreads = SDL_clamp(maxThreads, 1, maxLCores);
+        ctx->decoder->maxThreads = maxThreads;
         
         bool allowProgressive = SDL_GetBooleanProperty(decoderProps, "avif.allowprogressive", true);
         ctx->decoder->allowProgressive = allowProgressive ? AVIF_TRUE : AVIF_FALSE;
