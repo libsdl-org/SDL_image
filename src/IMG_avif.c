@@ -1077,9 +1077,9 @@ static bool IMG_AnimationDecoderStreamGetFrames_Internal(IMG_AnimationDecoderStr
             rgb.depth = 8;
             
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
-            rgb.format = AVIF_RGB_FORMAT_ABGR;
-#else
             rgb.format = AVIF_RGB_FORMAT_RGBA;
+#else
+            rgb.format = AVIF_RGB_FORMAT_ABGR;
 #endif
             
             rgb.ignoreAlpha = false;
