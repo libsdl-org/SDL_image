@@ -54,20 +54,20 @@ static void SaveAnimation(IMG_Animation *anim, const char *file)
 {
     int i;
     Uint64 pts = 0;
-    IMG_AnimationEncoderStream *stream = IMG_CreateAnimationEncoderStream(file);
-    if (!stream) {
+    IMG_AnimationEncoder *encoder = IMG_CreateAnimationEncoder(file);
+    if (!encoder) {
         SDL_Log("Couldn't save anim: %s\n", SDL_GetError());
         return;
     }
 
     for (i = 0; i < anim->count; ++i) {
-        if (!IMG_AddAnimationEncoderFrame(stream, anim->frames[i], pts)) {
+        if (!IMG_AddAnimationEncoderFrame(encoder, anim->frames[i], pts)) {
             SDL_Log("Couldn't add anim frame: %s\n", SDL_GetError());
             break;
         }
         pts += anim->delays[i];
     }
-    IMG_CloseAnimationEncoderStream(stream);
+    IMG_CloseAnimationEncoder(encoder);
 }
 
 int main(int argc, char *argv[])
