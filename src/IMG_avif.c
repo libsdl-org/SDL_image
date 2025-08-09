@@ -811,7 +811,7 @@ IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
   return IMG_DecodeAsAnimation(src, "avifs", 0);
 }
 
-struct IMG_AnimationDecoderStreamContext
+struct IMG_AnimationDecoderContext
 {
     avifDecoder *decoder;             /* AVIF decoder instance */
     avifIO io;                        /* IO context for the decoder */
@@ -828,9 +828,9 @@ struct IMG_AnimationDecoderStreamContext
     int repetitionCount;              /* Number of repetitions */
 };
 
-static bool IMG_AnimationDecoderStreamReset_Internal(IMG_AnimationDecoderStream *stream)
+static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
 {
-    IMG_AnimationDecoderStreamContext *ctx = stream->ctx;
+    IMG_AnimationDecoderContext *ctx = decoder->ctx;
 
     // Reset the decoder
     if (ctx->decoder) {
@@ -839,7 +839,7 @@ static bool IMG_AnimationDecoderStreamReset_Internal(IMG_AnimationDecoderStream 
     }
 
     // Reset stream position
-    if (SDL_SeekIO(stream->src, ctx->start_pos, SDL_IO_SEEK_SET) < 0) {
+    if (SDL_SeekIO(decoder->src, ctx->start_pos, SDL_IO_SEEK_SET) < 0) {
         return SDL_SetError("Failed to seek to beginning of AVIF file");
     }
 
@@ -857,7 +857,7 @@ static bool IMG_AnimationDecoderStreamReset_Internal(IMG_AnimationDecoderStream 
         SDL_free(ctx->ioContext.data);
     }
 
-    ctx->ioContext.src = stream->src;
+    ctx->ioContext.src = decoder->src;
     ctx->ioContext.start = ctx->start_pos;
     ctx->ioContext.data = NULL;
     ctx->ioContext.size = 0;
@@ -881,9 +881,9 @@ static bool IMG_AnimationDecoderStreamReset_Internal(IMG_AnimationDecoderStream 
     return true;
 }
 
-static bool IMG_AnimationDecoderStreamGetFrames_Internal(IMG_AnimationDecoderStream* stream, int framesToLoad, IMG_AnimationDecoderFrames* animationFrames)
+static bool IMG_AnimationDecoderGetFrames_Internal(IMG_AnimationDecoder* decoder, int framesToLoad, IMG_AnimationDecoderFrames* animationFrames)
 {
-    IMG_AnimationDecoderStreamContext* ctx = stream->ctx;
+    IMG_AnimationDecoderContext* ctx = decoder->ctx;
     avifResult result;
     int i;
 
@@ -1113,7 +1113,7 @@ static bool IMG_AnimationDecoderStreamGetFrames_Internal(IMG_AnimationDecoderStr
         animationFrames->frames[i] = frame_surface;
 
         if (ctx->decoder->imageTiming.timescale > 0) {
-            animationFrames->delays[i] = (Sint64)ctx->decoder->imageTiming.ptsInTimescales * stream->timebase_denominator / (ctx->decoder->imageTiming.timescale * stream->timebase_numerator);
+            animationFrames->delays[i] = (Sint64)ctx->decoder->imageTiming.ptsInTimescales * decoder->timebase_denominator / (ctx->decoder->imageTiming.timescale * decoder->timebase_numerator);
         } else {
             animationFrames->delays[i] = 0;
         }
@@ -1126,9 +1126,9 @@ static bool IMG_AnimationDecoderStreamGetFrames_Internal(IMG_AnimationDecoderStr
     return true;
 }
 
-static bool IMG_AnimationDecoderStreamClose_Internal(IMG_AnimationDecoderStream* stream)
+static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder* decoder)
 {
-    IMG_AnimationDecoderStreamContext* ctx = stream->ctx;
+    IMG_AnimationDecoderContext* ctx = decoder->ctx;
 
     if (ctx->decoder) {
         lib.avifDecoderDestroy(ctx->decoder);
@@ -1142,23 +1142,23 @@ static bool IMG_AnimationDecoderStreamClose_Internal(IMG_AnimationDecoderStream*
     }
 
     SDL_free(ctx);
-    stream->ctx = NULL;
+    decoder->ctx = NULL;
     
     return true;
 }
 
-bool IMG_CreateAVIFAnimationDecoderStream(IMG_AnimationDecoderStream* stream, SDL_PropertiesID decoderProps)
+bool IMG_CreateAVIFAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_PropertiesID props)
 {
     if (!IMG_InitAVIF()) {
         return false;
     }
 
-    IMG_AnimationDecoderStreamContext* ctx = (IMG_AnimationDecoderStreamContext*)SDL_calloc(1, sizeof(IMG_AnimationDecoderStreamContext));
+    IMG_AnimationDecoderContext* ctx = (IMG_AnimationDecoderContext*)SDL_calloc(1, sizeof(IMG_AnimationDecoderContext));
     if (!ctx) {
         return SDL_SetError("Out of memory for AVIF decoder context");
     }
     
-    ctx->start_pos = SDL_TellIO(stream->src);
+    ctx->start_pos = SDL_TellIO(decoder->src);
     if (ctx->start_pos < 0) {
         SDL_free(ctx);
         return SDL_SetError("Failed to get current stream position");
@@ -1172,7 +1172,7 @@ bool IMG_CreateAVIFAnimationDecoderStream(IMG_AnimationDecoderStream* stream, SD
 
     ctx->decoder->strictFlags = AVIF_STRICT_DISABLED;
 
-    ctx->ioContext.src = stream->src;
+    ctx->ioContext.src = decoder->src;
     ctx->ioContext.start = ctx->start_pos;
     ctx->ioContext.data = NULL;
     ctx->ioContext.size = 0;
@@ -1186,30 +1186,30 @@ bool IMG_CreateAVIFAnimationDecoderStream(IMG_AnimationDecoderStream* stream, SD
     ctx->current_frame = 0;
     ctx->total_frames = 0;
 
-    if (decoderProps) {
+    if (props) {
         int maxLCores = SDL_GetNumLogicalCPUCores();
-        int maxThreads = (int)SDL_GetNumberProperty(decoderProps, "avif.maxthreads", maxLCores / 2);
+        int maxThreads = (int)SDL_GetNumberProperty(props, "avif.maxthreads", maxLCores / 2);
         maxThreads = SDL_clamp(maxThreads, 1, maxLCores);
         ctx->decoder->maxThreads = maxThreads;
         
-        bool allowProgressive = SDL_GetBooleanProperty(decoderProps, "avif.allowprogressive", true);
+        bool allowProgressive = SDL_GetBooleanProperty(props, "avif.allowprogressive", true);
         ctx->decoder->allowProgressive = allowProgressive ? AVIF_TRUE : AVIF_FALSE;
         
-        bool allowIncremental = SDL_GetBooleanProperty(decoderProps, "avif.allowincremental", false);
+        bool allowIncremental = SDL_GetBooleanProperty(props, "avif.allowincremental", false);
         ctx->decoder->allowIncremental = allowIncremental ? AVIF_TRUE : AVIF_FALSE;
         
         // Optional properties for ignoring metadata
-        bool ignoreExif = SDL_GetBooleanProperty(decoderProps, "avif.ignoreexif", false);
+        bool ignoreExif = SDL_GetBooleanProperty(props, "avif.ignoreexif", false);
         ctx->decoder->ignoreExif = ignoreExif ? AVIF_TRUE : AVIF_FALSE;
         
-        bool ignoreXMP = SDL_GetBooleanProperty(decoderProps, "avif.ignorexmp", false);
+        bool ignoreXMP = SDL_GetBooleanProperty(props, "avif.ignorexmp", false);
         ctx->decoder->ignoreXMP = ignoreXMP ? AVIF_TRUE : AVIF_FALSE;
     }
 
-    stream->ctx = ctx;
-    stream->Reset = IMG_AnimationDecoderStreamReset_Internal;
-    stream->GetFrames = IMG_AnimationDecoderStreamGetFrames_Internal;
-    stream->Close = IMG_AnimationDecoderStreamClose_Internal;
+    decoder->ctx = ctx;
+    decoder->Reset = IMG_AnimationDecoderReset_Internal;
+    decoder->GetFrames = IMG_AnimationDecoderGetFrames_Internal;
+    decoder->Close = IMG_AnimationDecoderClose_Internal;
     
     return true;
 }
@@ -1223,10 +1223,10 @@ IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
     return NULL;
 }
 
-bool IMG_CreateAVIFAnimationDecoderStream(IMG_AnimationDecoderStream* stream, SDL_PropertiesID decoderProps)
+bool IMG_CreateAVIFAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_PropertiesID props)
 {
-    (void)stream;
-    (void)decoderProps;
+    (void)decoder;
+    (void)props;
     return SDL_SetError("SDL_image built without AVIF animation loading support");
 }
 
@@ -1234,13 +1234,13 @@ bool IMG_CreateAVIFAnimationDecoderStream(IMG_AnimationDecoderStream* stream, SD
 
 #if SAVE_AVIF
 
-struct IMG_AnimationEncoderStreamContext
+struct IMG_AnimationEncoderContext
 {
     avifEncoder *encoder;
     bool first_frame_added;
 };
 
-static bool AnimationStream_AddFrame(struct IMG_AnimationEncoderStream *stream, SDL_Surface *surface, Uint64 pts)
+static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 pts)
 {
     avifImage *image = NULL;
     avifRGBImage rgb;
@@ -1252,7 +1252,7 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationEncoderStream *stream, 
     bool lockedSurf = false;
     SDL_Surface *temp = NULL;
     bool temp_is_copy = false;
-    bool isLossless = stream->quality == 100;
+    bool isLossless = encoder->quality == 100;
     bool is10bit = SDL_ISPIXELFORMAT_10BIT(surface->format);
     bool is16bit = (surface->format == SDL_PIXELFORMAT_RGB48 ||
                    surface->format == SDL_PIXELFORMAT_BGR48 ||
@@ -1262,8 +1262,8 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationEncoderStream *stream, 
                    surface->format == SDL_PIXELFORMAT_ABGR64);
     bool hasAlpha = SDL_ISPIXELFORMAT_ALPHA(surface->format);
 
-    double delta_seconds = (double)(!stream->ctx->first_frame_added ? stream->first_pts : (pts - stream->last_pts)) * stream->timebase_numerator / stream->timebase_denominator;
-    durationInTimescales = (uint64_t)SDL_round(delta_seconds * stream->ctx->encoder->timescale);
+    double delta_seconds = (double)(!encoder->ctx->first_frame_added ? encoder->first_pts : (pts - encoder->last_pts)) * encoder->timebase_numerator / encoder->timebase_denominator;
+    durationInTimescales = (uint64_t)SDL_round(delta_seconds * encoder->ctx->encoder->timescale);
     if (durationInTimescales == 0) {
         durationInTimescales = 1;
     }
@@ -1501,23 +1501,23 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationEncoderStream *stream, 
     }
 
     avifAddImageFlags addImageFlags = AVIF_ADD_IMAGE_FLAG_NONE;
-    if (isLossless || !stream->ctx->first_frame_added) {
+    if (isLossless || !encoder->ctx->first_frame_added) {
         addImageFlags = AVIF_ADD_IMAGE_FLAG_FORCE_KEYFRAME;
     }
 
     if (isLossless) {
         if (is10bit && rgb.pixels) {
             // For 10-bit lossless that required conversion
-            rc = lib.avifEncoderAddImage(stream->ctx->encoder, image, durationInTimescales, addImageFlags);
+            rc = lib.avifEncoderAddImage(encoder->ctx->encoder, image, durationInTimescales, addImageFlags);
             SDL_free(rgb.pixels);
             rgb.pixels = NULL;
         } else {
             // For direct encoding (8-bit, 16-bit, or pre-converted 10-bit)
-            rc = lib.avifEncoderAddImage(stream->ctx->encoder, image, durationInTimescales, addImageFlags);
+            rc = lib.avifEncoderAddImage(encoder->ctx->encoder, image, durationInTimescales, addImageFlags);
         }
     } else {
         // For lossy encoding (YUV conversion already done)
-        rc = lib.avifEncoderAddImage(stream->ctx->encoder, image, durationInTimescales, addImageFlags);
+        rc = lib.avifEncoderAddImage(encoder->ctx->encoder, image, durationInTimescales, addImageFlags);
     }
 
     if (temp_is_copy && temp) {
@@ -1534,69 +1534,69 @@ static bool AnimationStream_AddFrame(struct IMG_AnimationEncoderStream *stream, 
         return SDL_SetError("Failed to add image to avif encoder: %s", lib.avifResultToString(rc));
     }
 
-    if (!stream->ctx->first_frame_added) {
-        stream->ctx->first_frame_added = true;
+    if (!encoder->ctx->first_frame_added) {
+        encoder->ctx->first_frame_added = true;
     }
 
     return true;
 }
 
-static bool AnimationStream_End(struct IMG_AnimationEncoderStream* stream)
+static bool AnimationEncoder_End(struct IMG_AnimationEncoder* encoder)
 {
     avifRWData avifOutput = AVIF_DATA_EMPTY;
     avifResult rc;
     bool result = false;
 
-    if (!stream->ctx || !stream->ctx->encoder) {
+    if (!encoder->ctx || !encoder->ctx->encoder) {
         return SDL_SetError("Invalid context or encoder");
     }
 
-    rc = lib.avifEncoderFinish(stream->ctx->encoder, &avifOutput);
+    rc = lib.avifEncoderFinish(encoder->ctx->encoder, &avifOutput);
     if (rc != AVIF_RESULT_OK) {
         SDL_SetError("Failed to finish encoder: %s", lib.avifResultToString(rc));
         goto done;
     }
 
-    if (SDL_WriteIO(stream->dst, avifOutput.data, avifOutput.size) == avifOutput.size) {
+    if (SDL_WriteIO(encoder->dst, avifOutput.data, avifOutput.size) == avifOutput.size) {
         result = true;
     } else {
         SDL_SetError("Failed to write AVIF data to IOStream");
     }
 
 done:
-    if (stream->ctx->encoder) {
-        lib.avifEncoderDestroy(stream->ctx->encoder);
-        stream->ctx->encoder = NULL;
+    if (encoder->ctx->encoder) {
+        lib.avifEncoderDestroy(encoder->ctx->encoder);
+        encoder->ctx->encoder = NULL;
     }
-    if (stream->ctx) {
-        SDL_free(stream->ctx);
-        stream->ctx = NULL;
+    if (encoder->ctx) {
+        SDL_free(encoder->ctx);
+        encoder->ctx = NULL;
     }
     lib.avifRWDataFree(&avifOutput);
 
     return result;
 }
 
-bool IMG_CreateAVIFAnimationEncoderStream(IMG_AnimationEncoderStream *stream, SDL_PropertiesID props)
+bool IMG_CreateAVIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
     if (!IMG_InitAVIF()) {
         return false;
     }
 
-    stream->ctx = (IMG_AnimationEncoderStreamContext *)SDL_calloc(1, sizeof(IMG_AnimationEncoderStreamContext));
-    if (!stream->ctx) {
+    encoder->ctx = (IMG_AnimationEncoderContext *)SDL_calloc(1, sizeof(IMG_AnimationEncoderContext));
+    if (!encoder->ctx) {
         return SDL_SetError("Out of memory for AVIF context");
     }
 
-    if (stream->quality < 0)
-        stream->quality = 75;
-    else if (stream->quality > 100)
-        stream->quality = 100;
+    if (encoder->quality < 0)
+        encoder->quality = 75;
+    else if (encoder->quality > 100)
+        encoder->quality = 100;
 
-    stream->ctx->encoder = lib.avifEncoderCreate();
-    if (!stream->ctx->encoder) {
-        SDL_free(stream->ctx);
-        stream->ctx = NULL;
+    encoder->ctx->encoder = lib.avifEncoderCreate();
+    if (!encoder->ctx->encoder) {
+        SDL_free(encoder->ctx);
+        encoder->ctx = NULL;
         return SDL_SetError("Couldn't create AVIF encoder");
     }
 
@@ -1606,51 +1606,51 @@ bool IMG_CreateAVIFAnimationEncoderStream(IMG_AnimationEncoderStream *stream, SD
 
     int keyFrameInterval = (int)SDL_GetNumberProperty(props, "keyframeinterval", 0);
 
-    stream->ctx->encoder->maxThreads = mThreads;
-    stream->ctx->encoder->quality = stream->quality;
+    encoder->ctx->encoder->maxThreads = mThreads;
+    encoder->ctx->encoder->quality = encoder->quality;
 
-    stream->ctx->encoder->qualityAlpha = AVIF_QUALITY_DEFAULT;
-    stream->ctx->encoder->speed = AVIF_SPEED_FASTEST;
+    encoder->ctx->encoder->qualityAlpha = AVIF_QUALITY_DEFAULT;
+    encoder->ctx->encoder->speed = AVIF_SPEED_FASTEST;
 
-    if (stream->ctx->encoder->quality >= 100) {
-        stream->ctx->encoder->keyframeInterval = SDL_min(1, keyFrameInterval);
-        stream->ctx->encoder->minQuantizer = 0;
-        stream->ctx->encoder->maxQuantizer = 0;
+    if (encoder->ctx->encoder->quality >= 100) {
+        encoder->ctx->encoder->keyframeInterval = SDL_min(1, keyFrameInterval);
+        encoder->ctx->encoder->minQuantizer = 0;
+        encoder->ctx->encoder->maxQuantizer = 0;
 
-        stream->ctx->encoder->minQuantizerAlpha = 0;
-        stream->ctx->encoder->maxQuantizerAlpha = 0;
-        stream->ctx->encoder->autoTiling = AVIF_FALSE;
+        encoder->ctx->encoder->minQuantizerAlpha = 0;
+        encoder->ctx->encoder->maxQuantizerAlpha = 0;
+        encoder->ctx->encoder->autoTiling = AVIF_FALSE;
     } else {
-        stream->ctx->encoder->keyframeInterval = keyFrameInterval;
-        stream->ctx->encoder->minQuantizer = 8;
-        stream->ctx->encoder->maxQuantizer = 63;
+        encoder->ctx->encoder->keyframeInterval = keyFrameInterval;
+        encoder->ctx->encoder->minQuantizer = 8;
+        encoder->ctx->encoder->maxQuantizer = 63;
 
-        stream->ctx->encoder->minQuantizerAlpha = 0;
-        stream->ctx->encoder->maxQuantizerAlpha = 63;
-        stream->ctx->encoder->autoTiling = AVIF_TRUE;
+        encoder->ctx->encoder->minQuantizerAlpha = 0;
+        encoder->ctx->encoder->maxQuantizerAlpha = 63;
+        encoder->ctx->encoder->autoTiling = AVIF_TRUE;
     }
 
-    stream->ctx->encoder->tileRowsLog2 = 0;
-    stream->ctx->encoder->tileColsLog2 = 0;
+    encoder->ctx->encoder->tileRowsLog2 = 0;
+    encoder->ctx->encoder->tileColsLog2 = 0;
 
-    if (stream->timebase_denominator > 0) {
-        stream->ctx->encoder->timescale = (uint32_t)stream->timebase_denominator;
+    if (encoder->timebase_denominator > 0) {
+        encoder->ctx->encoder->timescale = (uint32_t)encoder->timebase_denominator;
     } else {
-        stream->ctx->encoder->timescale = 1000;
+        encoder->ctx->encoder->timescale = 1000;
     }
 
-    stream->ctx->first_frame_added = false;
-    stream->AddFrame = AnimationStream_AddFrame;
-    stream->Close = AnimationStream_End;
+    encoder->ctx->first_frame_added = false;
+    encoder->AddFrame = AnimationEncoder_AddFrame;
+    encoder->Close = AnimationEncoder_End;
 
     return true;
 }
 
 #else
 
-bool IMG_CreateAVIFAnimationEncoderStream(IMG_AnimationEncoderStream *stream, SDL_PropertiesID props)
+bool IMG_CreateAVIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
-    (void)stream;
+    (void)encoder;
     (void)props;
     return SDL_SetError("SDL_image built without AVIF animation encoding support");
 }
