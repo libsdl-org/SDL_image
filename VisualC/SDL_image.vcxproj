@@ -181,7 +181,7 @@
       </HeaderFileName>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\emirm\Downloads\SDL3-3.2.16\include;external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>DLL_EXPORT;NDEBUG;WIN32;_WINDOWS;USE_STBIMAGE;LOAD_AVIF;LOAD_AVIF_DYNAMIC="libavif-16.dll";LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC="libtiff-6.dll";LOAD_WEBP;LOAD_WEBP_DYNAMIC="libwebp-7.dll";LOAD_WEBPDEMUX_DYNAMIC="libwebpdemux-2.dll";LOAD_WEBPMUX_DYNAMIC="libwebpmux-3.dll";LOAD_LIBPNG_DYNAMIC="libpng16-16.dll";SDL_IMAGE_LIBPNG;LOAD_XCF;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
@@ -194,12 +194,7 @@
       <AdditionalDependencies>SDL3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalLibraryDirectories>C:\Users\emirm\Downloads\SDL3-3.2.16\VisualC\x64\Release;C:\Users\emirm\Downloads\SDL_image-09e29993126b13c3dd589c5f7a5806c09b43279f\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy "C:\Users\emirm\OneDrive\Belgeler\sdl_image_workon\SDL_image\VisualC\x64\Release\SDL3_image.dll" "C:\Users\emirm\source\repos\SDL3_image_testbed\x64\Debug\" /I /Y
-xcopy "C:\Users\emirm\OneDrive\Belgeler\sdl_image_workon\SDL_image\VisualC\x64\Release\SDL3_image.pdb" "C:\Users\emirm\source\repos\SDL3_image_testbed\x64\Debug\" /I /Y</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\IMG.c" />
@@ -442,4 +437,5 @@ xcopy "C:\Users\emirm\OneDrive\Belgeler\sdl_image_workon\SDL_image\VisualC\x64\R
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+
 </Project>
