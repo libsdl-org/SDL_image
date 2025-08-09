@@ -45,9 +45,9 @@ IMG_AnimationDecoderStream *IMG_CreateAnimationDecoderStream(const char *file)
     return stream;
 }
 
-IMG_AnimationDecoderStream *IMG_CreateAnimationDecoderStream_IO(SDL_IOStream *dst, bool closeio, const char *type)
+IMG_AnimationDecoderStream *IMG_CreateAnimationDecoderStream_IO(SDL_IOStream *src, bool closeio, const char *type)
 {
-    if (!dst) {
+    if (!src) {
         SDL_InvalidParamError("dst");
         return NULL;
     }
@@ -62,7 +62,7 @@ IMG_AnimationDecoderStream *IMG_CreateAnimationDecoderStream_IO(SDL_IOStream *ds
         return NULL;
     }
 
-    SDL_SetPointerProperty(props, IMG_PROP_ANIMATION_DECODER_STREAM_CREATE_IOSTREAM_POINTER, dst);
+    SDL_SetPointerProperty(props, IMG_PROP_ANIMATION_DECODER_STREAM_CREATE_IOSTREAM_POINTER, src);
     SDL_SetBooleanProperty(props, IMG_PROP_ANIMATION_DECODER_STREAM_CREATE_IOSTREAM_AUTOCLOSE_BOOLEAN, closeio);
     SDL_SetStringProperty(props, IMG_PROP_ANIMATION_DECODER_STREAM_CREATE_TYPE_STRING, type);
     IMG_AnimationDecoderStream *stream = IMG_CreateAnimationDecoderStreamWithProperties(props);
