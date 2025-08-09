@@ -2544,6 +2544,9 @@ extern SDL_DECLSPEC bool SDLCALL IMG_CloseAnimationEncoderStream(IMG_AnimationEn
  */
 typedef struct IMG_AnimationDecoderStream IMG_AnimationDecoderStream;
 
+/**
+ * Represents the partially or fully loaded animation frames
+ */
 typedef struct IMG_AnimationDecoderFrames
 {
     int w;                  /**< The width of the frames */
