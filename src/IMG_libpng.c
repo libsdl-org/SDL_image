@@ -2379,4 +2379,11 @@ bool IMG_CreateAPNGAnimationEncoderStream(IMG_AnimationEncoderStream *stream, SD
     return SDL_SetError("SDL_image not built against libpng.");
 }
 
+bool IMG_CreateAPNGAnimationDecoderStream(IMG_AnimationDecoderStream *stream, SDL_IOStream *src)
+{
+    (void)stream;
+    (void)src;
+    return SDL_SetError("SDL_image not built against libpng.");
+}
+
 #endif /* SDL_IMAGE_LIBPNG */
