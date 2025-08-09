@@ -193,12 +193,12 @@
       <AdditionalDependencies>SDL3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalLibraryDirectories>C:\Users\emirm\Downloads\SDL_image-09e29993126b13c3dd589c5f7a5806c09b43279f\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\IMG.c" />
-    <ClCompile Include="..\src\IMG_anim.c" />
+    <ClCompile Include="..\src\IMG_anim_decoder.c" />
+    <ClCompile Include="..\src\IMG_anim_encoder.c" />
     <ClCompile Include="..\src\IMG_avif.c" />
     <ClCompile Include="..\src\IMG_bmp.c" />
     <ClCompile Include="..\src\IMG_gif.c" />
@@ -225,6 +225,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\SDL3_image\SDL_image.h" />
+    <ClInclude Include="..\src\IMG_anim_decoder.h" />
+    <ClInclude Include="..\src\IMG_anim_encoder.h" />
     <ClInclude Include="..\src\IMG_libpng.h" />
     <ClInclude Include="..\src\IMG_gif.h" />
     <ClInclude Include="..\src\IMG_avif.h" />
@@ -434,6 +436,6 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-</Project>
 
+</Project>
 

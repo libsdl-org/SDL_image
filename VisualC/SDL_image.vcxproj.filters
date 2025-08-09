@@ -64,7 +64,10 @@
     <ClCompile Include="..\src\IMG_libpng.c">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\IMG_anim.c">
+    <ClCompile Include="..\src\IMG_anim_encoder.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\IMG_anim_decoder.c">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -93,6 +96,12 @@
       <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="..\src\IMG_avif.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\IMG_anim_encoder.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\IMG_anim_decoder.h">
       <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
@@ -169,9 +178,4 @@
       <Filter>x86</Filter>
     </CustomBuild>
   </ItemGroup>
-
 </Project>
-
-
-
-
