@@ -542,6 +542,9 @@ class AndroidApiVersion:
     def __repr__(self) -> str:
         return f"<{self.name} ({'.'.join(str(v) for v in self.ints)})>"
 
+ANDROID_ABI_EXTRA_LINK_OPTIONS = {
+    "arm64-v8a": "-Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384",
+}
 
 class Releaser:
     def __init__(self, release_info: dict, commit: str, revision: str, root: Path, dist_path: Path, section_printer: SectionPrinter, executer: Executer, cmake_generator: str, deps_path: Path, overwrite: bool, github: bool, fast: bool):
@@ -700,8 +703,7 @@ class Releaser:
         libraries = re.findall(r"DLL Name: ([^\n]+)", objdump_output)
         logger.info("%s (%s) libraries: %r", path, triplet, libraries)
         illegal_libraries = list(filter(RE_ILLEGAL_MINGW_LIBRARIES.match, libraries))
-        if illegal_libraries:
-            logger.error("Detected 'illegal' libraries: %r", illegal_libraries)
+        logger.error("Detected 'illegal' libraries: %r", illegal_libraries)
         if illegal_libraries:
             raise Exception(f"{path} links to illegal libraries: {illegal_libraries}")
 
@@ -835,16 +837,7 @@ class Releaser:
                     "ARCH": arch,
                     "DEP_PREFIX": str(mingw_deps_path / triplet),
                 })
-                my_cflags = f"-ffile-prefix-map={self.root}=/src/{self.project}"
                 extra_args = configure_text_list(text_list=self.release_info["mingw"]["cmake"]["args"], context=context)
-                try:
-                    extra_cflags_i, extra_cmake_c_flags = next((arg_i, a) for (arg_i, a) in enumerate(extra_args) if a.startswith("-DCMAKE_C_FLAGS"))
-                    extra_cflags = extra_cmake_c_flags.removeprefix("-DCMAKE_C_FLAGS=")
-                    assert extra_cflags[:1] not in "'\"" and extra_cflags[:-1] not in "'\""
-                    extra_args[extra_cflags_i] = f"-DCMAKE_C_FLAGS={extra_cflags} {my_cflags}"
-                except StopIteration:
-                    extra_args.append(f"-DCMAKE_C_FLAGS={my_cflags}")
-
 
                 build_path = build_parent_dir / f"build-{triplet}"
                 install_path = build_parent_dir / f"install-{triplet}"
@@ -861,6 +854,7 @@ class Releaser:
                             f"cmake",
                             f"-S", str(self.root), "-B", str(build_path),
                             f"-DCMAKE_BUILD_TYPE={build_type}",
+                            f'''-DCMAKE_C_FLAGS="-ffile-prefix-map={self.root}=/src/{self.project}"''',
                             f'''-DCMAKE_CXX_FLAGS="-ffile-prefix-map={self.root}=/src/{self.project}"''',
                             f"-DCMAKE_PREFIX_PATH={mingw_deps_path / triplet}",
                             f"-DCMAKE_INSTALL_PREFIX={install_path}",
@@ -1022,6 +1016,7 @@ class Releaser:
         android_devel_file_tree = ArchiveFileTree()
 
         for android_abi in android_abis:
+            extra_link_options = ANDROID_ABI_EXTRA_LINK_OPTIONS.get(android_abi, "")
             with self.section_printer.group(f"Building for Android {android_api} {android_abi}"):
                 build_dir = self.root / "build-android" / f"{android_abi}-build"
                 install_dir = self.root / "install-android" / f"{android_abi}-install"
@@ -1032,8 +1027,11 @@ class Releaser:
                     "cmake",
                     "-S", str(self.root),
                     "-B", str(build_dir),
-                    f'''-DCMAKE_C_FLAGS="-ffile-prefix-map={self.root}=/src/{self.project}"''',
-                    f'''-DCMAKE_CXX_FLAGS="-ffile-prefix-map={self.root}=/src/{self.project}"''',
+                    # NDK 21e does not support -ffile-prefix-map
+                    # f'''-DCMAKE_C_FLAGS="-ffile-prefix-map={self.root}=/src/{self.project}"''',
+                    # f'''-DCMAKE_CXX_FLAGS="-ffile-prefix-map={self.root}=/src/{self.project}"''',
+                    f"-DCMAKE_EXE_LINKER_FLAGS={extra_link_options}",
+                    f"-DCMAKE_SHARED_LINKER_FLAGS={extra_link_options}",
                     f"-DCMAKE_TOOLCHAIN_FILE={cmake_toolchain_file}",
                     f"-DCMAKE_PREFIX_PATH={str(android_deps_path)}",
                     f"-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH",
@@ -1539,7 +1537,7 @@ def main(argv=None) -> int:
             parser.error("Invalid --android-api, and/or could not be detected")
         android_api_path = Path(args.android_home) / f"platforms/{args.android_api.name}"
         if not android_api_path.is_dir():
-            parser.error(f"Android API directory does not exist ({android_api_path})")
+            logger.warning(f"Android API directory does not exist ({android_api_path})")
         with section_printer.group("Android arguments"):
             print(f"android_home     = {args.android_home}")
             print(f"android_ndk_home = {args.android_ndk_home}")
