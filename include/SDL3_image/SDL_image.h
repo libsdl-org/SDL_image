@@ -2719,6 +2719,21 @@ extern SDL_DECLSPEC IMG_AnimationDecoderFrames *SDLCALL IMG_CreateAnimationDecod
  */
 extern SDL_DECLSPEC void SDLCALL IMG_FreeAnimationDecoderFrames(IMG_AnimationDecoderFrames* frames);
 
+/**
+ * Get the presentation timestamp of a frame in milliseconds.
+ *
+ * This function converts a presentation timestamp from the stream's timebase
+ * to milliseconds.
+ *
+ * \param stream the animation decoder stream.
+ * \param pts the presentation timestamp to convert.
+ * \returns the presentation timestamp in milliseconds.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_CreateAnimationDecoderStreamWithProperties
+ * \sa IMG_GetAnimationDecoderFrames
+ */
 extern SDL_DECLSPEC int SDLCALL IMG_GetAnimationDecoderPresentationTimestampMS(IMG_AnimationDecoderStream *stream, Sint64 pts);
 
 /* Ends C function definitions when using C++ */
