@@ -292,11 +292,22 @@ IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int 
 
     for (int i = 0; i < anim->count; ++i) {
         anim->frames[i] = frames->frames[i];
-        ++anim->frames[i]->refcount; // Increment refcount since we are taking ownership of the frames
-        anim->delays[i] = IMG_GetAnimationDecoderPresentationTimestampMS(decoder, frames->delays[i]);
-        if (i > 0) {
-            anim->delays[i] /= i;
+
+        // Increment refcount since we are taking ownership of the frames
+        ++anim->frames[i]->refcount;
+
+        Sint64 d;
+        if (i == 0 && anim->count > 1) {
+            d = frames->delays[i + 1];
+        } else {
+            d = frames->delays[i];
         }
+
+        if (i > 1) {
+            d /= i;
+        }
+
+        anim->delays[i] = IMG_GetAnimationDecoderPresentationTimestampMS(decoder, d);
     }
 
     IMG_FreeAnimationDecoderFrames(frames);
