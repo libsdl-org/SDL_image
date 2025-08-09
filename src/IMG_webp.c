@@ -385,7 +385,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
     return IMG_DecodeAsAnimation(src, "webp", 0);
 }
 
-struct IMG_AnimationDecoderStreamContext
+struct IMG_AnimationDecoderContext
 {
     WebPDemuxer *demuxer;
     WebPIterator iter;
@@ -398,19 +398,19 @@ struct IMG_AnimationDecoderStreamContext
     Sint64 last_pts;
 };
 
-static bool IMG_AnimationDecoderStreamReset_Internal(IMG_AnimationDecoderStream *stream)
+static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
 {
-    lib.WebPDemuxReleaseIterator(&stream->ctx->iter);
-    SDL_zero(stream->ctx->iter);
-    stream->ctx->dispose_method = WEBP_MUX_DISPOSE_BACKGROUND;
+    lib.WebPDemuxReleaseIterator(&decoder->ctx->iter);
+    SDL_zero(decoder->ctx->iter);
+    decoder->ctx->dispose_method = WEBP_MUX_DISPOSE_BACKGROUND;
 
-    return lib.WebPDemuxGetFrame(stream->ctx->demuxer, 1, &stream->ctx->iter);
+    return lib.WebPDemuxGetFrame(decoder->ctx->demuxer, 1, &decoder->ctx->iter);
 }
 
-static bool IMG_AnimationDecoderStreamGetFrames_Internal(IMG_AnimationDecoderStream *stream, int framesToLoad, IMG_AnimationDecoderFrames *animationFrames)
+static bool IMG_AnimationDecoderGetFrames_Internal(IMG_AnimationDecoder *decoder, int framesToLoad, IMG_AnimationDecoderFrames *animationFrames)
 {
-    int totalFrames = stream->ctx->iter.num_frames;
-    int availableFrames = totalFrames - (stream->ctx->iter.frame_num - 1);
+    int totalFrames = decoder->ctx->iter.num_frames;
+    int availableFrames = totalFrames - (decoder->ctx->iter.frame_num - 1);
 
     if (framesToLoad < 1)
         framesToLoad = availableFrames;
@@ -420,13 +420,13 @@ static bool IMG_AnimationDecoderStreamGetFrames_Internal(IMG_AnimationDecoderStr
     animationFrames->frames = (SDL_Surface **)SDL_calloc(framesToLoad, sizeof(SDL_Surface *));
     animationFrames->delays = (Sint64 *)SDL_calloc(framesToLoad, sizeof(Sint64));
     animationFrames->count = 0;
-    animationFrames->w = stream->ctx->canvas->w;
-    animationFrames->h = stream->ctx->canvas->h;
+    animationFrames->w = decoder->ctx->canvas->w;
+    animationFrames->h = decoder->ctx->canvas->h;
 
-    SDL_Surface *canvas = stream->ctx->canvas;
-    uint32_t bgcolor = stream->ctx->bgcolor;
-    WebPMuxAnimDispose dispose_method = stream->ctx->dispose_method;
-    WebPIterator *iter = &stream->ctx->iter;
+    SDL_Surface *canvas = decoder->ctx->canvas;
+    uint32_t bgcolor = decoder->ctx->bgcolor;
+    WebPMuxAnimDispose dispose_method = decoder->ctx->dispose_method;
+    WebPIterator *iter = &decoder->ctx->iter;
     int decoded_frames = 0;
 
     do {
@@ -475,18 +475,18 @@ static bool IMG_AnimationDecoderStreamGetFrames_Internal(IMG_AnimationDecoderStr
             break;
         }
 
-        if (stream->ctx->iter.frame_num == 1 || stream->timebase_denominator == 0) {
+        if (decoder->ctx->iter.frame_num == 1 || decoder->timebase_denominator == 0) {
             animationFrames->delays[decoded_frames] = 0;
-            stream->ctx->last_pts = 0;
+            decoder->ctx->last_pts = 0;
         } else {
-            animationFrames->delays[decoded_frames] = stream->ctx->last_pts += iter->duration * stream->timebase_denominator / (1000 * stream->timebase_numerator);
+            animationFrames->delays[decoded_frames] = decoder->ctx->last_pts += iter->duration * decoder->timebase_denominator / (1000 * decoder->timebase_numerator);
         }
         decoded_frames++;
 
         dispose_method = iter->dispose_method;
     } while (lib.WebPDemuxNextFrame(iter));
 
-    stream->ctx->dispose_method = dispose_method;
+    decoder->ctx->dispose_method = dispose_method;
 
     animationFrames->count = decoded_frames;
 
@@ -506,117 +506,117 @@ static bool IMG_AnimationDecoderStreamGetFrames_Internal(IMG_AnimationDecoderStr
     return decoded_frames > 0;
 }
 
-static bool IMG_AnimationDecoderStreamClose_Internal(IMG_AnimationDecoderStream *stream)
+static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder *decoder)
 {
-    if (!stream->ctx) {
+    if (!decoder->ctx) {
         return false;
     }
 
-    if (stream->ctx->canvas) {
-        SDL_DestroySurface(stream->ctx->canvas);
+    if (decoder->ctx->canvas) {
+        SDL_DestroySurface(decoder->ctx->canvas);
     }
-    if (stream->ctx->demuxer) {
-        lib.WebPDemuxDelete(stream->ctx->demuxer);
+    if (decoder->ctx->demuxer) {
+        lib.WebPDemuxDelete(decoder->ctx->demuxer);
     }
-    if (stream->ctx->raw_data) {
-        SDL_free(stream->ctx->raw_data);
+    if (decoder->ctx->raw_data) {
+        SDL_free(decoder->ctx->raw_data);
     }
-    lib.WebPDemuxReleaseIterator(&stream->ctx->iter);
-    SDL_free(stream->ctx);
-    stream->ctx = NULL;
+    lib.WebPDemuxReleaseIterator(&decoder->ctx->iter);
+    SDL_free(decoder->ctx);
+    decoder->ctx = NULL;
     return true;
 }
 
-bool IMG_CreateWEBPAnimationDecoderStream(IMG_AnimationDecoderStream *stream, SDL_PropertiesID decoderProps)
+bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props)
 {
-    (void)decoderProps;
+    (void)props;
 
     if (!IMG_InitWEBP()) {
         SDL_SetError("Failed to initialize WEBP library");
         return false;
     }
 
-    if (!webp_getinfo(stream->src, NULL)) {
+    if (!webp_getinfo(decoder->src, NULL)) {
         SDL_SetError("Not a valid WebP file: %s", SDL_GetError());
         return false;
     }
 
-    Sint64 stream_size = SDL_GetIOSize(stream->src);
+    Sint64 stream_size = SDL_GetIOSize(decoder->src);
     if (stream_size <= 0) {
         SDL_SetError("Stream has no data (size: %" SDL_PRIs64 ")", stream_size);
         return false;
     }
 
-    stream->ctx = (IMG_AnimationDecoderStreamContext *)SDL_calloc(1, sizeof(IMG_AnimationDecoderStreamContext));
-    if (!stream->ctx) {
+    decoder->ctx = (IMG_AnimationDecoderContext *)SDL_calloc(1, sizeof(IMG_AnimationDecoderContext));
+    if (!decoder->ctx) {
         SDL_SetError("Out of memory");
         return false;
     }
 
-    stream->ctx->raw_data_size = (size_t)stream_size;
-    stream->ctx->raw_data = (uint8_t *)SDL_malloc(stream->ctx->raw_data_size);
-    if (!stream->ctx->raw_data) {
-        SDL_free(stream->ctx);
-        stream->ctx = NULL;
+    decoder->ctx->raw_data_size = (size_t)stream_size;
+    decoder->ctx->raw_data = (uint8_t *)SDL_malloc(decoder->ctx->raw_data_size);
+    if (!decoder->ctx->raw_data) {
+        SDL_free(decoder->ctx);
+        decoder->ctx = NULL;
         SDL_SetError("Out of memory for WebP file buffer");
         return false;
     }
-    if (SDL_SeekIO(stream->src, stream->start, SDL_IO_SEEK_SET) < 0 ||
-        SDL_ReadIO(stream->src, stream->ctx->raw_data, stream->ctx->raw_data_size) != stream->ctx->raw_data_size) {
-        SDL_free(stream->ctx->raw_data);
-        SDL_free(stream->ctx);
-        stream->ctx = NULL;
+    if (SDL_SeekIO(decoder->src, decoder->start, SDL_IO_SEEK_SET) < 0 ||
+        SDL_ReadIO(decoder->src, decoder->ctx->raw_data, decoder->ctx->raw_data_size) != decoder->ctx->raw_data_size) {
+        SDL_free(decoder->ctx->raw_data);
+        SDL_free(decoder->ctx);
+        decoder->ctx = NULL;
         SDL_SetError("Failed to read WebP file into memory");
         return false;
     }
 
-    WebPData wd = { stream->ctx->raw_data, stream->ctx->raw_data_size };
-    stream->ctx->demuxer = lib.WebPDemuxInternal(&wd, 0, NULL, WEBP_DEMUX_ABI_VERSION);
-    if (!stream->ctx->demuxer) {
-        SDL_free(stream->ctx->raw_data);
-        SDL_free(stream->ctx);
-        stream->ctx = NULL;
+    WebPData wd = { decoder->ctx->raw_data, decoder->ctx->raw_data_size };
+    decoder->ctx->demuxer = lib.WebPDemuxInternal(&wd, 0, NULL, WEBP_DEMUX_ABI_VERSION);
+    if (!decoder->ctx->demuxer) {
+        SDL_free(decoder->ctx->raw_data);
+        SDL_free(decoder->ctx);
+        decoder->ctx = NULL;
         SDL_SetError("WebPDemux failed to initialize demuxer (not a valid WebP file or corrupted data)");
         return false;
     }
 
-    uint32_t width = lib.WebPDemuxGetI(stream->ctx->demuxer, WEBP_FF_CANVAS_WIDTH);
-    uint32_t height = lib.WebPDemuxGetI(stream->ctx->demuxer, WEBP_FF_CANVAS_HEIGHT);
-    uint32_t flags = lib.WebPDemuxGetI(stream->ctx->demuxer, WEBP_FF_FORMAT_FLAGS);
+    uint32_t width = lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_CANVAS_WIDTH);
+    uint32_t height = lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_CANVAS_HEIGHT);
+    uint32_t flags = lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_FORMAT_FLAGS);
     bool has_alpha = (flags & 0x10) != 0;
 
-    stream->ctx->canvas = SDL_CreateSurface(width, height, has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
-    if (!stream->ctx->canvas) {
-        lib.WebPDemuxDelete(stream->ctx->demuxer);
-        SDL_free(stream->ctx->raw_data);
-        SDL_free(stream->ctx);
-        stream->ctx = NULL;
+    decoder->ctx->canvas = SDL_CreateSurface(width, height, has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
+    if (!decoder->ctx->canvas) {
+        lib.WebPDemuxDelete(decoder->ctx->demuxer);
+        SDL_free(decoder->ctx->raw_data);
+        SDL_free(decoder->ctx);
+        decoder->ctx = NULL;
         return false;
     }
 
-    uint32_t bgcolor = lib.WebPDemuxGetI(stream->ctx->demuxer, WEBP_FF_BACKGROUND_COLOR);
+    uint32_t bgcolor = lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_BACKGROUND_COLOR);
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    stream->ctx->bgcolor = SDL_MapSurfaceRGBA(stream->ctx->canvas,
+    decoder->ctx->bgcolor = SDL_MapSurfaceRGBA(decoder->ctx->canvas,
                                               (bgcolor >> 8) & 0xFF,
                                               (bgcolor >> 16) & 0xFF,
                                               (bgcolor >> 24) & 0xFF,
                                               (bgcolor >> 0) & 0xFF);
 #else
-    stream->ctx->bgcolor = SDL_MapSurfaceRGBA(stream->ctx->canvas,
+    decoder->ctx->bgcolor = SDL_MapSurfaceRGBA(decoder->ctx->canvas,
                                               (bgcolor >> 16) & 0xFF,
                                               (bgcolor >> 8) & 0xFF,
                                               (bgcolor >> 0) & 0xFF,
                                               (bgcolor >> 24) & 0xFF);
 #endif
 
-    stream->ctx->dispose_method = WEBP_MUX_DISPOSE_BACKGROUND;
+    decoder->ctx->dispose_method = WEBP_MUX_DISPOSE_BACKGROUND;
 
-    SDL_zero(stream->ctx->iter);
-    lib.WebPDemuxGetFrame(stream->ctx->demuxer, 1, &stream->ctx->iter);
+    SDL_zero(decoder->ctx->iter);
+    lib.WebPDemuxGetFrame(decoder->ctx->demuxer, 1, &decoder->ctx->iter);
 
-    stream->GetFrames = IMG_AnimationDecoderStreamGetFrames_Internal;
-    stream->Reset = IMG_AnimationDecoderStreamReset_Internal;
-    stream->Close = IMG_AnimationDecoderStreamClose_Internal;
+    decoder->GetFrames = IMG_AnimationDecoderGetFrames_Internal;
+    decoder->Reset = IMG_AnimationDecoderReset_Internal;
+    decoder->Close = IMG_AnimationDecoderClose_Internal;
 
     return true;
 }
@@ -797,16 +797,16 @@ bool IMG_SaveWEBP(SDL_Surface *surface, const char *file, float quality)
    return IMG_SaveWEBP_IO(surface, dst, true, quality);
 }
 
-struct IMG_AnimationEncoderStreamContext
+struct IMG_AnimationEncoderContext
 {
     WebPAnimEncoder *encoder;
     WebPConfig config;
     int frames;
 };
 
-static bool IMG_AddWEBPAnimationFrame(IMG_AnimationEncoderStream *stream, SDL_Surface *surface, Uint64 pts)
+static bool IMG_AddWEBPAnimationFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 pts)
 {
-    IMG_AnimationEncoderStreamContext *ctx = stream->ctx;
+    IMG_AnimationEncoderContext *ctx = encoder->ctx;
     const char *error = NULL;
     WebPPicture pic;
     bool pic_initialized = false;
@@ -842,7 +842,7 @@ static bool IMG_AddWEBPAnimationFrame(IMG_AnimationEncoderStream *stream, SDL_Su
         goto done;
     }
 
-    int timestamp = GetStreamPresentationTimestampMS(stream, pts);
+    int timestamp = GetStreamPresentationTimestampMS(encoder, pts);
     if (!lib.WebPAnimEncoderAdd(ctx->encoder, &pic, timestamp, &ctx->config)) {
         error = GetWebPEncodingErrorStringInternal(pic.error_code);
         goto done;
@@ -863,9 +863,9 @@ done:
     return true;
 }
 
-static bool IMG_CloseWEBPAnimationStream(IMG_AnimationEncoderStream *stream)
+static bool IMG_CloseWEBPAnimation(IMG_AnimationEncoder *encoder)
 {
-    IMG_AnimationEncoderStreamContext *ctx = stream->ctx;
+    IMG_AnimationEncoderContext *ctx = encoder->ctx;
     const char *error = NULL;
     WebPData data = { NULL, 0 };
 
@@ -874,7 +874,7 @@ static bool IMG_CloseWEBPAnimationStream(IMG_AnimationEncoderStream *stream)
         goto done;
     }
 
-    int timestamp = GetStreamPresentationTimestampMS(stream, stream->last_pts);
+    int timestamp = GetStreamPresentationTimestampMS(encoder, encoder->last_pts);
     if (ctx->frames > 1) {
         timestamp += (timestamp / (ctx->frames - 1));
     }
@@ -888,7 +888,7 @@ static bool IMG_CloseWEBPAnimationStream(IMG_AnimationEncoderStream *stream)
         goto done;
     }
 
-    if (SDL_WriteIO(stream->dst, data.bytes, data.size) != data.size) {
+    if (SDL_WriteIO(encoder->dst, data.bytes, data.size) != data.size) {
         error = SDL_GetError();
         goto done;
     }
@@ -909,7 +909,7 @@ done:
     return true;
 }
 
-bool IMG_CreateWEBPAnimationEncoderStream(IMG_AnimationEncoderStream *stream, SDL_PropertiesID props)
+bool IMG_CreateWEBPAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
     (void)props;
 
@@ -917,19 +917,19 @@ bool IMG_CreateWEBPAnimationEncoderStream(IMG_AnimationEncoderStream *stream, SD
         return false;
     }
 
-    IMG_AnimationEncoderStreamContext *ctx = (IMG_AnimationEncoderStreamContext *)SDL_calloc(1, sizeof(*stream->ctx));
+    IMG_AnimationEncoderContext *ctx = (IMG_AnimationEncoderContext *)SDL_calloc(1, sizeof(*encoder->ctx));
     if (!ctx) {
         return false;
     }
-    stream->ctx = ctx;
-    stream->AddFrame = IMG_AddWEBPAnimationFrame;
-    stream->Close = IMG_CloseWEBPAnimationStream;
+    encoder->ctx = ctx;
+    encoder->AddFrame = IMG_AddWEBPAnimationFrame;
+    encoder->Close = IMG_CloseWEBPAnimation;
 
     float quality;
-    if (stream->quality < 0) {
+    if (encoder->quality < 0) {
         quality = 75.0f;
     } else {
-        quality = (float)SDL_clamp(stream->quality, 0, 100);
+        quality = (float)SDL_clamp(encoder->quality, 0, 100);
     }
     if (!lib.WebPConfigInitInternal(&ctx->config, WEBP_PRESET_DEFAULT, quality, WEBP_ENCODER_ABI_VERSION)) {
         SDL_free(ctx);
@@ -972,10 +972,10 @@ IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
     return NULL;
 }
 
-bool IMG_CreateWEBPAnimationDecoderStream(IMG_AnimationDecoderStream *stream, SDL_PropertiesID decoderProps)
+bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoderStream *decoder, SDL_PropertiesID props)
 {
-    (void)stream;
-    (void)decoderProps;
+    (void)decoder;
+    (void)props;
     return SDL_SetError("SDL_image was not built with WEBP load support");
 }
 
@@ -1000,9 +1000,9 @@ bool IMG_SaveWEBP(SDL_Surface *surface, const char *file, float quality)
     return SDL_SetError("SDL_image was not built with WEBP save support");
 }
 
-bool IMG_CreateWEBPAnimationEncoderStream(IMG_AnimationEncoderStream *stream, SDL_PropertiesID props)
+bool IMG_CreateWEBPAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
-    (void)stream;
+    (void)encoder;
     (void)props;
     return SDL_SetError("SDL_image was not built with WEBP save support");
 }
