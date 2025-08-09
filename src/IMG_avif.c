@@ -911,6 +911,9 @@ static bool IMG_AnimationDecoderStreamGetFrames_Internal(IMG_AnimationDecoderStr
         ctx->parsed = true;
     }
 
+    animationFrames->w = ctx->width;
+    animationFrames->h = ctx->height;
+
     if (framesToLoad <= 0) {
         framesToLoad = ctx->total_frames - ctx->current_frame;
     } else {
