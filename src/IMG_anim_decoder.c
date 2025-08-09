@@ -257,9 +257,9 @@ IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int 
     if (frames->count < 1 || !frames->delays || !frames->frames) {
         const char *err = SDL_GetError();
         if (err[0] == '\0') {
-            SDL_SetError("No frames loaded from APNG animation");
+            SDL_SetError("No frames loaded animation");
         } else {
-            SDL_SetError("No frames loaded from APNG animation: %s", err);
+            SDL_SetError("No frames loaded animation: %s", err);
         }
         IMG_FreeAnimationDecoderFrames(frames);
         return NULL;
