@@ -151,69 +151,6 @@ static Image *ReadImage(SDL_IOStream * src, int len, int height, int,
 			unsigned char cmap[3][MAXCOLORMAPSIZE],
 			int gray, int interlace, int ignore, State_t * state);
 
-static bool NormalizeFrames(Frame_t *frames, int count)
-{
-    SDL_Surface *image;
-    int i;
-    int lastDispose = GIF_DISPOSE_RESTORE_BACKGROUND;
-    int iRestore = 0;
-    Uint32 fill;
-    SDL_Rect rect;
-
-
-    if (SDL_SurfaceHasColorKey(frames[0].image)) {
-        image = SDL_ConvertSurface(frames[0].image, SDL_PIXELFORMAT_ARGB8888);
-    } else {
-        image = SDL_ConvertSurface(frames[0].image, SDL_PIXELFORMAT_XRGB8888);
-    }
-    if (!image) {
-        return false;
-    }
-
-    fill = SDL_MapSurfaceRGBA(image, 0, 0, 0, SDL_ALPHA_TRANSPARENT);
-
-    rect.x = 0;
-    rect.y = 0;
-    rect.w = image->w;
-    rect.h = image->h;
-
-    for (i = 0; i < count; ++i) {
-        switch (lastDispose) {
-        case GIF_DISPOSE_RESTORE_BACKGROUND:
-            SDL_FillSurfaceRect(image, &rect, fill);
-            break;
-        case GIF_DISPOSE_RESTORE_PREVIOUS:
-            SDL_BlitSurface(frames[iRestore].image, &rect, image, &rect);
-            break;
-        default:
-            break;
-        }
-
-        if (frames[i].disposal != GIF_DISPOSE_RESTORE_PREVIOUS) {
-            iRestore = i;
-        }
-
-        rect.x = (Sint16)frames[i].x;
-        rect.y = (Sint16)frames[i].y;
-        rect.w = frames[i].image->w;
-        rect.h = frames[i].image->h;
-        SDL_BlitSurface(frames[i].image, NULL, image, &rect);
-
-        SDL_DestroySurface(frames[i].image);
-        frames[i].image = SDL_DuplicateSurface(image);
-        if (!frames[i].image) {
-            SDL_DestroySurface( image );
-            return false;
-        }
-
-        lastDispose = frames[i].disposal;
-    }
-
-    SDL_DestroySurface( image );
-
-    return true;
-}
-
 static int
 ReadColorMap(SDL_IOStream *src, int number,
              unsigned char buffer[3][MAXCOLORMAPSIZE], int *gray)
