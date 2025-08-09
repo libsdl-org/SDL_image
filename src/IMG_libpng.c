@@ -1290,7 +1290,9 @@ static bool IMG_AnimationDecoderStreamGetFrames_Internal(IMG_AnimationDecoderStr
             fctl->width,
             fctl->height,
             ctx->png_color_type,
-            ctx->bit_depth);
+            ctx->bit_depth,
+            ctx->palette_colors,
+            ctx->palette_count);
 
         if (!temp_frame) {
             animationFrames->frames[i] = NULL;
