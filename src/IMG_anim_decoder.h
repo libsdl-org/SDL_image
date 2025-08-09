@@ -19,5 +19,21 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-extern bool IMG_CreateAVIFAnimationEncoderStream(IMG_AnimationEncoderStream *stream, SDL_PropertiesID props);
-extern bool IMG_CreateAVIFAnimationDecoderStream(IMG_AnimationDecoderStream *stream, SDL_PropertiesID decoderProps);
+typedef struct IMG_AnimationDecoderStreamContext IMG_AnimationDecoderStreamContext;
+
+struct IMG_AnimationDecoderStream
+{
+    SDL_IOStream *src;
+    Sint64 start;
+    bool closeio;
+    int timebase_numerator;
+    int timebase_denominator;
+
+    bool (*GetFrames)(IMG_AnimationDecoderStream *stream, int framesToLoad, IMG_AnimationDecoderFrames* decoderFrames);
+    bool (*Reset)(IMG_AnimationDecoderStream *stream);
+    bool (*Close)(IMG_AnimationDecoderStream *stream);
+
+    IMG_AnimationDecoderStreamContext *ctx;
+};
+
+extern IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int maxFrames);

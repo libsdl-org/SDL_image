@@ -22,7 +22,8 @@
 /* This is a GIF image file loading framework */
 
 #include <SDL3_image/SDL_image.h>
-#include "IMG_anim.h"
+#include "IMG_anim_encoder.h"
+#include "IMG_anim_decoder.h"
 
 // We will have the saving GIF feature by default
 #if !defined(SAVE_GIF)
@@ -721,34 +722,410 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
 /* Load a GIF type animation from an SDL datasource */
 IMG_Animation *IMG_LoadGIFAnimation_IO(SDL_IOStream *src)
 {
-    Anim_t *internal = IMG_LoadGIF_IO_Internal(src, true);
-    if (internal) {
-        IMG_Animation *anim = (IMG_Animation *)SDL_malloc(sizeof(*anim));
-        if (anim) {
-            anim->w = internal->frames[0].image->w;
-            anim->h = internal->frames[0].image->h;
-            anim->count = internal->count;
+    return IMG_DecodeAsAnimation(src, "gif", 0);
+}
 
-            anim->frames = (SDL_Surface **)SDL_calloc(anim->count, sizeof(*anim->frames));
-            anim->delays = (int *)SDL_calloc(anim->count, sizeof(*anim->delays));
+struct IMG_AnimationDecoderStreamContext
+{
+    State_t state;                /* GIF decoding state */
+    
+    unsigned char buf[256];      /* Buffer for reading chunks */
+    char version[4];             /* GIF version */
+    
+    int width;                   /* Width of the GIF */
+    int height;                  /* Height of the GIF */
+    
+    SDL_Surface *canvas;         /* Canvas for compositing frames */
+    SDL_Surface *prev_canvas;    /* Previous canvas for DISPOSE_PREVIOUS */
+    
+    int frame_count;             /* Total number of frames seen */
+    int current_frame;           /* Current frame index */
+    
+    bool got_header;             /* Whether we've read the GIF header */
+    bool got_eof;                /* Whether we've reached the end of the GIF */
+    
+    /* Current frame info */
+    int current_disposal;        /* Disposal method for current frame */
+    int current_delay;           /* Delay time for current frame */
+    int transparent_index;       /* Transparent color index for current frame */
+    
+    /* Global color map */
+    unsigned char global_colormap[3][MAXCOLORMAPSIZE];
+    int global_colormap_size;
+    bool has_global_colormap;
+    bool global_grayscale;
+    
+    /* Frame info */
+    int last_disposal;           /* Disposal method from previous frame */
+    int restore_frame;           /* Frame to restore when using DISPOSE_PREVIOUS */
 
-            if (anim->frames && anim->delays) {
-                int i;
+    Sint64 last_pts;
+};
 
-                for (i = 0; i < anim->count; ++i) {
-                    anim->frames[i] = internal->frames[i].image;
-                    anim->delays[i] = internal->frames[i].delay;
-                }
-            } else {
-                IMG_FreeAnimation(anim);
-                anim = NULL;
+static bool IMG_AnimationDecoderStreamReset_Internal(IMG_AnimationDecoderStream* stream)
+{
+    IMG_AnimationDecoderStreamContext* ctx = stream->ctx;
+    if (SDL_SeekIO(stream->src, stream->start, SDL_IO_SEEK_SET) < 0) {
+        return SDL_SetError("Failed to seek to beginning of GIF file");
+    }
+
+    SDL_memset(&ctx->state, 0, sizeof(ctx->state));
+    ctx->state.Gif89.transparent = -1;
+    ctx->state.Gif89.delayTime = -1;
+    ctx->state.Gif89.inputFlag = -1;
+    ctx->state.Gif89.disposal = GIF_DISPOSE_NA;
+
+    ctx->current_frame = 0;
+    ctx->current_disposal = GIF_DISPOSE_NA;
+    ctx->current_delay = 100;
+    ctx->transparent_index = -1;
+    ctx->got_header = false;
+    ctx->got_eof = false;
+    ctx->last_disposal = GIF_DISPOSE_NONE;
+    ctx->restore_frame = 0;
+
+    if (ctx->canvas) {
+        SDL_FillSurfaceRect(ctx->canvas, NULL, 0);
+    }
+    
+    if (ctx->prev_canvas) {
+        SDL_FillSurfaceRect(ctx->prev_canvas, NULL, 0);
+    }
+    
+    return true;
+}
+
+static bool IMG_AnimationDecoderStreamGetFrames_Internal(IMG_AnimationDecoderStream *stream, int framesToLoad, IMG_AnimationDecoderFrames *animationFrames)
+{
+    IMG_AnimationDecoderStreamContext *ctx = stream->ctx;
+    SDL_IOStream *src = stream->src;
+    unsigned char c;
+    int framesLoaded = 0;
+
+    animationFrames->w = ctx->width;
+    animationFrames->h = ctx->height;
+    animationFrames->count = 0;
+    animationFrames->frames = NULL;
+    animationFrames->delays = NULL;
+
+    if (ctx->got_eof) {
+        return true;
+    }
+
+    if (framesToLoad <= 0) {
+        framesToLoad = SDL_MAX_SINT32;
+    }
+
+    if (!ctx->got_header) {
+        if (!ReadOK(src, ctx->buf, 6)) {
+            return SDL_SetError("Error reading GIF magic number");
+        }
+
+        if (SDL_strncmp((char *)ctx->buf, "GIF", 3) != 0) {
+            return SDL_SetError("Not a GIF file");
+        }
+
+        SDL_memcpy(ctx->version, (char *)ctx->buf + 3, 3);
+        ctx->version[3] = '\0';
+
+        if ((SDL_strcmp(ctx->version, "87a") != 0) && (SDL_strcmp(ctx->version, "89a") != 0)) {
+            return SDL_SetError("Bad version number, not '87a' or '89a'");
+        }
+
+        if (!ReadOK(src, ctx->buf, 7)) {
+            return SDL_SetError("Failed to read screen descriptor");
+        }
+
+        ctx->width = LM_to_uint(ctx->buf[0], ctx->buf[1]);
+        ctx->height = LM_to_uint(ctx->buf[2], ctx->buf[3]);
+        ctx->state.GifScreen.Width = ctx->width;
+        ctx->state.GifScreen.Height = ctx->height;
+        ctx->state.GifScreen.BitPixel = 2 << (ctx->buf[4] & 0x07);
+        ctx->state.GifScreen.ColorResolution = (((ctx->buf[4] & 0x70) >> 3) + 1);
+        ctx->state.GifScreen.Background = ctx->buf[5];
+        ctx->state.GifScreen.AspectRatio = ctx->buf[6];
+
+        ctx->has_global_colormap = BitSet(ctx->buf[4], LOCALCOLORMAP);
+
+        if (ctx->has_global_colormap) {
+            ctx->global_colormap_size = ctx->state.GifScreen.BitPixel;
+            int g = ctx->global_grayscale ? 1 : 0;
+            if (ReadColorMap(src, ctx->global_colormap_size, ctx->global_colormap, &g)) {
+                return SDL_SetError("Error reading global colormap");
+            }
+            SDL_memcpy(ctx->state.GifScreen.ColorMap, ctx->global_colormap, sizeof(ctx->global_colormap));
+            ctx->state.GifScreen.GrayScale = ctx->global_grayscale;
+        }
+
+        if (!ctx->canvas) {
+            ctx->canvas = SDL_CreateSurface(ctx->width, ctx->height, SDL_PIXELFORMAT_RGBA32);
+            if (!ctx->canvas) {
+                return SDL_SetError("Failed to create canvas surface");
+            }
+
+            if (!SDL_FillSurfaceRect(ctx->canvas, NULL, 0)) {
+                SDL_DestroySurface(ctx->canvas);
+                ctx->canvas = NULL;
+                return SDL_SetError("Failed to fill canvas surface with transparent color");
             }
         }
-        SDL_free(internal->frames);
-        SDL_free(internal);
-        return anim;
+
+        if (!ctx->prev_canvas) {
+            ctx->prev_canvas = SDL_CreateSurface(ctx->width, ctx->height, SDL_PIXELFORMAT_RGBA32);
+            if (!ctx->prev_canvas) {
+                return SDL_SetError("Failed to create previous canvas surface");
+            }
+
+            if (!SDL_FillSurfaceRect(ctx->prev_canvas, NULL, 0)) {
+                SDL_DestroySurface(ctx->prev_canvas);
+                ctx->prev_canvas = NULL;
+                return SDL_SetError("Failed to fill previous canvas surface with transparent color");
+            }
+        }
+
+        ctx->got_header = true;
     }
-    return NULL;
+
+    animationFrames->frames = (SDL_Surface **)SDL_calloc(framesToLoad, sizeof(SDL_Surface *));
+    if (!animationFrames->frames) {
+        return SDL_SetError("Out of memory for frame array");
+    }
+
+    animationFrames->delays = (Sint64 *)SDL_malloc(framesToLoad * sizeof(Sint64));
+    if (!animationFrames->delays) {
+        SDL_free(animationFrames->frames);
+        animationFrames->frames = NULL;
+        return SDL_SetError("Out of memory for delays array");
+    }
+
+    animationFrames->w = ctx->width;
+    animationFrames->h = ctx->height;
+
+    while (framesLoaded < framesToLoad) {
+        if (!ReadOK(src, &c, 1)) {
+            ctx->got_eof = true;
+            break;
+        }
+
+        if (c == ';') {
+            ctx->got_eof = true;
+            break;
+        }
+
+        if (c == '!') {
+            if (!ReadOK(src, &c, 1)) {
+                ctx->got_eof = true;
+                break;
+            }
+            DoExtension(src, c, &ctx->state);
+            continue;
+        }
+
+        if (c != ',') {
+            continue;
+        }
+
+        if (!ReadOK(src, ctx->buf, 9)) {
+            ctx->got_eof = true;
+            break;
+        }
+
+        int useGlobalColormap = !BitSet(ctx->buf[8], LOCALCOLORMAP);
+        int bitPixel = 1 << ((ctx->buf[8] & 0x07) + 1);
+        int left = LM_to_uint(ctx->buf[0], ctx->buf[1]);
+        int top = LM_to_uint(ctx->buf[2], ctx->buf[3]);
+        int width = LM_to_uint(ctx->buf[4], ctx->buf[5]);
+        int height = LM_to_uint(ctx->buf[6], ctx->buf[7]);
+
+        unsigned char localColorMap[3][MAXCOLORMAPSIZE];
+        int grayScale = 0;
+
+        if (!useGlobalColormap) {
+            if (ReadColorMap(src, bitPixel, localColorMap, &grayScale)) {
+                ctx->got_eof = true;
+                break;
+            }
+        }
+
+        switch (ctx->last_disposal) {
+        case GIF_DISPOSE_NONE:
+            /* Leave canvas as is */
+            break;
+
+        case GIF_DISPOSE_RESTORE_BACKGROUND:
+        {
+            SDL_Rect rect = { 0, 0, ctx->width, ctx->height };
+            if (!SDL_FillSurfaceRect(ctx->canvas, &rect, 0)) {
+                SDL_free(animationFrames->frames);
+                SDL_free(animationFrames->delays);
+                animationFrames->frames = NULL;
+                animationFrames->delays = NULL;
+                return SDL_SetError("Failed to fill canvas with background color");
+            }
+        } break;
+
+        case GIF_DISPOSE_RESTORE_PREVIOUS:
+            /* Restore canvas to previous state */
+            if (ctx->prev_canvas) {
+                if (!SDL_BlitSurface(ctx->prev_canvas, NULL, ctx->canvas, NULL)) {
+                    SDL_free(animationFrames->frames);
+                    SDL_free(animationFrames->delays);
+                    animationFrames->frames = NULL;
+                    animationFrames->delays = NULL;
+                    return SDL_SetError("Failed to restore previous canvas");
+                }
+            }
+            break;
+
+        default:
+            /* Default is to do nothing */
+            break;
+        }
+
+        /* If current disposal method is RESTORE_PREVIOUS, save current canvas */
+        if (ctx->state.Gif89.disposal == GIF_DISPOSE_RESTORE_PREVIOUS) {
+            if (!SDL_BlitSurface(ctx->canvas, NULL, ctx->prev_canvas, NULL)) {
+                SDL_free(animationFrames->frames);
+                SDL_free(animationFrames->delays);
+                animationFrames->frames = NULL;
+                animationFrames->delays = NULL;
+                return SDL_SetError("Failed to save current canvas for restoration");
+            }
+        }
+        Image *image;
+        if (!useGlobalColormap) {
+            image = ReadImage(src, width, height, bitPixel, localColorMap, grayScale,
+                              BitSet(ctx->buf[8], INTERLACE), 0, &ctx->state);
+        } else {
+            image = ReadImage(src, width, height, ctx->state.GifScreen.BitPixel,
+                              ctx->state.GifScreen.ColorMap, ctx->state.GifScreen.GrayScale,
+                              BitSet(ctx->buf[8], INTERLACE), 0, &ctx->state);
+        }
+
+        if (!image) {
+            // TODO:
+            // Error reading image, but we'll continue with what we have, or should we??
+            continue;
+        }
+
+        /* Apply transparency if needed */
+        if (ctx->state.Gif89.transparent >= 0) {
+            if (!SDL_SetSurfaceColorKey(image, true, ctx->state.Gif89.transparent)) {
+                SDL_DestroySurface(image);
+                SDL_free(animationFrames->frames);
+                SDL_free(animationFrames->delays);
+                animationFrames->frames = NULL;
+                animationFrames->delays = NULL;
+                return SDL_SetError("Failed to set transparency on frame");
+            }
+        }
+
+        /* Composite the frame onto the canvas */
+        SDL_Rect dest = { left, top, width, height };
+        if (!SDL_BlitSurface(image, NULL, ctx->canvas, &dest)) {
+            SDL_DestroySurface(image);
+            SDL_free(animationFrames->frames);
+            SDL_free(animationFrames->delays);
+            animationFrames->frames = NULL;
+            animationFrames->delays = NULL;
+            return SDL_SetError("Failed to blit frame onto canvas");
+        }
+
+        /* Store the frame in the output array */
+        animationFrames->frames[framesLoaded] = SDL_DuplicateSurface(ctx->canvas);
+        if (!animationFrames->frames[framesLoaded]) {
+            SDL_DestroySurface(image);
+            for (int i = 0; i < framesLoaded; i++) {
+                SDL_DestroySurface(animationFrames->frames[i]);
+            }
+            SDL_free(animationFrames->frames);
+            SDL_free(animationFrames->delays);
+            animationFrames->frames = NULL;
+            animationFrames->delays = NULL;
+            return SDL_SetError("Failed to duplicate frame surface");
+        }
+
+        if (ctx->current_frame == 0) {
+            animationFrames->delays[framesLoaded] = 0;
+        } else if (ctx->state.Gif89.delayTime < 2) {
+            animationFrames->delays[framesLoaded] = stream->ctx->last_pts += stream->timebase_denominator * stream->timebase_denominator * 10;
+        } else {
+             int millisecond_delay = ctx->state.Gif89.delayTime * 10;
+            animationFrames->delays[framesLoaded] = stream->ctx->last_pts += millisecond_delay * stream->timebase_denominator / (1000 * stream->timebase_numerator);
+        }
+
+        ctx->last_disposal = ctx->state.Gif89.disposal;
+
+        SDL_DestroySurface(image);
+
+        ctx->state.Gif89.transparent = -1;
+        ctx->state.Gif89.delayTime = -1;
+        ctx->state.Gif89.inputFlag = -1;
+        ctx->state.Gif89.disposal = GIF_DISPOSE_NA;
+
+        framesLoaded++;
+        ctx->current_frame++;
+        ctx->frame_count++;
+    }
+
+    animationFrames->count = framesLoaded;
+
+    if (framesLoaded == 0 && !ctx->got_eof) {
+        SDL_free(animationFrames->frames);
+        SDL_free(animationFrames->delays);
+        animationFrames->frames = NULL;
+        animationFrames->delays = NULL;
+        return SDL_SetError("Failed to load any frames");
+    }
+
+    return true;
+}
+
+static bool IMG_AnimationDecoderStreamClose_Internal(IMG_AnimationDecoderStream* stream)
+{
+    IMG_AnimationDecoderStreamContext* ctx = stream->ctx;
+    if (ctx->canvas) {
+        SDL_DestroySurface(ctx->canvas);
+    }
+    
+    if (ctx->prev_canvas) {
+        SDL_DestroySurface(ctx->prev_canvas);
+    }
+
+    SDL_free(ctx);
+    stream->ctx = NULL;
+    
+    return true;
+}
+
+bool IMG_CreateGIFAnimationDecoderStream(IMG_AnimationDecoderStream* stream, SDL_PropertiesID decoderProps)
+{
+    IMG_AnimationDecoderStreamContext* ctx = (IMG_AnimationDecoderStreamContext*)SDL_calloc(1, sizeof(IMG_AnimationDecoderStreamContext));
+    if (!ctx) {
+        return SDL_SetError("Out of memory for GIF decoder context");
+    }
+
+    ctx->state.Gif89.transparent = -1;
+    ctx->state.Gif89.delayTime = -1;
+    ctx->state.Gif89.inputFlag = -1;
+    ctx->state.Gif89.disposal = GIF_DISPOSE_NA;
+    
+    ctx->transparent_index = -1;
+    ctx->got_header = false;
+    ctx->got_eof = false;
+    ctx->current_frame = 0;
+    ctx->frame_count = 0;
+    ctx->current_delay = 100;
+    ctx->current_disposal = GIF_DISPOSE_NA;
+    ctx->last_disposal = GIF_DISPOSE_NONE;
+    ctx->restore_frame = 0;
+
+    stream->ctx = ctx;
+    stream->Reset = IMG_AnimationDecoderStreamReset_Internal;
+    stream->GetFrames = IMG_AnimationDecoderStreamGetFrames_Internal;
+    stream->Close = IMG_AnimationDecoderStreamClose_Internal;
+    
+    return true;
 }
 
 #else
@@ -758,6 +1135,13 @@ IMG_Animation *IMG_LoadGIFAnimation_IO(SDL_IOStream *src)
 {
     (void)src;
     return NULL;
+}
+
+bool IMG_CreateGIFAnimationDecoderStream(IMG_AnimationDecoderStream *stream, SDL_PropertiesID decoderProps)
+{
+    (void)stream;
+    (void)decoderProps;
+    return false;
 }
 
 #endif /* LOAD_GIF */
@@ -892,7 +1276,7 @@ static bool writeWord(SDL_IOStream *io, uint16_t word)
     return SDL_WriteIO(io, bytes, 2) == 2;
 }
 
-struct IMG_AnimationStreamContext
+struct IMG_AnimationEncoderStreamContext
 {
     uint16_t width;
     uint16_t height;
@@ -2225,9 +2609,9 @@ static int writeGifTrailer(SDL_IOStream *io)
     return 0;
 }
 
-static bool AnimationStream_AddFrame(struct IMG_AnimationStream *stream, SDL_Surface *surface, Uint64 pts)
+static bool AnimationStream_AddFrame(struct IMG_AnimationEncoderStream *stream, SDL_Surface *surface, Uint64 pts)
 {
-    IMG_AnimationStreamContext *ctx = stream->ctx;
+    IMG_AnimationEncoderStreamContext *ctx = stream->ctx;
     SDL_IOStream *io = stream->dst;
     uint8_t *indexedPixels = NULL;
     uint8_t *compressedData = NULL;
@@ -2343,14 +2727,14 @@ error:
     return false;
 }
 
-static bool AnimationStream_End(struct IMG_AnimationStream *stream)
+static bool AnimationStream_End(struct IMG_AnimationEncoderStream *stream)
 {
     if (!stream || !stream->ctx) {
         SDL_SetError("Invalid arguments for AnimationStream_End.");
         return false;
     }
 
-    IMG_AnimationStreamContext *ctx = stream->ctx;
+    IMG_AnimationEncoderStreamContext *ctx = stream->ctx;
     SDL_IOStream *io = stream->dst;
     bool success = true;
 
@@ -2371,12 +2755,12 @@ static bool AnimationStream_End(struct IMG_AnimationStream *stream)
 }
 #endif /* SAVE_GIF */
 
-bool IMG_CreateGIFAnimationStream(struct IMG_AnimationStream *stream, SDL_PropertiesID props)
+bool IMG_CreateGIFAnimationEncoderStream(struct IMG_AnimationEncoderStream *stream, SDL_PropertiesID props)
 {
 #if !SAVE_GIF
     return SDL_SetError("GIF animation saving is not enabled in this build.");
 #else
-    IMG_AnimationStreamContext *ctx;
+    IMG_AnimationEncoderStreamContext *ctx;
     int loop_count;
     int transparent_index = -1;
     uint16_t num_global_colors = 256;
@@ -2398,7 +2782,7 @@ bool IMG_CreateGIFAnimationStream(struct IMG_AnimationStream *stream, SDL_Proper
         return false;
     }
 
-    ctx = (IMG_AnimationStreamContext *)SDL_calloc(1, sizeof(IMG_AnimationStreamContext));
+    ctx = (IMG_AnimationEncoderStreamContext *)SDL_calloc(1, sizeof(IMG_AnimationEncoderStreamContext));
     if (!ctx) {
         SDL_SetError("Failed to allocate animation stream context.");
         return false;
@@ -2428,17 +2812,17 @@ bool IMG_CreateGIFAnimationStream(struct IMG_AnimationStream *stream, SDL_Proper
 
 bool IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
-    IMG_AnimationStream *stream = IMG_CreateAnimationStream_IO(dst, closeio, "gif");
+    IMG_AnimationEncoderStream *stream = IMG_CreateAnimationEncoderStream_IO(dst, closeio, "gif");
     if (!stream) {
         return false;
     }
 
-    if (!IMG_AddAnimationFrame(stream, surface, 0)) {
-        IMG_CloseAnimationStream(stream);
+    if (!IMG_AddAnimationEncoderFrame(stream, surface, 0)) {
+        IMG_CloseAnimationEncoderStream(stream);
         return false;
     }
 
-    if (!IMG_CloseAnimationStream(stream)) {
+    if (!IMG_CloseAnimationEncoderStream(stream)) {
         return false;
     }
 

@@ -19,5 +19,6 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-extern bool IMG_CreateWEBPAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID props);
+extern bool IMG_CreateWEBPAnimationEncoderStream(IMG_AnimationEncoderStream *stream, SDL_PropertiesID props);
+extern bool IMG_CreateWEBPAnimationDecoderStream(IMG_AnimationDecoderStream *stream, SDL_PropertiesID decoderProps);
 
