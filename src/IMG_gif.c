@@ -1100,6 +1100,8 @@ static bool IMG_AnimationDecoderStreamClose_Internal(IMG_AnimationDecoderStream*
 
 bool IMG_CreateGIFAnimationDecoderStream(IMG_AnimationDecoderStream* stream, SDL_PropertiesID decoderProps)
 {
+    (void)decoderProps;
+    
     IMG_AnimationDecoderStreamContext* ctx = (IMG_AnimationDecoderStreamContext*)SDL_calloc(1, sizeof(IMG_AnimationDecoderStreamContext));
     if (!ctx) {
         return SDL_SetError("Out of memory for GIF decoder context");
