@@ -48,7 +48,7 @@ IMG_AnimationDecoderStream *IMG_CreateAnimationDecoderStream(const char *file)
 IMG_AnimationDecoderStream *IMG_CreateAnimationDecoderStream_IO(SDL_IOStream *src, bool closeio, const char *type)
 {
     if (!src) {
-        SDL_InvalidParamError("dst");
+        SDL_InvalidParamError("src");
         return NULL;
     }
 
