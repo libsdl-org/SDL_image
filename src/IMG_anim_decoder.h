@@ -19,9 +19,9 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-typedef struct IMG_AnimationDecoderStreamContext IMG_AnimationDecoderStreamContext;
+typedef struct IMG_AnimationDecoderContext IMG_AnimationDecoderContext;
 
-struct IMG_AnimationDecoderStream
+struct IMG_AnimationDecoder
 {
     SDL_IOStream *src;
     Sint64 start;
@@ -29,11 +29,11 @@ struct IMG_AnimationDecoderStream
     int timebase_numerator;
     int timebase_denominator;
 
-    bool (*GetFrames)(IMG_AnimationDecoderStream *stream, int framesToLoad, IMG_AnimationDecoderFrames* decoderFrames);
-    bool (*Reset)(IMG_AnimationDecoderStream *stream);
-    bool (*Close)(IMG_AnimationDecoderStream *stream);
+    bool (*GetFrames)(IMG_AnimationDecoder *decoder, int framesToLoad, IMG_AnimationDecoderFrames* decoderFrames);
+    bool (*Reset)(IMG_AnimationDecoder *decoder);
+    bool (*Close)(IMG_AnimationDecoder *decoder);
 
-    IMG_AnimationDecoderStreamContext *ctx;
+    IMG_AnimationDecoderContext *ctx;
 };
 
 extern IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int maxFrames);
