@@ -2575,7 +2575,7 @@ typedef struct IMG_AnimationDecoderFrames
 extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoder(const char *file);
 
 /**
- * Create an animation decoder and save it to an IOStream.
+ * Create a decoder to read a series of images from an IOStream.
  *
  * If `closeio` is true, `src` will be closed before returning if this
  * function fails, or when the animation decoder is closed if this function
