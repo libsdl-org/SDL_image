@@ -169,7 +169,7 @@ bool IMG_GetAnimationDecoderFrames(IMG_AnimationDecoderStream *stream, int frame
         return SDL_InvalidParamError("stream");
     }
     if (!decoderFrames) {
-        return SDL_InvalidParamError("frames");
+        return SDL_InvalidParamError("decoderFrames");
     }
 
     return stream->GetFrames(stream, framesToLoad, decoderFrames);
