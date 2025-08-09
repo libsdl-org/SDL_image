@@ -1000,7 +1000,7 @@ bool IMG_SaveWEBP(SDL_Surface *surface, const char *file, float quality)
     return SDL_SetError("SDL_image was not built with WEBP save support");
 }
 
-bool IMG_CreateWEBPAnimationEncoderStream(IMG_AnimationStream *stream, SDL_PropertiesID props)
+bool IMG_CreateWEBPAnimationEncoderStream(IMG_AnimationEncoderStream *stream, SDL_PropertiesID props)
 {
     (void)stream;
     (void)props;
