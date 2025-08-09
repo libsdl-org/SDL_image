@@ -828,47 +828,48 @@ struct IMG_AnimationDecoderStreamContext
     int repetitionCount;              /* Number of repetitions */
 };
 
-static bool IMG_AnimationDecoderStreamReset_Internal(IMG_AnimationDecoderStream* stream)
+static bool IMG_AnimationDecoderStreamReset_Internal(IMG_AnimationDecoderStream *stream)
 {
-     IMG_AnimationDecoderStreamContext* ctx = stream->ctx;
-    
+    IMG_AnimationDecoderStreamContext *ctx = stream->ctx;
+
     // Reset the decoder
     if (ctx->decoder) {
         lib.avifDecoderDestroy(ctx->decoder);
         ctx->decoder = NULL;
     }
-    
+
     // Reset stream position
     if (SDL_SeekIO(stream->src, ctx->start_pos, SDL_IO_SEEK_SET) < 0) {
         return SDL_SetError("Failed to seek to beginning of AVIF file");
     }
-    
+
     // Recreate the decoder
     ctx->decoder = lib.avifDecoderCreate();
     if (!ctx->decoder) {
         return SDL_SetError("Couldn't create AVIF decoder");
     }
-    
+
     // Be permissive to decode as many frames as possible
     ctx->decoder->strictFlags = AVIF_STRICT_DISABLED;
-    
+
     // Set up IO
-    ctx->ioContext.src = stream->src;
-    ctx->ioContext.start = ctx->start_pos;
     if (ctx->ioContext.data) {
         SDL_free(ctx->ioContext.data);
-        ctx->ioContext.data = NULL;
-        ctx->ioContext.size = 0;
     }
-    
+
+    ctx->ioContext.src = stream->src;
+    ctx->ioContext.start = ctx->start_pos;
+    ctx->ioContext.data = NULL;
+    ctx->ioContext.size = 0;
+
     ctx->io.destroy = DestroyAVIFIO;
     ctx->io.read = ReadAVIFIO;
     ctx->io.data = &ctx->ioContext;
     lib.avifDecoderSetIO(ctx->decoder, &ctx->io);
-    
+
     // Reset state
     ctx->current_frame = 0;
-    
+
     // Need to re-parse the animation if we reset
     if (ctx->parsed) {
         avifResult result = lib.avifDecoderParse(ctx->decoder);
@@ -876,7 +877,7 @@ static bool IMG_AnimationDecoderStreamReset_Internal(IMG_AnimationDecoderStream*
             return SDL_SetError("Couldn't re-parse AVIF animation after reset: %s", lib.avifResultToString(result));
         }
     }
-    
+
     return true;
 }
 
