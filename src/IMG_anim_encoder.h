@@ -19,9 +19,9 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-typedef struct IMG_AnimationEncoderStreamContext IMG_AnimationEncoderStreamContext;
+typedef struct IMG_AnimationEncoderContext IMG_AnimationEncoderContext;
 
-struct IMG_AnimationEncoderStream
+struct IMG_AnimationEncoder
 {
     SDL_IOStream *dst;
     Sint64 start;
@@ -32,11 +32,11 @@ struct IMG_AnimationEncoderStream
     Uint64 first_pts;
     Uint64 last_pts;
 
-    bool (*AddFrame)(IMG_AnimationEncoderStream *stream, SDL_Surface *surface, Uint64 pts);
-    bool (*Close)(IMG_AnimationEncoderStream *stream);
+    bool (*AddFrame)(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 pts);
+    bool (*Close)(IMG_AnimationEncoder *encoder);
 
-    IMG_AnimationEncoderStreamContext *ctx;
+    IMG_AnimationEncoderContext *ctx;
 };
 
-extern int GetStreamPresentationTimestampMS(IMG_AnimationEncoderStream *stream, Uint64 pts);
+extern int GetStreamPresentationTimestampMS(IMG_AnimationEncoder *encoder, Uint64 pts);
 
