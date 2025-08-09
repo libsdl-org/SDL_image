@@ -831,6 +831,52 @@ static SDL_Surface *decompress_png_frame_data(DecompressionContext* context, png
         }
     }
 
+    // Write PLTE chunk if this is a palette-based image
+    if (png_color_type == PNG_COLOR_TYPE_PALETTE && palette_colors && palette_count > 0) {
+        // Calculate PLTE chunk size (3 bytes per color)
+        png_uint_32 plte_size = palette_count * 3;
+        
+        // PLTE header
+        png_byte plte_header[8] = { 0, 0, 0, 0, 'P', 'L', 'T', 'E' };
+        custom_png_save_uint_32(plte_header, plte_size);
+        
+        if (SDL_WriteIO(context->mem_stream, plte_header, 8) != 8) {
+            SDL_SetError("Failed to write PLTE header");
+            goto error;
+        }
+        
+        // Write palette data
+        png_byte *plte_data = (png_byte *)SDL_malloc(plte_size);
+        if (!plte_data) {
+            SDL_SetError("Out of memory for PLTE data");
+            goto error;
+        }
+        
+        for (int i = 0; i < palette_count; i++) {
+            plte_data[i * 3 + 0] = palette_colors[i].r;
+            plte_data[i * 3 + 1] = palette_colors[i].g;
+            plte_data[i * 3 + 2] = palette_colors[i].b;
+        }
+        
+        if (SDL_WriteIO(context->mem_stream, plte_data, plte_size) != plte_size) {
+            SDL_free(plte_data);
+            SDL_SetError("Failed to write PLTE data");
+            goto error;
+        }
+        
+        // Calculate and write PLTE CRC
+        png_uint_32 crc = SDL_crc32(0, (Uint8 *)"PLTE", 4);
+        crc = SDL_crc32(crc, plte_data, plte_size);
+        png_byte crc_bytes[4];
+        custom_png_save_uint_32(crc_bytes, crc);
+        SDL_free(plte_data);
+        
+        if (SDL_WriteIO(context->mem_stream, crc_bytes, 4) != 4) {
+            SDL_SetError("Failed to write PLTE CRC");
+            goto error;
+        }
+    }
+
     // Write IDAT chunk
     {
         png_byte idat_header[8] = { 0, 0, 0, 0, 'I', 'D', 'A', 'T' };
