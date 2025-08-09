@@ -2618,7 +2618,6 @@ extern SDL_DECLSPEC IMG_AnimationDecoderStream * SDLCALL IMG_CreateAnimationDeco
  *   `IMG_PROP_ANIMATION_DECODER_STREAM_CREATE_FILENAME_STRING` is set.
  *
  * \param props the properties of the animation stream.
- * \param decoderSettings the properties that will be filled by the decoder with decoder-specific settings if not empty.
  * \returns a new IMG_AnimationDecoderStream, or NULL on failure; call SDL_GetError()
  *          for more information.
  *
@@ -2643,9 +2642,8 @@ extern SDL_DECLSPEC IMG_AnimationDecoderStream * SDLCALL IMG_CreateAnimationDeco
  *
  * \param stream the stream receiving images.
  * \param framesToLoad the number of frames to load from the stream.
- * \param frames an array of SDL_Surface pointers to fill with the loaded frames.
- * \param delays an array of integers to fill with the frame delays, in the stated numerator and denominator unit.
- * \param count a pointer to an integer that will be filled with the number of frames loaded.
+ * \param decoderFrames an instance of IMG_AnimationDecoderFrames to be filled with
+ *        loaded frames and their delays.
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
