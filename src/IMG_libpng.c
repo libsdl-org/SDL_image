@@ -1365,6 +1365,8 @@ static bool IMG_AnimationDecoderStreamClose_Internal(IMG_AnimationDecoderStream*
 
 bool IMG_CreateAPNGAnimationDecoderStream(IMG_AnimationDecoderStream* stream, SDL_PropertiesID decoderProps)
 {
+    (void)decoderProps;
+
     if (!IMG_InitPNG()) {
         return false;
     }
