@@ -2428,7 +2428,7 @@ typedef struct IMG_AnimationEncoder IMG_AnimationEncoder;
 extern SDL_DECLSPEC IMG_AnimationEncoder * SDLCALL IMG_CreateAnimationEncoder(const char *file);
 
 /**
- * Create an animation encoder and save it to an IOStream.
+ * Create an encoder to save a series of images to an IOStream.
  *
  * If `closeio` is true, `dst` will be closed before returning if this
  * function fails, or when the animation encoder is closed if this function
