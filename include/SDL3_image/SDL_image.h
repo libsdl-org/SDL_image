@@ -2578,11 +2578,11 @@ extern SDL_DECLSPEC IMG_AnimationDecoderStream * SDLCALL IMG_CreateAnimationDeco
 /**
  * Create an animation stream and save it to an IOStream.
  *
- * If `closeio` is true, `dst` will be closed before returning if this
+ * If `closeio` is true, `src` will be closed before returning if this
  * function fails, or when the animation stream is closed if this function
  * succeeds.
  *
- * \param dst an SDL_IOStream that will be used to save the stream.
+ * \param src an SDL_IOStream that will be used to save the stream.
  * \param closeio true to close the SDL_IOStream when done, false to leave it
  *                open.
  * \param type a filename extension that represent this data ("WEBP", etc).
@@ -2596,7 +2596,7 @@ extern SDL_DECLSPEC IMG_AnimationDecoderStream * SDLCALL IMG_CreateAnimationDeco
  * \sa IMG_AddAnimationDecoderFrame
  * \sa IMG_CloseAnimationDecoderStream
  */
-extern SDL_DECLSPEC IMG_AnimationDecoderStream * SDLCALL IMG_CreateAnimationDecoderStream_IO(SDL_IOStream *dst, bool closeio, const char *type);
+extern SDL_DECLSPEC IMG_AnimationDecoderStream * SDLCALL IMG_CreateAnimationDecoderStream_IO(SDL_IOStream *src, bool closeio, const char *type);
 
 /**
  * Create an animation stream with the specified properties.
