@@ -1644,7 +1644,7 @@ bool IMG_CreateAVIFAnimationEncoderStream(IMG_AnimationEncoderStream *stream, SD
 
 #else
 
-bool IMG_CreateAVIFAnimationEncoderStream(IMG_AnimationStream *stream, SDL_PropertiesID props)
+bool IMG_CreateAVIFAnimationEncoderStream(IMG_AnimationEncoderStream *stream, SDL_PropertiesID props)
 {
     (void)stream;
     (void)props;
