@@ -2597,8 +2597,8 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoder_IO
  *   an SDL_IOStream isn't being used. This is required if
  *   `IMG_PROP_ANIMATION_DECODER_CREATE_IOSTREAM_POINTER` isn't set.
  * - `IMG_PROP_ANIMATION_DECODER_CREATE_IOSTREAM_POINTER`: an SDL_IOStream
- *   containing a series of images. This should not be closed until
- *   the animation decoder is closed. This is required if
+ *   containing a series of images. This should not be closed until the
+ *   animation decoder is closed. This is required if
  *   `IMG_PROP_ANIMATION_DECODER_CREATE_FILENAME_STRING` isn't set.
  * - `IMG_PROP_ANIMATION_DECODER_CREATE_IOSTREAM_AUTOCLOSE_BOOLEAN`: true if
  *   closing the animation decoder should also close the associated
@@ -2639,10 +2639,10 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoderWit
  * only sets the error if the decoding has failed.
  *
  * \param decoder the animation decoder.
- * \param frame a pointer filled in with the SDL_Surface for the next frame in the animation.
- * \param pts a pointer filled in with the
- *            presentation timestamp of the frame, usually in milliseconds
- *            but can be other units if the
+ * \param frame a pointer filled in with the SDL_Surface for the next frame in
+ *              the animation.
+ * \param pts a pointer filled in with the presentation timestamp of the
+ *            frame, usually in milliseconds but can be other units if the
  *            `IMG_PROP_ANIMATION_DECODER_CREATE_TIMEBASE_DENOMINATOR_NUMBER`
  *            property is set when creating the decoder.
  * \returns true on success or false on failure; call SDL_GetError() for more
