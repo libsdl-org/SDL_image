@@ -19,6 +19,22 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-extern bool IMG_CreateWEBPAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props);
-extern bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props);
+typedef struct IMG_AnimationDecoderContext IMG_AnimationDecoderContext;
 
+struct IMG_AnimationDecoder
+{
+    SDL_IOStream *src;
+    Sint64 start;
+    bool closeio;
+    int timebase_numerator;
+    int timebase_denominator;
+
+    bool (*GetNextFrame)(IMG_AnimationDecoder *decoder, SDL_Surface** frame, Sint64* pts);
+    bool (*Reset)(IMG_AnimationDecoder *decoder);
+    bool (*Close)(IMG_AnimationDecoder *decoder);
+
+    IMG_AnimationDecoderContext *ctx;
+    SDL_PropertiesID metadata;
+};
+
+extern IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int maxFrames);

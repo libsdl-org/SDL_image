@@ -19,4 +19,5 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-extern bool IMG_CreateGIFAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID props);
+extern bool IMG_CreateGIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props);
+extern bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props);

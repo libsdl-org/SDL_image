@@ -28,7 +28,8 @@
  *******************************************************************************/
 
 #include <SDL3_image/SDL_image.h>
-#include "IMG_anim.h"
+#include "IMG_anim_encoder.h"
+#include "IMG_anim_decoder.h"
 
 #ifdef SDL_IMAGE_LIBPNG
 #include <png.h>
@@ -771,7 +772,7 @@ typedef struct
 } DecompressionContext;
 
 static SDL_Surface *decompress_png_frame_data(DecompressionContext* context, png_bytep compressed_data, png_size_t compressed_size,
-                                              int width, int height, int png_color_type, int bit_depth)
+                                              int width, int height, int png_color_type, int bit_depth, SDL_Color *palette_colors, int palette_count)
 {
     /*
      * Usually you'd directly decompress zlib but then we have to do defiltering and deinterlacing ourselves.
@@ -826,6 +827,52 @@ static SDL_Surface *decompress_png_frame_data(DecompressionContext* context, png
         custom_png_save_uint_32(crc_bytes, crc);
         if (SDL_WriteIO(context->mem_stream, crc_bytes, 4) != 4) {
             SDL_SetError("Failed to write IHDR CRC");
+            goto error;
+        }
+    }
+
+    // Write PLTE chunk if this is a palette-based image
+    if (png_color_type == PNG_COLOR_TYPE_PALETTE && palette_colors && palette_count > 0) {
+        // Calculate PLTE chunk size (3 bytes per color)
+        png_uint_32 plte_size = palette_count * 3;
+        
+        // PLTE header
+        png_byte plte_header[8] = { 0, 0, 0, 0, 'P', 'L', 'T', 'E' };
+        custom_png_save_uint_32(plte_header, plte_size);
+        
+        if (SDL_WriteIO(context->mem_stream, plte_header, 8) != 8) {
+            SDL_SetError("Failed to write PLTE header");
+            goto error;
+        }
+        
+        // Write palette data
+        png_byte *plte_data = (png_byte *)SDL_malloc(plte_size);
+        if (!plte_data) {
+            SDL_SetError("Out of memory for PLTE data");
+            goto error;
+        }
+        
+        for (int i = 0; i < palette_count; i++) {
+            plte_data[i * 3 + 0] = palette_colors[i].r;
+            plte_data[i * 3 + 1] = palette_colors[i].g;
+            plte_data[i * 3 + 2] = palette_colors[i].b;
+        }
+        
+        if (SDL_WriteIO(context->mem_stream, plte_data, plte_size) != plte_size) {
+            SDL_free(plte_data);
+            SDL_SetError("Failed to write PLTE data");
+            goto error;
+        }
+        
+        // Calculate and write PLTE CRC
+        png_uint_32 crc = SDL_crc32(0, (Uint8 *)"PLTE", 4);
+        crc = SDL_crc32(crc, plte_data, plte_size);
+        png_byte crc_bytes[4];
+        custom_png_save_uint_32(crc_bytes, crc);
+        SDL_free(plte_data);
+        
+        if (SDL_WriteIO(context->mem_stream, crc_bytes, 4) != 4) {
+            SDL_SetError("Failed to write PLTE CRC");
             goto error;
         }
     }
@@ -1048,163 +1095,389 @@ static bool read_png_chunk(SDL_IOStream *stream, char *type, png_bytep *data, pn
 
 IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
 {
-    Sint64 start_pos;
-    SDL_Color *palette_colors = NULL;
-    int palette_count = -1;
-    png_bytep trans_alpha = NULL;
-    int trans_count;
-    IMG_Animation *animation = NULL;
-    apng_read_context apng_ctx;
-    unsigned char header[8];
-    SDL_Surface *temp_frame_surface = NULL;
-    png_bytep decompressed_frame_data = NULL;
-    int total_frame_count = 0;
-    int png_color_type = -1;
-    int bit_depth = -1;
-    bool found_iend = false;
-    int width = -1, height = -1;
+    return IMG_DecodeAsAnimation(src, "png", 0);
+}
 
-    if (!src) {
-        SDL_SetError("SDL_IOStream is NULL");
-        return NULL;
+struct IMG_AnimationDecoderContext
+{
+    apng_acTL_chunk actl;
+    apng_fcTL_chunk *fctl_frames;
+    int fctl_count;
+    int fctl_capacity;
+    bool is_apng;
+    SDL_Surface *canvas;
+    SDL_Surface *prev_canvas_copy;
+    int current_frame_index;
+
+    int width;
+    int height;
+    int bit_depth;
+    int png_color_type;
+
+    SDL_Color *palette_colors;
+    int palette_count;
+    png_bytep trans_alpha;
+    int trans_count;
+
+    Sint64 last_pts;
+};
+
+static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder* decoder)
+{
+    IMG_AnimationDecoderContext* ctx = decoder->ctx;
+
+    ctx->current_frame_index = 0;
+    if (SDL_SeekIO(decoder->src, decoder->start, SDL_IO_SEEK_SET) < 0) {
+        return SDL_SetError("Failed to seek to beginning of APNG animation");
     }
+    
+    if (ctx->canvas) {
+        SDL_FillSurfaceRect(ctx->canvas, NULL, 0x00000000);
+    }
+
+    if (ctx->prev_canvas_copy) {
+        SDL_FillSurfaceRect(ctx->prev_canvas_copy, NULL, 0x00000000);
+    }
+    
+    return true;
+}
+
+static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Sint64 *pts)
+{
+    *pts = 0;
+    *frame = NULL;
+
+    IMG_AnimationDecoderContext *ctx = decoder->ctx;
+    if (!ctx->is_apng) {
+        return SDL_SetError("APNG decoder not properly initialized");
+    }
+
+    if (ctx->actl.num_frames - ctx->current_frame_index < 1) {
+        return true;
+    }
+
+    if (!ctx->canvas) {
+        ctx->canvas = SDL_CreateSurface(ctx->width, ctx->height, SDL_PIXELFORMAT_RGBA32);
+        if (!ctx->canvas) {
+            return SDL_SetError("Failed to create APNG canvas");
+        }
+        if (!SDL_SetSurfaceBlendMode(ctx->canvas, SDL_BLENDMODE_BLEND)) {
+            return SDL_SetError("Failed to set APNG canvas blend mode");
+        }
+        if (!SDL_FillSurfaceRect(ctx->canvas, NULL, 0x00000000)) {
+            return SDL_SetError("Failed to fill APNG canvas");
+        }
+    }
+
+    if (!ctx->prev_canvas_copy) {
+        ctx->prev_canvas_copy = SDL_CreateSurface(ctx->width, ctx->height, SDL_PIXELFORMAT_RGBA32);
+        if (!ctx->prev_canvas_copy) {
+            return SDL_SetError("Failed to create previous canvas copy");
+        }
+        if (!SDL_FillSurfaceRect(ctx->prev_canvas_copy, NULL, 0x00000000)) {
+            return SDL_SetError("Failed to fill previous canvas copy");
+        }
+    }
+
+    SDL_Surface *retval = NULL;
+    apng_fcTL_chunk *fctl = &ctx->fctl_frames[ctx->current_frame_index];
+
+    if (decoder->timebase_denominator == 0 || fctl->delay_den == 0 || ctx->current_frame_index == 0) {
+        *pts = ctx->last_pts = 0;
+    } else {
+        *pts = ctx->last_pts += (Sint64)((Sint64)fctl->delay_num * decoder->timebase_denominator / fctl->delay_den * decoder->timebase_numerator);
+    }
+
+    if (ctx->current_frame_index > 0) {
+        apng_fcTL_chunk *prev_fctl = &ctx->fctl_frames[ctx->current_frame_index - 1];
+        SDL_Rect prev_frame_rect = {
+            (int)prev_fctl->x_offset,
+            (int)prev_fctl->y_offset,
+            (int)prev_fctl->width,
+            (int)prev_fctl->height
+        };
+
+        switch (prev_fctl->dispose_op) {
+        case PNG_DISPOSE_OP_NONE:
+            // Do nothing
+            break;
+        case PNG_DISPOSE_OP_BACKGROUND:
+            if (!SDL_FillSurfaceRect(ctx->canvas, &prev_frame_rect, 0x00000000)) {
+                return SDL_SetError("Failed to fill canvas for background dispose operation");
+            }
+            break;
+        case PNG_DISPOSE_OP_PREVIOUS:
+            if (!SDL_BlitSurface(ctx->prev_canvas_copy, NULL, ctx->canvas, NULL)) {
+                return SDL_SetError("Failed to restore previous canvas copy for dispose operation");
+            }
+            break;
+        }
+    }
+
+    if (fctl->dispose_op == PNG_DISPOSE_OP_PREVIOUS) {
+        if (!SDL_BlitSurface(ctx->canvas, NULL, ctx->prev_canvas_copy, NULL)) {
+            return SDL_SetError("Failed to copy current canvas to previous canvas copy");
+        }
+    }
+
+    DecompressionContext decompressionContext;
+    SDL_zero(decompressionContext);
+    SDL_Surface *temp_frame = decompress_png_frame_data(
+        &decompressionContext,
+        fctl->raw_idat_data,
+        fctl->raw_idat_size,
+        fctl->width,
+        fctl->height,
+        ctx->png_color_type,
+        ctx->bit_depth,
+        ctx->palette_colors,
+        ctx->palette_count);
+
+    if (!temp_frame) {
+        return SDL_SetError("Failed to decompress PNG frame data: %s", SDL_GetError());
+    }
+
+    if (temp_frame->format == SDL_PIXELFORMAT_INDEX8) {
+        if (ctx->palette_colors && ctx->palette_count > 0) {
+            SDL_Palette *frame_palette = SDL_CreatePalette(ctx->palette_count);
+            if (frame_palette) {
+                if (!SDL_SetPaletteColors(frame_palette, ctx->palette_colors, 0, ctx->palette_count)) {
+                    SDL_DestroySurface(temp_frame);
+                    return SDL_SetError("Failed to set palette colors for frame: %s", SDL_GetError());
+                }
+                if (!SDL_SetSurfacePalette(temp_frame, frame_palette)) {
+                    SDL_DestroySurface(temp_frame);
+                    return SDL_SetError("Failed to set palette for frame: %s", SDL_GetError());
+                }
+                SDL_DestroyPalette(frame_palette);
+            }
+        }
+    }
+
+    switch (fctl->blend_op) {
+    case PNG_BLEND_OP_SOURCE:
+        if (!SDL_SetSurfaceBlendMode(temp_frame, SDL_BLENDMODE_NONE)) {
+            SDL_DestroySurface(temp_frame);
+            return SDL_SetError("Failed to set blend mode for frame: %s", SDL_GetError());
+        }
+        break;
+    case PNG_BLEND_OP_OVER:
+        if (!SDL_SetSurfaceBlendMode(temp_frame, SDL_BLENDMODE_BLEND)) {
+            SDL_DestroySurface(temp_frame);
+            return SDL_SetError("Failed to set blend mode for frame: %s", SDL_GetError());
+        }
+        break;
+    }
+
+    SDL_Rect dest_rect = {
+        (int)fctl->x_offset,
+        (int)fctl->y_offset,
+        (int)fctl->width,
+        (int)fctl->height
+    };
+
+    if (!SDL_BlitSurface(temp_frame, NULL, ctx->canvas, &dest_rect)) {
+        SDL_DestroySurface(temp_frame);
+        return SDL_SetError("Failed to blit frame onto canvas: %s", SDL_GetError());
+    }
+    SDL_DestroySurface(temp_frame);
+
+    retval = SDL_DuplicateSurface(ctx->canvas);
+    if (!retval) {
+        return false;
+    }
+
+    ++ctx->current_frame_index;
+
+    *frame = retval;
+    return true;
+}
+
+static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder* decoder)
+{
+    IMG_AnimationDecoderContext* ctx = decoder->ctx;
+
+    if (ctx->fctl_frames) {
+        for (int i = 0; i < ctx->fctl_count; i++) {
+            if (ctx->fctl_frames[i].raw_idat_data) {
+                SDL_free(ctx->fctl_frames[i].raw_idat_data);
+            }
+        }
+        SDL_free(ctx->fctl_frames);
+    }
+
+    if (ctx->palette_colors) {
+        SDL_free(ctx->palette_colors);
+    }
+    
+    if (ctx->trans_alpha) {
+        SDL_free(ctx->trans_alpha);
+    }
+
+    if (ctx->canvas) {
+        SDL_DestroySurface(ctx->canvas);
+    }
+    
+    if (ctx->prev_canvas_copy) {
+        SDL_DestroySurface(ctx->prev_canvas_copy);
+    }
+
+    SDL_free(ctx);
+    decoder->ctx = NULL;
+    
+    return true;
+}
+
+bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_PropertiesID props)
+{
+    (void)props;
 
     if (!IMG_InitPNG()) {
-        return NULL;
+        return false;
     }
 
-    start_pos = SDL_TellIO(src);
-    SDL_zero(apng_ctx);
-    apng_ctx.stream = src;
-
-    if (SDL_ReadIO(src, header, sizeof(header)) != sizeof(header)) {
-        SDL_SetError("Failed to read PNG header from SDL_IOStream");
-        goto error;
+    IMG_AnimationDecoderContext* ctx = (IMG_AnimationDecoderContext*)SDL_calloc(1, sizeof(IMG_AnimationDecoderContext));
+    if (!ctx) {
+        return SDL_SetError("Out of memory for APNG decoder context");
     }
+    
+    decoder->ctx = ctx;
 
+    unsigned char header[8];
+    if (SDL_ReadIO(decoder->src, header, sizeof(header)) != sizeof(header)) {
+        SDL_SetError("Failed to read PNG header");
+        SDL_free(ctx);
+        decoder->ctx = NULL;
+        return false;
+    }
+    
     if (lib.png_sig_cmp(header, 0, 8)) {
         SDL_SetError("Not a valid PNG file signature");
-        goto error;
+        SDL_free(ctx);
+        decoder->ctx = NULL;
+        return false;
     }
 
-    // Read all chunks and process them
-    // Here we manually process all chunks because libpng was consuming fdAT (which is mandatory as it contains frame data) somehow even if we specified custom read function and specify unknown chunks to be sent, via png_set_keep_unknown_chunks.
-
-    /*
-     * SPEC - CHUNK SEQUENCE NUMBERS
-     * Decoders must treat out-of-order APNG chunks as an error. APNG-aware PNG editors should restore them to correct order using the sequence numbers.
-     *
-     * TODO:
-     * I am kinda confused as to why "editors" are separated in this spec. If I got it right (the spec), SDL is a core library that can either be used by an editor or a normal app, so in this case, which qualifies us for?
-     * Here I simply assume that we should rather try to fix the order to output a correct animation.
-     * Our decoder simply pushes the chunks into a list then correctly gathers them by searching for the correct sequence with for loop.
-     */
+    bool found_iend = false;
+    
     while (!found_iend) {
         char chunk_type[5] = { 0 };
         png_bytep chunk_data = NULL;
         png_size_t chunk_length = 0;
-
-        if (!read_png_chunk(src, chunk_type, &chunk_data, &chunk_length)) {
-            goto error;
+        
+        if (!read_png_chunk(decoder->src, chunk_type, &chunk_data, &chunk_length)) {
+            SDL_free(ctx);
+            decoder->ctx = NULL;
+            return false;
         }
-
+        
         if (chunk_length > INT_MAX) {
-            SDL_SetError("APNG chunk too large to process.");
+            SDL_SetError("APNG chunk too large to process");
             SDL_free(chunk_data);
-            goto error;
+            SDL_free(ctx);
+            decoder->ctx = NULL;
+            return false;
         }
-
+        
         if (SDL_memcmp(chunk_type, "IHDR", 4) == 0) {
             if (chunk_length != 13) {
                 SDL_SetError("Invalid IHDR chunk size");
                 SDL_free(chunk_data);
-                goto error;
+                SDL_free(ctx);
+                decoder->ctx = NULL;
+                return false;
             }
-
+            
             // Extract image dimensions from IHDR
-            width = SDL_Swap32BE(*(Uint32 *)chunk_data);
-            height = SDL_Swap32BE(*(Uint32 *)(chunk_data + 4));
-            bit_depth = *(Uint32 *)(chunk_data + 8);
-            png_color_type = *(Uint32 *)(chunk_data + 9);
-            // Note: We don't use the rest of the IHDR data here, but you could extract more info if needed.
-            //compression_method = *(Uint32 *)(chunk_data + 10);
-            //filter_method = *(Uint32 *)(chunk_data + 11);
-            //interlace_method = *(Uint32 *)(chunk_data + 12);
-
+            ctx->width = SDL_Swap32BE(*(Uint32 *)chunk_data);
+            ctx->height = SDL_Swap32BE(*(Uint32 *)(chunk_data + 4));
+            ctx->bit_depth = *(Uint8 *)(chunk_data + 8);
+            ctx->png_color_type = *(Uint8 *)(chunk_data + 9);
+            
         } else if (SDL_memcmp(chunk_type, "acTL", 4) == 0) {
             if (chunk_length != 8) {
                 SDL_SetError("Invalid acTL chunk size");
                 SDL_free(chunk_data);
-                goto error;
+                SDL_free(ctx);
+                decoder->ctx = NULL;
+                return false;
             }
-
-            apng_ctx.is_apng = true;
-            apng_ctx.actl.num_frames = SDL_Swap32BE(*(Uint32 *)chunk_data);
-            apng_ctx.actl.num_plays = SDL_Swap32BE(*(Uint32 *)(chunk_data + 4));
-
+            
+            ctx->is_apng = true;
+            ctx->actl.num_frames = SDL_Swap32BE(*(Uint32 *)chunk_data);
+            ctx->actl.num_plays = SDL_Swap32BE(*(Uint32 *)(chunk_data + 4));
+            
         } else if (SDL_memcmp(chunk_type, "PLTE", 4) == 0) {
             int num_entries = (int)chunk_length / 3;
             if (num_entries > 0 && num_entries <= 256) {
-                if (palette_colors) {
-                    SDL_free(palette_colors);
+                if (ctx->palette_colors) {
+                    SDL_free(ctx->palette_colors);
                 }
-
-                palette_colors = (SDL_Color *)SDL_malloc(num_entries * sizeof(SDL_Color));
-                if (!palette_colors) {
+                
+                ctx->palette_colors = (SDL_Color *)SDL_malloc(num_entries * sizeof(SDL_Color));
+                if (!ctx->palette_colors) {
                     SDL_SetError("Out of memory for palette data");
                     SDL_free(chunk_data);
-                    goto error;
+                    SDL_free(ctx);
+                    decoder->ctx = NULL;
+                    return false;
                 }
-
+                
                 for (int i = 0; i < num_entries; i++) {
-                    palette_colors[i].r = chunk_data[i * 3];
-                    palette_colors[i].g = chunk_data[i * 3 + 1];
-                    palette_colors[i].b = chunk_data[i * 3 + 2];
-                    palette_colors[i].a = 0xFF; // Default opaque
+                    ctx->palette_colors[i].r = chunk_data[i * 3];
+                    ctx->palette_colors[i].g = chunk_data[i * 3 + 1];
+                    ctx->palette_colors[i].b = chunk_data[i * 3 + 2];
+                    ctx->palette_colors[i].a = 0xFF; // Default opaque
                 }
-
-                palette_count = num_entries;
+                
+                ctx->palette_count = num_entries;
             }
         } else if (SDL_memcmp(chunk_type, "tRNS", 4) == 0) {
-            if (trans_alpha) {
-                SDL_free(trans_alpha);
+            if (ctx->trans_alpha) {
+                SDL_free(ctx->trans_alpha);
             }
-
-            trans_alpha = (png_bytep)SDL_malloc(chunk_length);
-            if (!trans_alpha) {
+            
+            ctx->trans_alpha = (png_bytep)SDL_malloc(chunk_length);
+            if (!ctx->trans_alpha) {
                 SDL_SetError("Out of memory for transparency data");
                 SDL_free(chunk_data);
-                goto error;
+                SDL_free(ctx);
+                decoder->ctx = NULL;
+                return false;
             }
-
-            SDL_memcpy(trans_alpha, chunk_data, chunk_length);
-            trans_count = (int)chunk_length;
-
-            if (palette_colors && palette_count > 0) {
-                int num_trans = SDL_min(trans_count, palette_count);
+            
+            SDL_memcpy(ctx->trans_alpha, chunk_data, chunk_length);
+            ctx->trans_count = (int)chunk_length;
+            
+            if (ctx->palette_colors && ctx->palette_count > 0) {
+                int num_trans = SDL_min(ctx->trans_count, ctx->palette_count);
                 for (int i = 0; i < num_trans; i++) {
-                    palette_colors[i].a = trans_alpha[i];
+                    ctx->palette_colors[i].a = ctx->trans_alpha[i];
                 }
-            } else {
-                SDL_SetError("No palette colors available for paletted frame. This either shows the tRNS was found earlier than PLTE in a corrupted APNG file");
-                goto error;
             }
         } else if (SDL_memcmp(chunk_type, "fcTL", 4) == 0) {
             if (chunk_length != 26) {
                 SDL_SetError("Invalid fcTL chunk size");
                 SDL_free(chunk_data);
-                goto error;
+                SDL_free(ctx);
+                decoder->ctx = NULL;
+                return false;
             }
-
-            if (apng_ctx.fctl_count >= apng_ctx.fctl_capacity) {
-                apng_ctx.fctl_capacity = apng_ctx.fctl_capacity == 0 ? 4 : apng_ctx.fctl_capacity * 2;
-                apng_ctx.fctl_frames = (apng_fcTL_chunk *)SDL_realloc(apng_ctx.fctl_frames, sizeof(apng_fcTL_chunk) * apng_ctx.fctl_capacity);
-                if (!apng_ctx.fctl_frames) {
-                    SDL_SetError("Out of memory for fcTL chunks in apng_read_user_chunk_callback");
-                    goto error;
+            
+            if (ctx->fctl_count >= ctx->fctl_capacity) {
+                ctx->fctl_capacity = ctx->fctl_capacity == 0 ? 4 : ctx->fctl_capacity * 2;
+                ctx->fctl_frames = (apng_fcTL_chunk *)SDL_realloc(ctx->fctl_frames, 
+                                                                sizeof(apng_fcTL_chunk) * ctx->fctl_capacity);
+                if (!ctx->fctl_frames) {
+                    SDL_SetError("Out of memory for fcTL chunks");
+                    SDL_free(chunk_data);
+                    SDL_free(ctx);
+                    decoder->ctx = NULL;
+                    return false;
                 }
             }
-            apng_fcTL_chunk *fctl = &apng_ctx.fctl_frames[apng_ctx.fctl_count];
+            
+            apng_fcTL_chunk *fctl = &ctx->fctl_frames[ctx->fctl_count];
             fctl->sequence_number = SDL_Swap32BE(*(Uint32 *)chunk_data);
             fctl->width = SDL_Swap32BE(*(Uint32 *)(chunk_data + 4));
             fctl->height = SDL_Swap32BE(*(Uint32 *)(chunk_data + 8));
@@ -1216,329 +1489,151 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
             fctl->blend_op = chunk_data[25];
             fctl->raw_idat_data = NULL;
             fctl->raw_idat_size = 0;
-            apng_ctx.fctl_count++;
-
+            ctx->fctl_count++;
+            
         } else if (SDL_memcmp(chunk_type, "IDAT", 4) == 0) {
             // Find fcTL with sequence number 0 (which corresponds to IDAT data)
             int matching_fctl_index = -1;
-            for (int i = 0; i < apng_ctx.fctl_count; ++i) {
-                if (apng_ctx.fctl_frames[i].sequence_number == 0) {
+            for (int i = 0; i < ctx->fctl_count; ++i) {
+                if (ctx->fctl_frames[i].sequence_number == 0) {
                     matching_fctl_index = i;
                     break;
                 }
             }
-
+            
             if (matching_fctl_index >= 0) {
-                apng_fcTL_chunk *fctl = &apng_ctx.fctl_frames[matching_fctl_index];
-
+                apng_fcTL_chunk *fctl = &ctx->fctl_frames[matching_fctl_index];
+                
                 // Allocate or reallocate buffer
                 png_size_t new_size = fctl->raw_idat_size + chunk_length;
                 if (new_size < fctl->raw_idat_size) {
                     SDL_SetError("IDAT size would overflow");
                     SDL_free(chunk_data);
-                    goto error;
+                    SDL_free(ctx);
+                    decoder->ctx = NULL;
+                    return false;
                 }
+                
                 png_bytep new_buffer = (png_bytep)SDL_realloc(fctl->raw_idat_data, new_size);
-
                 if (!new_buffer) {
                     SDL_SetError("Out of memory for IDAT data");
                     SDL_free(chunk_data);
-                    goto error;
+                    SDL_free(ctx);
+                    decoder->ctx = NULL;
+                    return false;
                 }
-
-                // Copy data
+                
                 fctl->raw_idat_data = new_buffer;
                 SDL_memcpy(fctl->raw_idat_data + fctl->raw_idat_size, chunk_data, chunk_length);
                 fctl->raw_idat_size = new_size;
-            } else {
-                SDL_SetError("Could not find fcTL with sequence number 0 for IDAT data");
-                SDL_free(chunk_data);
-                goto error;
             }
-
         } else if (SDL_memcmp(chunk_type, "fdAT", 4) == 0) {
-
             if (chunk_length < 4) {
                 SDL_SetError("Invalid fdAT chunk size");
                 SDL_free(chunk_data);
-                goto error;
+                SDL_free(ctx);
+                decoder->ctx = NULL;
+                return false;
             }
-
+            
             Uint32 sequence_number = SDL_Swap32BE(*(Uint32 *)chunk_data);
-
+            
             // Find matching fcTL by sequence number (fdAT sequence - 1 matches fcTL sequence)
             int matching_fctl_index = -1;
-            for (int i = 0; i < apng_ctx.fctl_count; ++i) {
-                if (apng_ctx.fctl_frames[i].sequence_number == sequence_number - 1) {
+            for (int i = 0; i < ctx->fctl_count; ++i) {
+                if (ctx->fctl_frames[i].sequence_number == sequence_number - 1) {
                     matching_fctl_index = i;
                     break;
                 }
             }
-
+            
             if (matching_fctl_index >= 0) {
-                apng_fcTL_chunk *fctl = &apng_ctx.fctl_frames[matching_fctl_index];
+                apng_fcTL_chunk *fctl = &ctx->fctl_frames[matching_fctl_index];
                 png_size_t new_size = fctl->raw_idat_size + (chunk_length - 4);
+                
                 if (new_size < fctl->raw_idat_size) {
                     SDL_SetError("fdAT size would overflow");
                     SDL_free(chunk_data);
-                    goto error;
+                    SDL_free(ctx);
+                    decoder->ctx = NULL;
+                    return false;
                 }
+                
                 png_bytep new_buffer = (png_bytep)SDL_realloc(fctl->raw_idat_data, new_size);
-
                 if (!new_buffer) {
                     SDL_SetError("Out of memory for fdAT data");
                     SDL_free(chunk_data);
-                    goto error;
+                    SDL_free(ctx);
+                    decoder->ctx = NULL;
+                    return false;
                 }
-
+                
                 fctl->raw_idat_data = new_buffer;
                 SDL_memcpy(fctl->raw_idat_data + fctl->raw_idat_size, chunk_data + 4, chunk_length - 4);
                 fctl->raw_idat_size = new_size;
-            } else {
-                SDL_SetError("Could not find matching fcTL for fdAT sequence number %u", sequence_number);
-                SDL_free(chunk_data);
-                goto error;
             }
-
         } else if (SDL_memcmp(chunk_type, "IEND", 4) == 0) {
             found_iend = true;
         }
-
+        
         SDL_free(chunk_data);
     }
-
-    if (!apng_ctx.is_apng || apng_ctx.fctl_count == 0) {
-        SDL_SetError("Not an APNG file or no frame control chunks found.");
-        goto error;
+    
+    if (!ctx->is_apng || ctx->fctl_count == 0) {
+        SDL_SetError("Not an APNG file or no frame control chunks found");
+        if (ctx->fctl_frames) {
+            for (int i = 0; i < ctx->fctl_count; i++) {
+                if (ctx->fctl_frames[i].raw_idat_data) {
+                    SDL_free(ctx->fctl_frames[i].raw_idat_data);
+                }
+            }
+            SDL_free(ctx->fctl_frames);
+        }
+        if (ctx->palette_colors) {
+            SDL_free(ctx->palette_colors);
+        }
+        if (ctx->trans_alpha) {
+            SDL_free(ctx->trans_alpha);
+        }
+        SDL_free(ctx);
+        decoder->ctx = NULL;
+        return false;
     }
-
+    
     // Validate what might be missing or wrong
-    if (bit_depth < 1 || png_color_type < 0 || width < 1 || height < 1) {
-        SDL_SetError("Received invalid APNG with either corrupt or unspecified bit depth, color type, width or height.");
-        goto error;
-    }
-
-    animation = (IMG_Animation *)SDL_calloc(1, sizeof(IMG_Animation));
-    if (!animation) {
-        SDL_SetError("Out of memory for IMG_Animation");
-        goto error;
-    }
-    animation->w = width;
-    animation->h = height;
-
-    total_frame_count = (int)apng_ctx.actl.num_frames;
-    animation->count = total_frame_count;
-
-    animation->delays = (int *)SDL_malloc(sizeof(int) * total_frame_count);
-    if (!animation->delays) {
-        SDL_SetError("Out of memory for APNG frame delays");
-        goto error;
-    }
-
-    animation->frames = (SDL_Surface **)SDL_calloc(total_frame_count, sizeof(SDL_Surface *));
-    if (!animation->frames) {
-        SDL_SetError("Out of memory for APNG frame surfaces");
-        goto error;
-    }
-
-    apng_ctx.canvas = SDL_CreateSurface(width, height, SDL_PIXELFORMAT_RGBA32); // Canvas always RGBA32 for blending
-    if (!apng_ctx.canvas) {
-        SDL_SetError("Failed to create APNG canvas: %s", SDL_GetError());
-        goto error;
-    }
-    SDL_SetSurfaceBlendMode(apng_ctx.canvas, SDL_BLENDMODE_BLEND);
-    SDL_FillSurfaceRect(apng_ctx.canvas, NULL, 0x00000000); // Initialize canvas to transparent black
-
-    apng_ctx.prev_canvas_copy = SDL_CreateSurface(width, height, SDL_PIXELFORMAT_RGBA32);
-    if (!apng_ctx.prev_canvas_copy) {
-        SDL_SetError("Failed to create APNG previous canvas copy: %s", SDL_GetError());
-        goto error;
-    }
-    SDL_FillSurfaceRect(apng_ctx.prev_canvas_copy, NULL, 0x00000000); // Initialize to transparent black
-
-    for (int i = 0; i < total_frame_count; ++i) {
-        if ((png_uint_32)i >= (png_uint_32)apng_ctx.fctl_count) {
-            SDL_SetError("APNG frame index out of bounds: %d >= %d", i, apng_ctx.fctl_count);
-            goto error;
-        }
-
-        apng_fcTL_chunk *fctl = &apng_ctx.fctl_frames[i];
-
-        // Calculate delay
-        if (fctl->delay_den == 0) {
-            animation->delays[i] = fctl->delay_num * 100;
-        } else {
-            animation->delays[i] = (int)(((float)fctl->delay_num / fctl->delay_den) * 1000.0f);
-        }
-
-        // Apply dispose_op from the *previous* frame (if applicable)
-        // The dispose_op of frame N specifies how to dispose of frame N's area *before* rendering frame N+1.
-        // So, when rendering frame 'i', we apply the dispose_op of frame 'i-1'.
-        if (i > 0) {
-            apng_fcTL_chunk *prev_fctl = &apng_ctx.fctl_frames[i - 1];
-            SDL_Rect prev_frame_rect = { (int)prev_fctl->x_offset, (int)prev_fctl->y_offset, (int)prev_fctl->width, (int)prev_fctl->height };
-
-            switch (prev_fctl->dispose_op) {
-            case PNG_DISPOSE_OP_NONE:
-                // Do nothing
-                break;
-            case PNG_DISPOSE_OP_BACKGROUND:
-                SDL_FillSurfaceRect(apng_ctx.canvas, &prev_frame_rect, 0x00000000); // Clear to transparent black
-                break;
-            case PNG_DISPOSE_OP_PREVIOUS:
-                // Restore canvas to its state before previous frame was rendered
-                if (apng_ctx.prev_canvas_copy) {
-                    SDL_BlitSurface(apng_ctx.prev_canvas_copy, NULL, apng_ctx.canvas, NULL);
-                } else {
-                    SDL_FillSurfaceRect(apng_ctx.canvas, &prev_frame_rect, 0x00000000); // Fallback
-                }
-                break;
-            default:
-                SDL_SetError("Unknown dispose_op for previous frame: %d", prev_fctl->dispose_op);
-                goto error;
-            }
-        } else { // For the very first animated frame (i == 0)
-            // If the first fcTL chunk uses a dispose_op of APNG_DISPOSE_OP_PREVIOUS it should be treated as APNG_DISPOSE_OP_BACKGROUND.
-            if (fctl->dispose_op == PNG_DISPOSE_OP_PREVIOUS) {
-                SDL_FillSurfaceRect(apng_ctx.canvas, NULL, 0x00000000); // Clear entire canvas
-            }
-        }
-
-        // Save current canvas state to prev_canvas_copy *before* rendering the current frame,
-        //    if the *current* frame's dispose_op is PNG_DISPOSE_OP_PREVIOUS.
-        if (fctl->dispose_op == PNG_DISPOSE_OP_PREVIOUS) {
-            if (!apng_ctx.prev_canvas_copy) { // Should already be created, but defensive
-                apng_ctx.prev_canvas_copy = SDL_CreateSurface(width, height, SDL_PIXELFORMAT_RGBA32);
-                if (!apng_ctx.prev_canvas_copy) {
-                    SDL_SetError("Failed to create prev_canvas_copy for dispose_op PREVIOUS: %s", SDL_GetError());
-                    goto error;
+    if (ctx->bit_depth < 1 || ctx->png_color_type < 0 || ctx->width < 1 || ctx->height < 1) {
+        SDL_SetError("Received invalid APNG with either corrupt or unspecified bit depth, color type, width or height");
+        if (ctx->fctl_frames) {
+            for (int i = 0; i < ctx->fctl_count; i++) {
+                if (ctx->fctl_frames[i].raw_idat_data) {
+                    SDL_free(ctx->fctl_frames[i].raw_idat_data);
                 }
             }
-            SDL_BlitSurface(apng_ctx.canvas, NULL, apng_ctx.prev_canvas_copy, NULL);
+            SDL_free(ctx->fctl_frames);
         }
-
-        DecompressionContext decompressionContext;
-        SDL_zero(decompressionContext);
-        temp_frame_surface = decompress_png_frame_data(&decompressionContext, fctl->raw_idat_data, fctl->raw_idat_size, fctl->width, fctl->height, png_color_type, bit_depth);
-        if (!temp_frame_surface) {
-            SDL_SetError("Failed to decompress png frame data for %i.", i);
-            goto error;
+        if (ctx->palette_colors) {
+            SDL_free(ctx->palette_colors);
         }
-
-        SDL_PixelFormat sdl_pixel_format = temp_frame_surface->format;
-
-        // If it's a paletted frame, set its palette and tRNS from the main PNG info_ptr
-        if (sdl_pixel_format == SDL_PIXELFORMAT_INDEX8) {
-            if (palette_colors && palette_count > 0) {
-                SDL_Palette *frame_palette = SDL_CreatePalette(palette_count);
-                if (!frame_palette) {
-                    SDL_SetError("Failed to create palette for frame surface: %s", SDL_GetError());
-                    goto error;
-                }
-
-                SDL_SetPaletteColors(frame_palette, palette_colors, 0, palette_count);
-                SDL_SetSurfacePalette(temp_frame_surface, frame_palette);
-                SDL_DestroyPalette(frame_palette); // Surface takes ownership
-            } else {
-                SDL_SetError("No palette colors available for paletted frame");
-                goto error;
-            }
+        if (ctx->trans_alpha) {
+            SDL_free(ctx->trans_alpha);
         }
-
-        SDL_Rect dest_rect = { (int)fctl->x_offset, (int)fctl->y_offset, (int)fctl->width, (int)fctl->height };
-        switch (fctl->blend_op) {
-        case PNG_BLEND_OP_SOURCE:
-            SDL_SetSurfaceBlendMode(temp_frame_surface, SDL_BLENDMODE_NONE);
-            break;
-        case PNG_BLEND_OP_OVER:
-            SDL_SetSurfaceBlendMode(temp_frame_surface, SDL_BLENDMODE_BLEND);
-            break;
-        default:
-            SDL_SetError("Unknown blend_op: %d", fctl->blend_op);
-            SDL_SetSurfaceBlendMode(temp_frame_surface, SDL_BLENDMODE_BLEND); // Fallback
-            break;
-        }
-
-        SDL_BlitSurface(temp_frame_surface, NULL, apng_ctx.canvas, &dest_rect);
-
-        animation->frames[i] = SDL_DuplicateSurface(apng_ctx.canvas);
-        if (!animation->frames[i]) {
-            SDL_SetError("Failed to duplicate canvas for frame %d: %s", i, SDL_GetError());
-            goto error;
-        }
-
-        SDL_DestroySurface(temp_frame_surface);
-        temp_frame_surface = NULL;
-        SDL_free(decompressed_frame_data);
-        decompressed_frame_data = NULL;
+        SDL_free(ctx);
+        decoder->ctx = NULL;
+        return false;
     }
 
-    if (apng_ctx.fctl_frames) {
-        for (int i = 0; i < apng_ctx.fctl_count; ++i) {
-            if (apng_ctx.fctl_frames[i].raw_idat_data) {
-                SDL_free(apng_ctx.fctl_frames[i].raw_idat_data);
-            }
-        }
-        SDL_free(apng_ctx.fctl_frames);
-    }
-    if (apng_ctx.canvas) {
-        SDL_DestroySurface(apng_ctx.canvas);
-    }
-    if (apng_ctx.prev_canvas_copy) {
-        SDL_DestroySurface(apng_ctx.prev_canvas_copy);
-    }
+    decoder->GetNextFrame = IMG_AnimationDecoderGetNextFrame_Internal;
+    decoder->Reset = IMG_AnimationDecoderReset_Internal;
+    decoder->Close = IMG_AnimationDecoderClose_Internal;
 
-    return animation;
+    SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_FRAME_COUNT_NUMBER, ctx->actl.num_frames);
+    SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_LOOP_COUNT_NUMBER, ctx->actl.num_plays);
 
-error:
-    if (apng_ctx.fctl_frames) {
-        for (int i = 0; i < apng_ctx.fctl_count; ++i) {
-            if (apng_ctx.fctl_frames[i].raw_idat_data) {
-                SDL_free(apng_ctx.fctl_frames[i].raw_idat_data);
-            }
-        }
-        SDL_free(apng_ctx.fctl_frames);
-    }
-    if (apng_ctx.canvas) {
-        SDL_DestroySurface(apng_ctx.canvas);
-    }
-    if (apng_ctx.prev_canvas_copy) {
-        SDL_DestroySurface(apng_ctx.prev_canvas_copy);
-    }
-    if (animation) {
-        if (animation->delays) {
-            SDL_free(animation->delays);
-        }
-        if (animation->frames) {
-            for (int i = 0; i < total_frame_count; ++i) {
-                if (animation->frames[i]) {
-                    SDL_DestroySurface(animation->frames[i]);
-                }
-            }
-            SDL_free(animation->frames);
-        }
-        SDL_free(animation);
-    }
-    if (temp_frame_surface) {
-        SDL_DestroySurface(temp_frame_surface);
-    }
-    if (decompressed_frame_data) {
-        SDL_free(decompressed_frame_data);
-    }
-
-    if (palette_colors) {
-        SDL_free(palette_colors);
-    }
-    if (trans_alpha) {
-        SDL_free(trans_alpha);
-    }
-
-    SDL_SeekIO(src, start_pos, SDL_IO_SEEK_SET);
-    return NULL;
+    return true;
 }
 
 #if SAVE_PNG
-struct IMG_AnimationStreamContext
+struct IMG_AnimationEncoderContext
 {
     png_structp png_write_ptr;
     png_infop info_write_ptr;
@@ -1784,15 +1879,15 @@ error:
     return NULL;
 }
 
-static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface *frame, Uint64 pts)
+static bool SaveAPNGAnimationPushFrame(IMG_AnimationEncoder *encoder, SDL_Surface *frame, Uint64 pts)
 {
-    if (!stream->ctx) {
+    if (!encoder->ctx) {
         // bogus call, not initialized
         SDL_SetError("APNG animation context not initialized.");
         return false;
     }
 
-    if (!stream->ctx->png_write_ptr) {
+    if (!encoder->ctx->png_write_ptr) {
         // bogus call, not initialized
         SDL_SetError("APNG animation write not started.");
         return false;
@@ -1807,46 +1902,46 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
     png_bytep full_zlib_data = NULL;
     png_size_t full_zlib_size = 0;
 
-    if (stream->ctx->current_frame_index == 0) {
+    if (encoder->ctx->current_frame_index == 0) {
         png_byte pngColorType;
         png_byte bit_depth;
 
-        stream->ctx->output_pixel_format = frame->format;
-        if (stream->ctx->output_pixel_format != SDL_PIXELFORMAT_RGBA32 && stream->ctx->output_pixel_format != SDL_PIXELFORMAT_INDEX8) {
-            stream->ctx->output_pixel_format = SDL_PIXELFORMAT_RGBA32;
+        encoder->ctx->output_pixel_format = frame->format;
+        if (encoder->ctx->output_pixel_format != SDL_PIXELFORMAT_RGBA32 && encoder->ctx->output_pixel_format != SDL_PIXELFORMAT_INDEX8) {
+            encoder->ctx->output_pixel_format = SDL_PIXELFORMAT_RGBA32;
         }
 
-        if (stream->ctx->output_pixel_format == SDL_PIXELFORMAT_INDEX8) {
+        if (encoder->ctx->output_pixel_format == SDL_PIXELFORMAT_INDEX8) {
             pngColorType = PNG_COLOR_TYPE_PALETTE; // Use palette for paletted output
         } else {
-            stream->ctx->output_pixel_format = SDL_PIXELFORMAT_RGBA32;
+            encoder->ctx->output_pixel_format = SDL_PIXELFORMAT_RGBA32;
             pngColorType = PNG_COLOR_TYPE_RGBA; // Use RGBA for other formats
         }
 
-        const SDL_PixelFormatDetails *pfd = SDL_GetPixelFormatDetails(stream->ctx->output_pixel_format);
+        const SDL_PixelFormatDetails *pfd = SDL_GetPixelFormatDetails(encoder->ctx->output_pixel_format);
         if (pfd) {
             bit_depth = pfd->bits_per_pixel / pfd->bytes_per_pixel;
         } else {
             bit_depth = 8;
         }
 
-        stream->ctx->apng_width = frame->w;
-        stream->ctx->apng_height = frame->h;
+        encoder->ctx->apng_width = frame->w;
+        encoder->ctx->apng_height = frame->h;
 
         png_byte ihdr_data[13];
-        custom_png_save_uint_32(ihdr_data, (png_int_32)stream->ctx->apng_width);
-        custom_png_save_uint_32(ihdr_data + 4, (png_int_32)stream->ctx->apng_height);
+        custom_png_save_uint_32(ihdr_data, (png_int_32)encoder->ctx->apng_width);
+        custom_png_save_uint_32(ihdr_data + 4, (png_int_32)encoder->ctx->apng_height);
 
         ihdr_data[8] = bit_depth;
         ihdr_data[9] = pngColorType;
         ihdr_data[10] = PNG_COMPRESSION_TYPE_BASE;
         ihdr_data[11] = PNG_FILTER_TYPE_BASE;
         ihdr_data[12] = PNG_INTERLACE_NONE;
-        if (!write_png_chunk(stream->dst, "IHDR", ihdr_data, 13)) {
+        if (!write_png_chunk(encoder->dst, "IHDR", ihdr_data, 13)) {
             goto error;
         }
 
-        stream->ctx->acTL_chunk_start_pos = SDL_TellIO(stream->dst);
+        encoder->ctx->acTL_chunk_start_pos = SDL_TellIO(encoder->dst);
 
         // Write a placeholder acTL chunk (animation control)
         // num_frames and num_plays will be updated in SaveAPNGAnimationEnd.
@@ -1854,18 +1949,18 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
         custom_png_save_uint_32(actl_data, 0);     // Placeholder for num_frames
         custom_png_save_uint_32(actl_data + 4, 0); // num_plays (0 for infinite loop)
 
-        if (!write_png_chunk(stream->dst, "acTL", actl_data, 8)) {
+        if (!write_png_chunk(encoder->dst, "acTL", actl_data, 8)) {
             goto error;
         }
 
         current_frame_for_processing = frame;
     } else {
-        if (frame->w != stream->ctx->apng_width || frame->h != stream->ctx->apng_height) {
+        if (frame->w != encoder->ctx->apng_width || frame->h != encoder->ctx->apng_height) {
             current_frame_for_processing = frame;
             // The current API is unspecified about deciding whether to fail or resize subsequent frames according to the first frame so,
             // we will fail here as default, if API changes in the future requires us to resize the subsequent frames, please uncomment the code below.
 
-            SDL_SetError("Frame %i doesn't match the first frame's width (current=%i | expected=%i) and height (current=%i | expected=%i)", stream->ctx->current_frame_index, frame->w, stream->ctx->apng_width, frame->h, stream->ctx->apng_height);
+            SDL_SetError("Frame %i doesn't match the first frame's width (current=%i | expected=%i) and height (current=%i | expected=%i)", encoder->ctx->current_frame_index, frame->w, encoder->ctx->apng_width, frame->h, encoder->ctx->apng_height);
             goto error;
 
             //    current_frame_for_processing = SDL_CreateSurface(stream->ctx->apng_width, stream->ctx->apng_height, SDL_PIXELFORMAT_RGBA32);
@@ -1884,7 +1979,7 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
 
     // We do manually convert surface pixel format right now if it doesn't much INDEX8 and RGBA32,
     // since those two are the only ones supported by this implementation of libpng right now (usually libpng only uses palette, rgb/a or gray/with alpha).
-    if (stream->ctx->output_pixel_format == SDL_PIXELFORMAT_INDEX8) {
+    if (encoder->ctx->output_pixel_format == SDL_PIXELFORMAT_INDEX8) {
         if (current_frame_for_processing->format != SDL_PIXELFORMAT_INDEX8) {
             final_frame_for_compression = SDL_ConvertSurface(current_frame_for_processing, SDL_PIXELFORMAT_INDEX8);
             if (!final_frame_for_compression) {
@@ -1907,16 +2002,16 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
     }
 
     int png_color_type_for_compression;
-    if (stream->ctx->output_pixel_format == SDL_PIXELFORMAT_INDEX8) {
+    if (encoder->ctx->output_pixel_format == SDL_PIXELFORMAT_INDEX8) {
         png_color_type_for_compression = PNG_COLOR_TYPE_PALETTE;
     } else {
         png_color_type_for_compression = PNG_COLOR_TYPE_RGBA;
     }
 
-    Uint64 delta_pts = pts - stream->last_pts;
+    Uint64 delta_pts = pts - encoder->last_pts;
     png_uint_16 delay_den = APNG_DEFAULT_DENOMINATOR;
-    png_uint_16 pts_source_timebase_num = stream->timebase_numerator;
-    png_uint_16 pts_source_timebase_den = stream->timebase_denominator;
+    png_uint_16 pts_source_timebase_num = encoder->timebase_numerator;
+    png_uint_16 pts_source_timebase_den = encoder->timebase_denominator;
     if (pts_source_timebase_den == 0) {
         pts_source_timebase_den = 1; // Fallback to prevent division by zero, though accuracy is lost.
     }
@@ -1928,34 +2023,34 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
     }
 
     // Default image + first animated frame
-    if (stream->ctx->current_frame_index == 0) {
+    if (encoder->ctx->current_frame_index == 0) {
         // If paletted output, create and write PLTE and tRNS chunks
-        if (stream->ctx->output_pixel_format == SDL_PIXELFORMAT_INDEX8) {
+        if (encoder->ctx->output_pixel_format == SDL_PIXELFORMAT_INDEX8) {
             SDL_Palette *first_frame_palette = SDL_GetSurfacePalette(final_frame_for_compression);
             if (first_frame_palette && first_frame_palette->ncolors > 0) {
-                stream->ctx->apng_palette_ptr = SDL_CreatePalette(first_frame_palette->ncolors);
-                if (!stream->ctx->apng_palette_ptr) {
+                encoder->ctx->apng_palette_ptr = SDL_CreatePalette(first_frame_palette->ncolors);
+                if (!encoder->ctx->apng_palette_ptr) {
                     SDL_SetError("Failed to allocate palette for APNG: %s", SDL_GetError());
                     goto error;
                 }
-                SDL_SetPaletteColors(stream->ctx->apng_palette_ptr, first_frame_palette->colors, 0, first_frame_palette->ncolors);
+                SDL_SetPaletteColors(encoder->ctx->apng_palette_ptr, first_frame_palette->colors, 0, first_frame_palette->ncolors);
             } else {
                 SDL_SetError("First frame has no palette after conversion to indexed format.");
                 goto error;
             }
 
             // Write PLTE chunk
-            png_bytep plte_data = (png_bytep)SDL_malloc((size_t)stream->ctx->apng_palette_ptr->ncolors * 3); // 3 bytes per color (RGB)
+            png_bytep plte_data = (png_bytep)SDL_malloc((size_t)encoder->ctx->apng_palette_ptr->ncolors * 3); // 3 bytes per color (RGB)
             if (!plte_data) {
                 SDL_SetError("Out of memory for PLTE data");
                 goto error;
             }
-            for (int i = 0; i < stream->ctx->apng_palette_ptr->ncolors; ++i) {
-                plte_data[i * 3 + 0] = stream->ctx->apng_palette_ptr->colors[i].r;
-                plte_data[i * 3 + 1] = stream->ctx->apng_palette_ptr->colors[i].g;
-                plte_data[i * 3 + 2] = stream->ctx->apng_palette_ptr->colors[i].b;
+            for (int i = 0; i < encoder->ctx->apng_palette_ptr->ncolors; ++i) {
+                plte_data[i * 3 + 0] = encoder->ctx->apng_palette_ptr->colors[i].r;
+                plte_data[i * 3 + 1] = encoder->ctx->apng_palette_ptr->colors[i].g;
+                plte_data[i * 3 + 2] = encoder->ctx->apng_palette_ptr->colors[i].b;
             }
-            if (!write_png_chunk(stream->dst, "PLTE", plte_data, (size_t)stream->ctx->apng_palette_ptr->ncolors * 3)) {
+            if (!write_png_chunk(encoder->dst, "PLTE", plte_data, (size_t)encoder->ctx->apng_palette_ptr->ncolors * 3)) {
                 goto error;
             }
             SDL_free(plte_data);
@@ -1963,26 +2058,26 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
             // Write tRNS chunk (based on hex dump, first entry transparent)
             png_byte tRNS_data[1];
             tRNS_data[0] = 0x00;
-            if (!write_png_chunk(stream->dst, "tRNS", tRNS_data, 1)) {
+            if (!write_png_chunk(encoder->dst, "tRNS", tRNS_data, 1)) {
                 goto error;
             }
         }
 
         png_byte software_text[] = "Software\0SDL3";
-        if (!write_png_chunk(stream->dst, "tEXt", software_text, sizeof(software_text) - 1)) { // -1 for null terminator
+        if (!write_png_chunk(encoder->dst, "tEXt", software_text, sizeof(software_text) - 1)) { // -1 for null terminator
             goto error;
         }
 
         png_byte comment_text[] = "Comment\0SDL3 APNG Animation Writer";
-        if (!write_png_chunk(stream->dst, "tEXt", comment_text, sizeof(comment_text) - 1)) { // -1 for null terminator
+        if (!write_png_chunk(encoder->dst, "tEXt", comment_text, sizeof(comment_text) - 1)) { // -1 for null terminator
             goto error;
         }
 
         // Now, write the fcTL for the first animated frame (sequence 0)
         png_byte fctl_data[26];
         custom_png_save_uint_32(fctl_data, 0);                                         // Sequence number for the first animated frame is fixed at 0.
-        custom_png_save_uint_32(fctl_data + 4, (png_uint_32)stream->ctx->apng_width);  // Frame width
-        custom_png_save_uint_32(fctl_data + 8, (png_uint_32)stream->ctx->apng_height); // Frame height
+        custom_png_save_uint_32(fctl_data + 4, (png_uint_32)encoder->ctx->apng_width);  // Frame width
+        custom_png_save_uint_32(fctl_data + 8, (png_uint_32)encoder->ctx->apng_height); // Frame height
         custom_png_save_uint_32(fctl_data + 12, 0);                                    // x_offset
         custom_png_save_uint_32(fctl_data + 16, 0);                                    // y_offset
 
@@ -1990,34 +2085,34 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
         custom_png_save_uint_16(fctl_data + 22, delay_den);
         fctl_data[24] = PNG_DISPOSE_OP_NONE; // dispose_op
         fctl_data[25] = PNG_BLEND_OP_SOURCE; // blend_op
-        if (!write_png_chunk(stream->dst, "fcTL", fctl_data, 26)) {
+        if (!write_png_chunk(encoder->dst, "fcTL", fctl_data, 26)) {
             goto error;
         }
 
         // Compress the current frame's surface into a full zlib stream (IDAT payload)
         CompressionContext compressionContext;
         SDL_zero(compressionContext);
-        full_zlib_data = compress_surface_to_png_data(&compressionContext, final_frame_for_compression, &full_zlib_size, stream->ctx->compression_level, png_color_type_for_compression);
+        full_zlib_data = compress_surface_to_png_data(&compressionContext, final_frame_for_compression, &full_zlib_size, encoder->ctx->compression_level, png_color_type_for_compression);
         if (!full_zlib_data || full_zlib_size == 0) {
             SDL_SetError("Failed to compress frame data for default IDAT.");
             goto error;
         }
 
         // Write IDAT chunk: This is the default image, NOT part of the animation sequence
-        if (!write_png_chunk(stream->dst, "IDAT", full_zlib_data, full_zlib_size)) {
+        if (!write_png_chunk(encoder->dst, "IDAT", full_zlib_data, full_zlib_size)) {
             goto error;
         }
         SDL_free(full_zlib_data);
         full_zlib_data = NULL;
 
         // We have no fdAT chunk for the first frame, so we increase our index only by 1.
-        stream->ctx->current_frame_index = 1;
+        encoder->ctx->current_frame_index = 1;
 
     } else { // For subsequent animated frames (current_frame_index > 0)
         // Compress the current frame's surface into a full zlib stream (IDAT payload)
         CompressionContext compressionContext;
         SDL_zero(compressionContext);
-        full_zlib_data = compress_surface_to_png_data(&compressionContext, final_frame_for_compression, &full_zlib_size, stream->ctx->compression_level, png_color_type_for_compression);
+        full_zlib_data = compress_surface_to_png_data(&compressionContext, final_frame_for_compression, &full_zlib_size, encoder->ctx->compression_level, png_color_type_for_compression);
         if (!full_zlib_data || full_zlib_size == 0) {
             SDL_SetError("Failed to compress frame data or compressed data is empty.");
             goto error;
@@ -2025,9 +2120,9 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
 
         // Write fcTL chunk for this frame
         png_byte fctl_data[26];
-        custom_png_save_uint_32(fctl_data, (png_uint_32)stream->ctx->current_frame_index); // Sequence number for this fcTL
-        custom_png_save_uint_32(fctl_data + 4, (png_uint_32)stream->ctx->apng_width);      // Frame width
-        custom_png_save_uint_32(fctl_data + 8, (png_uint_32)stream->ctx->apng_height);     // Frame height
+        custom_png_save_uint_32(fctl_data, (png_uint_32)encoder->ctx->current_frame_index); // Sequence number for this fcTL
+        custom_png_save_uint_32(fctl_data + 4, (png_uint_32)encoder->ctx->apng_width);      // Frame width
+        custom_png_save_uint_32(fctl_data + 8, (png_uint_32)encoder->ctx->apng_height);     // Frame height
         custom_png_save_uint_32(fctl_data + 12, 0);                                        // x_offset
         custom_png_save_uint_32(fctl_data + 16, 0);                                        // y_offset
 
@@ -2036,13 +2131,13 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
         fctl_data[24] = PNG_DISPOSE_OP_NONE;
         fctl_data[25] = PNG_BLEND_OP_SOURCE;
 
-        if (!write_png_chunk(stream->dst, "fcTL", fctl_data, 26)) {
+        if (!write_png_chunk(encoder->dst, "fcTL", fctl_data, 26)) {
             goto error;
         }
 
         // Write fdAT chunk for this frame
         png_byte fdat_prefix[4];
-        custom_png_save_uint_32(fdat_prefix, (png_uint_32)(stream->ctx->current_frame_index + 1)); // Sequence number for fdAT
+        custom_png_save_uint_32(fdat_prefix, (png_uint_32)(encoder->ctx->current_frame_index + 1)); // Sequence number for fdAT
 
         png_bytep fdat_data = NULL;
         if (full_zlib_size > SDL_SIZE_MAX - 4) {
@@ -2056,7 +2151,7 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
         }
         SDL_memcpy(fdat_data, fdat_prefix, 4);
         SDL_memcpy(fdat_data + 4, full_zlib_data, full_zlib_size);
-        if (!write_png_chunk(stream->dst, "fdAT", fdat_data, 4 + full_zlib_size)) {
+        if (!write_png_chunk(encoder->dst, "fdAT", fdat_data, 4 + full_zlib_size)) {
             goto error;
         }
         SDL_free(fdat_data);
@@ -2064,7 +2159,7 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationStream *stream, SDL_Surface 
         SDL_free(full_zlib_data);
         full_zlib_data = NULL;
 
-        stream->ctx->current_frame_index += 2; // Increment by 2 (one for fcTL and one for fdAT) for the next fcTL sequence number
+        encoder->ctx->current_frame_index += 2; // Increment by 2 (one for fcTL and one for fdAT) for the next fcTL sequence number
     }
 
     if (current_frame_for_processing && current_frame_for_processing != frame) {
@@ -2088,77 +2183,77 @@ error:
     return false;
 }
 
-static bool SaveAPNGAnimationEnd(IMG_AnimationStream *stream)
+static bool SaveAPNGAnimationEnd(IMG_AnimationEncoder *encoder)
 {
-    if (!stream->ctx) {
+    if (!encoder->ctx) {
         // bogus call, not initialized
         SDL_SetError("APNG animation context not initialized.");
         return false;
     }
 
-    if (!stream->ctx->png_write_ptr) {
+    if (!encoder->ctx->png_write_ptr) {
         // bogus call, not initialized
         SDL_SetError("APNG animation write not in progress.");
         return false;
     }
 
-    Sint64 current_pos = SDL_TellIO(stream->dst);
+    Sint64 current_pos = SDL_TellIO(encoder->dst);
     if (current_pos < 0) {
         SDL_SetError("Failed to get current stream position: %s", SDL_GetError());
         goto error;
     }
 
-    if (SDL_SeekIO(stream->dst, stream->ctx->acTL_chunk_start_pos, SDL_IO_SEEK_SET) < 0) {
+    if (SDL_SeekIO(encoder->dst, encoder->ctx->acTL_chunk_start_pos, SDL_IO_SEEK_SET) < 0) {
         SDL_SetError("Failed to seek to acTL chunk: %s", SDL_GetError());
         goto error;
     }
 
     png_byte actl_data[8];
     // Write the actual total number of frames pushed (which is current_frame_index + 1 / 2 or directly 0 if current_frame_index is 0)
-    custom_png_save_uint_32(actl_data, (png_uint_32)(stream->ctx->current_frame_index == 0 ? 0 : (stream->ctx->current_frame_index + 1) / 2));
+    custom_png_save_uint_32(actl_data, (png_uint_32)(encoder->ctx->current_frame_index == 0 ? 0 : (encoder->ctx->current_frame_index + 1) / 2));
 
     // num_plays
-    custom_png_save_uint_32(actl_data + 4, stream->ctx->num_plays);
+    custom_png_save_uint_32(actl_data + 4, encoder->ctx->num_plays);
 
     // Re-write the updated acTL chunk. write_png_chunk will recalculate its CRC.
-    if (!write_png_chunk(stream->dst, "acTL", actl_data, 8)) {
+    if (!write_png_chunk(encoder->dst, "acTL", actl_data, 8)) {
         goto error;
     }
 
-    if (SDL_SeekIO(stream->dst, current_pos, SDL_IO_SEEK_SET) < 0) {
+    if (SDL_SeekIO(encoder->dst, current_pos, SDL_IO_SEEK_SET) < 0) {
         SDL_SetError("Failed to seek back to end of stream: %s", SDL_GetError());
         goto error;
     }
 
     // Write the IEND chunk to finalize the PNG file
-    if (!write_png_chunk(stream->dst, "IEND", NULL, 0)) {
+    if (!write_png_chunk(encoder->dst, "IEND", NULL, 0)) {
         goto error;
     }
 
-    lib.png_destroy_write_struct(&stream->ctx->png_write_ptr, &stream->ctx->info_write_ptr);
-    if (stream->ctx->apng_palette_ptr) {
-        SDL_DestroyPalette(stream->ctx->apng_palette_ptr);
+    lib.png_destroy_write_struct(&encoder->ctx->png_write_ptr, &encoder->ctx->info_write_ptr);
+    if (encoder->ctx->apng_palette_ptr) {
+        SDL_DestroyPalette(encoder->ctx->apng_palette_ptr);
     }
 
-    SDL_free(stream->ctx);
-    stream->ctx = NULL;
+    SDL_free(encoder->ctx);
+    encoder->ctx = NULL;
     return true;
 
 error:
-    if (stream->ctx->png_write_ptr) {
-        lib.png_destroy_write_struct(&stream->ctx->png_write_ptr, &stream->ctx->info_write_ptr);
+    if (encoder->ctx->png_write_ptr) {
+        lib.png_destroy_write_struct(&encoder->ctx->png_write_ptr, &encoder->ctx->info_write_ptr);
     }
-    if (stream->ctx->apng_palette_ptr) {
-        SDL_DestroyPalette(stream->ctx->apng_palette_ptr);
+    if (encoder->ctx->apng_palette_ptr) {
+        SDL_DestroyPalette(encoder->ctx->apng_palette_ptr);
     }
-    SDL_free(stream->ctx);
-    stream->ctx = NULL;
+    SDL_free(encoder->ctx);
+    encoder->ctx = NULL;
     return false;
 }
 
 #endif /* SAVE_PNG */
 
-bool IMG_CreateAPNGAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID props)
+bool IMG_CreateAPNGAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
 #if !SAVE_PNG
     return SDL_SetError("SDL_image built without PNG save support");
@@ -2168,22 +2263,22 @@ bool IMG_CreateAPNGAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID
         return false;
     }
 
-    IMG_AnimationStreamContext *ctx = (IMG_AnimationStreamContext *)SDL_calloc(1, sizeof(*stream->ctx));
+    IMG_AnimationEncoderContext *ctx = (IMG_AnimationEncoderContext *)SDL_calloc(1, sizeof(*encoder->ctx));
     if (!ctx) {
         return false;
     }
 
-    stream->ctx = ctx;
+    encoder->ctx = ctx;
 
-    stream->AddFrame = SaveAPNGAnimationPushFrame;
-    stream->Close = SaveAPNGAnimationEnd;
+    encoder->AddFrame = SaveAPNGAnimationPushFrame;
+    encoder->Close = SaveAPNGAnimationEnd;
 
     ctx->num_plays = (int)SDL_GetNumberProperty(props, "SDL_image.animation_stream.create.apng.numplays", 0);
 
-    stream->start = SDL_TellIO(stream->dst);
+    encoder->start = SDL_TellIO(encoder->dst);
 
     // Calculate compression level based on quality (1-9)
-    ctx->compression_level = (int)(stream->quality / 100.0f * 8.0f) + 1;
+    ctx->compression_level = (int)(encoder->quality / 100.0f * 8.0f) + 1;
     if (ctx->compression_level < 1)
         ctx->compression_level = 1;
     if (ctx->compression_level > 9)
@@ -2211,10 +2306,10 @@ bool IMG_CreateAPNGAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID
     }
 
     // png_io_context io_context = { apng_write_ctx.dst_stream };
-    lib.png_set_write_fn(ctx->png_write_ptr, stream->dst, png_write_data, png_flush_data);
+    lib.png_set_write_fn(ctx->png_write_ptr, encoder->dst, png_write_data, png_flush_data);
 
     // Write PNG signature (8 bytes)
-    if (SDL_WriteIO(stream->dst, png_sig, 8) != 8) {
+    if (SDL_WriteIO(encoder->dst, png_sig, 8) != 8) {
         SDL_SetError("Failed to write PNG signature");
         goto error;
     }
@@ -2242,9 +2337,16 @@ IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
     return NULL;
 }
 
-bool IMG_CreateAPNGAnimationStream(IMG_AnimationStream *stream, SDL_PropertiesID props)
+bool IMG_CreateAPNGAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
-    (void)stream;
+    (void)encoder;
+    (void)props;
+    return SDL_SetError("SDL_image not built against libpng.");
+}
+
+bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_PropertiesID props)
+{
+    (void)decoder;
     (void)props;
     return SDL_SetError("SDL_image not built against libpng.");
 }
