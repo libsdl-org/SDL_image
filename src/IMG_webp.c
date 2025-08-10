@@ -404,106 +404,87 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
     SDL_zero(decoder->ctx->iter);
     decoder->ctx->dispose_method = WEBP_MUX_DISPOSE_BACKGROUND;
 
-    return lib.WebPDemuxGetFrame(decoder->ctx->demuxer, 1, &decoder->ctx->iter);
+    return true;
 }
 
-static bool IMG_AnimationDecoderGetFrames_Internal(IMG_AnimationDecoder *decoder, int framesToLoad, IMG_AnimationDecoderFrames *animationFrames)
+static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Sint64 *pts)
 {
+    *pts = 0;
+    *frame = NULL;
+    // Get the next frame from the demuxer.
+    if (decoder->ctx->iter.frame_num < 1) {
+        if (!lib.WebPDemuxGetFrame(decoder->ctx->demuxer, 1, &decoder->ctx->iter)) {
+            SDL_SetError("Failed to get first frame from WEBP demuxer");
+            return false;
+        }
+    } else {
+        if (!lib.WebPDemuxNextFrame(&decoder->ctx->iter)) {
+            return true;
+        }
+    }
+
     int totalFrames = decoder->ctx->iter.num_frames;
     int availableFrames = totalFrames - (decoder->ctx->iter.frame_num - 1);
 
-    if (framesToLoad < 1)
-        framesToLoad = availableFrames;
-    else
-        framesToLoad = SDL_min(availableFrames, framesToLoad);
-
-    animationFrames->frames = (SDL_Surface **)SDL_calloc(framesToLoad, sizeof(SDL_Surface *));
-    animationFrames->delays = (Sint64 *)SDL_calloc(framesToLoad, sizeof(Sint64));
-    animationFrames->count = 0;
-    animationFrames->w = decoder->ctx->canvas->w;
-    animationFrames->h = decoder->ctx->canvas->h;
+    if (availableFrames < 1)
+        return true;
 
     SDL_Surface *canvas = decoder->ctx->canvas;
     uint32_t bgcolor = decoder->ctx->bgcolor;
     WebPMuxAnimDispose dispose_method = decoder->ctx->dispose_method;
     WebPIterator *iter = &decoder->ctx->iter;
-    int decoded_frames = 0;
+    SDL_Surface *retval = NULL;
 
-    do {
-        if (decoded_frames >= framesToLoad) {
-            break;
-        }
-
-        if (decoded_frames == 0 || dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
-            SDL_FillSurfaceRect(canvas, NULL, bgcolor);
-        }
-
-        SDL_Surface *curr = SDL_CreateSurface(iter->width, iter->height, SDL_PIXELFORMAT_RGBA32);
-        if (!curr) {
-            break;
-        }
-
-        if (!lib.WebPDecodeRGBAInto(iter->fragment.bytes, iter->fragment.size,
-                                    (uint8_t *)curr->pixels, curr->pitch * curr->h, curr->pitch)) {
-            SDL_DestroySurface(curr);
-            break;
-        }
-
-        SDL_Rect dst = { iter->x_offset, iter->y_offset, iter->width, iter->height };
-        if (iter->blend_method == WEBP_MUX_BLEND) {
-            if (!SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_BLEND)) {
-                SDL_DestroySurface(curr);
-                SDL_SetError("Failed to set blend mode for WEBP frame");
-                break;
-            }
-        } else {
-            if (!SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_NONE)) {
-                SDL_DestroySurface(curr);
-                SDL_SetError("Failed to set blend mode for WEBP frame");
-                break;
-            }
-        }
-        if (!SDL_BlitSurface(curr, NULL, canvas, &dst)) {
-            SDL_DestroySurface(curr);
-            SDL_SetError("Failed to blit WEBP frame to canvas");
-            break;
-        }
-        SDL_DestroySurface(curr);
-
-        animationFrames->frames[decoded_frames] = SDL_DuplicateSurface(canvas);
-        if (!animationFrames->frames[decoded_frames]) {
-            break;
-        }
-
-        if (decoder->ctx->iter.frame_num == 1 || decoder->timebase_denominator == 0) {
-            animationFrames->delays[decoded_frames] = 0;
-            decoder->ctx->last_pts = 0;
-        } else {
-            animationFrames->delays[decoded_frames] = decoder->ctx->last_pts += iter->duration * decoder->timebase_denominator / (1000 * decoder->timebase_numerator);
-        }
-        decoded_frames++;
-
-        dispose_method = iter->dispose_method;
-    } while (lib.WebPDemuxNextFrame(iter));
-
-    decoder->ctx->dispose_method = dispose_method;
-
-    animationFrames->count = decoded_frames;
-
-    if (decoded_frames > 0 && decoded_frames < framesToLoad) {
-        SDL_Surface **new_frames = (SDL_Surface **)SDL_realloc(animationFrames->frames,
-                                                               decoded_frames * sizeof(SDL_Surface *));
-        Sint64 *new_delays = (Sint64 *)SDL_realloc(animationFrames->delays,
-                                                   decoded_frames * sizeof(Sint64));
-        if (new_frames) {
-            animationFrames->frames = new_frames;
-        }
-        if (new_delays) {
-            animationFrames->delays = new_delays;
-        }
+    if (totalFrames == availableFrames || dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
+        SDL_FillSurfaceRect(canvas, NULL, bgcolor);
     }
 
-    return decoded_frames > 0;
+    SDL_Surface *curr = SDL_CreateSurface(iter->width, iter->height, SDL_PIXELFORMAT_RGBA32);
+    if (!curr) {
+        return SDL_SetError("Failed to create surface for the frame");
+    }
+
+    if (!lib.WebPDecodeRGBAInto(iter->fragment.bytes, iter->fragment.size,
+                                (uint8_t *)curr->pixels, curr->pitch * curr->h, curr->pitch)) {
+        SDL_DestroySurface(curr);
+        return SDL_SetError("Failed to decode frame");
+    }
+
+    SDL_Rect dst = { iter->x_offset, iter->y_offset, iter->width, iter->height };
+    if (iter->blend_method == WEBP_MUX_BLEND) {
+        if (!SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_BLEND)) {
+            SDL_DestroySurface(curr);
+            return SDL_SetError("Failed to set blend mode for WEBP frame");
+        }
+    } else {
+        if (!SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_NONE)) {
+            SDL_DestroySurface(curr);
+            return SDL_SetError("Failed to set blend mode for WEBP frame");
+        }
+    }
+    if (!SDL_BlitSurface(curr, NULL, canvas, &dst)) {
+        SDL_DestroySurface(curr);
+        return SDL_SetError("Failed to blit WEBP frame to canvas");
+    }
+    SDL_DestroySurface(curr);
+
+    retval = SDL_DuplicateSurface(canvas);
+    if (!retval) {
+        return SDL_SetError("Failed to duplicate the surface for the next frame");
+    }
+
+    if (decoder->ctx->iter.frame_num == 1 || decoder->timebase_denominator == 0) {
+        *pts = 0;
+        decoder->ctx->last_pts = 0;
+    } else {
+        *pts = decoder->ctx->last_pts += iter->duration * decoder->timebase_denominator / (1000 * decoder->timebase_numerator);
+    }
+
+    dispose_method = iter->dispose_method;
+    decoder->ctx->dispose_method = dispose_method;
+
+    *frame = retval;
+    return true;
 }
 
 static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder *decoder)
@@ -583,6 +564,10 @@ bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
     uint32_t width = lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_CANVAS_WIDTH);
     uint32_t height = lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_CANVAS_HEIGHT);
     uint32_t flags = lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_FORMAT_FLAGS);
+
+    SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_FRAME_COUNT_NUMBER, lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_FRAME_COUNT));
+    SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_LOOP_COUNT_NUMBER, lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_LOOP_COUNT));
+
     bool has_alpha = (flags & 0x10) != 0;
 
     decoder->ctx->canvas = SDL_CreateSurface(width, height, has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
@@ -612,9 +597,8 @@ bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
     decoder->ctx->dispose_method = WEBP_MUX_DISPOSE_BACKGROUND;
 
     SDL_zero(decoder->ctx->iter);
-    lib.WebPDemuxGetFrame(decoder->ctx->demuxer, 1, &decoder->ctx->iter);
 
-    decoder->GetFrames = IMG_AnimationDecoderGetFrames_Internal;
+    decoder->GetNextFrame = IMG_AnimationDecoderGetNextFrame_Internal;
     decoder->Reset = IMG_AnimationDecoderReset_Internal;
     decoder->Close = IMG_AnimationDecoderClose_Internal;
 
