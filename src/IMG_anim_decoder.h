@@ -29,7 +29,7 @@ struct IMG_AnimationDecoder
     int timebase_numerator;
     int timebase_denominator;
 
-    bool (*GetNextFrame)(IMG_AnimationDecoder *decoder, SDL_Surface** frame, Sint64* pts);
+    bool (*GetNextFrame)(IMG_AnimationDecoder *decoder, SDL_Surface** frame, Uint64* pts);
     bool (*Reset)(IMG_AnimationDecoder *decoder);
     bool (*Close)(IMG_AnimationDecoder *decoder);
 
