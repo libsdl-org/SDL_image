@@ -132,6 +132,13 @@ IMG_AnimationDecoder *IMG_CreateAnimationDecoderWithProperties(SDL_PropertiesID 
     decoder->timebase_numerator = timebase_numerator;
     decoder->timebase_denominator = timebase_denominator;
 
+    decoder->metadata = SDL_CreateProperties();
+    if (!decoder->metadata)
+    {
+        SDL_SetError("Failed to create metadata properties");
+        goto error;
+    }
+
     bool result = false;
     if (SDL_strcasecmp(type, "webp") == 0) {
         result = IMG_CreateWEBPAnimationDecoder(decoder, props);
@@ -163,46 +170,23 @@ error:
     return NULL;
 }
 
-bool IMG_GetAnimationDecoderFrames(IMG_AnimationDecoder *decoder, int framesToLoad, IMG_AnimationDecoderFrames *decoderFrames)
+SDL_PropertiesID  IMG_GetAnimationDecoderMetadata(IMG_AnimationDecoder* decoder)
+{
+    if (!decoder) {
+        SDL_InvalidParamError("decoder");
+        return 0;
+    }
+
+    return decoder->metadata;
+}
+
+bool IMG_GetNextAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface** frame, Sint64 *pts)
 {
     if (!decoder) {
         return SDL_InvalidParamError("decoder");
     }
-    if (!decoderFrames) {
-        return SDL_InvalidParamError("decoderFrames");
-    }
 
-    bool retval = decoder->GetFrames(decoder, framesToLoad, decoderFrames);
-
-    // Sanity check, all frames returned should be valid surfaces
-    if (retval) {
-        const char *err = SDL_GetError();
-        bool hasErr = err[0] != '\0';
-        if (decoderFrames->count < 1 && decoderFrames->frames) {
-            if (hasErr) {
-                SDL_SetError("Getting frames failed, returned decoder frames has corrupted data: %s", err);
-            } else {
-                SDL_SetError("Getting frames failed, returned decoder frames has corrupted data");
-            }
-            retval = false;
-        }
-
-        for (int i = 0; i < decoderFrames->count; ++i) {
-            if (!decoderFrames->frames[i]) {
-                if (hasErr) {
-                    SDL_SetError("Getting frames failed, returned decoder frames has corrupted data: %s", err);
-                } else {
-                    SDL_SetError("Getting frames failed, returned decoder frames has corrupted data");
-                }
-                retval = false;
-                break;
-            }
-        }
-
-        // TODO: should we allow delays to be NULL?
-    }
-
-    return retval;
+    return decoder->GetNextFrame(decoder, frame, pts);
 }
 
 bool IMG_CloseAnimationDecoder(IMG_AnimationDecoder *decoder)
@@ -212,10 +196,18 @@ bool IMG_CloseAnimationDecoder(IMG_AnimationDecoder *decoder)
     }
 
     bool result = decoder->Close(decoder);
+
+    if (decoder->metadata) {
+        SDL_DestroyProperties(decoder->metadata);
+        decoder->metadata = 0;
+    }
+
     if (decoder->closeio) {
         SDL_CloseIO(decoder->src);
     }
+
     SDL_free(decoder);
+
     return result;
 }
 
@@ -226,41 +218,6 @@ bool IMG_ResetAnimationDecoder(IMG_AnimationDecoder *decoder)
     }
 
     return decoder->Reset(decoder);
-}
-
-IMG_AnimationDecoderFrames *IMG_CreateAnimationDecoderFrames()
-{
-    IMG_AnimationDecoderFrames *frames = (IMG_AnimationDecoderFrames *)SDL_calloc(1, sizeof(*frames));
-    if (!frames) {
-        SDL_SetError("Out of memory");
-        return NULL;
-    }
-
-    return frames;
-}
-
-void IMG_FreeAnimationDecoderFrames(IMG_AnimationDecoderFrames *frames)
-{
-    if (!frames) {
-        return;
-    }
-
-    if (frames->delays) {
-        SDL_free(frames->delays);
-    }
-
-    if (frames->frames) {
-        for (int i = 0; i < frames->count; ++i) {
-            if (frames->frames[i]) {
-                SDL_DestroySurface(frames->frames[i]);
-                frames->frames[i] = NULL;
-            }
-        }
-
-        SDL_free(frames->frames);
-    }
-
-    SDL_free(frames);
 }
 
 int IMG_GetAnimationDecoderPresentationTimestampMS(IMG_AnimationDecoder *decoder, Sint64 pts)
@@ -275,40 +232,135 @@ IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int 
         return NULL;
     }
 
-    // Make sure no error is set before loading frames so we can catch any failures.
-    SDL_ClearError();
+    // We do not rely on the metadata for the count of available frames because some
+    // formats like GIF only supports continous decoding and doesn't have any data that
+    // states the total available frames inside the binary data.
+    //
+    // For this reason , we will decode frames until we reach the end of the stream or
+    // we reach the maximum number of frames specified by the caller.
+    int actualCount = 0;
+    int currentCount = 32;
+    SDL_Surface **frames = (SDL_Surface **)SDL_calloc(currentCount, sizeof(*frames));
+    Sint64 *delays = (Sint64 *)SDL_calloc(currentCount, sizeof(*delays));
+    while (true) {
+        if (maxFrames > 0 && actualCount >= maxFrames)
+            break;
 
-    IMG_AnimationDecoderFrames *frames = IMG_CreateAnimationDecoderFrames();
-    if (!IMG_GetAnimationDecoderFrames(decoder, maxFrames, frames)) {
-        IMG_FreeAnimationDecoderFrames(frames);
-        return NULL;
-    }
+        Sint64 pts = 0;
+        SDL_Surface *nextFrame;
+        if (!IMG_GetNextAnimationDecoderFrame(decoder, &nextFrame, &pts)) {
+            for (int i = 0; i < actualCount; ++i) {
+                SDL_DestroySurface(frames[i]);
+            }
 
-    if (frames->count < 1 || !frames->delays || !frames->frames) {
-        const char *err = SDL_GetError();
-        if (err[0] == '\0') {
-            SDL_SetError("No frames loaded animation");
-        } else {
-            SDL_SetError("No frames loaded animation: %s", err);
+            SDL_free(frames);
+            SDL_free(delays);
+            IMG_CloseAnimationDecoder(decoder);
+            return NULL;
         }
-        IMG_FreeAnimationDecoderFrames(frames);
+
+        if (!nextFrame) {
+            // No more frames available or an error occurred.
+            break;
+        }
+
+        actualCount++;
+        if (actualCount > currentCount) {
+            currentCount *= 2;
+            SDL_Surface **tempFrames = (SDL_Surface **)SDL_realloc(frames, currentCount * sizeof(*tempFrames));
+            if (!tempFrames) {
+                SDL_SetError("Out of memory for animation frames");
+                for (int i = 0; i < actualCount; ++i) {
+                    SDL_DestroySurface(frames[i]);
+                }
+
+                SDL_free(frames);
+                SDL_free(delays);
+                IMG_CloseAnimationDecoder(decoder);
+                return NULL;
+            }
+
+            frames = tempFrames;
+            Sint64 *tempDelays = (Sint64 *)SDL_realloc(delays, currentCount * sizeof(*delays));
+            if (!tempDelays) {
+                SDL_SetError("Out of memory for animation delays");
+                for (int i = 0; i < actualCount; ++i) {
+                    SDL_DestroySurface(frames[i]);
+                }
+
+                SDL_free(frames);
+                SDL_free(delays);
+                IMG_CloseAnimationDecoder(decoder);
+                return NULL;
+            }
+            delays = tempDelays;
+        }
+
+        frames[actualCount - 1] = nextFrame;
+        delays[actualCount - 1] = pts;
+    }
+
+    if (actualCount < currentCount) {
+        //Resize the arrays to the actual count of frames.
+        SDL_Surface **tempFrames = (SDL_Surface **)SDL_realloc(frames, actualCount * sizeof(*tempFrames));
+        if (!tempFrames) {
+            SDL_SetError("Out of memory for animation frames");
+            for (int i = 0; i < actualCount; ++i) {
+                SDL_DestroySurface(frames[i]);
+            }
+
+            SDL_free(frames);
+            SDL_free(delays);
+            IMG_CloseAnimationDecoder(decoder);
+            return NULL;
+        }
+
+        frames = tempFrames;
+
+        Sint64 *tempDelays = (Sint64 *)SDL_realloc(delays, actualCount * sizeof(*delays));
+        if (!tempDelays) {
+            SDL_SetError("Out of memory for animation delays");
+            for (int i = 0; i < actualCount; ++i) {
+                SDL_DestroySurface(frames[i]);
+            }
+
+            SDL_free(frames);
+            SDL_free(delays);
+            IMG_CloseAnimationDecoder(decoder);
+            return NULL;
+        }
+        delays = tempDelays;
+    }
+
+    IMG_CloseAnimationDecoder(decoder);
+
+    if (actualCount < 1) {
+        SDL_free(frames);
+        SDL_free(delays);
         return NULL;
     }
+
+    int width = frames[0]->w;
+    int height = frames[0]->h;
 
     IMG_Animation *anim = (IMG_Animation *)SDL_calloc(1, sizeof(*anim));
     if (!anim) {
         SDL_SetError("Out of memory for IMG_Animation");
-        IMG_FreeAnimationDecoderFrames(frames);
         return NULL;
     }
-    anim->count = frames->count;
-    anim->w = frames->w;
-    anim->h = frames->h;
+    anim->count = actualCount;
+    anim->w = width;
+    anim->h = height;
     anim->delays = (int *)SDL_calloc(anim->count, sizeof(*anim->delays));
     if (!anim->delays) {
         SDL_SetError("Out of memory for animation delays");
         SDL_free(anim);
-        IMG_FreeAnimationDecoderFrames(frames);
+        for (int i = 0; i < actualCount; ++i) {
+            SDL_DestroySurface(frames[i]);
+        }
+
+        SDL_free(frames);
+        SDL_free(delays);
         return NULL;
     }
     anim->frames = (SDL_Surface **)SDL_calloc(anim->count, sizeof(*anim->frames));
@@ -316,21 +368,23 @@ IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int 
         SDL_SetError("Out of memory for animation frames");
         SDL_free(anim->delays);
         SDL_free(anim);
-        IMG_FreeAnimationDecoderFrames(frames);
+        for (int i = 0; i < actualCount; ++i) {
+            SDL_DestroySurface(frames[i]);
+        }
+
+        SDL_free(frames);
+        SDL_free(delays);
         return NULL;
     }
 
     for (int i = 0; i < anim->count; ++i) {
-        anim->frames[i] = frames->frames[i];
-
-        // Increment refcount since we are taking ownership of the frames
-        ++anim->frames[i]->refcount;
+        anim->frames[i] = frames[i];
 
         Sint64 d;
         if (i == 0 && anim->count > 1) {
-            d = frames->delays[i + 1];
+            d = delays[i + 1];
         } else {
-            d = frames->delays[i];
+            d = delays[i];
         }
 
         if (i > 1) {
@@ -340,7 +394,8 @@ IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int 
         anim->delays[i] = IMG_GetAnimationDecoderPresentationTimestampMS(decoder, d);
     }
 
-    IMG_FreeAnimationDecoderFrames(frames);
+    SDL_free(frames);
+    SDL_free(delays);
 
     return anim;
 }
