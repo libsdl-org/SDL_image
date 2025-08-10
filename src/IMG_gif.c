@@ -570,25 +570,17 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder* decoder)
     return true;
 }
 
-static bool IMG_AnimationDecoderGetFrames_Internal(IMG_AnimationDecoder *decoder, int framesToLoad, IMG_AnimationDecoderFrames *animationFrames)
+static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Sint64 *pts)
 {
+    *pts = 0;
+    *frame = NULL;
     IMG_AnimationDecoderContext *ctx = decoder->ctx;
     SDL_IOStream *src = decoder->src;
     unsigned char c;
     int framesLoaded = 0;
 
-    animationFrames->w = ctx->width;
-    animationFrames->h = ctx->height;
-    animationFrames->count = 0;
-    animationFrames->frames = NULL;
-    animationFrames->delays = NULL;
-
     if (ctx->got_eof) {
         return true;
-    }
-
-    if (framesToLoad <= 0) {
-        framesToLoad = SDL_MAX_SINT32;
     }
 
     if (!ctx->got_header) {
@@ -661,21 +653,8 @@ static bool IMG_AnimationDecoderGetFrames_Internal(IMG_AnimationDecoder *decoder
         ctx->got_header = true;
     }
 
-    animationFrames->frames = (SDL_Surface **)SDL_calloc(framesToLoad, sizeof(SDL_Surface *));
-    if (!animationFrames->frames) {
-        return SDL_SetError("Out of memory for frame array");
-    }
-
-    animationFrames->delays = (Sint64 *)SDL_malloc(framesToLoad * sizeof(Sint64));
-    if (!animationFrames->delays) {
-        SDL_free(animationFrames->frames);
-        animationFrames->frames = NULL;
-        return SDL_SetError("Out of memory for delays array");
-    }
-
-    animationFrames->w = ctx->width;
-    animationFrames->h = ctx->height;
-
+    int framesToLoad = 1;
+    SDL_Surface *retval = NULL;
     while (framesLoaded < framesToLoad) {
         if (!ReadOK(src, &c, 1)) {
             ctx->got_eof = true;
@@ -731,10 +710,6 @@ static bool IMG_AnimationDecoderGetFrames_Internal(IMG_AnimationDecoder *decoder
         {
             SDL_Rect rect = { 0, 0, ctx->width, ctx->height };
             if (!SDL_FillSurfaceRect(ctx->canvas, &rect, 0)) {
-                SDL_free(animationFrames->frames);
-                SDL_free(animationFrames->delays);
-                animationFrames->frames = NULL;
-                animationFrames->delays = NULL;
                 return SDL_SetError("Failed to fill canvas with background color");
             }
         } break;
@@ -743,10 +718,6 @@ static bool IMG_AnimationDecoderGetFrames_Internal(IMG_AnimationDecoder *decoder
             /* Restore canvas to previous state */
             if (ctx->prev_canvas) {
                 if (!SDL_BlitSurface(ctx->prev_canvas, NULL, ctx->canvas, NULL)) {
-                    SDL_free(animationFrames->frames);
-                    SDL_free(animationFrames->delays);
-                    animationFrames->frames = NULL;
-                    animationFrames->delays = NULL;
                     return SDL_SetError("Failed to restore previous canvas");
                 }
             }
@@ -760,10 +731,6 @@ static bool IMG_AnimationDecoderGetFrames_Internal(IMG_AnimationDecoder *decoder
         /* If current disposal method is RESTORE_PREVIOUS, save current canvas */
         if (ctx->state.Gif89.disposal == GIF_DISPOSE_RESTORE_PREVIOUS) {
             if (!SDL_BlitSurface(ctx->canvas, NULL, ctx->prev_canvas, NULL)) {
-                SDL_free(animationFrames->frames);
-                SDL_free(animationFrames->delays);
-                animationFrames->frames = NULL;
-                animationFrames->delays = NULL;
                 return SDL_SetError("Failed to save current canvas for restoration");
             }
         }
@@ -787,10 +754,6 @@ static bool IMG_AnimationDecoderGetFrames_Internal(IMG_AnimationDecoder *decoder
         if (ctx->state.Gif89.transparent >= 0) {
             if (!SDL_SetSurfaceColorKey(image, true, ctx->state.Gif89.transparent)) {
                 SDL_DestroySurface(image);
-                SDL_free(animationFrames->frames);
-                SDL_free(animationFrames->delays);
-                animationFrames->frames = NULL;
-                animationFrames->delays = NULL;
                 return SDL_SetError("Failed to set transparency on frame");
             }
         }
@@ -799,34 +762,23 @@ static bool IMG_AnimationDecoderGetFrames_Internal(IMG_AnimationDecoder *decoder
         SDL_Rect dest = { left, top, width, height };
         if (!SDL_BlitSurface(image, NULL, ctx->canvas, &dest)) {
             SDL_DestroySurface(image);
-            SDL_free(animationFrames->frames);
-            SDL_free(animationFrames->delays);
-            animationFrames->frames = NULL;
-            animationFrames->delays = NULL;
             return SDL_SetError("Failed to blit frame onto canvas");
         }
 
         /* Store the frame in the output array */
-        animationFrames->frames[framesLoaded] = SDL_DuplicateSurface(ctx->canvas);
-        if (!animationFrames->frames[framesLoaded]) {
+        retval = SDL_DuplicateSurface(ctx->canvas);
+        if (!retval) {
             SDL_DestroySurface(image);
-            for (int i = 0; i < framesLoaded; i++) {
-                SDL_DestroySurface(animationFrames->frames[i]);
-            }
-            SDL_free(animationFrames->frames);
-            SDL_free(animationFrames->delays);
-            animationFrames->frames = NULL;
-            animationFrames->delays = NULL;
             return SDL_SetError("Failed to duplicate frame surface");
         }
 
         if (ctx->current_frame == 0) {
-            animationFrames->delays[framesLoaded] = 0;
+            *pts = 0;
         } else if (ctx->state.Gif89.delayTime < 2) {
-            animationFrames->delays[framesLoaded] = decoder->ctx->last_pts += decoder->timebase_denominator * decoder->timebase_denominator * 10;
+            *pts = decoder->ctx->last_pts += decoder->timebase_denominator * decoder->timebase_denominator * 10;
         } else {
-             int millisecond_delay = ctx->state.Gif89.delayTime * 10;
-            animationFrames->delays[framesLoaded] = decoder->ctx->last_pts += millisecond_delay * decoder->timebase_denominator / (1000 * decoder->timebase_numerator);
+            int millisecond_delay = ctx->state.Gif89.delayTime * 10;
+            *pts = decoder->ctx->last_pts += millisecond_delay * decoder->timebase_denominator / (1000 * decoder->timebase_numerator);
         }
 
         ctx->last_disposal = ctx->state.Gif89.disposal;
@@ -843,16 +795,11 @@ static bool IMG_AnimationDecoderGetFrames_Internal(IMG_AnimationDecoder *decoder
         ctx->frame_count++;
     }
 
-    animationFrames->count = framesLoaded;
-
     if (framesLoaded == 0 && !ctx->got_eof) {
-        SDL_free(animationFrames->frames);
-        SDL_free(animationFrames->delays);
-        animationFrames->frames = NULL;
-        animationFrames->delays = NULL;
         return SDL_SetError("Failed to load any frames");
     }
 
+    *frame = retval;
     return true;
 }
 
@@ -899,7 +846,7 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Properties
 
     decoder->ctx = ctx;
     decoder->Reset = IMG_AnimationDecoderReset_Internal;
-    decoder->GetFrames = IMG_AnimationDecoderGetFrames_Internal;
+    decoder->GetNextFrame = IMG_AnimationDecoderGetNextFrame_Internal;
     decoder->Close = IMG_AnimationDecoderClose_Internal;
     
     return true;
@@ -954,33 +901,23 @@ bool IMG_isGIF(SDL_IOStream *src)
 /* Load a GIF type image from an SDL datasource */
 SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
 {
-    SDL_Surface *image = NULL;
-
-    IMG_AnimationDecoder* decoder = IMG_CreateAnimationDecoder_IO(src, false, "gif");
+    IMG_AnimationDecoder *decoder = IMG_CreateAnimationDecoder_IO(src, false, "gif");
     if (!decoder) {
         return NULL;
     }
 
-    IMG_AnimationDecoderFrames *frames = IMG_CreateAnimationDecoderFrames();
-    if (!frames) {
+    Sint64 pts = 0;
+    SDL_Surface *frame;
+    if (!IMG_GetNextAnimationDecoderFrame(decoder, &frame, &pts)) {
+        return NULL;
+    }
+    if (!frame) {
         return NULL;
     }
 
-    if (!IMG_GetAnimationDecoderFrames(decoder, 1, frames)) {
-        IMG_FreeAnimationDecoderFrames(frames);
-        IMG_CloseAnimationDecoder(decoder);
-        return NULL;
-    }
-
-    image = frames->frames[0];
-    if (image) {
-        ++image->refcount;
-    }
-
-    IMG_FreeAnimationDecoderFrames(frames);
     IMG_CloseAnimationDecoder(decoder);
 
-    return image;
+    return frame;
 }
 
 #else
