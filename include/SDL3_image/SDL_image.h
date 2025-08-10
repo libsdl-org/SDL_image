@@ -2656,7 +2656,7 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoderWit
  * \sa IMG_ResetAnimationDecoder
  * \sa IMG_CloseAnimationDecoder
  */
-extern SDL_DECLSPEC bool SDLCALL IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Sint64 *pts);
+extern SDL_DECLSPEC bool SDLCALL IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *pts);
 
 /**
  * Reset an animation decoder.

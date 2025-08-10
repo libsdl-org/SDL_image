@@ -503,33 +503,33 @@ IMG_Animation *IMG_LoadGIFAnimation_IO(SDL_IOStream *src)
 struct IMG_AnimationDecoderContext
 {
     State_t state;                /* GIF decoding state */
-    
+
     unsigned char buf[256];      /* Buffer for reading chunks */
     char version[4];             /* GIF version */
-    
+
     int width;                   /* Width of the GIF */
     int height;                  /* Height of the GIF */
-    
+
     SDL_Surface *canvas;         /* Canvas for compositing frames */
     SDL_Surface *prev_canvas;    /* Previous canvas for DISPOSE_PREVIOUS */
-    
+
     int frame_count;             /* Total number of frames seen */
     int current_frame;           /* Current frame index */
-    
+
     bool got_header;             /* Whether we've read the GIF header */
     bool got_eof;                /* Whether we've reached the end of the GIF */
-    
+
     /* Current frame info */
     int current_disposal;        /* Disposal method for current frame */
     int current_delay;           /* Delay time for current frame */
     int transparent_index;       /* Transparent color index for current frame */
-    
+
     /* Global color map */
     unsigned char global_colormap[3][MAXCOLORMAPSIZE];
     int global_colormap_size;
     bool has_global_colormap;
     bool global_grayscale;
-    
+
     /* Frame info */
     int last_disposal;           /* Disposal method from previous frame */
     int restore_frame;           /* Frame to restore when using DISPOSE_PREVIOUS */
@@ -562,11 +562,11 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder* decoder)
     if (ctx->canvas) {
         SDL_FillSurfaceRect(ctx->canvas, NULL, 0);
     }
-    
+
     if (ctx->prev_canvas) {
         SDL_FillSurfaceRect(ctx->prev_canvas, NULL, 0);
     }
-    
+
     return true;
 }
 
@@ -809,21 +809,21 @@ static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder* decoder)
     if (ctx->canvas) {
         SDL_DestroySurface(ctx->canvas);
     }
-    
+
     if (ctx->prev_canvas) {
         SDL_DestroySurface(ctx->prev_canvas);
     }
 
     SDL_free(ctx);
     decoder->ctx = NULL;
-    
+
     return true;
 }
 
 bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_PropertiesID props)
 {
     (void)props;
-    
+
     IMG_AnimationDecoderContext* ctx = (IMG_AnimationDecoderContext*)SDL_calloc(1, sizeof(IMG_AnimationDecoderContext));
     if (!ctx) {
         return SDL_SetError("Out of memory for GIF decoder context");
@@ -833,7 +833,7 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Properties
     ctx->state.Gif89.delayTime = -1;
     ctx->state.Gif89.inputFlag = -1;
     ctx->state.Gif89.disposal = GIF_DISPOSE_NA;
-    
+
     ctx->transparent_index = -1;
     ctx->got_header = false;
     ctx->got_eof = false;
@@ -848,7 +848,7 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Properties
     decoder->Reset = IMG_AnimationDecoderReset_Internal;
     decoder->GetNextFrame = IMG_AnimationDecoderGetNextFrame_Internal;
     decoder->Close = IMG_AnimationDecoderClose_Internal;
-    
+
     return true;
 }
 
@@ -906,7 +906,7 @@ SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
         return NULL;
     }
 
-    Sint64 pts = 0;
+    Uint64 pts = 0;
     SDL_Surface *frame = NULL;
     IMG_GetAnimationDecoderFrame(decoder, &frame, &pts);
     IMG_CloseAnimationDecoder(decoder);
@@ -2408,7 +2408,7 @@ static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_
                          surface->w, surface->h, ctx->width, ctx->height);
             goto error;
         }
-        
+
         if (ctx->use_lut) {
             // For subsequent frames, map pixels to the existing global palette using the fast LUT.
             if (mapSurfaceToExistingPalette(surface, ctx->colorMapLUT, indexedPixels, ctx->transparentColorIndex) != 0) {

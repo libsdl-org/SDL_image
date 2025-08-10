@@ -163,10 +163,10 @@ error:
     return NULL;
 }
 
-bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Sint64 *pts)
+bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *pts)
 {
     SDL_Surface *temp_frame = NULL;
-    Sint64 temp_pts;
+    Uint64 temp_pts;
 
     if (!decoder) {
         return SDL_InvalidParamError("decoder");
@@ -239,7 +239,7 @@ IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int 
             break;
         }
 
-        Sint64 pts = 0;
+        Uint64 pts = 0;
         SDL_Surface *nextFrame;
         if (!IMG_GetAnimationDecoderFrame(decoder, &nextFrame, &pts)) {
             goto error;
