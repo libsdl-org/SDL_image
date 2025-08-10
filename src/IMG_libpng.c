@@ -1142,61 +1142,29 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder* decoder)
     return true;
 }
 
-static bool IMG_AnimationDecoderGetFrames_Internal(IMG_AnimationDecoder *decoder, int framesToLoad, IMG_AnimationDecoderFrames *animationFrames)
+static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Sint64 *pts)
 {
+    *pts = 0;
+    *frame = NULL;
+
     IMG_AnimationDecoderContext *ctx = decoder->ctx;
     if (!ctx->is_apng) {
         return SDL_SetError("APNG decoder not properly initialized");
     }
 
-    if (framesToLoad <= 0) {
-        framesToLoad = ctx->fctl_count - ctx->current_frame_index;
-    } else {
-        framesToLoad = SDL_min(framesToLoad, ctx->fctl_count - ctx->current_frame_index);
-    }
-
-    if (framesToLoad <= 0) {
-        animationFrames->count = 0;
-        return false;
-    }
-
-    animationFrames->w = ctx->width;
-    animationFrames->h = ctx->height;
-    animationFrames->count = framesToLoad;
-
-    animationFrames->frames = (SDL_Surface **)SDL_calloc(framesToLoad, sizeof(SDL_Surface *));
-    if (!animationFrames->frames) {
-        return SDL_SetError("Out of memory for frame surfaces");
-    }
-
-    animationFrames->delays = (Sint64 *)SDL_malloc(framesToLoad * sizeof(Sint64));
-    if (!animationFrames->delays) {
-        SDL_free(animationFrames->frames);
-        animationFrames->frames = NULL;
-        return SDL_SetError("Out of memory for frame delays");
+    if (ctx->actl.num_frames - ctx->current_frame_index < 1) {
+        return true;
     }
 
     if (!ctx->canvas) {
         ctx->canvas = SDL_CreateSurface(ctx->width, ctx->height, SDL_PIXELFORMAT_RGBA32);
         if (!ctx->canvas) {
-            SDL_free(animationFrames->delays);
-            SDL_free(animationFrames->frames);
-            animationFrames->frames = NULL;
-            animationFrames->delays = NULL;
             return SDL_SetError("Failed to create APNG canvas");
         }
         if (!SDL_SetSurfaceBlendMode(ctx->canvas, SDL_BLENDMODE_BLEND)) {
-            SDL_free(animationFrames->delays);
-            SDL_free(animationFrames->frames);
-            animationFrames->frames = NULL;
-            animationFrames->delays = NULL;
             return SDL_SetError("Failed to set APNG canvas blend mode");
         }
         if (!SDL_FillSurfaceRect(ctx->canvas, NULL, 0x00000000)) {
-            SDL_free(animationFrames->delays);
-            SDL_free(animationFrames->frames);
-            animationFrames->frames = NULL;
-            animationFrames->delays = NULL;
             return SDL_SetError("Failed to fill APNG canvas");
         }
     }
@@ -1204,175 +1172,124 @@ static bool IMG_AnimationDecoderGetFrames_Internal(IMG_AnimationDecoder *decoder
     if (!ctx->prev_canvas_copy) {
         ctx->prev_canvas_copy = SDL_CreateSurface(ctx->width, ctx->height, SDL_PIXELFORMAT_RGBA32);
         if (!ctx->prev_canvas_copy) {
-            SDL_free(animationFrames->delays);
-            SDL_free(animationFrames->frames);
-            animationFrames->frames = NULL;
-            animationFrames->delays = NULL;
             return SDL_SetError("Failed to create previous canvas copy");
         }
         if (!SDL_FillSurfaceRect(ctx->prev_canvas_copy, NULL, 0x00000000)) {
-            SDL_free(animationFrames->delays);
-            SDL_free(animationFrames->frames);
-            animationFrames->frames = NULL;
-            animationFrames->delays = NULL;
             return SDL_SetError("Failed to fill previous canvas copy");
         }
     }
 
-    for (int i = 0; i < framesToLoad; i++) {
-        int frame_index = ctx->current_frame_index + i;
+    SDL_Surface *retval = NULL;
+    apng_fcTL_chunk *fctl = &ctx->fctl_frames[ctx->current_frame_index];
 
-        if (frame_index >= ctx->fctl_count) {
-            break;
-        }
+    if (decoder->timebase_denominator == 0 || fctl->delay_den == 0 || ctx->current_frame_index == 0) {
+        *pts = ctx->last_pts = 0;
+    } else {
+        *pts = ctx->last_pts += (Sint64)((Sint64)fctl->delay_num * decoder->timebase_denominator / fctl->delay_den * decoder->timebase_numerator);
+    }
 
-        apng_fcTL_chunk *fctl = &ctx->fctl_frames[frame_index];
-
-        Sint64 pts;
-        if (decoder->timebase_denominator == 0 || fctl->delay_den == 0 || (i == 0 && ctx->current_frame_index == 0)) {
-            pts = ctx->last_pts = 0;
-        } else {
-            pts = ctx->last_pts += (Sint64)((Sint64)fctl->delay_num * decoder->timebase_denominator / fctl->delay_den * decoder->timebase_numerator);
-        }
-
-        animationFrames->delays[i] = pts;
-
-        if (frame_index > 0) {
-            apng_fcTL_chunk *prev_fctl = &ctx->fctl_frames[frame_index - 1];
-            SDL_Rect prev_frame_rect = {
-                (int)prev_fctl->x_offset,
-                (int)prev_fctl->y_offset,
-                (int)prev_fctl->width,
-                (int)prev_fctl->height
-            };
-
-            switch (prev_fctl->dispose_op) {
-            case PNG_DISPOSE_OP_NONE:
-                // Do nothing
-                break;
-            case PNG_DISPOSE_OP_BACKGROUND:
-                if (!SDL_FillSurfaceRect(ctx->canvas, &prev_frame_rect, 0x00000000)) {
-                    SDL_free(animationFrames->delays);
-                    SDL_free(animationFrames->frames);
-                    animationFrames->frames = NULL;
-                    animationFrames->delays = NULL;
-                    return SDL_SetError("Failed to fill canvas for background dispose operation");
-                }
-                break;
-            case PNG_DISPOSE_OP_PREVIOUS:
-                if (!SDL_BlitSurface(ctx->prev_canvas_copy, NULL, ctx->canvas, NULL)) {
-                    SDL_free(animationFrames->delays);
-                    SDL_free(animationFrames->frames);
-                    animationFrames->frames = NULL;
-                    animationFrames->delays = NULL;
-                    return SDL_SetError("Failed to restore previous canvas copy for dispose operation");
-                }
-                break;
-            }
-        }
-
-        if (fctl->dispose_op == PNG_DISPOSE_OP_PREVIOUS) {
-            if (!SDL_BlitSurface(ctx->canvas, NULL, ctx->prev_canvas_copy, NULL)) {
-                SDL_free(animationFrames->delays);
-                SDL_free(animationFrames->frames);
-                animationFrames->frames = NULL;
-                animationFrames->delays = NULL;
-                return SDL_SetError("Failed to copy current canvas to previous canvas copy");
-            }
-        }
-
-        DecompressionContext decompressionContext;
-        SDL_zero(decompressionContext);
-        SDL_Surface *temp_frame = decompress_png_frame_data(
-            &decompressionContext,
-            fctl->raw_idat_data,
-            fctl->raw_idat_size,
-            fctl->width,
-            fctl->height,
-            ctx->png_color_type,
-            ctx->bit_depth,
-            ctx->palette_colors,
-            ctx->palette_count);
-
-        if (!temp_frame) {
-            animationFrames->frames[i] = NULL;
-            continue;
-        }
-
-        if (temp_frame->format == SDL_PIXELFORMAT_INDEX8) {
-            if (ctx->palette_colors && ctx->palette_count > 0) {
-                SDL_Palette *frame_palette = SDL_CreatePalette(ctx->palette_count);
-                if (frame_palette) {
-                    if (!SDL_SetPaletteColors(frame_palette, ctx->palette_colors, 0, ctx->palette_count)) {
-                        SDL_free(animationFrames->delays);
-                        SDL_free(animationFrames->frames);
-                        animationFrames->frames = NULL;
-                        animationFrames->delays = NULL;
-                        SDL_DestroySurface(temp_frame);
-                        return SDL_SetError("Failed to set palette colors for frame: %s", SDL_GetError());
-                    }
-                    if (!SDL_SetSurfacePalette(temp_frame, frame_palette)) {
-                        SDL_free(animationFrames->delays);
-                        SDL_free(animationFrames->frames);
-                        animationFrames->frames = NULL;
-                        animationFrames->delays = NULL;
-                        SDL_DestroySurface(temp_frame);
-                        return SDL_SetError("Failed to set palette for frame: %s", SDL_GetError());
-                    }
-                    SDL_DestroyPalette(frame_palette);
-                }
-            }
-        }
-
-        switch (fctl->blend_op) {
-        case PNG_BLEND_OP_SOURCE:
-            if (!SDL_SetSurfaceBlendMode(temp_frame, SDL_BLENDMODE_NONE)) {
-                SDL_free(animationFrames->delays);
-                SDL_free(animationFrames->frames);
-                animationFrames->frames = NULL;
-                animationFrames->delays = NULL;
-                SDL_DestroySurface(temp_frame);
-                return SDL_SetError("Failed to set blend mode for frame: %s", SDL_GetError());
-            }
-            break;
-        case PNG_BLEND_OP_OVER:
-            if (!SDL_SetSurfaceBlendMode(temp_frame, SDL_BLENDMODE_BLEND)) {
-                SDL_free(animationFrames->delays);
-                SDL_free(animationFrames->frames);
-                animationFrames->frames = NULL;
-                animationFrames->delays = NULL;
-                SDL_DestroySurface(temp_frame);
-                return SDL_SetError("Failed to set blend mode for frame: %s", SDL_GetError());
-            }
-            break;
-        }
-
-        SDL_Rect dest_rect = {
-            (int)fctl->x_offset,
-            (int)fctl->y_offset,
-            (int)fctl->width,
-            (int)fctl->height
+    if (ctx->current_frame_index > 0) {
+        apng_fcTL_chunk *prev_fctl = &ctx->fctl_frames[ctx->current_frame_index - 1];
+        SDL_Rect prev_frame_rect = {
+            (int)prev_fctl->x_offset,
+            (int)prev_fctl->y_offset,
+            (int)prev_fctl->width,
+            (int)prev_fctl->height
         };
 
-        if (!SDL_BlitSurface(temp_frame, NULL, ctx->canvas, &dest_rect)) {
-            SDL_free(animationFrames->delays);
-            SDL_free(animationFrames->frames);
-            animationFrames->frames = NULL;
-            animationFrames->delays = NULL;
-            SDL_DestroySurface(temp_frame);
-            return SDL_SetError("Failed to blit frame onto canvas: %s", SDL_GetError());
-        }
-        SDL_DestroySurface(temp_frame);
-
-        animationFrames->frames[i] = SDL_DuplicateSurface(ctx->canvas);
-        if (!animationFrames->frames[i]) {
-            // TODO: Handle error, but continue with other frames, maybe??
-            continue;
+        switch (prev_fctl->dispose_op) {
+        case PNG_DISPOSE_OP_NONE:
+            // Do nothing
+            break;
+        case PNG_DISPOSE_OP_BACKGROUND:
+            if (!SDL_FillSurfaceRect(ctx->canvas, &prev_frame_rect, 0x00000000)) {
+                return SDL_SetError("Failed to fill canvas for background dispose operation");
+            }
+            break;
+        case PNG_DISPOSE_OP_PREVIOUS:
+            if (!SDL_BlitSurface(ctx->prev_canvas_copy, NULL, ctx->canvas, NULL)) {
+                return SDL_SetError("Failed to restore previous canvas copy for dispose operation");
+            }
+            break;
         }
     }
 
-    ctx->current_frame_index += framesToLoad;
+    if (fctl->dispose_op == PNG_DISPOSE_OP_PREVIOUS) {
+        if (!SDL_BlitSurface(ctx->canvas, NULL, ctx->prev_canvas_copy, NULL)) {
+            return SDL_SetError("Failed to copy current canvas to previous canvas copy");
+        }
+    }
 
+    DecompressionContext decompressionContext;
+    SDL_zero(decompressionContext);
+    SDL_Surface *temp_frame = decompress_png_frame_data(
+        &decompressionContext,
+        fctl->raw_idat_data,
+        fctl->raw_idat_size,
+        fctl->width,
+        fctl->height,
+        ctx->png_color_type,
+        ctx->bit_depth,
+        ctx->palette_colors,
+        ctx->palette_count);
+
+    if (!temp_frame) {
+        return SDL_SetError("Failed to decompress PNG frame data: %s", SDL_GetError());
+    }
+
+    if (temp_frame->format == SDL_PIXELFORMAT_INDEX8) {
+        if (ctx->palette_colors && ctx->palette_count > 0) {
+            SDL_Palette *frame_palette = SDL_CreatePalette(ctx->palette_count);
+            if (frame_palette) {
+                if (!SDL_SetPaletteColors(frame_palette, ctx->palette_colors, 0, ctx->palette_count)) {
+                    SDL_DestroySurface(temp_frame);
+                    return SDL_SetError("Failed to set palette colors for frame: %s", SDL_GetError());
+                }
+                if (!SDL_SetSurfacePalette(temp_frame, frame_palette)) {
+                    SDL_DestroySurface(temp_frame);
+                    return SDL_SetError("Failed to set palette for frame: %s", SDL_GetError());
+                }
+                SDL_DestroyPalette(frame_palette);
+            }
+        }
+    }
+
+    switch (fctl->blend_op) {
+    case PNG_BLEND_OP_SOURCE:
+        if (!SDL_SetSurfaceBlendMode(temp_frame, SDL_BLENDMODE_NONE)) {
+            SDL_DestroySurface(temp_frame);
+            return SDL_SetError("Failed to set blend mode for frame: %s", SDL_GetError());
+        }
+        break;
+    case PNG_BLEND_OP_OVER:
+        if (!SDL_SetSurfaceBlendMode(temp_frame, SDL_BLENDMODE_BLEND)) {
+            SDL_DestroySurface(temp_frame);
+            return SDL_SetError("Failed to set blend mode for frame: %s", SDL_GetError());
+        }
+        break;
+    }
+
+    SDL_Rect dest_rect = {
+        (int)fctl->x_offset,
+        (int)fctl->y_offset,
+        (int)fctl->width,
+        (int)fctl->height
+    };
+
+    if (!SDL_BlitSurface(temp_frame, NULL, ctx->canvas, &dest_rect)) {
+        SDL_DestroySurface(temp_frame);
+        return SDL_SetError("Failed to blit frame onto canvas: %s", SDL_GetError());
+    }
+    SDL_DestroySurface(temp_frame);
+
+    retval = SDL_DuplicateSurface(ctx->canvas);
+    if (!retval) {
+        return false;
+    }
+
+    ++ctx->current_frame_index;
+
+    *frame = retval;
     return true;
 }
 
@@ -1705,9 +1622,12 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
         return false;
     }
 
-    decoder->GetFrames = IMG_AnimationDecoderGetFrames_Internal;
+    decoder->GetNextFrame = IMG_AnimationDecoderGetNextFrame_Internal;
     decoder->Reset = IMG_AnimationDecoderReset_Internal;
     decoder->Close = IMG_AnimationDecoderClose_Internal;
+
+    SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_FRAME_COUNT_NUMBER, ctx->actl.num_frames);
+    SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_LOOP_COUNT_NUMBER, ctx->actl.num_plays);
 
     return true;
 }
