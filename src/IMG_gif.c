@@ -907,14 +907,8 @@ SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
     }
 
     Sint64 pts = 0;
-    SDL_Surface *frame;
-    if (!IMG_GetNextAnimationDecoderFrame(decoder, &frame, &pts)) {
-        return NULL;
-    }
-    if (!frame) {
-        return NULL;
-    }
-
+    SDL_Surface *frame = NULL;
+    IMG_GetAnimationDecoderFrame(decoder, &frame, &pts);
     IMG_CloseAnimationDecoder(decoder);
 
     return frame;

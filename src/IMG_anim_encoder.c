@@ -29,7 +29,7 @@
 
 IMG_AnimationEncoder *IMG_CreateAnimationEncoder(const char *file)
 {
-    if (!file) {
+    if (!file || !*file) {
         SDL_InvalidParamError("file");
         return NULL;
     }
@@ -52,7 +52,7 @@ IMG_AnimationEncoder *IMG_CreateAnimationEncoder_IO(SDL_IOStream *dst, bool clos
         return NULL;
     }
 
-    if (!type) {
+    if (!type || !*type) {
         SDL_InvalidParamError("type");
         return NULL;
     }

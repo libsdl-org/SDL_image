@@ -835,42 +835,42 @@ static SDL_Surface *decompress_png_frame_data(DecompressionContext* context, png
     if (png_color_type == PNG_COLOR_TYPE_PALETTE && palette_colors && palette_count > 0) {
         // Calculate PLTE chunk size (3 bytes per color)
         png_uint_32 plte_size = palette_count * 3;
-        
+
         // PLTE header
         png_byte plte_header[8] = { 0, 0, 0, 0, 'P', 'L', 'T', 'E' };
         custom_png_save_uint_32(plte_header, plte_size);
-        
+
         if (SDL_WriteIO(context->mem_stream, plte_header, 8) != 8) {
             SDL_SetError("Failed to write PLTE header");
             goto error;
         }
-        
+
         // Write palette data
         png_byte *plte_data = (png_byte *)SDL_malloc(plte_size);
         if (!plte_data) {
             SDL_SetError("Out of memory for PLTE data");
             goto error;
         }
-        
+
         for (int i = 0; i < palette_count; i++) {
             plte_data[i * 3 + 0] = palette_colors[i].r;
             plte_data[i * 3 + 1] = palette_colors[i].g;
             plte_data[i * 3 + 2] = palette_colors[i].b;
         }
-        
+
         if (SDL_WriteIO(context->mem_stream, plte_data, plte_size) != plte_size) {
             SDL_free(plte_data);
             SDL_SetError("Failed to write PLTE data");
             goto error;
         }
-        
+
         // Calculate and write PLTE CRC
         png_uint_32 crc = SDL_crc32(0, (Uint8 *)"PLTE", 4);
         crc = SDL_crc32(crc, plte_data, plte_size);
         png_byte crc_bytes[4];
         custom_png_save_uint_32(crc_bytes, crc);
         SDL_free(plte_data);
-        
+
         if (SDL_WriteIO(context->mem_stream, crc_bytes, 4) != 4) {
             SDL_SetError("Failed to write PLTE CRC");
             goto error;
@@ -1130,7 +1130,7 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder* decoder)
     if (SDL_SeekIO(decoder->src, decoder->start, SDL_IO_SEEK_SET) < 0) {
         return SDL_SetError("Failed to seek to beginning of APNG animation");
     }
-    
+
     if (ctx->canvas) {
         SDL_FillSurfaceRect(ctx->canvas, NULL, 0x00000000);
     }
@@ -1138,7 +1138,7 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder* decoder)
     if (ctx->prev_canvas_copy) {
         SDL_FillSurfaceRect(ctx->prev_canvas_copy, NULL, 0x00000000);
     }
-    
+
     return true;
 }
 
@@ -1309,7 +1309,7 @@ static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder* decoder)
     if (ctx->palette_colors) {
         SDL_free(ctx->palette_colors);
     }
-    
+
     if (ctx->trans_alpha) {
         SDL_free(ctx->trans_alpha);
     }
@@ -1317,14 +1317,14 @@ static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder* decoder)
     if (ctx->canvas) {
         SDL_DestroySurface(ctx->canvas);
     }
-    
+
     if (ctx->prev_canvas_copy) {
         SDL_DestroySurface(ctx->prev_canvas_copy);
     }
 
     SDL_free(ctx);
     decoder->ctx = NULL;
-    
+
     return true;
 }
 
@@ -1340,7 +1340,7 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
     if (!ctx) {
         return SDL_SetError("Out of memory for APNG decoder context");
     }
-    
+
     decoder->ctx = ctx;
 
     unsigned char header[8];
@@ -1350,7 +1350,7 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
         decoder->ctx = NULL;
         return false;
     }
-    
+
     if (lib.png_sig_cmp(header, 0, 8)) {
         SDL_SetError("Not a valid PNG file signature");
         SDL_free(ctx);
@@ -1359,18 +1359,18 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
     }
 
     bool found_iend = false;
-    
+
     while (!found_iend) {
         char chunk_type[5] = { 0 };
         png_bytep chunk_data = NULL;
         png_size_t chunk_length = 0;
-        
+
         if (!read_png_chunk(decoder->src, chunk_type, &chunk_data, &chunk_length)) {
             SDL_free(ctx);
             decoder->ctx = NULL;
             return false;
         }
-        
+
         if (chunk_length > INT_MAX) {
             SDL_SetError("APNG chunk too large to process");
             SDL_free(chunk_data);
@@ -1378,7 +1378,7 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
             decoder->ctx = NULL;
             return false;
         }
-        
+
         if (SDL_memcmp(chunk_type, "IHDR", 4) == 0) {
             if (chunk_length != 13) {
                 SDL_SetError("Invalid IHDR chunk size");
@@ -1387,13 +1387,13 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
                 decoder->ctx = NULL;
                 return false;
             }
-            
+
             // Extract image dimensions from IHDR
             ctx->width = SDL_Swap32BE(*(Uint32 *)chunk_data);
             ctx->height = SDL_Swap32BE(*(Uint32 *)(chunk_data + 4));
             ctx->bit_depth = *(Uint8 *)(chunk_data + 8);
             ctx->png_color_type = *(Uint8 *)(chunk_data + 9);
-            
+
         } else if (SDL_memcmp(chunk_type, "acTL", 4) == 0) {
             if (chunk_length != 8) {
                 SDL_SetError("Invalid acTL chunk size");
@@ -1402,18 +1402,18 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
                 decoder->ctx = NULL;
                 return false;
             }
-            
+
             ctx->is_apng = true;
             ctx->actl.num_frames = SDL_Swap32BE(*(Uint32 *)chunk_data);
             ctx->actl.num_plays = SDL_Swap32BE(*(Uint32 *)(chunk_data + 4));
-            
+
         } else if (SDL_memcmp(chunk_type, "PLTE", 4) == 0) {
             int num_entries = (int)chunk_length / 3;
             if (num_entries > 0 && num_entries <= 256) {
                 if (ctx->palette_colors) {
                     SDL_free(ctx->palette_colors);
                 }
-                
+
                 ctx->palette_colors = (SDL_Color *)SDL_malloc(num_entries * sizeof(SDL_Color));
                 if (!ctx->palette_colors) {
                     SDL_SetError("Out of memory for palette data");
@@ -1422,21 +1422,21 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
                     decoder->ctx = NULL;
                     return false;
                 }
-                
+
                 for (int i = 0; i < num_entries; i++) {
                     ctx->palette_colors[i].r = chunk_data[i * 3];
                     ctx->palette_colors[i].g = chunk_data[i * 3 + 1];
                     ctx->palette_colors[i].b = chunk_data[i * 3 + 2];
                     ctx->palette_colors[i].a = 0xFF; // Default opaque
                 }
-                
+
                 ctx->palette_count = num_entries;
             }
         } else if (SDL_memcmp(chunk_type, "tRNS", 4) == 0) {
             if (ctx->trans_alpha) {
                 SDL_free(ctx->trans_alpha);
             }
-            
+
             ctx->trans_alpha = (png_bytep)SDL_malloc(chunk_length);
             if (!ctx->trans_alpha) {
                 SDL_SetError("Out of memory for transparency data");
@@ -1445,10 +1445,10 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
                 decoder->ctx = NULL;
                 return false;
             }
-            
+
             SDL_memcpy(ctx->trans_alpha, chunk_data, chunk_length);
             ctx->trans_count = (int)chunk_length;
-            
+
             if (ctx->palette_colors && ctx->palette_count > 0) {
                 int num_trans = SDL_min(ctx->trans_count, ctx->palette_count);
                 for (int i = 0; i < num_trans; i++) {
@@ -1463,10 +1463,10 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
                 decoder->ctx = NULL;
                 return false;
             }
-            
+
             if (ctx->fctl_count >= ctx->fctl_capacity) {
                 ctx->fctl_capacity = ctx->fctl_capacity == 0 ? 4 : ctx->fctl_capacity * 2;
-                ctx->fctl_frames = (apng_fcTL_chunk *)SDL_realloc(ctx->fctl_frames, 
+                ctx->fctl_frames = (apng_fcTL_chunk *)SDL_realloc(ctx->fctl_frames,
                                                                 sizeof(apng_fcTL_chunk) * ctx->fctl_capacity);
                 if (!ctx->fctl_frames) {
                     SDL_SetError("Out of memory for fcTL chunks");
@@ -1476,7 +1476,7 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
                     return false;
                 }
             }
-            
+
             apng_fcTL_chunk *fctl = &ctx->fctl_frames[ctx->fctl_count];
             fctl->sequence_number = SDL_Swap32BE(*(Uint32 *)chunk_data);
             fctl->width = SDL_Swap32BE(*(Uint32 *)(chunk_data + 4));
@@ -1490,7 +1490,7 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
             fctl->raw_idat_data = NULL;
             fctl->raw_idat_size = 0;
             ctx->fctl_count++;
-            
+
         } else if (SDL_memcmp(chunk_type, "IDAT", 4) == 0) {
             // Find fcTL with sequence number 0 (which corresponds to IDAT data)
             int matching_fctl_index = -1;
@@ -1500,10 +1500,10 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
                     break;
                 }
             }
-            
+
             if (matching_fctl_index >= 0) {
                 apng_fcTL_chunk *fctl = &ctx->fctl_frames[matching_fctl_index];
-                
+
                 // Allocate or reallocate buffer
                 png_size_t new_size = fctl->raw_idat_size + chunk_length;
                 if (new_size < fctl->raw_idat_size) {
@@ -1513,7 +1513,7 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
                     decoder->ctx = NULL;
                     return false;
                 }
-                
+
                 png_bytep new_buffer = (png_bytep)SDL_realloc(fctl->raw_idat_data, new_size);
                 if (!new_buffer) {
                     SDL_SetError("Out of memory for IDAT data");
@@ -1522,7 +1522,7 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
                     decoder->ctx = NULL;
                     return false;
                 }
-                
+
                 fctl->raw_idat_data = new_buffer;
                 SDL_memcpy(fctl->raw_idat_data + fctl->raw_idat_size, chunk_data, chunk_length);
                 fctl->raw_idat_size = new_size;
@@ -1535,9 +1535,9 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
                 decoder->ctx = NULL;
                 return false;
             }
-            
+
             Uint32 sequence_number = SDL_Swap32BE(*(Uint32 *)chunk_data);
-            
+
             // Find matching fcTL by sequence number (fdAT sequence - 1 matches fcTL sequence)
             int matching_fctl_index = -1;
             for (int i = 0; i < ctx->fctl_count; ++i) {
@@ -1546,11 +1546,11 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
                     break;
                 }
             }
-            
+
             if (matching_fctl_index >= 0) {
                 apng_fcTL_chunk *fctl = &ctx->fctl_frames[matching_fctl_index];
                 png_size_t new_size = fctl->raw_idat_size + (chunk_length - 4);
-                
+
                 if (new_size < fctl->raw_idat_size) {
                     SDL_SetError("fdAT size would overflow");
                     SDL_free(chunk_data);
@@ -1558,7 +1558,7 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
                     decoder->ctx = NULL;
                     return false;
                 }
-                
+
                 png_bytep new_buffer = (png_bytep)SDL_realloc(fctl->raw_idat_data, new_size);
                 if (!new_buffer) {
                     SDL_SetError("Out of memory for fdAT data");
@@ -1567,7 +1567,7 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
                     decoder->ctx = NULL;
                     return false;
                 }
-                
+
                 fctl->raw_idat_data = new_buffer;
                 SDL_memcpy(fctl->raw_idat_data + fctl->raw_idat_size, chunk_data + 4, chunk_length - 4);
                 fctl->raw_idat_size = new_size;
@@ -1575,10 +1575,10 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
         } else if (SDL_memcmp(chunk_type, "IEND", 4) == 0) {
             found_iend = true;
         }
-        
+
         SDL_free(chunk_data);
     }
-    
+
     if (!ctx->is_apng || ctx->fctl_count == 0) {
         SDL_SetError("Not an APNG file or no frame control chunks found");
         if (ctx->fctl_frames) {
@@ -1599,7 +1599,7 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
         decoder->ctx = NULL;
         return false;
     }
-    
+
     // Validate what might be missing or wrong
     if (ctx->bit_depth < 1 || ctx->png_color_type < 0 || ctx->width < 1 || ctx->height < 1) {
         SDL_SetError("Received invalid APNG with either corrupt or unspecified bit depth, color type, width or height");
@@ -1626,8 +1626,8 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
     decoder->Reset = IMG_AnimationDecoderReset_Internal;
     decoder->Close = IMG_AnimationDecoderClose_Internal;
 
-    SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_FRAME_COUNT_NUMBER, ctx->actl.num_frames);
-    SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_LOOP_COUNT_NUMBER, ctx->actl.num_plays);
+    //SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_FRAME_COUNT_NUMBER, ctx->actl.num_frames);
+    //SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_LOOP_COUNT_NUMBER, ctx->actl.num_plays);
 
     return true;
 }

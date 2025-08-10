@@ -806,7 +806,7 @@ static void SetHDRProperties(SDL_Surface *surface, const avifImage *image)
     }
 }
 
-IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
+IMG_Animation *IMG_LoadAVIFAnimation_IO(SDL_IOStream *src)
 {
   return IMG_DecodeAsAnimation(src, "avifs", 0);
 }
@@ -820,7 +820,7 @@ struct IMG_AnimationDecoderContext
 
     int current_frame;                /* Current frame index */
     int total_frames;                 /* Total number of frames in the animation */
-    
+
     int width;                        /* Width of the animation */
     int height;                       /* Height of the animation */
     uint64_t timescale;               /* Timescale of the media (Hz) */
@@ -1042,7 +1042,7 @@ static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder* decoder)
 
     SDL_free(ctx);
     decoder->ctx = NULL;
-    
+
     return true;
 }
 
@@ -1127,8 +1127,8 @@ bool IMG_CreateAVIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
     ctx->total_frames = ctx->decoder->imageCount;
     ctx->repetitionCount = ctx->decoder->repetitionCount;
 
-    SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_FRAME_COUNT_NUMBER, ctx->total_frames);
-    SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_LOOP_COUNT_NUMBER, ctx->repetitionCount);
+    //SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_FRAME_COUNT_NUMBER, ctx->total_frames);
+    //SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_LOOP_COUNT_NUMBER, ctx->repetitionCount);
 
     return true;
 }

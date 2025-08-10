@@ -2550,7 +2550,7 @@ typedef struct IMG_AnimationDecoder IMG_AnimationDecoder;
  * The file type is determined from the file extension, e.g. "file.webp" will
  * be decoded using WEBP.
  *
- * \param file the file where the animation will be saved.
+ * \param file the file containing a series of images.
  * \returns a new IMG_AnimationDecoder, or NULL on failure; call
  *          SDL_GetError() for more information.
  *
@@ -2558,6 +2558,8 @@ typedef struct IMG_AnimationDecoder IMG_AnimationDecoder;
  *
  * \sa IMG_CreateAnimationDecoder_IO
  * \sa IMG_CreateAnimationDecoderWithProperties
+ * \sa IMG_GetAnimationDecoderFrame
+ * \sa IMG_ResetAnimationDecoder
  * \sa IMG_CloseAnimationDecoder
  */
 extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoder(const char *file);
@@ -2569,7 +2571,7 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoder(co
  * function fails, or when the animation decoder is closed if this function
  * succeeds.
  *
- * \param src an SDL_IOStream that will be used to decode binary from.
+ * \param src an SDL_IOStream containing a series of images.
  * \param closeio true to close the SDL_IOStream when done, false to leave it
  *                open.
  * \param type a filename extension that represent this data ("WEBP", etc).
@@ -2580,6 +2582,8 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoder(co
  *
  * \sa IMG_CreateAnimationDecoder
  * \sa IMG_CreateAnimationDecoderWithProperties
+ * \sa IMG_GetAnimationDecoderFrame
+ * \sa IMG_ResetAnimationDecoder
  * \sa IMG_CloseAnimationDecoder
  */
 extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoder_IO(SDL_IOStream *src, bool closeio, const char *type);
@@ -2589,17 +2593,17 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoder_IO
  *
  * These are the supported properties:
  *
- * - `IMG_PROP_ANIMATION_DECODER_CREATE_FILENAME_STRING`: the file to save, if
+ * - `IMG_PROP_ANIMATION_DECODER_CREATE_FILENAME_STRING`: the file to load, if
  *   an SDL_IOStream isn't being used. This is required if
  *   `IMG_PROP_ANIMATION_DECODER_CREATE_IOSTREAM_POINTER` isn't set.
  * - `IMG_PROP_ANIMATION_DECODER_CREATE_IOSTREAM_POINTER`: an SDL_IOStream
- *   that will be used to decode binary from. This should not be closed until
+ *   containing a series of images. This should not be closed until
  *   the animation decoder is closed. This is required if
  *   `IMG_PROP_ANIMATION_DECODER_CREATE_FILENAME_STRING` isn't set.
  * - `IMG_PROP_ANIMATION_DECODER_CREATE_IOSTREAM_AUTOCLOSE_BOOLEAN`: true if
  *   closing the animation decoder should also close the associated
  *   SDL_IOStream.
- * - `IMG_PROP_ANIMATION_DECODER_CREATE_TYPE_STRING`: the output file type,
+ * - `IMG_PROP_ANIMATION_DECODER_CREATE_TYPE_STRING`: the input file type,
  *   e.g. "webp", defaults to the file extension if
  *   `IMG_PROP_ANIMATION_DECODER_CREATE_FILENAME_STRING` is set.
  *
@@ -2611,6 +2615,8 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoder_IO
  *
  * \sa IMG_CreateAnimationDecoder
  * \sa IMG_CreateAnimationDecoder_IO
+ * \sa IMG_GetAnimationDecoderFrame
+ * \sa IMG_ResetAnimationDecoder
  * \sa IMG_CloseAnimationDecoder
  */
 extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoderWithProperties(SDL_PropertiesID props);
@@ -2621,31 +2627,6 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoderWit
 #define IMG_PROP_ANIMATION_DECODER_CREATE_TYPE_STRING                    "SDL_image.animation_decoder.create.type"
 #define IMG_PROP_ANIMATION_DECODER_CREATE_TIMEBASE_NUMERATOR_NUMBER      "SDL_image.animation_decoder.create.timebase.numerator"
 #define IMG_PROP_ANIMATION_DECODER_CREATE_TIMEBASE_DENOMINATOR_NUMBER    "SDL_image.animation_decoder.create.timebase.denominator"
-
-#define IMG_PROP_ANIMATION_DECODER_METADATA_FRAME_COUNT_NUMBER           "SDL_image.animation_decoder.metadata.frame_count"
-#define IMG_PROP_ANIMATION_DECODER_METADATA_LOOP_COUNT_NUMBER            "SDL_image.animation_decoder.metadata.loop_count"
-
-/**
- * Get the metadata of an animation decoder.
- *
- * These are the supported properties: -
- * `IMG_PROP_ANIMATION_DECODER_METADATA_FRAME_COUNT_NUMBER`: the number of
- * frames in the animation. -
- * `IMG_PROP_ANIMATION_DECODER_METADATA_LOOP_COUNT_NUMBER`: the amount of
- * loops the animation will perform. A value of 0 means it will loop forever.
- *
- * This function returns the properties of the animation decoder, such as the
- * number of frames and loop count.
- *
- * \param decoder the animation decoder.
- * \returns a SDL_PropertiesID containing the metadata, or 0 if there is no
- *          metadata available.
- *
- * \since This function is available since SDL_image 3.4.0.
- *
- * \sa IMG_GetNextAnimationDecoderFrame
- */
-extern SDL_DECLSPEC SDL_PropertiesID SDLCALL IMG_GetAnimationDecoderMetadata(IMG_AnimationDecoder *decoder);
 
 /**
  * Get the next frame in an animation decoder.
@@ -2658,17 +2639,45 @@ extern SDL_DECLSPEC SDL_PropertiesID SDLCALL IMG_GetAnimationDecoderMetadata(IMG
  * only sets the error if the decoding has failed.
  *
  * \param decoder the animation decoder.
- * \param pts a pointer to a Sint64 variable that will be set to the
- *            presentation timestamp of the frame, in milliseconds.
- * \returns a new SDL_Surface containing the decoded frame, or NULL on error;
- *          call SDL_GetError() for more information.
+ * \param frame a pointer filled in with the SDL_Surface for the next frame in the animation.
+ * \param pts a pointer filled in with the
+ *            presentation timestamp of the frame, usually in milliseconds
+ *            but can be other units if the
+ *            `IMG_PROP_ANIMATION_DECODER_CREATE_TIMEBASE_DENOMINATOR_NUMBER`
+ *            property is set when creating the decoder.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
  *
  * \since This function is available since SDL_image 3.4.0.
  *
- * \sa SDL_FreeSurface
- * \sa IMG_GetAnimationDecoderPresentationTimestampMS
+ * \sa IMG_CreateAnimationDecoder
+ * \sa IMG_CreateAnimationDecoder_IO
+ * \sa IMG_CreateAnimationDecoderWithProperties
+ * \sa IMG_ResetAnimationDecoder
+ * \sa IMG_CloseAnimationDecoder
  */
-extern SDL_DECLSPEC bool SDLCALL IMG_GetNextAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface** frame, Sint64* pts);
+extern SDL_DECLSPEC bool SDLCALL IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Sint64 *pts);
+
+/**
+ * Reset an animation decoder.
+ *
+ * Calling this function resets the animation decoder, allowing it to start
+ * from the beginning again. This is useful if you want to decode the frame
+ * sequence again without creating a new decoder.
+ *
+ * \param decoder the decoder to reset.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_CreateAnimationDecoder
+ * \sa IMG_CreateAnimationDecoder_IO
+ * \sa IMG_CreateAnimationDecoderWithProperties
+ * \sa IMG_GetAnimationDecoderFrame
+ * \sa IMG_CloseAnimationDecoder
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_ResetAnimationDecoder(IMG_AnimationDecoder *decoder);
 
 /**
  * Close an animation decoder, finishing any decoding.
@@ -2685,42 +2694,8 @@ extern SDL_DECLSPEC bool SDLCALL IMG_GetNextAnimationDecoderFrame(IMG_AnimationD
  * \sa IMG_CreateAnimationDecoder
  * \sa IMG_CreateAnimationDecoder_IO
  * \sa IMG_CreateAnimationDecoderWithProperties
- * \sa IMG_CreateAnimationDecoderWithProperties
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_CloseAnimationDecoder(IMG_AnimationDecoder *decoder);
-
-/**
- * Reset the animation decoder.
- *
- * Calling this function resets the animation decoder, allowing it to start
- * from the beginning again. This is useful if you want to decode the frame
- * sequence again without creating a new decoder.
- *
- * \param decoder the decoder to reset.
- * \returns true on success or false on failure; call SDL_GetError() for more
- *          information.
- *
- * \since This function is available since SDL_image 3.4.0.
- *
- * \sa IMG_GetNextAnimationDecoderFrame
- */
-extern SDL_DECLSPEC bool SDLCALL IMG_ResetAnimationDecoder(IMG_AnimationDecoder *decoder);
-
-/**
- * Get the presentation timestamp of a frame in milliseconds.
- *
- * This function converts a presentation timestamp from the decoder's timebase
- * to milliseconds.
- *
- * \param decoder the animation decoder.
- * \param pts the presentation timestamp to convert.
- * \returns the presentation timestamp in milliseconds.
- *
- * \since This function is available since SDL_image 3.4.0.
- *
- * \sa IMG_GetNextAnimationDecoderFrame
- */
-extern SDL_DECLSPEC int SDLCALL IMG_GetAnimationDecoderPresentationTimestampMS(IMG_AnimationDecoder *decoder, Sint64 pts);
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
