@@ -165,11 +165,25 @@ error:
 
 bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Sint64 *pts)
 {
+    SDL_Surface *temp_frame = NULL;
+    Sint64 temp_pts;
+
     if (!decoder) {
         return SDL_InvalidParamError("decoder");
     }
 
-    return decoder->GetNextFrame(decoder, frame, pts);
+    if (!frame) {
+        frame = &temp_frame;
+    }
+    if (!pts) {
+        pts = &temp_pts;
+    }
+
+    bool result = decoder->GetNextFrame(decoder, frame, pts);
+    if (temp_frame) {
+        SDL_DestroySurface(temp_frame);
+    }
+    return result;
 }
 
 bool IMG_CloseAnimationDecoder(IMG_AnimationDecoder *decoder)
