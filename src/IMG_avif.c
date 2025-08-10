@@ -1111,12 +1111,14 @@ bool IMG_CreateAVIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
     avifResult result = lib.avifDecoderParse(ctx->decoder);
     if (result != AVIF_RESULT_OK) {
         SDL_SetError("Couldn't parse AVIF animation: %s", lib.avifResultToString(result));
-        return NULL;
+        SDL_free(ctx);
+        return false;
     }
 
     if (ctx->decoder->imageCount <= 1) {
         SDL_SetError("Not an AVIF animation (only %i image found)", ctx->decoder->imageCount);
-        return NULL;
+        SDL_free(ctx);
+        return false;
     }
 
     ctx->width = ctx->decoder->image->width;
