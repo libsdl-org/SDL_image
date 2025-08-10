@@ -310,7 +310,6 @@ SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
             error = "Failed to seek IO to read animated WebP";
             goto error;
         } else {
-
             IMG_Animation *animation = IMG_DecodeAsAnimation(src, "webp", 1);
             if (animation && animation->count > 0) {
                 SDL_Surface *surf = animation->frames[0];
@@ -407,7 +406,7 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
     return true;
 }
 
-static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Sint64 *pts)
+static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *pts)
 {
     *pts = 0;
     *frame = NULL;
@@ -477,7 +476,8 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
         *pts = 0;
         decoder->ctx->last_pts = 0;
     } else {
-        *pts = decoder->ctx->last_pts += iter->duration * decoder->timebase_denominator / (1000 * decoder->timebase_numerator);
+        *pts = decoder->ctx->last_pts + iter->duration * decoder->timebase_denominator / (1000 * decoder->timebase_numerator);
+        decoder->ctx->last_pts = *pts;
     }
 
     dispose_method = iter->dispose_method;
@@ -565,8 +565,8 @@ bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
     uint32_t height = lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_CANVAS_HEIGHT);
     uint32_t flags = lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_FORMAT_FLAGS);
 
-    SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_FRAME_COUNT_NUMBER, lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_FRAME_COUNT));
-    SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_LOOP_COUNT_NUMBER, lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_LOOP_COUNT));
+    //SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_FRAME_COUNT_NUMBER, lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_FRAME_COUNT));
+    //SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_LOOP_COUNT_NUMBER, lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_LOOP_COUNT));
 
     bool has_alpha = (flags & 0x10) != 0;
 
