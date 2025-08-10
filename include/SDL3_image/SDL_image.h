@@ -2415,8 +2415,8 @@ typedef struct IMG_AnimationEncoder IMG_AnimationEncoder;
  * be encoded using WEBP.
  *
  * \param file the file where the animation will be saved.
- * \returns a new IMG_AnimationEncoder, or NULL on failure; call SDL_GetError()
- *          for more information.
+ * \returns a new IMG_AnimationEncoder, or NULL on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL_image 3.4.0.
  *
@@ -2438,8 +2438,8 @@ extern SDL_DECLSPEC IMG_AnimationEncoder * SDLCALL IMG_CreateAnimationEncoder(co
  * \param closeio true to close the SDL_IOStream when done, false to leave it
  *                open.
  * \param type a filename extension that represent this data ("WEBP", etc).
- * \returns a new IMG_AnimationEncoder, or NULL on failure; call SDL_GetError()
- *          for more information.
+ * \returns a new IMG_AnimationEncoder, or NULL on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL_image 3.4.0.
  *
@@ -2458,8 +2458,8 @@ extern SDL_DECLSPEC IMG_AnimationEncoder * SDLCALL IMG_CreateAnimationEncoder_IO
  * - `IMG_PROP_ANIMATION_ENCODER_CREATE_FILENAME_STRING`: the file to save, if
  *   an SDL_IOStream isn't being used. This is required if
  *   `IMG_PROP_ANIMATION_ENCODER_CREATE_IOSTREAM_POINTER` isn't set.
- * - `IMG_PROP_ANIMATION_ENCODER_CREATE_IOSTREAM_POINTER`: an SDL_IOStream that
- *   will be used to save the stream. This should not be closed until the
+ * - `IMG_PROP_ANIMATION_ENCODER_CREATE_IOSTREAM_POINTER`: an SDL_IOStream
+ *   that will be used to save the stream. This should not be closed until the
  *   animation encoder is closed. This is required if
  *   `IMG_PROP_ANIMATION_ENCODER_CREATE_FILENAME_STRING` isn't set.
  * - `IMG_PROP_ANIMATION_ENCODER_CREATE_IOSTREAM_AUTOCLOSE_BOOLEAN`: true if
@@ -2480,8 +2480,8 @@ extern SDL_DECLSPEC IMG_AnimationEncoder * SDLCALL IMG_CreateAnimationEncoder_IO
  *   seconds. This defaults to 1000.
  *
  * \param props the properties of the animation encoder.
- * \returns a new IMG_AnimationEncoder, or NULL on failure; call SDL_GetError()
- *          for more information.
+ * \returns a new IMG_AnimationEncoder, or NULL on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL_image 3.4.0.
  *
@@ -2551,8 +2551,8 @@ typedef struct IMG_AnimationDecoder IMG_AnimationDecoder;
  * be decoded using WEBP.
  *
  * \param file the file where the animation will be saved.
- * \returns a new IMG_AnimationDecoder, or NULL on failure; call SDL_GetError()
- *          for more information.
+ * \returns a new IMG_AnimationDecoder, or NULL on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL_image 3.4.0.
  *
@@ -2573,8 +2573,8 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoder(co
  * \param closeio true to close the SDL_IOStream when done, false to leave it
  *                open.
  * \param type a filename extension that represent this data ("WEBP", etc).
- * \returns a new IMG_AnimationDecoder, or NULL on failure; call SDL_GetError()
- *          for more information.
+ * \returns a new IMG_AnimationDecoder, or NULL on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL_image 3.4.0.
  *
@@ -2592,9 +2592,9 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoder_IO
  * - `IMG_PROP_ANIMATION_DECODER_CREATE_FILENAME_STRING`: the file to save, if
  *   an SDL_IOStream isn't being used. This is required if
  *   `IMG_PROP_ANIMATION_DECODER_CREATE_IOSTREAM_POINTER` isn't set.
- * - `IMG_PROP_ANIMATION_DECODER_CREATE_IOSTREAM_POINTER`: an SDL_IOStream that
- *   will be used to decode binary from. This should not be closed until the
- *   animation decoder is closed. This is required if
+ * - `IMG_PROP_ANIMATION_DECODER_CREATE_IOSTREAM_POINTER`: an SDL_IOStream
+ *   that will be used to decode binary from. This should not be closed until
+ *   the animation decoder is closed. This is required if
  *   `IMG_PROP_ANIMATION_DECODER_CREATE_FILENAME_STRING` isn't set.
  * - `IMG_PROP_ANIMATION_DECODER_CREATE_IOSTREAM_AUTOCLOSE_BOOLEAN`: true if
  *   closing the animation decoder should also close the associated
@@ -2604,8 +2604,8 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoder_IO
  *   `IMG_PROP_ANIMATION_DECODER_CREATE_FILENAME_STRING` is set.
  *
  * \param props the properties of the animation decoder.
- * \returns a new IMG_AnimationDecoder, or NULL on failure; call SDL_GetError()
- *          for more information.
+ * \returns a new IMG_AnimationDecoder, or NULL on failure; call
+ *          SDL_GetError() for more information.
  *
  * \since This function is available since SDL_image 3.4.0.
  *
@@ -2628,10 +2628,10 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoderWit
 /**
  * Get the metadata of an animation decoder.
  *
- * These are the supported properties:
- * - `IMG_PROP_ANIMATION_DECODER_METADATA_FRAME_COUNT_NUMBER`: the number of
- * frames in the animation.
- * - `IMG_PROP_ANIMATION_DECODER_METADATA_LOOP_COUNT_NUMBER`: the amount of
+ * These are the supported properties: -
+ * `IMG_PROP_ANIMATION_DECODER_METADATA_FRAME_COUNT_NUMBER`: the number of
+ * frames in the animation. -
+ * `IMG_PROP_ANIMATION_DECODER_METADATA_LOOP_COUNT_NUMBER`: the amount of
  * loops the animation will perform. A value of 0 means it will loop forever.
  *
  * This function returns the properties of the animation decoder, such as the
@@ -2651,11 +2651,11 @@ extern SDL_DECLSPEC SDL_PropertiesID SDLCALL IMG_GetAnimationDecoderMetadata(IMG
  * Get the next frame in an animation decoder.
  *
  * This function decodes the next frame in the animation decoder, returning it
- * as an SDL_Surface. The returned surface should be freed with SDL_FreeSurface()
- * when no longer needed.
+ * as an SDL_Surface. The returned surface should be freed with
+ * SDL_FreeSurface() when no longer needed.
  *
- * If the animation decoder has no more frames, this function returns NULL and only
- * sets the error if the decoding has failed.
+ * If the animation decoder has no more frames, this function returns NULL and
+ * only sets the error if the decoding has failed.
  *
  * \param decoder the animation decoder.
  * \param pts a pointer to a Sint64 variable that will be set to the
@@ -2692,9 +2692,9 @@ extern SDL_DECLSPEC bool SDLCALL IMG_CloseAnimationDecoder(IMG_AnimationDecoder 
 /**
  * Reset the animation decoder.
  *
- * Calling this function resets the animation decoder, allowing it to
- * start from the beginning again. This is useful if you want to decode the
- * frame sequence again without creating a new decoder.
+ * Calling this function resets the animation decoder, allowing it to start
+ * from the beginning again. This is useful if you want to decode the frame
+ * sequence again without creating a new decoder.
  *
  * \param decoder the decoder to reset.
  * \returns true on success or false on failure; call SDL_GetError() for more
