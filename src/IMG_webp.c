@@ -476,7 +476,8 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
         *pts = 0;
         decoder->ctx->last_pts = 0;
     } else {
-        *pts = decoder->ctx->last_pts += iter->duration * decoder->timebase_denominator / (1000 * decoder->timebase_numerator);
+        *pts = decoder->ctx->last_pts + iter->duration * decoder->timebase_denominator / (1000 * decoder->timebase_numerator);
+        decoder->ctx->last_pts = *pts;
     }
 
     dispose_method = iter->dispose_method;

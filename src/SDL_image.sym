@@ -63,6 +63,8 @@ SDL3_image_0.0.0 {
     IMG_SaveTGA_IO;
     IMG_SaveGIF;
     IMG_SaveGIF_IO;
+    IMG_SaveWEBP;
+    IMG_SaveWEBP_IO;
     IMG_SaveBMP;
     IMG_SaveBMP_IO;
     IMG_Save;
