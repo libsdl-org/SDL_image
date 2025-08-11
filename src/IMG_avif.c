@@ -1264,16 +1264,21 @@ static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_
         return SDL_SetError("Couldn't create AVIF image");
     }
 
-    if (!encoder->ctx->first_frame_added && (encoder->ctx->desc || encoder->ctx->rights)) {
-        size_t outlen = 0;
-        uint8_t *xmp_data = __xmlman_ConstructXMPWithRDFDescription(encoder->ctx->title, encoder->ctx->creator, encoder->ctx->desc, encoder->ctx->rights, encoder->ctx->createdate, &outlen);
-        if (!xmp_data || outlen < 1) {
-            lib.avifImageDestroy(image);
-            return SDL_SetError("Couldn't create XMP data for AVIF image");
-        }
-        lib.avifImageSetMetadataXMP(image, xmp_data, outlen);
-        SDL_free((void *)xmp_data);
-    }
+	if (!encoder->ctx->first_frame_added && (encoder->ctx->desc || encoder->ctx->rights)) {
+	    size_t outlen = 0;
+	    uint8_t *xmp_data = __xmlman_ConstructXMPWithRDFDescription(encoder->ctx->title, encoder->ctx->creator, encoder->ctx->desc, encoder->ctx->rights, encoder->ctx->createdate, &outlen);
+	    if (!xmp_data || outlen < 1) {
+	        lib.avifImageDestroy(image);
+	        return SDL_SetError("Couldn't create XMP data for AVIF image");
+	    }
+	    avifResult ar = lib.avifImageSetMetadataXMP(image, xmp_data, outlen);
+	    if (ar != AVIF_RESULT_OK) {
+	        lib.avifImageDestroy(image);
+	        SDL_free((void *)xmp_data);
+	        return SDL_SetError("Couldn't set XMP metadata for AVIF image: %s", lib.avifResultToString(ar));
+	    }
+	    SDL_free((void *)xmp_data);
+	}
 
     image->yuvRange = AVIF_RANGE_FULL;
     image->colorPrimaries = (avifColorPrimaries)SDL_COLORSPACEPRIMARIES(colorspace);
