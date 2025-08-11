@@ -131,6 +131,11 @@ IMG_AnimationDecoder *IMG_CreateAnimationDecoderWithProperties(SDL_PropertiesID 
     decoder->closeio = closeio;
     decoder->timebase_numerator = timebase_numerator;
     decoder->timebase_denominator = timebase_denominator;
+    decoder->props = SDL_CreateProperties();
+    if (!decoder->props) {
+        SDL_SetError("Failed to create properties for animation decoder");
+        goto error;
+    }
 
     bool result = false;
     if (SDL_strcasecmp(type, "webp") == 0) {
@@ -161,6 +166,16 @@ error:
         SDL_free(decoder);
     }
     return NULL;
+}
+
+SDL_PropertiesID IMG_GetAnimationDecoderProperties(IMG_AnimationDecoder *decoder)
+{
+    if (!decoder) {
+        SDL_InvalidParamError("decoder");
+        return 0;
+    }
+
+    return decoder->props;
 }
 
 bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *pts)
@@ -196,6 +211,11 @@ bool IMG_CloseAnimationDecoder(IMG_AnimationDecoder *decoder)
 
     if (decoder->closeio) {
         result &= SDL_CloseIO(decoder->src);
+    }
+
+    if (decoder->props) {
+        SDL_DestroyProperties(decoder->props);
+        decoder->props = 0;
     }
 
     SDL_free(decoder);
