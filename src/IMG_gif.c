@@ -534,7 +534,7 @@ struct IMG_AnimationDecoderContext
     int last_disposal;           /* Disposal method from previous frame */
     int restore_frame;           /* Frame to restore when using DISPOSE_PREVIOUS */
 
-    Sint64 last_pts;
+    Uint64 last_pts;
 
     char *comment;
     int loop_count;
@@ -618,78 +618,101 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
             ctx->state.GifScreen.GrayScale = ctx->global_grayscale;
         }
 
-        int block_type;
-        while (1) {
+        bool processing_extensions = true;
+        while (processing_extensions) {
+            uint8_t block_type;
             if (!ReadOK(src, &block_type, 1)) {
                 return SDL_SetError("Error reading GIF block type");
             }
-            if (block_type == 0x21) {
-                int extension_label;
+
+            switch (block_type) {
+            case 0x21: // Extension Introducer
+            {
+                uint8_t extension_label;
                 if (!ReadOK(src, &extension_label, 1)) {
                     return SDL_SetError("Error reading GIF extension label");
                 }
-                if (extension_label == 0xFF) {
-                    Uint8 app_data[12];
-                    if (!ReadOK(src, app_data, 12)) {
-                        return SDL_SetError("Error reading GIF application extension block");
-                    }
-                    if (SDL_strncmp((char *)app_data, "NETSCAPE2.0", 11) == 0) {
+
+                switch (extension_label) {
+                    case 0xFF: // Application Extension
+                    {
+                        Uint8 app_data[12];
+                        if (!ReadOK(src, app_data, 12)) {
+                            return SDL_SetError("Error reading GIF application extension block");
+                        }
+
+                        // Check for NETSCAPE2.0 extension (loop count)
+                        if (SDL_strncmp((char *)app_data, "NETSCAPE2.0", 11) == 0) {
+                            Uint8 sub_block_size;
+                            if (!ReadOK(src, &sub_block_size, 1)) {
+                                return SDL_SetError("Error reading Netscape sub-block size");
+                            }
+                            if (sub_block_size == 3) {
+                                Uint8 sub_block_data[3];
+                                if (!ReadOK(src, sub_block_data, 3)) {
+                                    return SDL_SetError("Error reading Netscape sub-block data");
+                                }
+                                if (sub_block_data[0] == 0x01) {
+                                    ctx->loop_count = LM_to_uint(sub_block_data[1], sub_block_data[2]);
+                                }
+                                if (!ReadOK(src, &sub_block_size, 1) || sub_block_size != 0x00) {
+                                    return SDL_SetError("Netscape extension block not terminated correctly");
+                                }
+                            } else {
+                                SDL_SeekIO(src, sub_block_size, SDL_IO_SEEK_CUR);
+                                Uint8 terminator;
+                                if (!ReadOK(src, &terminator, 1) || terminator != 0) {
+                                    return SDL_SetError("Extension block not terminated correctly");
+                                }
+                            }
+                        } else {
+                            Uint8 sub_block_size;
+                            while (ReadOK(src, &sub_block_size, 1) && sub_block_size > 0) {
+                                SDL_SeekIO(src, sub_block_size, SDL_IO_SEEK_CUR);
+                            }
+                        }
+                    } break;
+
+                    case 0xFE: // Comment Extension
+                    {
                         Uint8 sub_block_size;
-                        if (!ReadOK(src, &sub_block_size, 1)) {
-                            return SDL_SetError("Error reading Netscape sub-block size");
+                        size_t current_len = 0;
+                        while (ReadOK(src, &sub_block_size, 1) && sub_block_size > 0) {
+                            size_t new_len = current_len + sub_block_size;
+                            char *temp_comment = SDL_realloc(ctx->comment, new_len + 1);
+                            if (!temp_comment) {
+                                return SDL_SetError("Failed to allocate memory for GIF comment");
+                            }
+                            ctx->comment = temp_comment;
+                            if (!ReadOK(src, ctx->comment + current_len, sub_block_size)) {
+                                return SDL_SetError("Error reading GIF comment data");
+                            }
+                            current_len = new_len;
                         }
-                        if (sub_block_size == 3) {
-                            Uint8 sub_block_data[3];
-                            if (!ReadOK(src, sub_block_data, 3)) {
-                                return SDL_SetError("Error reading Netscape sub-block data");
-                            }
-                            if (sub_block_data[0] == 0x01) {
-                                ctx->loop_count = LM_to_uint(sub_block_data[1], sub_block_data[2]);
-                            }
-                            if (!ReadOK(src, &sub_block_size, 1) || sub_block_size != 0x00) {
-                                return SDL_SetError("Netscape extension block not terminated correctly");
-                            }
+                        if (ctx->comment && current_len > 0) {
+                            ctx->comment[current_len] = '\0';
                         }
-                    } else {
+                    } break;
+
+                    default: // Other extensions
+                    {
                         Uint8 sub_block_size;
                         while (ReadOK(src, &sub_block_size, 1) && sub_block_size > 0) {
                             SDL_SeekIO(src, sub_block_size, SDL_IO_SEEK_CUR);
                         }
-                    }
-                } else if (extension_label == 0xFE) {
-                    Uint8 sub_block_size;
-                    size_t current_len = 0;
-                    size_t new_len;
-                    char *temp_comment;
-                    while (ReadOK(src, &sub_block_size, 1) && sub_block_size > 0) {
-                        new_len = current_len + sub_block_size;
-                        temp_comment = SDL_realloc(ctx->comment, new_len + 1);
-                        if (!temp_comment) {
-                            return SDL_SetError("Failed to reallocate memory for GIF comment");
-                        }
-                        ctx->comment = temp_comment;
-
-                        if (!ReadOK(src, ctx->comment + current_len, sub_block_size)) {
-                            return SDL_SetError("Error reading GIF comment block data");
-                        }
-                        current_len = new_len;
-                    }
-                    if (ctx->comment) {
-                        ctx->comment[current_len] = '\0';
-                    }
-                } else {
-                    Uint8 sub_block_size;
-                    while (ReadOK(src, &sub_block_size, 1) && sub_block_size > 0) {
-                        SDL_SeekIO(src, sub_block_size, SDL_IO_SEEK_CUR);
-                    }
+                    } break;
                 }
-            } else if (block_type == 0x2C) {
+            } break;
+            case 0x2C: // Image Descriptor
                 SDL_SeekIO(src, -1, SDL_IO_SEEK_CUR);
+                processing_extensions = false;
                 break;
-            } else if (block_type == 0x3B) {
+
+            case 0x3B: // Trailer
                 return SDL_SetError("GIF file contains no images");
-            } else {
-                return SDL_SetError("Unknown block type found in GIF header");
+
+            default: // Unknown block type
+                return SDL_SetError("Unknown GIF block type: 0x%02X", block_type);
             }
         }
 
@@ -943,13 +966,14 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Properties
         return false;
     }
 
-    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_ANIMATION_IGNORE_PROPS_BOOLEAN, false);
+    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
     if (!ignoreProps) {
         // Set well-defined properties.
-        SDL_SetNumberProperty(props, IMG_PROP_ANIMATION_LOOP_COUNT_NUMBER, (Sint64)ctx->loop_count);
+        SDL_SetNumberProperty(decoder->props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (Sint64)ctx->loop_count);
+
         // Get other well-defined properties and set them in our props.
         if (ctx->comment) {
-            SDL_SetStringProperty(props, IMG_PROP_ANIMATION_DESCRIPTION_STRING, (const char *)ctx->comment);
+            SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_DESCRIPTION_STRING, (const char *)ctx->comment);
         }
     }
 
@@ -2694,10 +2718,10 @@ bool IMG_CreateGIFAnimationEncoder(struct IMG_AnimationEncoder *encoder, SDL_Pro
     else if (encoder->quality > 100)
         encoder->quality = 100;
 
-    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_ANIMATION_IGNORE_PROPS_BOOLEAN, false);
+    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
     if (!ignoreProps) {
-        loop_count = (int)SDL_GetNumberProperty(props, IMG_PROP_ANIMATION_LOOP_COUNT_NUMBER, 0);
-        ctx->desc = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_DESCRIPTION_STRING, NULL);
+        loop_count = (int)SDL_GetNumberProperty(props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, 0);
+        ctx->desc = SDL_GetStringProperty(props, IMG_PROP_METADATA_DESCRIPTION_STRING, NULL);
     }
 
     ctx->width = 0;
