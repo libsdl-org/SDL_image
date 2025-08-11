@@ -2403,13 +2403,13 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadGIFAnimation_IO(SDL_IOStream
  */
 extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadWEBPAnimation_IO(SDL_IOStream *src);
 
-#define IMG_PROP_ANIMATION_IGNORE_PROPS_BOOLEAN                 "SDL_image.animation.ignore_props"
-#define IMG_PROP_ANIMATION_DESCRIPTION_STRING                   "SDL_image.animation.description"
-#define IMG_PROP_ANIMATION_COPYRIGHT_STRING                     "SDL_image.animation.copyright"
-#define IMG_PROP_ANIMATION_TITLE_STRING                         "SDL_image.animation.title"
-#define IMG_PROP_ANIMATION_AUTHOR_STRING                        "SDL_image.animation.author"
-#define IMG_PROP_ANIMATION_CREATION_TIME_STRING                 "SDL_image.animation.creation_time"
-#define IMG_PROP_ANIMATION_LOOP_COUNT_NUMBER                    "SDL_image.animation.loop_count"
+#define IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN                 "SDL_image.metadata.ignore_props"
+#define IMG_PROP_METADATA_DESCRIPTION_STRING                   "SDL_image.metadata.description"
+#define IMG_PROP_METADATA_COPYRIGHT_STRING                     "SDL_image.metadata.copyright"
+#define IMG_PROP_METADATA_TITLE_STRING                         "SDL_image.metadata.title"
+#define IMG_PROP_METADATA_AUTHOR_STRING                        "SDL_image.metadata.author"
+#define IMG_PROP_METADATA_CREATION_TIME_STRING                 "SDL_image.metadata.creation_time"
+#define IMG_PROP_METADATA_LOOP_COUNT_NUMBER                    "SDL_image.metadata.loop_count"
 
 /**
  * An object representing the encoder context.
@@ -2635,7 +2635,6 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoderWit
 #define IMG_PROP_ANIMATION_DECODER_CREATE_TYPE_STRING                    "SDL_image.animation_decoder.create.type"
 #define IMG_PROP_ANIMATION_DECODER_CREATE_TIMEBASE_NUMERATOR_NUMBER      "SDL_image.animation_decoder.create.timebase.numerator"
 #define IMG_PROP_ANIMATION_DECODER_CREATE_TIMEBASE_DENOMINATOR_NUMBER    "SDL_image.animation_decoder.create.timebase.denominator"
-
 
 /**
  * Get the properties of an animation decoder.
