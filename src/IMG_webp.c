@@ -932,8 +932,7 @@ static bool IMG_CloseWEBPAnimation(IMG_AnimationEncoder *encoder)
         goto done;
     }
 
-    if (!ctx->rights && !ctx->desc && ctx->loop_count == 0)
-    {
+    if (!ctx->rights && !ctx->desc && ctx->loop_count == 0) {
         if (!lib.WebPAnimEncoderAssemble(ctx->encoder, &data)) {
             error = "WebPAnimEncoderAssemble() failed";
             goto done;
