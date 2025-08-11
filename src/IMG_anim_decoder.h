@@ -23,6 +23,7 @@ typedef struct IMG_AnimationDecoderContext IMG_AnimationDecoderContext;
 
 struct IMG_AnimationDecoder
 {
+    SDL_PropertiesID props;
     SDL_IOStream *src;
     Sint64 start;
     bool closeio;
@@ -34,7 +35,6 @@ struct IMG_AnimationDecoder
     bool (*Close)(IMG_AnimationDecoder *decoder);
 
     IMG_AnimationDecoderContext *ctx;
-    SDL_PropertiesID props;
 };
 
 extern IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int maxFrames);
