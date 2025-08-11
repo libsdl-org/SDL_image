@@ -75,6 +75,7 @@ LOCAL_SRC_FILES :=  		\
     src/IMG.c           	\
     src/IMG_anim_encoder.c      \
     src/IMG_anim_decoder.c      \
+    src/xmlman.c      		\
     src/IMG_avif.c      	\
     src/IMG_bmp.c       	\
     src/IMG_gif.c       	\
