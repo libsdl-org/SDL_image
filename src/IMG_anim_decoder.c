@@ -219,7 +219,6 @@ bool IMG_CloseAnimationDecoder(IMG_AnimationDecoder *decoder)
     }
 
     SDL_free(decoder);
-
     return result;
 }
 
@@ -249,7 +248,7 @@ IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int 
     int actualCount = 0;
     int currentCount = 32;
     SDL_Surface **frames = (SDL_Surface **)SDL_calloc(currentCount, sizeof(*frames));
-    Sint64 *delays = (Sint64 *)SDL_calloc(currentCount, sizeof(*delays));
+    Uint64 *delays = (Uint64 *)SDL_calloc(currentCount, sizeof(*delays));
     if (!frames || !delays) {
         goto error;
     }
@@ -278,7 +277,7 @@ IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int 
             }
             frames = tempFrames;
 
-            Sint64 *tempDelays = (Sint64 *)SDL_realloc(delays, currentCount * sizeof(*delays));
+            Uint64 *tempDelays = (Uint64 *)SDL_realloc(delays, currentCount * sizeof(*delays));
             if (!tempDelays) {
                 goto error;
             }
