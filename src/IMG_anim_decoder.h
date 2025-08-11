@@ -34,6 +34,7 @@ struct IMG_AnimationDecoder
     bool (*Close)(IMG_AnimationDecoder *decoder);
 
     IMG_AnimationDecoderContext *ctx;
+    SDL_PropertiesID props;
 };
 
 extern IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int maxFrames);
