@@ -420,7 +420,7 @@ struct IMG_AnimationDecoderContext
     uint8_t *raw_data;
     size_t raw_data_size;
     WebPDemuxState demux_state;
-    Sint64 last_pts;
+    Uint64 last_pts;
 };
 
 static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
@@ -531,27 +531,6 @@ static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder *decoder)
     lib.WebPDemuxReleaseIterator(&decoder->ctx->iter);
     SDL_free(decoder->ctx);
     decoder->ctx = NULL;
-
-    const char *desc = SDL_GetStringProperty(decoder->props, IMG_PROP_ANIMATION_DESCRIPTION_STRING, NULL);
-    const char *rights = SDL_GetStringProperty(decoder->props, IMG_PROP_ANIMATION_COPYRIGHT_STRING, NULL);
-    const char *title = SDL_GetStringProperty(decoder->props, IMG_PROP_ANIMATION_TITLE_STRING, NULL);
-    const char *creator = SDL_GetStringProperty(decoder->props, IMG_PROP_ANIMATION_AUTHOR_STRING, NULL);
-    const char *creationtime = SDL_GetStringProperty(decoder->props, IMG_PROP_ANIMATION_CREATION_TIME_STRING, NULL);
-    if (desc) {
-        SDL_free((void *)desc);
-    }
-    if (rights) {
-        SDL_free((void *)rights);
-    }
-    if (title) {
-        SDL_free((void *)title);
-    }
-    if (creator) {
-        SDL_free((void *)creator);
-    }
-    if (creationtime) {
-        SDL_free((void *)creationtime);
-    }
     return true;
 }
 
@@ -610,13 +589,13 @@ bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
     uint32_t height = lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_CANVAS_HEIGHT);
     uint32_t flags = lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_FORMAT_FLAGS);
 
-    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_ANIMATION_IGNORE_PROPS_BOOLEAN, false);
+    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
     if (!ignoreProps) {
         // Allow implicit properties to be set which are not globalized but specific to the decoder.
-        SDL_SetNumberProperty(decoder->props, "IMG_PROP_ANIMATION_DECODER_FRAME_COUNT_NUMBER", lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_FRAME_COUNT));
+        SDL_SetNumberProperty(decoder->props, "IMG_PROP_METADATA_FRAME_COUNT_NUMBER", lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_FRAME_COUNT));
 
         // Set well-defined properties.
-        SDL_SetNumberProperty(decoder->props, IMG_PROP_ANIMATION_LOOP_COUNT_NUMBER, lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_LOOP_COUNT));
+        SDL_SetNumberProperty(decoder->props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_LOOP_COUNT));
 
         // Get other well-defined properties and set them in our props.
         WebPChunkIterator xmp_iter;
@@ -628,19 +607,19 @@ bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
                 const char *creator = __xmlman_GetXMPCreator(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
                 const char *createdate = __xmlman_GetXMPCreateDate(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
                 if (desc) {
-                    SDL_SetStringProperty(decoder->props, IMG_PROP_ANIMATION_DESCRIPTION_STRING, desc);
+                    SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_DESCRIPTION_STRING, desc);
                 }
                 if (rights) {
-                    SDL_SetStringProperty(decoder->props, IMG_PROP_ANIMATION_COPYRIGHT_STRING, rights);
+                    SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_COPYRIGHT_STRING, rights);
                 }
                 if (title) {
-                    SDL_SetStringProperty(decoder->props, IMG_PROP_ANIMATION_TITLE_STRING, title);
+                    SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_TITLE_STRING, title);
                 }
                 if (creator) {
-                    SDL_SetStringProperty(decoder->props, IMG_PROP_ANIMATION_AUTHOR_STRING, creator);
+                    SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_AUTHOR_STRING, creator);
                 }
                 if (createdate) {
-                    SDL_SetStringProperty(decoder->props, IMG_PROP_ANIMATION_CREATION_TIME_STRING, createdate);
+                    SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_CREATION_TIME_STRING, createdate);
                 }
             }
             lib.WebPDemuxReleaseChunkIterator(&xmp_iter);
@@ -1074,17 +1053,17 @@ bool IMG_CreateWEBPAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Propertie
         return SDL_SetError("WebPValidateConfig() failed");
     }
 
-    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_ANIMATION_IGNORE_PROPS_BOOLEAN, false);
+    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
     if (!ignoreProps) {
-        ctx->loop_count = (int)SDL_GetNumberProperty(props, IMG_PROP_ANIMATION_LOOP_COUNT_NUMBER, 0);
+        ctx->loop_count = (int)SDL_GetNumberProperty(props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, 0);
         if (ctx->loop_count < 0) {
             ctx->loop_count = 0;
         }
-        ctx->desc = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_DESCRIPTION_STRING, NULL);
-        ctx->rights = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_COPYRIGHT_STRING, NULL);
-        ctx->title = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_TITLE_STRING, NULL);
-        ctx->creator = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_AUTHOR_STRING, NULL);
-        ctx->creationtime = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_CREATION_TIME_STRING, NULL);
+        ctx->desc = SDL_GetStringProperty(props, IMG_PROP_METADATA_DESCRIPTION_STRING, NULL);
+        ctx->rights = SDL_GetStringProperty(props, IMG_PROP_METADATA_COPYRIGHT_STRING, NULL);
+        ctx->title = SDL_GetStringProperty(props, IMG_PROP_METADATA_TITLE_STRING, NULL);
+        ctx->creator = SDL_GetStringProperty(props, IMG_PROP_METADATA_AUTHOR_STRING, NULL);
+        ctx->creationtime = SDL_GetStringProperty(props, IMG_PROP_METADATA_CREATION_TIME_STRING, NULL);
     }
 
     return true;
