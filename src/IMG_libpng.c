@@ -33,7 +33,6 @@
 
 #ifdef SDL_IMAGE_LIBPNG
 #include <png.h>
-#include <limits.h>
 
 #ifndef PNG_DISPOSE_OP_NONE
 #define PNG_DISPOSE_OP_NONE 0
@@ -1293,9 +1292,9 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     return true;
 }
 
-static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder* decoder)
+static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder *decoder)
 {
-    IMG_AnimationDecoderContext* ctx = decoder->ctx;
+    IMG_AnimationDecoderContext *ctx = decoder->ctx;
 
     if (ctx->fctl_frames) {
         for (int i = 0; i < ctx->fctl_count; i++) {
@@ -1325,10 +1324,30 @@ static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder* decoder)
     SDL_free(ctx);
     decoder->ctx = NULL;
 
+    const char *desc = SDL_GetStringProperty(decoder->props, IMG_PROP_ANIMATION_DESCRIPTION_STRING, NULL);
+    const char *rights = SDL_GetStringProperty(decoder->props, IMG_PROP_ANIMATION_COPYRIGHT_STRING, NULL);
+    const char *title = SDL_GetStringProperty(decoder->props, IMG_PROP_ANIMATION_TITLE_STRING, NULL);
+    const char *author = SDL_GetStringProperty(decoder->props, IMG_PROP_ANIMATION_AUTHOR_STRING, NULL);
+    const char *creationtime = SDL_GetStringProperty(decoder->props, IMG_PROP_ANIMATION_CREATION_TIME_STRING, NULL);
+    if (desc) {
+        SDL_free((void *)desc);
+    }
+    if (rights) {
+        SDL_free((void *)rights);
+    }
+    if (title) {
+        SDL_free((void *)title);
+    }
+    if (author) {
+        SDL_free((void *)author);
+    }
+    if (creationtime) {
+        SDL_free((void *)creationtime);
+    }
     return true;
 }
 
-bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_PropertiesID props)
+bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props)
 {
     (void)props;
 
@@ -1336,7 +1355,7 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
         return false;
     }
 
-    IMG_AnimationDecoderContext* ctx = (IMG_AnimationDecoderContext*)SDL_calloc(1, sizeof(IMG_AnimationDecoderContext));
+    IMG_AnimationDecoderContext *ctx = (IMG_AnimationDecoderContext *)SDL_calloc(1, sizeof(IMG_AnimationDecoderContext));
     if (!ctx) {
         return SDL_SetError("Out of memory for APNG decoder context");
     }
@@ -1358,8 +1377,14 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
         return false;
     }
 
-    bool found_iend = false;
+    // Extracted metadata will be assigned to variables below
+    const char *desc = NULL;
+    const char *rights = NULL;
+    const char *title = NULL;
+    const char *author = NULL;
+    const char *creationtime = NULL;
 
+    bool found_iend = false;
     while (!found_iend) {
         char chunk_type[5] = { 0 };
         png_bytep chunk_data = NULL;
@@ -1467,7 +1492,7 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
             if (ctx->fctl_count >= ctx->fctl_capacity) {
                 ctx->fctl_capacity = ctx->fctl_capacity == 0 ? 4 : ctx->fctl_capacity * 2;
                 ctx->fctl_frames = (apng_fcTL_chunk *)SDL_realloc(ctx->fctl_frames,
-                                                                sizeof(apng_fcTL_chunk) * ctx->fctl_capacity);
+                                                                  sizeof(apng_fcTL_chunk) * ctx->fctl_capacity);
                 if (!ctx->fctl_frames) {
                     SDL_SetError("Out of memory for fcTL chunks");
                     SDL_free(chunk_data);
@@ -1574,6 +1599,30 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
             }
         } else if (SDL_memcmp(chunk_type, "IEND", 4) == 0) {
             found_iend = true;
+        } else if (SDL_memcmp(chunk_type, "tEXt", 4) == 0) {
+            char *separator = (char *)memchr(chunk_data, '\0', chunk_length);
+            if (separator != NULL) {
+                size_t keyword_len = separator - (char *)chunk_data;
+                size_t text_len = chunk_length - keyword_len - 1;
+                char *keyword = (char *)SDL_malloc(keyword_len + 1);
+                if (keyword) {
+                    SDL_memcpy(keyword, chunk_data, keyword_len);
+                    keyword[keyword_len] = '\0';
+                    char *text = (char *)(separator + 1);
+                    if (SDL_strcasecmp(keyword, "description") == 0) {
+                        desc = SDL_strndup(text, text_len);
+                    } else if (SDL_strcasecmp(keyword, "copyright") == 0) {
+                        rights = SDL_strndup(text, text_len);
+                    } else if (SDL_strcasecmp(keyword, "title") == 0) {
+                        title = SDL_strndup(text, text_len);
+                    } else if (SDL_strcasecmp(keyword, "author") == 0) {
+                        author = SDL_strndup(text, text_len);
+                    } else if (SDL_strcasecmp(keyword, "creation time") == 0) {
+                        creationtime = SDL_strndup(text, text_len);
+                    }
+                    SDL_free(keyword);
+                }
+            }
         }
 
         SDL_free(chunk_data);
@@ -1626,8 +1675,31 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Propertie
     decoder->Reset = IMG_AnimationDecoderReset_Internal;
     decoder->Close = IMG_AnimationDecoderClose_Internal;
 
-    //SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_FRAME_COUNT_NUMBER, ctx->actl.num_frames);
-    //SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_LOOP_COUNT_NUMBER, ctx->actl.num_plays);
+    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_ANIMATION_IGNORE_PROPS_BOOLEAN, false);
+    if (!ignoreProps) {
+        // Allow implicit properties to be set which are not globalized but specific to the decoder.
+        SDL_SetNumberProperty(decoder->props, "IMG_PROP_ANIMATION_DECODER_FRAME_COUNT_NUMBER", ctx->actl.num_frames);
+
+        // Set well-defined properties.
+        SDL_SetNumberProperty(decoder->props, IMG_PROP_ANIMATION_LOOP_COUNT_NUMBER, ctx->actl.num_plays);
+
+        // Get other well-defined properties and set them in our props.
+        if (desc) {
+            SDL_SetStringProperty(decoder->props, IMG_PROP_ANIMATION_DESCRIPTION_STRING, desc);
+        }
+        if (rights) {
+            SDL_SetStringProperty(decoder->props, IMG_PROP_ANIMATION_COPYRIGHT_STRING, rights);
+        }
+        if (title) {
+            SDL_SetStringProperty(decoder->props, IMG_PROP_ANIMATION_TITLE_STRING, title);
+        }
+        if (author) {
+            SDL_SetStringProperty(decoder->props, IMG_PROP_ANIMATION_AUTHOR_STRING, author);
+        }
+        if (creationtime) {
+            SDL_SetStringProperty(decoder->props, IMG_PROP_ANIMATION_CREATION_TIME_STRING, creationtime);
+        }
+    }
 
     return true;
 }
@@ -1645,6 +1717,11 @@ struct IMG_AnimationEncoderContext
     SDL_PixelFormat output_pixel_format;
     SDL_Palette *apng_palette_ptr;
     int num_plays;
+    const char *desc;
+    const char *rights;
+    const char *title;
+    const char *author;
+    const char *creationtime;
 };
 
 static bool write_png_chunk(SDL_IOStream *stream, const char *chunk_type_str, png_bytep data, png_size_t size)
@@ -1879,6 +1956,22 @@ error:
     return NULL;
 }
 
+static bool writetEXtchunk(SDL_IOStream* dst, const char *keyword, const char *value)
+{
+    size_t total_len = SDL_strlen(keyword) + 1 + SDL_strlen(value);
+    png_byte *buffer = (png_byte *)SDL_malloc(total_len);
+    if (!buffer) {
+        return SDL_SetError("Out of memory for tEXt chunk");
+    }
+    SDL_snprintf((char *)buffer, total_len, "%s%c%s", keyword, '\0', value);
+    if (!write_png_chunk(dst, "tEXt", buffer, total_len)) {
+        SDL_free(buffer);
+        return SDL_SetError("Failed to write png chunk tEXt");
+    }
+    SDL_free(buffer);
+    return true;
+}
+
 static bool SaveAPNGAnimationPushFrame(IMG_AnimationEncoder *encoder, SDL_Surface *frame, Uint64 pts)
 {
     if (!encoder->ctx) {
@@ -2063,23 +2156,39 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationEncoder *encoder, SDL_Surfac
             }
         }
 
-        png_byte software_text[] = "Software\0SDL3";
-        if (!write_png_chunk(encoder->dst, "tEXt", software_text, sizeof(software_text) - 1)) { // -1 for null terminator
-            goto error;
+        if (encoder->ctx->desc) {
+            if (!writetEXtchunk(encoder->dst, "Description", encoder->ctx->desc)) {
+                goto error;
+            }
         }
-
-        png_byte comment_text[] = "Comment\0SDL3 APNG Animation Writer";
-        if (!write_png_chunk(encoder->dst, "tEXt", comment_text, sizeof(comment_text) - 1)) { // -1 for null terminator
-            goto error;
+        if (encoder->ctx->rights) {
+            if (!writetEXtchunk(encoder->dst, "Copyright", encoder->ctx->rights)) {
+                goto error;
+            }
+        }
+        if (encoder->ctx->title) {
+            if (!writetEXtchunk(encoder->dst, "Title", encoder->ctx->title)) {
+                goto error;
+            }
+        }
+        if (encoder->ctx->author) {
+            if (!writetEXtchunk(encoder->dst, "Author", encoder->ctx->author)) {
+                goto error;
+            }
+        }
+        if (encoder->ctx->creationtime) {
+            if (!writetEXtchunk(encoder->dst, "Creation Time", encoder->ctx->creationtime)) {
+                goto error;
+            }
         }
 
         // Now, write the fcTL for the first animated frame (sequence 0)
         png_byte fctl_data[26];
-        custom_png_save_uint_32(fctl_data, 0);                                         // Sequence number for the first animated frame is fixed at 0.
+        custom_png_save_uint_32(fctl_data, 0);                                          // Sequence number for the first animated frame is fixed at 0.
         custom_png_save_uint_32(fctl_data + 4, (png_uint_32)encoder->ctx->apng_width);  // Frame width
         custom_png_save_uint_32(fctl_data + 8, (png_uint_32)encoder->ctx->apng_height); // Frame height
-        custom_png_save_uint_32(fctl_data + 12, 0);                                    // x_offset
-        custom_png_save_uint_32(fctl_data + 16, 0);                                    // y_offset
+        custom_png_save_uint_32(fctl_data + 12, 0);                                     // x_offset
+        custom_png_save_uint_32(fctl_data + 16, 0);                                     // y_offset
 
         custom_png_save_uint_16(fctl_data + 20, delay_num);
         custom_png_save_uint_16(fctl_data + 22, delay_den);
@@ -2123,8 +2232,8 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationEncoder *encoder, SDL_Surfac
         custom_png_save_uint_32(fctl_data, (png_uint_32)encoder->ctx->current_frame_index); // Sequence number for this fcTL
         custom_png_save_uint_32(fctl_data + 4, (png_uint_32)encoder->ctx->apng_width);      // Frame width
         custom_png_save_uint_32(fctl_data + 8, (png_uint_32)encoder->ctx->apng_height);     // Frame height
-        custom_png_save_uint_32(fctl_data + 12, 0);                                        // x_offset
-        custom_png_save_uint_32(fctl_data + 16, 0);                                        // y_offset
+        custom_png_save_uint_32(fctl_data + 12, 0);                                         // x_offset
+        custom_png_save_uint_32(fctl_data + 16, 0);                                         // y_offset
 
         custom_png_save_uint_16(fctl_data + 20, delay_num);
         custom_png_save_uint_16(fctl_data + 22, delay_den);
@@ -2273,7 +2382,15 @@ bool IMG_CreateAPNGAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Propertie
     encoder->AddFrame = SaveAPNGAnimationPushFrame;
     encoder->Close = SaveAPNGAnimationEnd;
 
-    ctx->num_plays = (int)SDL_GetNumberProperty(props, "SDL_image.animation_stream.create.apng.numplays", 0);
+    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_ANIMATION_IGNORE_PROPS_BOOLEAN, false);
+    if (!ignoreProps) {
+        ctx->num_plays = (int)SDL_GetNumberProperty(props, IMG_PROP_ANIMATION_LOOP_COUNT_NUMBER, 0);
+        ctx->desc = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_DESCRIPTION_STRING, NULL);
+        ctx->rights = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_COPYRIGHT_STRING, NULL);
+        ctx->title = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_TITLE_STRING, NULL);
+        ctx->author = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_AUTHOR_STRING, NULL);
+        ctx->creationtime = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_CREATION_TIME_STRING, NULL);
+    }
 
     encoder->start = SDL_TellIO(encoder->dst);
 
