@@ -1118,7 +1118,7 @@ struct IMG_AnimationDecoderContext
     png_bytep trans_alpha;
     int trans_count;
 
-    Sint64 last_pts;
+    Uint64 last_pts;
 };
 
 static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder* decoder)
@@ -1184,7 +1184,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     if (decoder->timebase_denominator == 0 || fctl->delay_den == 0 || ctx->current_frame_index == 0) {
         *pts = ctx->last_pts = 0;
     } else {
-        *pts = ctx->last_pts += (Sint64)((Sint64)fctl->delay_num * decoder->timebase_denominator / fctl->delay_den * decoder->timebase_numerator);
+        *pts = ctx->last_pts += (Uint64)((Uint64)fctl->delay_num * decoder->timebase_denominator / fctl->delay_den * decoder->timebase_numerator);
     }
 
     if (ctx->current_frame_index > 0) {
@@ -1323,34 +1323,11 @@ static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder *decoder)
 
     SDL_free(ctx);
     decoder->ctx = NULL;
-
-    const char *desc = SDL_GetStringProperty(decoder->props, IMG_PROP_ANIMATION_DESCRIPTION_STRING, NULL);
-    const char *rights = SDL_GetStringProperty(decoder->props, IMG_PROP_ANIMATION_COPYRIGHT_STRING, NULL);
-    const char *title = SDL_GetStringProperty(decoder->props, IMG_PROP_ANIMATION_TITLE_STRING, NULL);
-    const char *author = SDL_GetStringProperty(decoder->props, IMG_PROP_ANIMATION_AUTHOR_STRING, NULL);
-    const char *creationtime = SDL_GetStringProperty(decoder->props, IMG_PROP_ANIMATION_CREATION_TIME_STRING, NULL);
-    if (desc) {
-        SDL_free((void *)desc);
-    }
-    if (rights) {
-        SDL_free((void *)rights);
-    }
-    if (title) {
-        SDL_free((void *)title);
-    }
-    if (author) {
-        SDL_free((void *)author);
-    }
-    if (creationtime) {
-        SDL_free((void *)creationtime);
-    }
     return true;
 }
 
 bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props)
 {
-    (void)props;
-
     if (!IMG_InitPNG()) {
         return false;
     }
@@ -1675,29 +1652,29 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
     decoder->Reset = IMG_AnimationDecoderReset_Internal;
     decoder->Close = IMG_AnimationDecoderClose_Internal;
 
-    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_ANIMATION_IGNORE_PROPS_BOOLEAN, false);
+    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
     if (!ignoreProps) {
         // Allow implicit properties to be set which are not globalized but specific to the decoder.
-        SDL_SetNumberProperty(decoder->props, "IMG_PROP_ANIMATION_DECODER_FRAME_COUNT_NUMBER", ctx->actl.num_frames);
+        SDL_SetNumberProperty(decoder->props, "IMG_PROP_METADATA_FRAME_COUNT_NUMBER", ctx->actl.num_frames);
 
         // Set well-defined properties.
-        SDL_SetNumberProperty(decoder->props, IMG_PROP_ANIMATION_LOOP_COUNT_NUMBER, ctx->actl.num_plays);
+        SDL_SetNumberProperty(decoder->props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, ctx->actl.num_plays);
 
         // Get other well-defined properties and set them in our props.
         if (desc) {
-            SDL_SetStringProperty(decoder->props, IMG_PROP_ANIMATION_DESCRIPTION_STRING, desc);
+            SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_DESCRIPTION_STRING, desc);
         }
         if (rights) {
-            SDL_SetStringProperty(decoder->props, IMG_PROP_ANIMATION_COPYRIGHT_STRING, rights);
+            SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_COPYRIGHT_STRING, rights);
         }
         if (title) {
-            SDL_SetStringProperty(decoder->props, IMG_PROP_ANIMATION_TITLE_STRING, title);
+            SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_TITLE_STRING, title);
         }
         if (author) {
-            SDL_SetStringProperty(decoder->props, IMG_PROP_ANIMATION_AUTHOR_STRING, author);
+            SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_AUTHOR_STRING, author);
         }
         if (creationtime) {
-            SDL_SetStringProperty(decoder->props, IMG_PROP_ANIMATION_CREATION_TIME_STRING, creationtime);
+            SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_CREATION_TIME_STRING, creationtime);
         }
     }
 
@@ -2382,14 +2359,14 @@ bool IMG_CreateAPNGAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Propertie
     encoder->AddFrame = SaveAPNGAnimationPushFrame;
     encoder->Close = SaveAPNGAnimationEnd;
 
-    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_ANIMATION_IGNORE_PROPS_BOOLEAN, false);
+    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
     if (!ignoreProps) {
-        ctx->num_plays = (int)SDL_GetNumberProperty(props, IMG_PROP_ANIMATION_LOOP_COUNT_NUMBER, 0);
-        ctx->desc = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_DESCRIPTION_STRING, NULL);
-        ctx->rights = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_COPYRIGHT_STRING, NULL);
-        ctx->title = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_TITLE_STRING, NULL);
-        ctx->author = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_AUTHOR_STRING, NULL);
-        ctx->creationtime = SDL_GetStringProperty(props, IMG_PROP_ANIMATION_CREATION_TIME_STRING, NULL);
+        ctx->num_plays = (int)SDL_GetNumberProperty(props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, 0);
+        ctx->desc = SDL_GetStringProperty(props, IMG_PROP_METADATA_DESCRIPTION_STRING, NULL);
+        ctx->rights = SDL_GetStringProperty(props, IMG_PROP_METADATA_COPYRIGHT_STRING, NULL);
+        ctx->title = SDL_GetStringProperty(props, IMG_PROP_METADATA_TITLE_STRING, NULL);
+        ctx->author = SDL_GetStringProperty(props, IMG_PROP_METADATA_AUTHOR_STRING, NULL);
+        ctx->creationtime = SDL_GetStringProperty(props, IMG_PROP_METADATA_CREATION_TIME_STRING, NULL);
     }
 
     encoder->start = SDL_TellIO(encoder->dst);
