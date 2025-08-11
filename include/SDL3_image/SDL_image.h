@@ -2403,6 +2403,14 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadGIFAnimation_IO(SDL_IOStream
  */
 extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadWEBPAnimation_IO(SDL_IOStream *src);
 
+#define IMG_PROP_ANIMATION_IGNORE_PROPS_BOOLEAN                 "SDL_image.animation.ignore_props"
+#define IMG_PROP_ANIMATION_DESCRIPTION_STRING                   "SDL_image.animation.description"
+#define IMG_PROP_ANIMATION_COPYRIGHT_STRING                     "SDL_image.animation.copyright"
+#define IMG_PROP_ANIMATION_TITLE_STRING                         "SDL_image.animation.title"
+#define IMG_PROP_ANIMATION_AUTHOR_STRING                        "SDL_image.animation.author"
+#define IMG_PROP_ANIMATION_CREATION_TIME_STRING                 "SDL_image.animation.creation_time"
+#define IMG_PROP_ANIMATION_LOOP_COUNT_NUMBER                    "SDL_image.animation.loop_count"
+
 /**
  * An object representing the encoder context.
  */
@@ -2627,6 +2635,26 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoderWit
 #define IMG_PROP_ANIMATION_DECODER_CREATE_TYPE_STRING                    "SDL_image.animation_decoder.create.type"
 #define IMG_PROP_ANIMATION_DECODER_CREATE_TIMEBASE_NUMERATOR_NUMBER      "SDL_image.animation_decoder.create.timebase.numerator"
 #define IMG_PROP_ANIMATION_DECODER_CREATE_TIMEBASE_DENOMINATOR_NUMBER    "SDL_image.animation_decoder.create.timebase.denominator"
+
+
+/**
+ * Get the properties of an animation decoder.
+ *
+ * This function returns the properties of the animation decoder, which
+ * holds information about the underlying image such as description,
+ * copyright text and loop count.
+ *
+ * \param decoder the animation decoder.
+ * \returns the properties ID of the animation decoder, or 0 if there are no
+ *          properties; call SDL_GetError() for more information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_CreateAnimationDecoder
+ * \sa IMG_CreateAnimationDecoder_IO
+ * \sa IMG_CreateAnimationDecoderWithProperties
+ */
+extern SDL_DECLSPEC SDL_PropertiesID SDLCALL IMG_GetAnimationDecoderProperties(IMG_AnimationDecoder* decoder);
 
 /**
  * Get the next frame in an animation decoder.
