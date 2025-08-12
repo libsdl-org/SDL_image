@@ -1373,7 +1373,7 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
             return false;
         }
 
-        if (chunk_length > INT_MAX) {
+        if (chunk_length > SDL_MAX_SINT32) {
             SDL_SetError("APNG chunk too large to process");
             SDL_free(chunk_data);
             SDL_free(ctx);
