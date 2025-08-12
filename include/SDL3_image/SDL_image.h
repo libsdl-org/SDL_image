@@ -2629,6 +2629,33 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoderWit
 #define IMG_PROP_ANIMATION_DECODER_CREATE_TIMEBASE_DENOMINATOR_NUMBER    "SDL_image.animation_decoder.create.timebase.denominator"
 
 /**
+ * Get the properties of an animation decoder.
+ *
+ * This function returns the properties of the animation decoder, which
+ * holds information about the underlying image such as description,
+ * copyright text and loop count.
+ *
+ * \param decoder the animation decoder.
+ * \returns the properties ID of the animation decoder, or 0 if there are no
+ *          properties; call SDL_GetError() for more information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_CreateAnimationDecoder
+ * \sa IMG_CreateAnimationDecoder_IO
+ * \sa IMG_CreateAnimationDecoderWithProperties
+ */
+extern SDL_DECLSPEC SDL_PropertiesID SDLCALL IMG_GetAnimationDecoderProperties(IMG_AnimationDecoder* decoder);
+
+#define IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN                 "SDL_image.metadata.ignore_props"
+#define IMG_PROP_METADATA_DESCRIPTION_STRING                   "SDL_image.metadata.description"
+#define IMG_PROP_METADATA_COPYRIGHT_STRING                     "SDL_image.metadata.copyright"
+#define IMG_PROP_METADATA_TITLE_STRING                         "SDL_image.metadata.title"
+#define IMG_PROP_METADATA_AUTHOR_STRING                        "SDL_image.metadata.author"
+#define IMG_PROP_METADATA_CREATION_TIME_STRING                 "SDL_image.metadata.creation_time"
+#define IMG_PROP_METADATA_LOOP_COUNT_NUMBER                    "SDL_image.metadata.loop_count"
+
+/**
  * Get the next frame in an animation decoder.
  *
  * This function decodes the next frame in the animation decoder, returning it

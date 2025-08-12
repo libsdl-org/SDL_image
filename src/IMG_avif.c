@@ -24,6 +24,7 @@
 #include <SDL3_image/SDL_image.h>
 #include "IMG_anim_encoder.h"
 #include "IMG_anim_decoder.h"
+#include "xmlman.h"
 
 /* We'll have AVIF save support by default */
 #if !defined(SAVE_AVIF)
@@ -73,6 +74,9 @@ static struct {
     void (*avifRGBImageSetDefaults)(avifRGBImage * rgb, const avifImage * image);
     void (*avifRWDataFree)(avifRWData * raw);
     const char * (*avifResultToString)(avifResult res);
+
+    // XMP metadata support
+    avifResult (*avifImageSetMetadataXMP)(avifImage * image, const uint8_t * xmp, size_t xmpSize);
 } lib;
 
 #ifdef LOAD_AVIF_DYNAMIC
@@ -115,6 +119,9 @@ static bool IMG_InitAVIF(void)
         FUNCTION_LOADER(avifRGBImageSetDefaults, void (*)(avifRGBImage * rgb, const avifImage * image))
         FUNCTION_LOADER(avifRWDataFree, void (*)(avifRWData * raw))
         FUNCTION_LOADER(avifResultToString, const char * (*)(avifResult res))
+
+        // XMP metadata support
+        FUNCTION_LOADER(avifImageSetMetadataXMP, avifResult (*)(avifImage * image, const uint8_t * xmp, size_t xmpSize))
     }
     ++lib.loaded;
 
@@ -1014,7 +1021,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     }
 
     if (ctx->decoder->imageTiming.timescale > 0) {
-        *pts = (Sint64)ctx->decoder->imageTiming.ptsInTimescales * decoder->timebase_denominator / (ctx->decoder->imageTiming.timescale * decoder->timebase_numerator);
+        *pts = (Uint64)ctx->decoder->imageTiming.ptsInTimescales * decoder->timebase_denominator / (ctx->decoder->imageTiming.timescale * decoder->timebase_numerator);
     } else {
         *pts = 0;
     }
@@ -1025,9 +1032,9 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     return true;
 }
 
-static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder* decoder)
+static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder *decoder)
 {
-    IMG_AnimationDecoderContext* ctx = decoder->ctx;
+    IMG_AnimationDecoderContext *ctx = decoder->ctx;
 
     if (ctx->decoder) {
         lib.avifDecoderDestroy(ctx->decoder);
@@ -1042,7 +1049,6 @@ static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder* decoder)
 
     SDL_free(ctx);
     decoder->ctx = NULL;
-
     return true;
 }
 
@@ -1083,25 +1089,20 @@ bool IMG_CreateAVIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
 
     ctx->current_frame = 0;
 
-    if (props) {
-        int maxLCores = SDL_GetNumLogicalCPUCores();
-        int maxThreads = (int)SDL_GetNumberProperty(props, "avif.maxthreads", maxLCores / 2);
-        maxThreads = SDL_clamp(maxThreads, 1, maxLCores);
-        ctx->decoder->maxThreads = maxThreads;
+    int maxLCores = SDL_GetNumLogicalCPUCores();
+    int maxThreads = (int)SDL_GetNumberProperty(props, "avif.maxthreads", maxLCores / 2);
+    maxThreads = SDL_clamp(maxThreads, 1, maxLCores);
+    ctx->decoder->maxThreads = maxThreads;
 
-        bool allowProgressive = SDL_GetBooleanProperty(props, "avif.allowprogressive", true);
-        ctx->decoder->allowProgressive = allowProgressive ? AVIF_TRUE : AVIF_FALSE;
+    bool allowProgressive = SDL_GetBooleanProperty(props, "avif.allowprogressive", true);
+    ctx->decoder->allowProgressive = allowProgressive ? AVIF_TRUE : AVIF_FALSE;
 
-        bool allowIncremental = SDL_GetBooleanProperty(props, "avif.allowincremental", false);
-        ctx->decoder->allowIncremental = allowIncremental ? AVIF_TRUE : AVIF_FALSE;
+    bool allowIncremental = SDL_GetBooleanProperty(props, "avif.allowincremental", false);
+    ctx->decoder->allowIncremental = allowIncremental ? AVIF_TRUE : AVIF_FALSE;
 
-        // Optional properties for ignoring metadata
-        bool ignoreExif = SDL_GetBooleanProperty(props, "avif.ignoreexif", false);
-        ctx->decoder->ignoreExif = ignoreExif ? AVIF_TRUE : AVIF_FALSE;
-
-        bool ignoreXMP = SDL_GetBooleanProperty(props, "avif.ignorexmp", false);
-        ctx->decoder->ignoreXMP = ignoreXMP ? AVIF_TRUE : AVIF_FALSE;
-    }
+    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
+    ctx->decoder->ignoreExif = ignoreProps ? AVIF_TRUE : AVIF_FALSE;
+    ctx->decoder->ignoreXMP = ignoreProps ? AVIF_TRUE : AVIF_FALSE;
 
     decoder->ctx = ctx;
     decoder->Reset = IMG_AnimationDecoderReset_Internal;
@@ -1127,8 +1128,41 @@ bool IMG_CreateAVIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
     ctx->total_frames = ctx->decoder->imageCount;
     ctx->repetitionCount = ctx->decoder->repetitionCount;
 
-    //SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_FRAME_COUNT_NUMBER, ctx->total_frames);
-    //SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_LOOP_COUNT_NUMBER, ctx->repetitionCount);
+    if (!ignoreProps) {
+        // Allow implicit properties to be set which are not globalized but specific to the decoder.
+        SDL_SetNumberProperty(decoder->props, "IMG_PROP_METADATA_FRAME_COUNT_NUMBER", ctx->total_frames);
+
+        // Set well-defined properties.
+        SDL_SetNumberProperty(decoder->props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, ctx->repetitionCount);
+
+        // Get other well-defined properties and set them in our props.
+        if (!ctx->decoder->ignoreXMP) {
+            uint8_t *data = ctx->decoder->image->xmp.data;
+            size_t len = ctx->decoder->image->xmp.size;
+            if (data && len > 0) {
+                const char *desc = __xmlman_GetXMPDescription(data, len);
+                const char *rights = __xmlman_GetXMPCopyright(data, len);
+                const char *title = __xmlman_GetXMPTitle(data, len);
+                const char *creator = __xmlman_GetXMPCreator(data, len);
+                const char *createDate = __xmlman_GetXMPCreateDate(data, len);
+                if (desc) {
+                    SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_DESCRIPTION_STRING, desc);
+                }
+                if (rights) {
+                    SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_COPYRIGHT_STRING, rights);
+                }
+                if (title) {
+                    SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_TITLE_STRING, title);
+                }
+                if (creator) {
+                    SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_AUTHOR_STRING, creator);
+                }
+                if (createDate) {
+                    SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_CREATION_TIME_STRING, createDate);
+                }
+            }
+        }
+    }
 
     return true;
 }
@@ -1157,6 +1191,11 @@ struct IMG_AnimationEncoderContext
 {
     avifEncoder *encoder;
     bool first_frame_added;
+    const char *rights;
+    const char *desc;
+    const char *title;
+    const char *creator;
+    const char *createdate;
 };
 
 static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 pts)
@@ -1198,6 +1237,22 @@ static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_
     image = lib.avifImageCreate(surface->w, surface->h, depth, pixelFormat);
     if (!image) {
         return SDL_SetError("Couldn't create AVIF image");
+    }
+
+    if (!encoder->ctx->first_frame_added && (encoder->ctx->desc || encoder->ctx->rights)) {
+        size_t outlen = 0;
+        uint8_t *xmp_data = __xmlman_ConstructXMPWithRDFDescription(encoder->ctx->title, encoder->ctx->creator, encoder->ctx->desc, encoder->ctx->rights, encoder->ctx->createdate, &outlen);
+        if (!xmp_data || outlen < 1) {
+            lib.avifImageDestroy(image);
+            return SDL_SetError("Couldn't create XMP data for AVIF image");
+        }
+        avifResult ar = lib.avifImageSetMetadataXMP(image, xmp_data, outlen);
+        if (ar != AVIF_RESULT_OK) {
+            lib.avifImageDestroy(image);
+            SDL_free((void *)xmp_data);
+            return SDL_SetError("Couldn't set XMP metadata for AVIF image: %s", lib.avifResultToString(ar));
+        }
+        SDL_free((void *)xmp_data);
     }
 
     image->yuvRange = AVIF_RANGE_FULL;
@@ -1556,6 +1611,20 @@ bool IMG_CreateAVIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Propertie
         encoder->ctx->encoder->timescale = (uint32_t)encoder->timebase_denominator;
     } else {
         encoder->ctx->encoder->timescale = 1000;
+    }
+
+    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
+    if (!ignoreProps) {
+        encoder->ctx->encoder->repetitionCount = (int)SDL_GetNumberProperty(props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, -1);
+        if (encoder->ctx->encoder->repetitionCount < 1 && encoder->ctx->encoder->repetitionCount != -1) {
+            encoder->ctx->encoder->repetitionCount = -1;
+        }
+
+        encoder->ctx->desc = SDL_GetStringProperty(props, IMG_PROP_METADATA_DESCRIPTION_STRING, NULL);
+        encoder->ctx->rights = SDL_GetStringProperty(props, IMG_PROP_METADATA_COPYRIGHT_STRING, NULL);
+        encoder->ctx->title = SDL_GetStringProperty(props, IMG_PROP_METADATA_TITLE_STRING, NULL);
+        encoder->ctx->creator = SDL_GetStringProperty(props, IMG_PROP_METADATA_AUTHOR_STRING, NULL);
+        encoder->ctx->createdate = SDL_GetStringProperty(props, IMG_PROP_METADATA_CREATION_TIME_STRING, NULL);
     }
 
     encoder->ctx->first_frame_added = false;

@@ -26,6 +26,7 @@
 #include "IMG_anim_encoder.h"
 #include "IMG_anim_decoder.h"
 #include "IMG_webp.h"
+#include "xmlman.h"
 
 // We will have the saving WEBP feature by default
 #if !defined(SAVE_WEBP)
@@ -93,6 +94,19 @@ static struct
     int (*WebPAnimEncoderAdd)(WebPAnimEncoder *, WebPPicture *, int, const WebPConfig *);     // Export #29 (0x001d),  (0x), 0x00003e60, None
     int (*WebPAnimEncoderAssemble)(WebPAnimEncoder *, WebPData *);                            // Export #30 (0x001e),  (0x), 0x00004580, None
     void (*WebPAnimEncoderDelete)(WebPAnimEncoder *);                                         // Export #31 (0x001f),  (0x), 0x00003cb0, None
+
+    // Used for extracting EXIF & XMP chunks.
+    int (*WebPDemuxGetChunk)(const WebPDemuxer* dmux, const char fourcc[4], int chunk_number, WebPChunkIterator* iter);
+    void (*WebPDemuxReleaseChunkIterator)(WebPChunkIterator* iter);
+
+    // Used for setting EXIF & XMP chunks and for loop count.
+    WebPMux *(*WebPMuxCreateInternal)(const WebPData*, int, int); // Export 38 (0x0026),  (0x), 0x00006e90, None
+    void (*WebPMuxDelete)(WebPMux* mux);
+    WebPMuxError (*WebPMuxSetChunk)(WebPMux *mux, const char fourcc[4], const WebPData *chunk_data, int copy_data);
+    WebPMuxError (*WebPMuxGetAnimationParams)(const WebPMux *mux, WebPMuxAnimParams *params);
+    WebPMuxError (*WebPMuxSetAnimationParams)(WebPMux* mux, const WebPMuxAnimParams* params);
+
+    WebPMuxError (*WebPMuxAssemble)(WebPMux* mux, WebPData* assembled_data);
 } lib;
 
 #if defined(LOAD_WEBP_DYNAMIC) && defined(LOAD_WEBPDEMUX_DYNAMIC) && defined(LOAD_WEBPMUX_DYNAMIC)
@@ -184,6 +198,18 @@ static bool IMG_InitWEBP(void)
         FUNCTION_LOADER_LIBWEBPMUX(WebPAnimEncoderAdd, int (*)(WebPAnimEncoder *, WebPPicture *, int, const WebPConfig *))
         FUNCTION_LOADER_LIBWEBPMUX(WebPAnimEncoderAssemble, int (*)(WebPAnimEncoder *, WebPData *))
         FUNCTION_LOADER_LIBWEBPMUX(WebPAnimEncoderDelete, void (*)(WebPAnimEncoder *))
+
+        // Used for extracting EXIF & XMP chunks.
+        FUNCTION_LOADER_LIBWEBPDEMUX(WebPDemuxGetChunk, int (*)(const WebPDemuxer *dmux, const char fourcc[4], int chunk_number, WebPChunkIterator *iter))
+        FUNCTION_LOADER_LIBWEBPDEMUX(WebPDemuxReleaseChunkIterator, void (*)(WebPChunkIterator* iter))
+
+        // Used for setting EXIF & XMP chunks and for loop count.
+        FUNCTION_LOADER_LIBWEBPMUX(WebPMuxCreateInternal, WebPMux * (*)(const WebPData*, int, int))
+        FUNCTION_LOADER_LIBWEBPMUX(WebPMuxDelete, void (*)(WebPMux* mux))
+        FUNCTION_LOADER_LIBWEBPMUX(WebPMuxSetChunk, WebPMuxError (*)(WebPMux *mux, const char fourcc[4], const WebPData *chunk_data, int copy_data))
+        FUNCTION_LOADER_LIBWEBPMUX(WebPMuxGetAnimationParams, WebPMuxError (*)(const WebPMux* mux, WebPMuxAnimParams* params))
+        FUNCTION_LOADER_LIBWEBPMUX(WebPMuxSetAnimationParams, WebPMuxError (*)(WebPMux* mux, const WebPMuxAnimParams* params))
+        FUNCTION_LOADER_LIBWEBPMUX(WebPMuxAssemble, WebPMuxError (*)(WebPMux* mux, WebPData* assembled_data))
     }
     ++lib.loaded;
 
@@ -394,7 +420,7 @@ struct IMG_AnimationDecoderContext
     uint8_t *raw_data;
     size_t raw_data_size;
     WebPDemuxState demux_state;
-    Sint64 last_pts;
+    Uint64 last_pts;
 };
 
 static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
@@ -510,8 +536,6 @@ static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder *decoder)
 
 bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props)
 {
-    (void)props;
-
     if (!IMG_InitWEBP()) {
         SDL_SetError("Failed to initialize WEBP library");
         return false;
@@ -565,8 +589,42 @@ bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
     uint32_t height = lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_CANVAS_HEIGHT);
     uint32_t flags = lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_FORMAT_FLAGS);
 
-    //SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_FRAME_COUNT_NUMBER, lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_FRAME_COUNT));
-    //SDL_SetNumberProperty(decoder->metadata, IMG_PROP_ANIMATION_DECODER_METADATA_LOOP_COUNT_NUMBER, lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_LOOP_COUNT));
+    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
+    if (!ignoreProps) {
+        // Allow implicit properties to be set which are not globalized but specific to the decoder.
+        SDL_SetNumberProperty(decoder->props, "IMG_PROP_METADATA_FRAME_COUNT_NUMBER", lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_FRAME_COUNT));
+
+        // Set well-defined properties.
+        SDL_SetNumberProperty(decoder->props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, lib.WebPDemuxGetI(decoder->ctx->demuxer, WEBP_FF_LOOP_COUNT));
+
+        // Get other well-defined properties and set them in our props.
+        WebPChunkIterator xmp_iter;
+        if (lib.WebPDemuxGetChunk(decoder->ctx->demuxer, "XMP ", 1, &xmp_iter)) {
+            if (xmp_iter.chunk.bytes && xmp_iter.chunk.size > 0) {
+                const char *desc = __xmlman_GetXMPDescription(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
+                const char *rights = __xmlman_GetXMPCopyright(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
+                const char *title = __xmlman_GetXMPTitle(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
+                const char *creator = __xmlman_GetXMPCreator(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
+                const char *createdate = __xmlman_GetXMPCreateDate(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
+                if (desc) {
+                    SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_DESCRIPTION_STRING, desc);
+                }
+                if (rights) {
+                    SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_COPYRIGHT_STRING, rights);
+                }
+                if (title) {
+                    SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_TITLE_STRING, title);
+                }
+                if (creator) {
+                    SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_AUTHOR_STRING, creator);
+                }
+                if (createdate) {
+                    SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_CREATION_TIME_STRING, createdate);
+                }
+            }
+            lib.WebPDemuxReleaseChunkIterator(&xmp_iter);
+        }
+    }
 
     bool has_alpha = (flags & 0x10) != 0;
 
@@ -786,6 +844,12 @@ struct IMG_AnimationEncoderContext
     WebPAnimEncoder *encoder;
     WebPConfig config;
     int frames;
+    const char *desc;
+    const char *rights;
+    const char *title;
+    const char *creator;
+    const char *creationtime;
+    int loop_count;
 };
 
 static bool IMG_AddWEBPAnimationFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 pts)
@@ -852,11 +916,12 @@ static bool IMG_CloseWEBPAnimation(IMG_AnimationEncoder *encoder)
     IMG_AnimationEncoderContext *ctx = encoder->ctx;
     const char *error = NULL;
     WebPData data = { NULL, 0 };
+    WebPMux *mux = NULL;
 
     if (!ctx->encoder) {
         error = "No frames added to animation";
         goto done;
-    }
+    } 
 
     int timestamp = GetStreamPresentationTimestampMS(encoder, encoder->last_pts);
     if (ctx->frames > 1) {
@@ -867,9 +932,67 @@ static bool IMG_CloseWEBPAnimation(IMG_AnimationEncoder *encoder)
         goto done;
     }
 
-    if (!lib.WebPAnimEncoderAssemble(ctx->encoder, &data)) {
-        error = "WebPAnimEncoderAssemble() failed";
-        goto done;
+    if (!ctx->rights && !ctx->desc && ctx->loop_count == 0) {
+        if (!lib.WebPAnimEncoderAssemble(ctx->encoder, &data)) {
+            error = "WebPAnimEncoderAssemble() failed";
+            goto done;
+        }
+    } else {
+        WebPMuxError muxErr;
+        WebPData pdata = { NULL, 0 };
+        if (!lib.WebPAnimEncoderAssemble(ctx->encoder, &pdata)) {
+            error = "WebPAnimEncoderAssemble() failed";
+            goto done;
+        }
+
+        mux = lib.WebPMuxCreateInternal(&pdata, 1, WEBP_MUX_ABI_VERSION);
+        if (!mux) {
+            error = "WebPMuxCreate() failed";
+            goto done;
+        }
+
+        WebPMuxAnimParams params;
+        muxErr = lib.WebPMuxGetAnimationParams(mux, &params);
+        if (muxErr != WEBP_MUX_OK) {
+            lib.WebPMuxDelete(mux);
+            error = "WebPMuxCreate() failed";
+            goto done;
+        }
+        params.loop_count = ctx->loop_count;
+        muxErr = lib.WebPMuxSetAnimationParams(mux, &params);
+        if (muxErr != WEBP_MUX_OK) {
+            lib.WebPMuxDelete(mux);
+            error = "WebPMuxCreate() failed";
+            goto done;
+        }
+
+        if (ctx->rights || ctx->desc) {
+            size_t siz = 0;
+            uint8_t *d = __xmlman_ConstructXMPWithRDFDescription(ctx->title, ctx->creator, ctx->desc, ctx->rights, ctx->creationtime, &siz);
+            if (siz < 1 || !d) {
+                lib.WebPMuxDelete(mux);
+                error = "Failed to construct XMP data";
+                goto done;
+            }
+
+            WebPData xmp_data = { d, siz };
+            muxErr = lib.WebPMuxSetChunk(mux, "XMP ", &xmp_data, 1);
+            if (muxErr != WEBP_MUX_OK) {
+                lib.WebPMuxDelete(mux);
+                SDL_free(d);
+                error = "WebPMuxSetChunk() failed for XMP data";
+                goto done;
+            }
+
+            SDL_free((void *)d);
+        }
+
+        muxErr = lib.WebPMuxAssemble(mux, &data);
+        if (muxErr != WEBP_MUX_OK) {
+            lib.WebPMuxDelete(mux);
+            error = "WebPMuxAssemble() failed";
+            goto done;
+        }
     }
 
     if (SDL_WriteIO(encoder->dst, data.bytes, data.size) != data.size) {
@@ -880,6 +1003,9 @@ static bool IMG_CloseWEBPAnimation(IMG_AnimationEncoder *encoder)
 done:
     if (data.bytes) {
         lib.WebPFree((void *)data.bytes);
+    }
+    if (mux) {
+        lib.WebPMuxDelete(mux);
     }
     if (ctx->encoder) {
         lib.WebPAnimEncoderDelete(ctx->encoder);
@@ -895,8 +1021,6 @@ done:
 
 bool IMG_CreateWEBPAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
-    (void)props;
-
     if (!IMG_InitWEBP()) {
         return false;
     }
@@ -927,6 +1051,20 @@ bool IMG_CreateWEBPAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Propertie
         SDL_free(ctx);
         return SDL_SetError("WebPValidateConfig() failed");
     }
+
+    bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
+    if (!ignoreProps) {
+        ctx->loop_count = (int)SDL_GetNumberProperty(props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, 0);
+        if (ctx->loop_count < 0) {
+            ctx->loop_count = 0;
+        }
+        ctx->desc = SDL_GetStringProperty(props, IMG_PROP_METADATA_DESCRIPTION_STRING, NULL);
+        ctx->rights = SDL_GetStringProperty(props, IMG_PROP_METADATA_COPYRIGHT_STRING, NULL);
+        ctx->title = SDL_GetStringProperty(props, IMG_PROP_METADATA_TITLE_STRING, NULL);
+        ctx->creator = SDL_GetStringProperty(props, IMG_PROP_METADATA_AUTHOR_STRING, NULL);
+        ctx->creationtime = SDL_GetStringProperty(props, IMG_PROP_METADATA_CREATION_TIME_STRING, NULL);
+    }
+
     return true;
 }
 

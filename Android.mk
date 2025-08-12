@@ -94,7 +94,8 @@ LOCAL_SRC_FILES :=  		\
     src/IMG_WIC.c       	\
     src/IMG_xcf.c       	\
     src/IMG_xpm.c.arm   	\
-    src/IMG_xv.c
+    src/IMG_xv.c		\
+    src/xmlman.c
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/include
 

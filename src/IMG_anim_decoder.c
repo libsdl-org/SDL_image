@@ -131,6 +131,11 @@ IMG_AnimationDecoder *IMG_CreateAnimationDecoderWithProperties(SDL_PropertiesID 
     decoder->closeio = closeio;
     decoder->timebase_numerator = timebase_numerator;
     decoder->timebase_denominator = timebase_denominator;
+    decoder->props = SDL_CreateProperties();
+    if (!decoder->props) {
+        SDL_SetError("Failed to create properties for animation decoder");
+        goto error;
+    }
 
     bool result = false;
     if (SDL_strcasecmp(type, "webp") == 0) {
@@ -161,6 +166,16 @@ error:
         SDL_free(decoder);
     }
     return NULL;
+}
+
+SDL_PropertiesID IMG_GetAnimationDecoderProperties(IMG_AnimationDecoder *decoder)
+{
+    if (!decoder) {
+        SDL_InvalidParamError("decoder");
+        return 0;
+    }
+
+    return decoder->props;
 }
 
 bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *pts)
@@ -198,8 +213,12 @@ bool IMG_CloseAnimationDecoder(IMG_AnimationDecoder *decoder)
         result &= SDL_CloseIO(decoder->src);
     }
 
-    SDL_free(decoder);
+    if (decoder->props) {
+        SDL_DestroyProperties(decoder->props);
+        decoder->props = 0;
+    }
 
+    SDL_free(decoder);
     return result;
 }
 
@@ -229,7 +248,7 @@ IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int 
     int actualCount = 0;
     int currentCount = 32;
     SDL_Surface **frames = (SDL_Surface **)SDL_calloc(currentCount, sizeof(*frames));
-    Sint64 *delays = (Sint64 *)SDL_calloc(currentCount, sizeof(*delays));
+    Uint64 *delays = (Uint64 *)SDL_calloc(currentCount, sizeof(*delays));
     if (!frames || !delays) {
         goto error;
     }
@@ -258,7 +277,7 @@ IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int 
             }
             frames = tempFrames;
 
-            Sint64 *tempDelays = (Sint64 *)SDL_realloc(delays, currentCount * sizeof(*delays));
+            Uint64 *tempDelays = (Uint64 *)SDL_realloc(delays, currentCount * sizeof(*delays));
             if (!tempDelays) {
                 goto error;
             }

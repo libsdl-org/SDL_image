@@ -281,6 +281,7 @@ add_library(${sdl3_image_target_name}
     src/IMG_xpm.c
     src/IMG_xv.c
     src/IMG_libpng.c
+    src/xmlman.c
 )
 add_library(SDL3_image::${sdl3_image_target_name} ALIAS ${sdl3_image_target_name})
 if(NOT TARGET SDL3_image::SDL3_image)
