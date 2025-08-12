@@ -1580,7 +1580,13 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
             char *separator = (char *)memchr(chunk_data, '\0', chunk_length);
             if (separator != NULL) {
                 size_t keyword_len = separator - (char *)chunk_data;
-                size_t text_len = chunk_length - keyword_len - 1;
+                size_t text_len;
+                if (keyword_len + 1 < chunk_length) {
+                    text_len = chunk_length - (keyword_len + 1);
+                } else {
+                    text_len = chunk_length - keyword_len - 1;
+                }
+
                 char *keyword = (char *)SDL_malloc(keyword_len + 1);
                 if (keyword) {
                     SDL_memcpy(keyword, chunk_data, keyword_len);
@@ -1935,7 +1941,7 @@ error:
 
 static bool writetEXtchunk(SDL_IOStream* dst, const char *keyword, const char *value)
 {
-    size_t total_len = SDL_strlen(keyword) + 1 + SDL_strlen(value);
+    size_t total_len = SDL_strlen(keyword) + 1 + SDL_strlen(value) + 1;
     png_byte *buffer = (png_byte *)SDL_malloc(total_len);
     if (!buffer) {
         return SDL_SetError("Out of memory for tEXt chunk");
