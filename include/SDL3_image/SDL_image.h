@@ -70,14 +70,6 @@ extern "C" {
  */
 extern SDL_DECLSPEC int SDLCALL IMG_Version(void);
 
-#define IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN                 "SDL_image.metadata.ignore_props"
-#define IMG_PROP_METADATA_DESCRIPTION_STRING                   "SDL_image.metadata.description"
-#define IMG_PROP_METADATA_COPYRIGHT_STRING                     "SDL_image.metadata.copyright"
-#define IMG_PROP_METADATA_TITLE_STRING                         "SDL_image.metadata.title"
-#define IMG_PROP_METADATA_AUTHOR_STRING                        "SDL_image.metadata.author"
-#define IMG_PROP_METADATA_CREATION_TIME_STRING                 "SDL_image.metadata.creation_time"
-#define IMG_PROP_METADATA_LOOP_COUNT_NUMBER                    "SDL_image.metadata.loop_count"
-
 /**
  * Load an image from an SDL data source into a software surface.
  *
@@ -2654,6 +2646,14 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoderWit
  * \sa IMG_CreateAnimationDecoderWithProperties
  */
 extern SDL_DECLSPEC SDL_PropertiesID SDLCALL IMG_GetAnimationDecoderProperties(IMG_AnimationDecoder* decoder);
+
+#define IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN                 "SDL_image.metadata.ignore_props"
+#define IMG_PROP_METADATA_DESCRIPTION_STRING                   "SDL_image.metadata.description"
+#define IMG_PROP_METADATA_COPYRIGHT_STRING                     "SDL_image.metadata.copyright"
+#define IMG_PROP_METADATA_TITLE_STRING                         "SDL_image.metadata.title"
+#define IMG_PROP_METADATA_AUTHOR_STRING                        "SDL_image.metadata.author"
+#define IMG_PROP_METADATA_CREATION_TIME_STRING                 "SDL_image.metadata.creation_time"
+#define IMG_PROP_METADATA_LOOP_COUNT_NUMBER                    "SDL_image.metadata.loop_count"
 
 /**
  * Get the next frame in an animation decoder.
