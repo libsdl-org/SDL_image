@@ -420,7 +420,7 @@ struct IMG_AnimationDecoderContext
     uint8_t *raw_data;
     size_t raw_data_size;
     WebPDemuxState demux_state;
-    Uint64 last_pts;
+    //Uint64 last_pts;
 };
 
 static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
@@ -432,10 +432,11 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
     return true;
 }
 
-static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *pts)
+static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *delay)
 {
-    *pts = 0;
+    *delay = 0;
     *frame = NULL;
+
     // Get the next frame from the demuxer.
     if (decoder->ctx->iter.frame_num < 1) {
         if (!lib.WebPDemuxGetFrame(decoder->ctx->demuxer, 1, &decoder->ctx->iter)) {
@@ -498,13 +499,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
         return SDL_SetError("Failed to duplicate the surface for the next frame");
     }
 
-    if (decoder->ctx->iter.frame_num == 1 || decoder->timebase_denominator == 0) {
-        *pts = 0;
-        decoder->ctx->last_pts = 0;
-    } else {
-        *pts = decoder->ctx->last_pts + iter->duration * decoder->timebase_denominator / (1000 * decoder->timebase_numerator);
-        decoder->ctx->last_pts = *pts;
-    }
+    *delay = IMG_CalculateDelay(decoder, iter->duration, 1000);
 
     dispose_method = iter->dispose_method;
     decoder->ctx->dispose_method = dispose_method;
@@ -852,7 +847,7 @@ struct IMG_AnimationEncoderContext
     int loop_count;
 };
 
-static bool IMG_AddWEBPAnimationFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 pts)
+static bool IMG_AddWEBPAnimationFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 delay)
 {
     IMG_AnimationEncoderContext *ctx = encoder->ctx;
     const char *error = NULL;
@@ -890,7 +885,8 @@ static bool IMG_AddWEBPAnimationFrame(IMG_AnimationEncoder *encoder, SDL_Surface
         goto done;
     }
 
-    int timestamp = GetStreamPresentationTimestampMS(encoder, pts);
+    //int timestamp = GetStreamPresentationTimestampMS(encoder, pts);
+    int timestamp = IMG_GetResolvedDuration(encoder, delay, 1000);
     if (!lib.WebPAnimEncoderAdd(ctx->encoder, &pic, timestamp, &ctx->config)) {
         error = GetWebPEncodingErrorStringInternal(pic.error_code);
         goto done;
@@ -921,12 +917,9 @@ static bool IMG_CloseWEBPAnimation(IMG_AnimationEncoder *encoder)
     if (!ctx->encoder) {
         error = "No frames added to animation";
         goto done;
-    } 
-
-    int timestamp = GetStreamPresentationTimestampMS(encoder, encoder->last_pts);
-    if (ctx->frames > 1) {
-        timestamp += (timestamp / (ctx->frames - 1));
     }
+
+    int timestamp = (int)IMG_GetCurrentTimestamp(encoder, 1000);
     if (!lib.WebPAnimEncoderAdd(ctx->encoder, NULL, timestamp, &ctx->config)) {
         error = "WebPAnimEncoderAdd() failed";
         goto done;
