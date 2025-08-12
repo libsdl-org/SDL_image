@@ -922,7 +922,7 @@ static SDL_Surface *decompress_png_frame_data(DecompressionContext* context, png
     if (data_size < 0) {
         goto error;
     }
-    if ((Uint64)data_size >= SIZE_MAX) {
+    if ((Uint64)data_size >= SDL_MAX_SINT32) {
         SDL_SetError("data size >= sizeof(size_t)");
         goto error;
     }
@@ -1118,7 +1118,7 @@ struct IMG_AnimationDecoderContext
     png_bytep trans_alpha;
     int trans_count;
 
-    Uint64 last_pts;
+    //Uint64 last_pts;
 };
 
 static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder* decoder)
@@ -1141,9 +1141,9 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder* decoder)
     return true;
 }
 
-static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *pts)
+static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *delay)
 {
-    *pts = 0;
+    *delay = 0;
     *frame = NULL;
 
     IMG_AnimationDecoderContext *ctx = decoder->ctx;
@@ -1180,12 +1180,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
 
     SDL_Surface *retval = NULL;
     apng_fcTL_chunk *fctl = &ctx->fctl_frames[ctx->current_frame_index];
-
-    if (decoder->timebase_denominator == 0 || fctl->delay_den == 0 || ctx->current_frame_index == 0) {
-        *pts = ctx->last_pts = 0;
-    } else {
-        *pts = ctx->last_pts += (Uint64)((Uint64)fctl->delay_num * decoder->timebase_denominator / fctl->delay_den * decoder->timebase_numerator);
-    }
+    *delay = IMG_CalculateDelay(decoder, fctl->delay_num, fctl->delay_den);
 
     if (ctx->current_frame_index > 0) {
         apng_fcTL_chunk *prev_fctl = &ctx->fctl_frames[ctx->current_frame_index - 1];
@@ -1955,7 +1950,7 @@ static bool writetEXtchunk(SDL_IOStream* dst, const char *keyword, const char *v
     return true;
 }
 
-static bool SaveAPNGAnimationPushFrame(IMG_AnimationEncoder *encoder, SDL_Surface *frame, Uint64 pts)
+static bool SaveAPNGAnimationPushFrame(IMG_AnimationEncoder *encoder, SDL_Surface *frame, Uint64 delay)
 {
     if (!encoder->ctx) {
         // bogus call, not initialized
@@ -2084,19 +2079,8 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationEncoder *encoder, SDL_Surfac
         png_color_type_for_compression = PNG_COLOR_TYPE_RGBA;
     }
 
-    Uint64 delta_pts = pts - encoder->last_pts;
-    png_uint_16 delay_den = APNG_DEFAULT_DENOMINATOR;
-    png_uint_16 pts_source_timebase_num = encoder->timebase_numerator;
-    png_uint_16 pts_source_timebase_den = encoder->timebase_denominator;
-    if (pts_source_timebase_den == 0) {
-        pts_source_timebase_den = 1; // Fallback to prevent division by zero, though accuracy is lost.
-    }
-
-    double raw_delay_num = SDL_min((double)delta_pts * pts_source_timebase_num * delay_den / pts_source_timebase_den, UINT16_MAX);
-    png_uint_16 delay_num = (png_uint_16)SDL_round(raw_delay_num);
-    if (delay_num == 0 && delta_pts > 0) {
-        delay_num = 1;
-    }
+    png_uint_16 delay_den = (png_uint_16)encoder->timebase_denominator;
+    png_uint_16 delay_num = (png_uint_16)(delay * encoder->timebase_numerator);
 
     // Default image + first animated frame
     if (encoder->ctx->current_frame_index == 0) {
