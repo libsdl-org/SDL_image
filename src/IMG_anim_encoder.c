@@ -163,7 +163,7 @@ error:
     return NULL;
 }
 
-bool IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 pts)
+bool IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 delay)
 {
     if (!encoder) {
         return SDL_InvalidParamError("encoder");
@@ -172,21 +172,14 @@ bool IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *su
         return SDL_InvalidParamError("surface");
     }
 
-    // Make sure the presentation timestamp starts at 0
-    if (!encoder->first_pts) {
-        encoder->first_pts = pts;
-    }
-    pts -= encoder->first_pts;
-
-    // Make sure the presentation timestamp isn't out of order
-    if (pts < encoder->last_pts) {
-        return SDL_SetError("Frame added out of order");
+    if (delay < 1) {
+        return SDL_SetError("Delay must be greater than 0");
     }
 
-    bool result = encoder->AddFrame(encoder, surface, pts);
+    bool result = encoder->AddFrame(encoder, surface, delay);
 
-    // Save the last presentation timestamp
-    encoder->last_pts = pts;
+    encoder->accumulated_pts += delay;
+    encoder->last_delay = delay;
 
     return result;
 }
@@ -205,8 +198,12 @@ bool IMG_CloseAnimationEncoder(IMG_AnimationEncoder *encoder)
     return result;
 }
 
-int GetStreamPresentationTimestampMS(IMG_AnimationEncoder *encoder, Uint64 pts)
+Uint64 IMG_GetResolvedDuration(IMG_AnimationEncoder* encoder, Uint64 duration, int factor)
 {
-    return (int)((pts * 1000 * encoder->timebase_numerator) / encoder->timebase_denominator);
+    return SDL_round((encoder->accumulated_pts + duration) * factor * encoder->timebase_numerator / encoder->timebase_denominator) - SDL_round((encoder->accumulated_pts * factor) * encoder->timebase_numerator / encoder->timebase_denominator);
 }
 
+Uint64 IMG_GetCurrentTimestamp(IMG_AnimationEncoder* encoder, int factor)
+{
+    return SDL_round((encoder->accumulated_pts + encoder->last_delay) * factor * encoder->timebase_numerator / encoder->timebase_denominator);
+}
