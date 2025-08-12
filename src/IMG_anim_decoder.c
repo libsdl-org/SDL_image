@@ -325,7 +325,7 @@ IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int 
     }
     for (int i = 0; i < anim->count; ++i) {
         anim->frames[i] = frames[i];
-        anim->delays[i] = SDL_round((int)delays[i] * 1000 * decoder->timebase_numerator / decoder->timebase_denominator);
+        anim->delays[i] = SDL_round((int)delays[i] * 1000 * decoder->timebase_numerator / decoder->timebase_denominator); // We do not have decoder here as it's freed above, but that's fine, I think?
     }
 
     SDL_free(frames);
