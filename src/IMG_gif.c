@@ -534,7 +534,7 @@ struct IMG_AnimationDecoderContext
     int last_disposal;           /* Disposal method from previous frame */
     int restore_frame;           /* Frame to restore when using DISPOSE_PREVIOUS */
 
-    Uint64 last_pts;
+    //Uint64 last_pts;
 
     char *comment;
     int loop_count;
@@ -618,6 +618,10 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
             ctx->state.GifScreen.GrayScale = ctx->global_grayscale;
         }
 
+        Uint64 stream_pos = SDL_TellIO(src);
+
+        // TODO: This is an optional part for finding extensions to assign loop count, comment etc.
+        // So maybe all the return SDL_SetError() calls should be replaced with quitting the loop and continuing the execution?
         bool processing_extensions = true;
         while (processing_extensions) {
             uint8_t block_type;
@@ -704,7 +708,6 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
                 }
             } break;
             case 0x2C: // Image Descriptor
-                SDL_SeekIO(src, -1, SDL_IO_SEEK_CUR);
                 processing_extensions = false;
                 break;
 
@@ -715,6 +718,7 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
                 return SDL_SetError("Unknown GIF block type: 0x%02X", block_type);
             }
         }
+        SDL_SeekIO(src, stream_pos, SDL_IO_SEEK_SET);
 
         if (!ctx->canvas) {
             ctx->canvas = SDL_CreateSurface(ctx->width, ctx->height, SDL_PIXELFORMAT_RGBA32);
@@ -747,9 +751,9 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
     return true;
 }
 
-static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *pts)
+static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *delay)
 {
-    *pts = 0;
+    *delay = 0;
     *frame = NULL;
     IMG_AnimationDecoderContext *ctx = decoder->ctx;
     SDL_IOStream *src = decoder->src;
@@ -883,14 +887,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
             return SDL_SetError("Failed to duplicate frame surface");
         }
 
-        if (ctx->current_frame == 0) {
-            *pts = 0;
-        } else if (ctx->state.Gif89.delayTime < 2) {
-            *pts = decoder->ctx->last_pts += decoder->timebase_denominator * decoder->timebase_denominator * 10;
-        } else {
-            int millisecond_delay = ctx->state.Gif89.delayTime * 10;
-            *pts = decoder->ctx->last_pts += millisecond_delay * decoder->timebase_denominator / (1000 * decoder->timebase_numerator);
-        }
+        *delay = IMG_CalculateDelay(decoder, ctx->state.Gif89.delayTime, 100);
 
         ctx->last_disposal = ctx->state.Gif89.disposal;
 
@@ -2507,7 +2504,7 @@ static int writeGifTrailer(SDL_IOStream *io)
     return 0;
 }
 
-static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 pts)
+static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 delay)
 {
     IMG_AnimationEncoderContext *ctx = encoder->ctx;
     SDL_IOStream *io = encoder->dst;
@@ -2598,14 +2595,7 @@ static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_
         }
     }
 
-    Uint64 delay_delta = (ctx->firstFrame) ? encoder->first_pts : (pts - encoder->last_pts);
-    uint16_t delayTime = (uint16_t)((delay_delta * encoder->timebase_numerator * 100) /
-                                    encoder->timebase_denominator);
-
-    if (!ctx->firstFrame && delayTime < 2) {
-        delayTime = 10; // A common default for very fast frames
-    }
-
+    uint16_t delayTime = IMG_GetResolvedDuration(encoder, delay, 100);
     uint8_t disposalMethod = (ctx->transparentColorIndex != -1) ? 2 : 1;
     if (writeGraphicsControlExtension(io, delayTime, ctx->transparentColorIndex, disposalMethod) != 0) {
         goto error;
@@ -2650,7 +2640,7 @@ static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_
     if (ctx->firstFrame) {
         ctx->firstFrame = false;
     }
-    encoder->last_pts = pts;
+
     return true;
 
 error:
