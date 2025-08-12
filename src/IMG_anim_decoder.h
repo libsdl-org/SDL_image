@@ -29,12 +29,14 @@ struct IMG_AnimationDecoder
     bool closeio;
     int timebase_numerator;
     int timebase_denominator;
+    Uint64 accumulated_pts;
 
-    bool (*GetNextFrame)(IMG_AnimationDecoder *decoder, SDL_Surface** frame, Uint64* pts);
+    bool (*GetNextFrame)(IMG_AnimationDecoder *decoder, SDL_Surface** frame, Uint64* delay);
     bool (*Reset)(IMG_AnimationDecoder *decoder);
     bool (*Close)(IMG_AnimationDecoder *decoder);
 
     IMG_AnimationDecoderContext *ctx;
 };
 
+extern Uint64 IMG_CalculateDelay(IMG_AnimationDecoder *decoder, int delay_num, int delay_den);
 extern IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int maxFrames);
