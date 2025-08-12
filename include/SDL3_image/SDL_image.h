@@ -2505,7 +2505,7 @@ extern SDL_DECLSPEC IMG_AnimationEncoder * SDLCALL IMG_CreateAnimationEncoderWit
  *
  * \param encoder the receiving images.
  * \param surface the surface to add as the next frame in the animation.
- * \param pts the presentation timestamp of the frame, usually in milliseconds
+ * \param delay the duration of the frame, usually in milliseconds
  *            but can be other units if the
  *            `IMG_PROP_ANIMATION_ENCODER_CREATE_TIMEBASE_DENOMINATOR_NUMBER`
  *            property is set when creating the encoder.
@@ -2519,7 +2519,7 @@ extern SDL_DECLSPEC IMG_AnimationEncoder * SDLCALL IMG_CreateAnimationEncoderWit
  * \sa IMG_CreateAnimationEncoderWithProperties
  * \sa IMG_CloseAnimationEncoder
  */
-extern SDL_DECLSPEC bool SDLCALL IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 pts);
+extern SDL_DECLSPEC bool SDLCALL IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 delay);
 
 /**
  * Close an animation encoder, finishing any encoding.
@@ -2631,9 +2631,9 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoderWit
 /**
  * Get the properties of an animation decoder.
  *
- * This function returns the properties of the animation decoder, which holds
- * information about the underlying image such as description, copyright text
- * and loop count.
+ * This function returns the properties of the animation decoder, which
+ * holds information about the underlying image such as description,
+ * copyright text and loop count.
  *
  * \param decoder the animation decoder.
  * \returns the properties ID of the animation decoder, or 0 if there are no
