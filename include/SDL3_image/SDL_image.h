@@ -2631,9 +2631,9 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoderWit
 /**
  * Get the properties of an animation decoder.
  *
- * This function returns the properties of the animation decoder, which
- * holds information about the underlying image such as description,
- * copyright text and loop count.
+ * This function returns the properties of the animation decoder, which holds
+ * information about the underlying image such as description, copyright text
+ * and loop count.
  *
  * \param decoder the animation decoder.
  * \returns the properties ID of the animation decoder, or 0 if there are no
