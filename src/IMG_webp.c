@@ -885,8 +885,7 @@ static bool IMG_AddWEBPAnimationFrame(IMG_AnimationEncoder *encoder, SDL_Surface
         goto done;
     }
 
-    //int timestamp = GetStreamPresentationTimestampMS(encoder, pts);
-    int timestamp = IMG_GetResolvedDuration(encoder, delay, 1000);
+    int timestamp = (int)IMG_GetResolvedDuration(encoder, delay, 1000);
     if (!lib.WebPAnimEncoderAdd(ctx->encoder, &pic, timestamp, &ctx->config)) {
         error = GetWebPEncodingErrorStringInternal(pic.error_code);
         goto done;
