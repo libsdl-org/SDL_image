@@ -199,7 +199,7 @@ Uint64 IMG_GetResolvedDuration(IMG_AnimationEncoder* encoder, Uint64 duration, i
     return (Uint64)(SDL_round(((double)encoder->accumulated_pts + duration) * factor * encoder->timebase_numerator / encoder->timebase_denominator) - SDL_round(((double)encoder->accumulated_pts * factor) * encoder->timebase_numerator / encoder->timebase_denominator));
 }
 
-Uint64 IMG_GetCurrentTimestamp(IMG_AnimationEncoder* encoder, int factor)
+Uint64 IMG_GetCurrentTimestamp(IMG_AnimationEncoder* encoder, Uint64 duration, int factor)
 {
-    return (Uint64)SDL_round(((double)encoder->accumulated_pts + (double)encoder->last_delay) * factor * encoder->timebase_numerator / encoder->timebase_denominator);
+    return (Uint64)SDL_round(((double)encoder->accumulated_pts + (double)duration) * factor * encoder->timebase_numerator / encoder->timebase_denominator);
 }
