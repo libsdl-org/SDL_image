@@ -39,4 +39,4 @@ struct IMG_AnimationEncoder
 };
 
 extern Uint64 IMG_GetResolvedDuration(IMG_AnimationEncoder *encoder, Uint64 duration, int factor);
-extern Uint64 IMG_GetCurrentTimestamp(IMG_AnimationEncoder *encoder, int factor);
+extern Uint64 IMG_GetCurrentTimestamp(IMG_AnimationEncoder *encoder, Uint64 duration, int factor);
