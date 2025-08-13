@@ -751,8 +751,6 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
 
 static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *duration)
 {
-    *duration = 0;
-    *frame = NULL;
     IMG_AnimationDecoderContext *ctx = decoder->ctx;
     SDL_IOStream *src = decoder->src;
     unsigned char c;

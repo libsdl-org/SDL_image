@@ -433,9 +433,6 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
 
 static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *duration)
 {
-    *duration = 0;
-    *frame = NULL;
-
     // Get the next frame from the demuxer.
     if (decoder->ctx->iter.frame_num < 1) {
         if (!lib.WebPDemuxGetFrame(decoder->ctx->demuxer, 1, &decoder->ctx->iter)) {

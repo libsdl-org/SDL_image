@@ -1141,9 +1141,6 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder* decoder)
 
 static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *duration)
 {
-    *duration = 0;
-    *frame = NULL;
-
     IMG_AnimationDecoderContext *ctx = decoder->ctx;
     if (!ctx->is_apng) {
         return SDL_SetError("APNG decoder not properly initialized");

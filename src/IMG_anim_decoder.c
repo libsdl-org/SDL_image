@@ -203,8 +203,10 @@ bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **f
 
     if (result) {
         decoder->accumulated_pts += *duration;
+    } else {
+        *frame = NULL;
+        *duration = 0;
     }
-    
     return result;
 }
 
