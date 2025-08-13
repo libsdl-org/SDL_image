@@ -420,7 +420,6 @@ struct IMG_AnimationDecoderContext
     uint8_t *raw_data;
     size_t raw_data_size;
     WebPDemuxState demux_state;
-    //Uint64 last_pts;
 };
 
 static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
