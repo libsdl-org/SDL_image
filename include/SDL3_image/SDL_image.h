@@ -2505,7 +2505,7 @@ extern SDL_DECLSPEC IMG_AnimationEncoder * SDLCALL IMG_CreateAnimationEncoderWit
  *
  * \param encoder the receiving images.
  * \param surface the surface to add as the next frame in the animation.
- * \param delay the duration of the frame, usually in milliseconds
+ * \param duration the duration of the frame, usually in milliseconds
  *            but can be other units if the
  *            `IMG_PROP_ANIMATION_ENCODER_CREATE_TIMEBASE_DENOMINATOR_NUMBER`
  *            property is set when creating the encoder.
@@ -2519,7 +2519,7 @@ extern SDL_DECLSPEC IMG_AnimationEncoder * SDLCALL IMG_CreateAnimationEncoderWit
  * \sa IMG_CreateAnimationEncoderWithProperties
  * \sa IMG_CloseAnimationEncoder
  */
-extern SDL_DECLSPEC bool SDLCALL IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 delay);
+extern SDL_DECLSPEC bool SDLCALL IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration);
 
 /**
  * Close an animation encoder, finishing any encoding.
@@ -2668,8 +2668,7 @@ extern SDL_DECLSPEC SDL_PropertiesID SDLCALL IMG_GetAnimationDecoderProperties(I
  * \param decoder the animation decoder.
  * \param frame a pointer filled in with the SDL_Surface for the next frame in
  *              the animation.
- * \param pts a pointer filled in with the presentation timestamp of the
- *            frame, usually in milliseconds but can be other units if the
+ * \param duration the duration of the frame, usually in milliseconds but can be other units if the
  *            `IMG_PROP_ANIMATION_DECODER_CREATE_TIMEBASE_DENOMINATOR_NUMBER`
  *            property is set when creating the decoder.
  * \returns true on success or false on failure; call SDL_GetError() for more
@@ -2683,7 +2682,7 @@ extern SDL_DECLSPEC SDL_PropertiesID SDLCALL IMG_GetAnimationDecoderProperties(I
  * \sa IMG_ResetAnimationDecoder
  * \sa IMG_CloseAnimationDecoder
  */
-extern SDL_DECLSPEC bool SDLCALL IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *pts);
+extern SDL_DECLSPEC bool SDLCALL IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *duration);
 
 /**
  * Reset an animation decoder.
