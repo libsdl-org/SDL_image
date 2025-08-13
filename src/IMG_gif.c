@@ -759,7 +759,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     int framesLoaded = 0;
 
     if (ctx->got_eof) {
-        return true;
+        return false;
     }
 
     if (!IMG_AnimationDecoderGetGIFHeader(decoder)) {
