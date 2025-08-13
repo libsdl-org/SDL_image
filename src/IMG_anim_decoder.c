@@ -194,6 +194,8 @@ bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **f
         duration = &temp_duration;
     }
 
+    SDL_ClearError();
+
     bool result = decoder->GetNextFrame(decoder, frame, duration);
     if (temp_frame) {
         SDL_DestroySurface(temp_frame);
