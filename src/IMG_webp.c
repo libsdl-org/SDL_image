@@ -917,7 +917,7 @@ static bool IMG_CloseWEBPAnimation(IMG_AnimationEncoder *encoder)
     if (!ctx->encoder) {
         error = "No frames added to animation";
         goto done;
-    }
+    } 
 
     int timestamp = (int)IMG_GetCurrentTimestamp(encoder, 1000);
     if (!lib.WebPAnimEncoderAdd(ctx->encoder, NULL, timestamp, &ctx->config)) {
