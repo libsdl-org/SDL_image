@@ -921,7 +921,7 @@ static bool IMG_CloseWEBPAnimation(IMG_AnimationEncoder *encoder)
     if (!ctx->encoder) {
         error = "No frames added to animation";
         goto done;
-    } 
+    }
 
     int timestamp = GetStreamPresentationTimestampMS(encoder, encoder->last_pts);
     if (ctx->frames > 1) {
@@ -1094,7 +1094,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
     return NULL;
 }
 
-bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoderStream *decoder, SDL_PropertiesID props)
+bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props)
 {
     (void)decoder;
     (void)props;
