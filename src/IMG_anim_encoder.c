@@ -172,10 +172,6 @@ bool IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *su
         return SDL_InvalidParamError("surface");
     }
 
-    if (delay < 1) {
-        return SDL_SetError("Delay must be greater than 0");
-    }
-
     bool result = encoder->AddFrame(encoder, surface, delay);
 
     encoder->accumulated_pts += delay;
