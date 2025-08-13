@@ -431,9 +431,9 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
     return true;
 }
 
-static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *delay)
+static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *duration)
 {
-    *delay = 0;
+    *duration = 0;
     *frame = NULL;
 
     // Get the next frame from the demuxer.
@@ -498,7 +498,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
         return SDL_SetError("Failed to duplicate the surface for the next frame");
     }
 
-    *delay = IMG_CalculateDelay(decoder, iter->duration, 1000);
+    *duration = IMG_CalculateDuration(decoder, iter->duration, 1000);
 
     dispose_method = iter->dispose_method;
     decoder->ctx->dispose_method = dispose_method;
@@ -846,7 +846,7 @@ struct IMG_AnimationEncoderContext
     int loop_count;
 };
 
-static bool IMG_AddWEBPAnimationFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 delay)
+static bool IMG_AddWEBPAnimationFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration)
 {
     IMG_AnimationEncoderContext *ctx = encoder->ctx;
     const char *error = NULL;
@@ -884,7 +884,7 @@ static bool IMG_AddWEBPAnimationFrame(IMG_AnimationEncoder *encoder, SDL_Surface
         goto done;
     }
 
-    int timestamp = (int)IMG_GetCurrentTimestamp(encoder, delay, 1000);
+    int timestamp = (int)IMG_GetCurrentTimestamp(encoder, duration, 1000);
     if (!lib.WebPAnimEncoderAdd(ctx->encoder, &pic, timestamp, &ctx->config)) {
         error = GetWebPEncodingErrorStringInternal(pic.error_code);
         goto done;
