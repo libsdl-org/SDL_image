@@ -163,7 +163,7 @@ error:
     return NULL;
 }
 
-bool IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 delay)
+bool IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration)
 {
     if (!encoder) {
         return SDL_InvalidParamError("encoder");
@@ -172,10 +172,10 @@ bool IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *su
         return SDL_InvalidParamError("surface");
     }
 
-    bool result = encoder->AddFrame(encoder, surface, delay);
+    bool result = encoder->AddFrame(encoder, surface, duration);
 
-    encoder->accumulated_pts += delay;
-    encoder->last_delay = delay;
+    encoder->accumulated_pts += duration;
+    encoder->last_delay = duration;
 
     return result;
 }
