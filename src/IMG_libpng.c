@@ -1117,8 +1117,6 @@ struct IMG_AnimationDecoderContext
     int palette_count;
     png_bytep trans_alpha;
     int trans_count;
-
-    //Uint64 last_pts;
 };
 
 static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder* decoder)
