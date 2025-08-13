@@ -884,9 +884,9 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
     return true;
 }
 
-static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *delay)
+static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *duration)
 {
-    *delay = 0;
+    *duration = 0;
     *frame = NULL;
 
     IMG_AnimationDecoderContext *ctx = decoder->ctx;
@@ -1019,7 +1019,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
         SDL_SetSurfaceColorspace(frame_surface, colorspace);
     }
 
-    *delay = ctx->decoder->imageTiming.durationInTimescales * decoder->timebase_numerator;
+    *duration = ctx->decoder->imageTiming.durationInTimescales * decoder->timebase_numerator;
 
     ctx->current_frame++;
 
@@ -1194,7 +1194,7 @@ struct IMG_AnimationEncoderContext
     const char *createdate;
 };
 
-static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 delay)
+static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration)
 {
     avifImage *image = NULL;
     avifRGBImage rgb;
@@ -1216,7 +1216,7 @@ static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_
                    surface->format == SDL_PIXELFORMAT_ABGR64);
     bool hasAlpha = SDL_ISPIXELFORMAT_ALPHA(surface->format);
 
-    durationInTimescales = delay * encoder->timebase_numerator;
+    durationInTimescales = duration * encoder->timebase_numerator;
     colorspace = SDL_GetSurfaceColorspace(surface);
     props = SDL_GetSurfaceProperties(surface);
     maxCLL = (Uint16)SDL_GetNumberProperty(props, SDL_PROP_SURFACE_MAXCLL_NUMBER, 0);
