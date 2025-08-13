@@ -922,10 +922,6 @@ static SDL_Surface *decompress_png_frame_data(DecompressionContext* context, png
     if (data_size < 0) {
         goto error;
     }
-    if ((Uint64)data_size >= SDL_SIZE_MAX) {
-        SDL_SetError("data size >= SDL_SIZE_MAX");
-        goto error;
-    }
     void *buffer = NULL;
 
     if (SDL_SeekIO(context->mem_stream, 0, SDL_IO_SEEK_SET) < 0) {
