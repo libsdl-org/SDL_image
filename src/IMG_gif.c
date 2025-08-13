@@ -2595,7 +2595,7 @@ static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_
         }
     }
 
-    uint16_t delayTime = IMG_GetResolvedDuration(encoder, delay, 100);
+    uint16_t delayTime = (uint16_t)IMG_GetResolvedDuration(encoder, delay, 100);
     uint8_t disposalMethod = (ctx->transparentColorIndex != -1) ? 2 : 1;
     if (writeGraphicsControlExtension(io, delayTime, ctx->transparentColorIndex, disposalMethod) != 0) {
         goto error;
