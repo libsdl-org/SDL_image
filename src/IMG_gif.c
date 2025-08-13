@@ -617,8 +617,6 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
             ctx->state.GifScreen.GrayScale = ctx->global_grayscale;
         }
 
-        Uint64 stream_pos = SDL_TellIO(src);
-
         if (!ctx->ignore_props) {
             Uint64 stream_pos = SDL_TellIO(src);
             bool processing_extensions = true;
