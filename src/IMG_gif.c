@@ -2503,7 +2503,7 @@ static int writeGifTrailer(SDL_IOStream *io)
     return 0;
 }
 
-static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 delay)
+static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration)
 {
     IMG_AnimationEncoderContext *ctx = encoder->ctx;
     SDL_IOStream *io = encoder->dst;
@@ -2594,9 +2594,9 @@ static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_
         }
     }
 
-    uint16_t delayTime = (uint16_t)IMG_GetResolvedDuration(encoder, delay, 100);
+    uint16_t resolvedDuration = (uint16_t)IMG_GetResolvedDuration(encoder, duration, 100);
     uint8_t disposalMethod = (ctx->transparentColorIndex != -1) ? 2 : 1;
-    if (writeGraphicsControlExtension(io, delayTime, ctx->transparentColorIndex, disposalMethod) != 0) {
+    if (writeGraphicsControlExtension(io, resolvedDuration, ctx->transparentColorIndex, disposalMethod) != 0) {
         goto error;
     }
 
