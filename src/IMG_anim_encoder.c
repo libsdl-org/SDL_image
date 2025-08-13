@@ -163,7 +163,7 @@ error:
     return NULL;
 }
 
-bool IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 pts)
+bool IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration)
 {
     if (!encoder) {
         return SDL_InvalidParamError("encoder");
@@ -172,21 +172,10 @@ bool IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *su
         return SDL_InvalidParamError("surface");
     }
 
-    // Make sure the presentation timestamp starts at 0
-    if (!encoder->first_pts) {
-        encoder->first_pts = pts;
-    }
-    pts -= encoder->first_pts;
+    bool result = encoder->AddFrame(encoder, surface, duration);
 
-    // Make sure the presentation timestamp isn't out of order
-    if (pts < encoder->last_pts) {
-        return SDL_SetError("Frame added out of order");
-    }
-
-    bool result = encoder->AddFrame(encoder, surface, pts);
-
-    // Save the last presentation timestamp
-    encoder->last_pts = pts;
+    encoder->accumulated_pts += duration;
+    encoder->last_delay = duration;
 
     return result;
 }
@@ -205,8 +194,12 @@ bool IMG_CloseAnimationEncoder(IMG_AnimationEncoder *encoder)
     return result;
 }
 
-int GetStreamPresentationTimestampMS(IMG_AnimationEncoder *encoder, Uint64 pts)
+Uint64 IMG_GetResolvedDuration(IMG_AnimationEncoder* encoder, Uint64 duration, int factor)
 {
-    return (int)((pts * 1000 * encoder->timebase_numerator) / encoder->timebase_denominator);
+    return (Uint64)(SDL_round(((double)encoder->accumulated_pts + duration) * factor * encoder->timebase_numerator / encoder->timebase_denominator) - SDL_round(((double)encoder->accumulated_pts * factor) * encoder->timebase_numerator / encoder->timebase_denominator));
 }
 
+Uint64 IMG_GetCurrentTimestamp(IMG_AnimationEncoder* encoder, Uint64 duration, int factor)
+{
+    return (Uint64)SDL_round(((double)encoder->accumulated_pts + (double)duration) * factor * encoder->timebase_numerator / encoder->timebase_denominator);
+}

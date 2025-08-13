@@ -534,10 +534,9 @@ struct IMG_AnimationDecoderContext
     int last_disposal;           /* Disposal method from previous frame */
     int restore_frame;           /* Frame to restore when using DISPOSE_PREVIOUS */
 
-    Uint64 last_pts;
-
     char *comment;
     int loop_count;
+    bool ignore_props;
 };
 
 static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder* decoder)
@@ -618,22 +617,24 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
             ctx->state.GifScreen.GrayScale = ctx->global_grayscale;
         }
 
-        bool processing_extensions = true;
-        while (processing_extensions) {
-            uint8_t block_type;
-            if (!ReadOK(src, &block_type, 1)) {
-                return SDL_SetError("Error reading GIF block type");
-            }
-
-            switch (block_type) {
-            case 0x21: // Extension Introducer
-            {
-                uint8_t extension_label;
-                if (!ReadOK(src, &extension_label, 1)) {
-                    return SDL_SetError("Error reading GIF extension label");
+        if (!ctx->ignore_props) {
+            Uint64 stream_pos = SDL_TellIO(src);
+            bool processing_extensions = true;
+            while (processing_extensions) {
+                uint8_t block_type;
+                if (!ReadOK(src, &block_type, 1)) {
+                    return SDL_SetError("Error reading GIF block type");
                 }
 
-                switch (extension_label) {
+                switch (block_type) {
+                case 0x21: // Extension Introducer
+                {
+                    uint8_t extension_label;
+                    if (!ReadOK(src, &extension_label, 1)) {
+                        return SDL_SetError("Error reading GIF extension label");
+                    }
+
+                    switch (extension_label) {
                     case 0xFF: // Application Extension
                     {
                         Uint8 app_data[12];
@@ -701,19 +702,20 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
                             SDL_SeekIO(src, sub_block_size, SDL_IO_SEEK_CUR);
                         }
                     } break;
+                    }
+                } break;
+                case 0x2C: // Image Descriptor
+                    processing_extensions = false;
+                    break;
+
+                case 0x3B: // Trailer
+                    return SDL_SetError("GIF file contains no images");
+
+                default: // Unknown block type
+                    return SDL_SetError("Unknown GIF block type: 0x%02X", block_type);
                 }
-            } break;
-            case 0x2C: // Image Descriptor
-                SDL_SeekIO(src, -1, SDL_IO_SEEK_CUR);
-                processing_extensions = false;
-                break;
-
-            case 0x3B: // Trailer
-                return SDL_SetError("GIF file contains no images");
-
-            default: // Unknown block type
-                return SDL_SetError("Unknown GIF block type: 0x%02X", block_type);
             }
+            SDL_SeekIO(src, stream_pos, SDL_IO_SEEK_SET);
         }
 
         if (!ctx->canvas) {
@@ -747,9 +749,9 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
     return true;
 }
 
-static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *pts)
+static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *duration)
 {
-    *pts = 0;
+    *duration = 0;
     *frame = NULL;
     IMG_AnimationDecoderContext *ctx = decoder->ctx;
     SDL_IOStream *src = decoder->src;
@@ -757,7 +759,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     int framesLoaded = 0;
 
     if (ctx->got_eof) {
-        return true;
+        return false;
     }
 
     if (!IMG_AnimationDecoderGetGIFHeader(decoder)) {
@@ -883,14 +885,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
             return SDL_SetError("Failed to duplicate frame surface");
         }
 
-        if (ctx->current_frame == 0) {
-            *pts = 0;
-        } else if (ctx->state.Gif89.delayTime < 2) {
-            *pts = decoder->ctx->last_pts += decoder->timebase_denominator * decoder->timebase_denominator * 10;
-        } else {
-            int millisecond_delay = ctx->state.Gif89.delayTime * 10;
-            *pts = decoder->ctx->last_pts += millisecond_delay * decoder->timebase_denominator / (1000 * decoder->timebase_numerator);
-        }
+        *duration = IMG_CalculateDuration(decoder, ctx->state.Gif89.delayTime, 100);
 
         ctx->last_disposal = ctx->state.Gif89.disposal;
 
@@ -967,6 +962,7 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Properties
     }
 
     bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
+    ctx->ignore_props = ignoreProps;
     if (!ignoreProps) {
         // Set well-defined properties.
         SDL_SetNumberProperty(decoder->props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (Sint64)ctx->loop_count);
@@ -2507,7 +2503,7 @@ static int writeGifTrailer(SDL_IOStream *io)
     return 0;
 }
 
-static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 pts)
+static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration)
 {
     IMG_AnimationEncoderContext *ctx = encoder->ctx;
     SDL_IOStream *io = encoder->dst;
@@ -2598,16 +2594,9 @@ static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_
         }
     }
 
-    Uint64 delay_delta = (ctx->firstFrame) ? encoder->first_pts : (pts - encoder->last_pts);
-    uint16_t delayTime = (uint16_t)((delay_delta * encoder->timebase_numerator * 100) /
-                                    encoder->timebase_denominator);
-
-    if (!ctx->firstFrame && delayTime < 2) {
-        delayTime = 10; // A common default for very fast frames
-    }
-
+    uint16_t resolvedDuration = (uint16_t)IMG_GetResolvedDuration(encoder, duration, 100);
     uint8_t disposalMethod = (ctx->transparentColorIndex != -1) ? 2 : 1;
-    if (writeGraphicsControlExtension(io, delayTime, ctx->transparentColorIndex, disposalMethod) != 0) {
+    if (writeGraphicsControlExtension(io, resolvedDuration, ctx->transparentColorIndex, disposalMethod) != 0) {
         goto error;
     }
 
@@ -2650,7 +2639,7 @@ static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_
     if (ctx->firstFrame) {
         ctx->firstFrame = false;
     }
-    encoder->last_pts = pts;
+
     return true;
 
 error:

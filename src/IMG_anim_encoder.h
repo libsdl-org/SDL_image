@@ -29,14 +29,14 @@ struct IMG_AnimationEncoder
     int quality;
     int timebase_numerator;
     int timebase_denominator;
-    Uint64 first_pts;
-    Uint64 last_pts;
+    Uint64 accumulated_pts;
+    Uint64 last_delay;
 
-    bool (*AddFrame)(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 pts);
+    bool (*AddFrame)(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration);
     bool (*Close)(IMG_AnimationEncoder *encoder);
 
     IMG_AnimationEncoderContext *ctx;
 };
 
-extern int GetStreamPresentationTimestampMS(IMG_AnimationEncoder *encoder, Uint64 pts);
-
+extern Uint64 IMG_GetResolvedDuration(IMG_AnimationEncoder *encoder, Uint64 duration, int factor);
+extern Uint64 IMG_GetCurrentTimestamp(IMG_AnimationEncoder *encoder, Uint64 duration, int factor);

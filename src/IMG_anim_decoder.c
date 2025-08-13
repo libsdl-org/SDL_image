@@ -178,10 +178,10 @@ SDL_PropertiesID IMG_GetAnimationDecoderProperties(IMG_AnimationDecoder *decoder
     return decoder->props;
 }
 
-bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *pts)
+bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *duration)
 {
     SDL_Surface *temp_frame = NULL;
-    Uint64 temp_pts;
+    Uint64 temp_duration;
 
     if (!decoder) {
         return SDL_InvalidParamError("decoder");
@@ -190,14 +190,21 @@ bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **f
     if (!frame) {
         frame = &temp_frame;
     }
-    if (!pts) {
-        pts = &temp_pts;
+    if (!duration) {
+        duration = &temp_duration;
     }
 
-    bool result = decoder->GetNextFrame(decoder, frame, pts);
+    SDL_ClearError();
+
+    bool result = decoder->GetNextFrame(decoder, frame, duration);
     if (temp_frame) {
         SDL_DestroySurface(temp_frame);
     }
+
+    if (result) {
+        decoder->accumulated_pts += *duration;
+    }
+    
     return result;
 }
 
@@ -229,6 +236,14 @@ bool IMG_ResetAnimationDecoder(IMG_AnimationDecoder *decoder)
     }
 
     return decoder->Reset(decoder);
+}
+
+Uint64 IMG_CalculateDuration(IMG_AnimationDecoder* decoder, int delay_num, int delay_den)
+{
+    if (delay_den < 1)
+        delay_den = 100;
+
+    return (Uint64)SDL_round(((double)delay_num / delay_den) * ((double)decoder->timebase_denominator / (double)decoder->timebase_numerator));
 }
 
 IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int maxFrames)
@@ -314,16 +329,7 @@ IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int 
     }
     for (int i = 0; i < anim->count; ++i) {
         anim->frames[i] = frames[i];
-
-        if (i < anim->count - 1) {
-            anim->delays[i] = (int)(delays[i + 1] - delays[i]);
-        } else if (i > 0) {
-            // Assuming consistent frame timing
-            anim->delays[i] = anim->delays[i - 1];
-        } else {
-            // Assuming single frame of 60 FPS animation
-            anim->delays[i] = 16;
-        }
+        anim->delays[i] = (int)delays[i];
     }
 
     SDL_free(frames);

@@ -34,7 +34,6 @@
 #ifdef LOAD_AVIF
 
 #include <avif/avif.h>
-#include <limits.h> /* for INT_MAX */
 
 
 /*
@@ -885,23 +884,23 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
     return true;
 }
 
-static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *pts)
+static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *duration)
 {
-    *pts = 0;
+    *duration = 0;
     *frame = NULL;
 
     IMG_AnimationDecoderContext *ctx = decoder->ctx;
     avifResult result;
 
     if (ctx->total_frames - ctx->current_frame < 1) {
-        return true;
+        return false;
     }
 
     result = lib.avifDecoderNextImage(ctx->decoder);
     if (result != AVIF_RESULT_OK) {
         if (result == AVIF_RESULT_NO_IMAGES_REMAINING) {
             // This shouldn't happen here, but handle it gracefully
-            return true;
+            return false;
         }
 
         return SDL_SetError("Couldn't get AVIF frame %d: %s", ctx->current_frame + 1, lib.avifResultToString(result));
@@ -1020,11 +1019,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
         SDL_SetSurfaceColorspace(frame_surface, colorspace);
     }
 
-    if (ctx->decoder->imageTiming.timescale > 0) {
-        *pts = (Uint64)ctx->decoder->imageTiming.ptsInTimescales * decoder->timebase_denominator / (ctx->decoder->imageTiming.timescale * decoder->timebase_numerator);
-    } else {
-        *pts = 0;
-    }
+    *duration = ctx->decoder->imageTiming.durationInTimescales * decoder->timebase_numerator;
 
     ctx->current_frame++;
 
@@ -1076,6 +1071,7 @@ bool IMG_CreateAVIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
     }
 
     ctx->decoder->strictFlags = AVIF_STRICT_DISABLED;
+    ctx->decoder->timescale = decoder->timebase_denominator;
 
     ctx->ioContext.src = decoder->src;
     ctx->ioContext.start = ctx->start_pos;
@@ -1198,7 +1194,7 @@ struct IMG_AnimationEncoderContext
     const char *createdate;
 };
 
-static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 pts)
+static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration)
 {
     avifImage *image = NULL;
     avifRGBImage rgb;
@@ -1220,12 +1216,7 @@ static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_
                    surface->format == SDL_PIXELFORMAT_ABGR64);
     bool hasAlpha = SDL_ISPIXELFORMAT_ALPHA(surface->format);
 
-    double delta_seconds = (double)(!encoder->ctx->first_frame_added ? encoder->first_pts : (pts - encoder->last_pts)) * encoder->timebase_numerator / encoder->timebase_denominator;
-    durationInTimescales = (uint64_t)SDL_round(delta_seconds * encoder->ctx->encoder->timescale);
-    if (durationInTimescales == 0) {
-        durationInTimescales = 1;
-    }
-
+    durationInTimescales = duration * encoder->timebase_numerator;
     colorspace = SDL_GetSurfaceColorspace(surface);
     props = SDL_GetSurfaceProperties(surface);
     maxCLL = (Uint16)SDL_GetNumberProperty(props, SDL_PROP_SURFACE_MAXCLL_NUMBER, 0);
@@ -1607,11 +1598,7 @@ bool IMG_CreateAVIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Propertie
     encoder->ctx->encoder->tileRowsLog2 = 0;
     encoder->ctx->encoder->tileColsLog2 = 0;
 
-    if (encoder->timebase_denominator > 0) {
-        encoder->ctx->encoder->timescale = (uint32_t)encoder->timebase_denominator;
-    } else {
-        encoder->ctx->encoder->timescale = 1000;
-    }
+    encoder->ctx->encoder->timescale = (uint32_t)encoder->timebase_denominator;
 
     bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
     if (!ignoreProps) {
