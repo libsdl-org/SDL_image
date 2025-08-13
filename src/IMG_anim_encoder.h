@@ -32,7 +32,7 @@ struct IMG_AnimationEncoder
     Uint64 accumulated_pts;
     Uint64 last_delay;
 
-    bool (*AddFrame)(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 delay);
+    bool (*AddFrame)(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration);
     bool (*Close)(IMG_AnimationEncoder *encoder);
 
     IMG_AnimationEncoderContext *ctx;
