@@ -893,14 +893,14 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     avifResult result;
 
     if (ctx->total_frames - ctx->current_frame < 1) {
-        return true;
+        return false;
     }
 
     result = lib.avifDecoderNextImage(ctx->decoder);
     if (result != AVIF_RESULT_OK) {
         if (result == AVIF_RESULT_NO_IMAGES_REMAINING) {
             // This shouldn't happen here, but handle it gracefully
-            return true;
+            return false;
         }
 
         return SDL_SetError("Couldn't get AVIF frame %d: %s", ctx->current_frame + 1, lib.avifResultToString(result));
