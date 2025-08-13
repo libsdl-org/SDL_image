@@ -749,9 +749,9 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
     return true;
 }
 
-static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *delay)
+static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *duration)
 {
-    *delay = 0;
+    *duration = 0;
     *frame = NULL;
     IMG_AnimationDecoderContext *ctx = decoder->ctx;
     SDL_IOStream *src = decoder->src;
@@ -885,7 +885,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
             return SDL_SetError("Failed to duplicate frame surface");
         }
 
-        *delay = IMG_CalculateDelay(decoder, ctx->state.Gif89.delayTime, 100);
+        *duration = IMG_CalculateDuration(decoder, ctx->state.Gif89.delayTime, 100);
 
         ctx->last_disposal = ctx->state.Gif89.disposal;
 
