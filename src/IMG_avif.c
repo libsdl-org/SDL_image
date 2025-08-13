@@ -1019,7 +1019,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
         SDL_SetSurfaceColorspace(frame_surface, colorspace);
     }
 
-    *delay = ctx->decoder->imageTiming.ptsInTimescales * decoder->timebase_numerator;
+    *delay = ctx->decoder->imageTiming.durationInTimescales * decoder->timebase_numerator;
 
     ctx->current_frame++;
 
