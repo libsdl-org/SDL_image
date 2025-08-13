@@ -534,10 +534,9 @@ struct IMG_AnimationDecoderContext
     int last_disposal;           /* Disposal method from previous frame */
     int restore_frame;           /* Frame to restore when using DISPOSE_PREVIOUS */
 
-    //Uint64 last_pts;
-
     char *comment;
     int loop_count;
+    bool ignore_props;
 };
 
 static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder* decoder)
@@ -620,24 +619,24 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
 
         Uint64 stream_pos = SDL_TellIO(src);
 
-        // TODO: This is an optional part for finding extensions to assign loop count, comment etc.
-        // So maybe all the return SDL_SetError() calls should be replaced with quitting the loop and continuing the execution?
-        bool processing_extensions = true;
-        while (processing_extensions) {
-            uint8_t block_type;
-            if (!ReadOK(src, &block_type, 1)) {
-                return SDL_SetError("Error reading GIF block type");
-            }
-
-            switch (block_type) {
-            case 0x21: // Extension Introducer
-            {
-                uint8_t extension_label;
-                if (!ReadOK(src, &extension_label, 1)) {
-                    return SDL_SetError("Error reading GIF extension label");
+        if (!ctx->ignore_props) {
+            Uint64 stream_pos = SDL_TellIO(src);
+            bool processing_extensions = true;
+            while (processing_extensions) {
+                uint8_t block_type;
+                if (!ReadOK(src, &block_type, 1)) {
+                    return SDL_SetError("Error reading GIF block type");
                 }
 
-                switch (extension_label) {
+                switch (block_type) {
+                case 0x21: // Extension Introducer
+                {
+                    uint8_t extension_label;
+                    if (!ReadOK(src, &extension_label, 1)) {
+                        return SDL_SetError("Error reading GIF extension label");
+                    }
+
+                    switch (extension_label) {
                     case 0xFF: // Application Extension
                     {
                         Uint8 app_data[12];
@@ -705,20 +704,21 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
                             SDL_SeekIO(src, sub_block_size, SDL_IO_SEEK_CUR);
                         }
                     } break;
+                    }
+                } break;
+                case 0x2C: // Image Descriptor
+                    processing_extensions = false;
+                    break;
+
+                case 0x3B: // Trailer
+                    return SDL_SetError("GIF file contains no images");
+
+                default: // Unknown block type
+                    return SDL_SetError("Unknown GIF block type: 0x%02X", block_type);
                 }
-            } break;
-            case 0x2C: // Image Descriptor
-                processing_extensions = false;
-                break;
-
-            case 0x3B: // Trailer
-                return SDL_SetError("GIF file contains no images");
-
-            default: // Unknown block type
-                return SDL_SetError("Unknown GIF block type: 0x%02X", block_type);
             }
+            SDL_SeekIO(src, stream_pos, SDL_IO_SEEK_SET);
         }
-        SDL_SeekIO(src, stream_pos, SDL_IO_SEEK_SET);
 
         if (!ctx->canvas) {
             ctx->canvas = SDL_CreateSurface(ctx->width, ctx->height, SDL_PIXELFORMAT_RGBA32);
@@ -964,6 +964,7 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_Properties
     }
 
     bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
+    ctx->ignore_props = ignoreProps;
     if (!ignoreProps) {
         // Set well-defined properties.
         SDL_SetNumberProperty(decoder->props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (Sint64)ctx->loop_count);
