@@ -178,10 +178,10 @@ SDL_PropertiesID IMG_GetAnimationDecoderProperties(IMG_AnimationDecoder *decoder
     return decoder->props;
 }
 
-bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *delay)
+bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *duration)
 {
     SDL_Surface *temp_frame = NULL;
-    Uint64 temp_delay;
+    Uint64 temp_duration;
 
     if (!decoder) {
         return SDL_InvalidParamError("decoder");
@@ -190,16 +190,16 @@ bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **f
     if (!frame) {
         frame = &temp_frame;
     }
-    if (!delay) {
-        delay = &temp_delay;
+    if (!duration) {
+        duration = &temp_duration;
     }
 
-    bool result = decoder->GetNextFrame(decoder, frame, delay);
+    bool result = decoder->GetNextFrame(decoder, frame, duration);
     if (temp_frame) {
         SDL_DestroySurface(temp_frame);
     }
 
-    decoder->accumulated_pts += *delay;
+    decoder->accumulated_pts += *duration;
 
     return result;
 }
@@ -234,7 +234,7 @@ bool IMG_ResetAnimationDecoder(IMG_AnimationDecoder *decoder)
     return decoder->Reset(decoder);
 }
 
-Uint64 IMG_CalculateDelay(IMG_AnimationDecoder* decoder, int delay_num, int delay_den)
+Uint64 IMG_CalculateDuration(IMG_AnimationDecoder* decoder, int delay_num, int delay_den)
 {
     if (delay_den < 1)
         delay_den = 100;
