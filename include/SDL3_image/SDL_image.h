@@ -2517,10 +2517,10 @@ extern SDL_DECLSPEC IMG_AnimationEncoder * SDLCALL IMG_CreateAnimationEncoderWit
  *
  * \param encoder the receiving images.
  * \param surface the surface to add as the next frame in the animation.
- * \param delay the duration of the frame, usually in milliseconds
- *            but can be other units if the
- *            `IMG_PROP_ANIMATION_ENCODER_CREATE_TIMEBASE_DENOMINATOR_NUMBER`
- *            property is set when creating the encoder.
+ * \param duration the duration of the frame, usually in milliseconds but can
+ *                 be other units if the
+ *                 `IMG_PROP_ANIMATION_ENCODER_CREATE_TIMEBASE_DENOMINATOR_NUMBER`
+ *                 property is set when creating the encoder.
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
@@ -2688,19 +2688,21 @@ extern SDL_DECLSPEC SDL_PropertiesID SDLCALL IMG_GetAnimationDecoderProperties(I
  * as an SDL_Surface. The returned surface should be freed with
  * SDL_FreeSurface() when no longer needed.
  *
- * If the animation decoder has no more frames or an error occurred while decoding the frame,
- * this function returns false. In that case, please call SDL_GetError() for more information.
- * If SDL_GetError() returns an empty string, that means there are no more available frames.
- * If SDL_GetError() returns a valid string, that means the decoding failed.
+ * If the animation decoder has no more frames or an error occurred while
+ * decoding the frame, this function returns false. In that case, please call
+ * SDL_GetError() for more information. If SDL_GetError() returns an empty
+ * string, that means there are no more available frames. If SDL_GetError()
+ * returns a valid string, that means the decoding failed.
  *
  * \param decoder the animation decoder.
  * \param frame a pointer filled in with the SDL_Surface for the next frame in
  *              the animation.
- * \param duration the duration of the frame, usually in milliseconds but can be other units if the
- *            `IMG_PROP_ANIMATION_DECODER_CREATE_TIMEBASE_DENOMINATOR_NUMBER`
- *            property is set when creating the decoder.
- * \returns true on success or false on failure and when no more frames available; call SDL_GetError() for more
- *          information.
+ * \param duration the duration of the frame, usually in milliseconds but can
+ *                 be other units if the
+ *                 `IMG_PROP_ANIMATION_DECODER_CREATE_TIMEBASE_DENOMINATOR_NUMBER`
+ *                 property is set when creating the decoder.
+ * \returns true on success or false on failure and when no more frames are
+ *          available; call SDL_GetError() for more information.
  *
  * \since This function is available since SDL_image 3.4.0.
  *
