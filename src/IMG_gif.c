@@ -757,7 +757,6 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     int framesLoaded = 0;
 
     if (ctx->got_eof) {
-        decoder->status = IMG_CODER_STATUS_MAX;
         return false;
     }
 
