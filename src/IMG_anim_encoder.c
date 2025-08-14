@@ -173,9 +173,11 @@ bool IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *su
     }
     
     bool result = encoder->AddFrame(encoder, surface, duration);
-    
-    encoder->accumulated_pts += duration;
-    encoder->last_delay = duration;
+
+    if (result) {
+        encoder->accumulated_pts += duration;
+        encoder->last_delay = duration;
+    }
 
     return result;
 }
