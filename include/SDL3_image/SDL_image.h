@@ -2404,8 +2404,8 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadGIFAnimation_IO(SDL_IOStream
 extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadWEBPAnimation_IO(SDL_IOStream *src);
 
 /**
-* An enum representing the status of the encoder and decoder.
-*/
+ * An enum representing the status of the encoder and decoder.
+ */
 typedef enum IMG_AnimationDecoderStatus
 {
 	IMG_DECODER_STATUS_OK, 	            /**< Decoded the frame successfully. */
@@ -2701,16 +2701,16 @@ extern SDL_DECLSPEC SDL_PropertiesID SDLCALL IMG_GetAnimationDecoderProperties(I
 extern SDL_DECLSPEC bool SDLCALL IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *duration);
 
 /**
-* Get the decoder status indicating the current state of the decoder.
-*
-* \param decoder the decoder to get the status of.
-* \returns the status of the underlying decoder, or IMG_DECODER_STATUS_INVALID if the given
-*          decoder is invalid.
-*
-* \since This function is available since SDL_image 3.4.0.
-*
-* \sa IMG_GetAnimationDecoderFrame
-*/
+ * Get the decoder status indicating the current state of the decoder.
+ *
+ * \param decoder the decoder to get the status of.
+ * \returns the status of the underlying decoder, or
+ *          IMG_DECODER_STATUS_INVALID if the given decoder is invalid.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_GetAnimationDecoderFrame
+ */
 extern SDL_DECLSPEC IMG_AnimationDecoderStatus SDLCALL IMG_GetAnimationDecoderStatus(IMG_AnimationDecoder *decoder);
 
 /**
