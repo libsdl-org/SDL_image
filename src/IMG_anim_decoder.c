@@ -193,7 +193,6 @@ bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **f
     if (!duration) {
         duration = &temp_duration;
     }
-    
     SDL_ClearError();
     // Reset the status before trying to get the next frame.
     decoder->status = IMG_DECODER_STATUS_OK;
