@@ -2405,14 +2405,16 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadWEBPAnimation_IO(SDL_IOStrea
 
 /**
  * An enum representing the status of the encoder and decoder.
+ *
+ * \since This enum is available since SDL_image 3.4.0.
  */
 typedef enum IMG_AnimationDecoderStatus
 {
-	IMG_DECODER_STATUS_OK, 	            /**< Decoded the frame successfully. */
-	IMG_DECODER_STATUS_FAILED,           /**< Decoding the frame failed. Call SDL_GetError for more information. */
-	IMG_DECODER_STATUS_COMPLETE, 	    /**< No more frames available. */
+    IMG_DECODER_STATUS_OK,          /**< Decoded the frame successfully. */
+    IMG_DECODER_STATUS_FAILED,      /**< Decoding the frame failed. Call SDL_GetError for more information. */
+    IMG_DECODER_STATUS_COMPLETE,    /**< No more frames available. */
 
-    IMG_DECODER_STATUS_INVALID,          /**< Invalid decoder status that does not represent any valid status. */
+    IMG_DECODER_STATUS_INVALID      /**< Invalid decoder status that does not represent any valid status. */
 } IMG_AnimationDecoderStatus;
 
 /**
