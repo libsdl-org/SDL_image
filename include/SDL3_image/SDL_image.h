@@ -2531,7 +2531,7 @@ extern SDL_DECLSPEC IMG_AnimationEncoder * SDLCALL IMG_CreateAnimationEncoderWit
  * \sa IMG_CreateAnimationEncoderWithProperties
  * \sa IMG_CloseAnimationEncoder
  */
-extern SDL_DECLSPEC bool SDLCALL IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 delay);
+extern SDL_DECLSPEC bool SDLCALL IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration);
 
 /**
  * Close an animation encoder, finishing any encoding.
