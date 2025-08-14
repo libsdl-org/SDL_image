@@ -1147,6 +1147,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     }
 
     if (ctx->actl.num_frames - ctx->current_frame_index < 1) {
+        decoder->status = IMG_DECODER_STATUS_COMPLETE;
         return false;
     }
 

@@ -2404,20 +2404,6 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadGIFAnimation_IO(SDL_IOStream
 extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadWEBPAnimation_IO(SDL_IOStream *src);
 
 /**
- * An enum representing the status of the encoder and decoder.
- *
- * \since This enum is available since SDL_image 3.4.0.
- */
-typedef enum IMG_AnimationDecoderStatus
-{
-    IMG_DECODER_STATUS_OK,          /**< Decoded the frame successfully. */
-    IMG_DECODER_STATUS_FAILED,      /**< Decoding the frame failed. Call SDL_GetError for more information. */
-    IMG_DECODER_STATUS_COMPLETE,    /**< No more frames available. */
-
-    IMG_DECODER_STATUS_INVALID      /**< Invalid decoder status that does not represent any valid status. */
-} IMG_AnimationDecoderStatus;
-
-/**
  * An object representing the encoder context.
  */
 typedef struct IMG_AnimationEncoder IMG_AnimationEncoder;
@@ -2552,6 +2538,19 @@ extern SDL_DECLSPEC bool SDLCALL IMG_AddAnimationEncoderFrame(IMG_AnimationEncod
  * \sa IMG_CreateAnimationEncoderWithProperties
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_CloseAnimationEncoder(IMG_AnimationEncoder *encoder);
+
+/**
+ * An enum representing the status of an animation decoder.
+ *
+ * \since This enum is available since SDL_image 3.4.0.
+ */
+typedef enum IMG_AnimationDecoderStatus
+{
+    IMG_DECODER_STATUS_INVALID = -1,    /**< The decoder is invalid */
+    IMG_DECODER_STATUS_OK,              /**< The decoder is ready to decode the next frame */
+    IMG_DECODER_STATUS_FAILED,          /**< The decoder failed to decode a frame, call SDL_GetError() for more information. */
+    IMG_DECODER_STATUS_COMPLETE         /**< No more frames available */
+} IMG_AnimationDecoderStatus;
 
 /**
  * An object representing animation decoder.
@@ -2690,13 +2689,14 @@ extern SDL_DECLSPEC SDL_PropertiesID SDLCALL IMG_GetAnimationDecoderProperties(I
  *                 `IMG_PROP_ANIMATION_DECODER_CREATE_TIMEBASE_DENOMINATOR_NUMBER`
  *                 property is set when creating the decoder.
  * \returns true on success or false on failure and when no more frames are
- *          available; call SDL_GetError() for more information.
+ *          available; call IMG_GetAnimationDecoderStatus() or SDL_GetError() for more information.
  *
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_CreateAnimationDecoder
  * \sa IMG_CreateAnimationDecoder_IO
  * \sa IMG_CreateAnimationDecoderWithProperties
+ * \sa IMG_GetAnimationDecoderStatus
  * \sa IMG_ResetAnimationDecoder
  * \sa IMG_CloseAnimationDecoder
  */

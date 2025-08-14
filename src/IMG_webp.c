@@ -436,11 +436,11 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     // Get the next frame from the demuxer.
     if (decoder->ctx->iter.frame_num < 1) {
         if (!lib.WebPDemuxGetFrame(decoder->ctx->demuxer, 1, &decoder->ctx->iter)) {
-            SDL_SetError("Failed to get first frame from WEBP demuxer");
-            return false;
+            return SDL_SetError("Failed to get first frame from WEBP demuxer");
         }
     } else {
         if (!lib.WebPDemuxNextFrame(&decoder->ctx->iter)) {
+            decoder->status = IMG_DECODER_STATUS_COMPLETE;
             return false;
         }
     }
@@ -449,6 +449,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     int availableFrames = totalFrames - (decoder->ctx->iter.frame_num - 1);
 
     if (availableFrames < 1) {
+        decoder->status = IMG_DECODER_STATUS_COMPLETE;
         return false;
     }
 
@@ -915,7 +916,7 @@ static bool IMG_CloseWEBPAnimation(IMG_AnimationEncoder *encoder)
         goto done;
     }
 
-    int timestamp = (int)IMG_GetCurrentTimestamp(encoder, encoder->last_delay, 1000);
+    int timestamp = (int)IMG_GetCurrentTimestamp(encoder, encoder->last_duration, 1000);
     if (!lib.WebPAnimEncoderAdd(ctx->encoder, NULL, timestamp, &ctx->config)) {
         error = "WebPAnimEncoderAdd() failed";
         goto done;

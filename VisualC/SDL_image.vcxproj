@@ -219,6 +219,7 @@
     <ClCompile Include="..\src\IMG_xcf.c" />
     <ClCompile Include="..\src\IMG_xpm.c" />
     <ClCompile Include="..\src\IMG_xv.c" />
+    <ClCompile Include="..\src\xmlman.c" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\src\version.rc" />
@@ -230,6 +231,7 @@
     <ClInclude Include="..\src\IMG_libpng.h" />
     <ClInclude Include="..\src\IMG_gif.h" />
     <ClInclude Include="..\src\IMG_avif.h" />
+    <ClInclude Include="..\src\xmlman.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="external\optional\x64\libavif-16.dll">
@@ -436,6 +438,4 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-
 </Project>
-
