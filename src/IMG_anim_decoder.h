@@ -23,6 +23,8 @@ typedef struct IMG_AnimationDecoderContext IMG_AnimationDecoderContext;
 
 struct IMG_AnimationDecoder
 {
+    IMG_CoderStatus status;
+
     SDL_PropertiesID props;
     SDL_IOStream *src;
     Sint64 start;
