@@ -441,6 +441,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
         }
     } else {
         if (!lib.WebPDemuxNextFrame(&decoder->ctx->iter)) {
+            decoder->status = IMG_CODER_STATUS_MAX;
             return false;
         }
     }
@@ -448,8 +449,10 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     int totalFrames = decoder->ctx->iter.num_frames;
     int availableFrames = totalFrames - (decoder->ctx->iter.frame_num - 1);
 
-    if (availableFrames < 1)
+    if (availableFrames < 1) {
+        decoder->status = IMG_CODER_STATUS_MAX;
         return false;
+    }
 
     SDL_Surface *canvas = decoder->ctx->canvas;
     uint32_t bgcolor = decoder->ctx->bgcolor;
