@@ -890,6 +890,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     avifResult result;
 
     if (ctx->total_frames - ctx->current_frame < 1) {
+        decoder->status = IMG_DECODER_STATUS_COMPLETE;
         return false;
     }
 
@@ -897,6 +898,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     if (result != AVIF_RESULT_OK) {
         if (result == AVIF_RESULT_NO_IMAGES_REMAINING) {
             // This shouldn't happen here, but handle it gracefully
+            decoder->status = IMG_DECODER_STATUS_COMPLETE;
             return false;
         }
 

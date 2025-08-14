@@ -171,13 +171,12 @@ bool IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *su
     if (!surface || surface->w <= 0 || surface->h <= 0) {
         return SDL_InvalidParamError("surface");
     }
-    bool result = encoder->AddFrame(encoder, surface, duration);
 
+    bool result = encoder->AddFrame(encoder, surface, duration);
     if (result) {
         encoder->accumulated_pts += duration;
-        encoder->last_delay = duration;
+        encoder->last_duration = duration;
     }
-
     return result;
 }
 

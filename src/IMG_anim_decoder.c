@@ -193,8 +193,8 @@ bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **f
     if (!duration) {
         duration = &temp_duration;
     }
-    SDL_ClearError();
-    // Reset the status before trying to get the next frame.
+
+    // Reset the status before trying to get the next frame
     decoder->status = IMG_DECODER_STATUS_OK;
 
     bool result = decoder->GetNextFrame(decoder, frame, duration);
@@ -202,17 +202,14 @@ bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **f
         SDL_DestroySurface(temp_frame);
     }
 
-    if (!result) {
-        if (SDL_GetError()[0] == '\0') {
-            decoder->status = IMG_DECODER_STATUS_COMPLETE;
-        } else {
-            decoder->status = IMG_DECODER_STATUS_FAILED;
-        }
-    }
-
     if (result) {
         decoder->accumulated_pts += *duration;
     } else {
+        if (decoder->status == IMG_DECODER_STATUS_COMPLETE) {
+            SDL_ClearError();
+        } else {
+            decoder->status = IMG_DECODER_STATUS_FAILED;
+        }
         *frame = NULL;
         *duration = 0;
     }
@@ -263,7 +260,6 @@ IMG_AnimationDecoderStatus IMG_GetAnimationDecoderStatus(IMG_AnimationDecoder* d
     if (!decoder) {
         return IMG_DECODER_STATUS_INVALID;
     }
-
     return decoder->status;
 }
 

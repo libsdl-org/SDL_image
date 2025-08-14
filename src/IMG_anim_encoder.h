@@ -30,7 +30,7 @@ struct IMG_AnimationEncoder
     int timebase_numerator;
     int timebase_denominator;
     Uint64 accumulated_pts;
-    Uint64 last_delay;
+    Uint64 last_duration;
 
     bool (*AddFrame)(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration);
     bool (*Close)(IMG_AnimationEncoder *encoder);
