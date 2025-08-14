@@ -203,9 +203,12 @@ bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **f
         SDL_DestroySurface(temp_frame);
     }
 
-    // If the underlying decoder only uses the SDL_SetError function, we can update our status accordingly as well.
-    if (decoder->status == IMG_CODER_STATUS_OK && SDL_GetError()[0] != '\0') {
-        decoder->status = IMG_CODER_STATUS_FAILED;
+    if (!result) {
+        if (SDL_GetError()[0] == '\0') {
+            decoder->status = IMG_DECODER_STATUS_COMPLETE;
+        } else {
+            decoder->status = IMG_DECODER_STATUS_FAILED;
+        }
     }
 
     if (result) {
@@ -256,10 +259,10 @@ Uint64 IMG_CalculateDuration(IMG_AnimationDecoder* decoder, int delay_num, int d
     return (Uint64)SDL_round(((double)delay_num / delay_den) * ((double)decoder->timebase_denominator / (double)decoder->timebase_numerator));
 }
 
-IMG_CoderStatus IMG_GetAnimationDecoderStatus(IMG_AnimationDecoder* decoder)
+IMG_AnimationDecoderStatus IMG_GetAnimationDecoderStatus(IMG_AnimationDecoder* decoder)
 {
     if (!decoder) {
-        return IMG_CODER_STATUS_INVALID;
+        return IMG_DECODER_STATUS_INVALID;
     }
 
     return decoder->status;
