@@ -248,6 +248,15 @@ Uint64 IMG_CalculateDuration(IMG_AnimationDecoder* decoder, int delay_num, int d
     return (Uint64)SDL_round(((double)delay_num / delay_den) * ((double)decoder->timebase_denominator / (double)decoder->timebase_numerator));
 }
 
+IMG_CoderStatus IMG_GetAnimationDecoderStatus(IMG_AnimationDecoder* decoder)
+{
+    if (!decoder) {
+        return IMG_CODER_STATUS_INVALID;
+    }
+
+    return decoder->status;
+}
+
 IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int maxFrames)
 {
     IMG_AnimationDecoder *decoder = IMG_CreateAnimationDecoder_IO(src, false, format);
