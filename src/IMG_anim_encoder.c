@@ -171,17 +171,9 @@ bool IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *su
     if (!surface || surface->w <= 0 || surface->h <= 0) {
         return SDL_InvalidParamError("surface");
     }
-
-    // Reset the status before trying to add a frame.
-    encoder->status = IMG_CODER_STATUS_OK;
-
+    
     bool result = encoder->AddFrame(encoder, surface, duration);
-
-    // If the underlying encoder only uses the SDL_SetError function, we can update our status accordingly as well.
-    if (encoder->status == IMG_CODER_STATUS_OK && SDL_GetError()[0] != '\0') {
-        encoder->status = IMG_CODER_STATUS_FAILED;
-    }
-
+    
     encoder->accumulated_pts += duration;
     encoder->last_delay = duration;
 
@@ -210,13 +202,4 @@ Uint64 IMG_GetResolvedDuration(IMG_AnimationEncoder* encoder, Uint64 duration, i
 Uint64 IMG_GetCurrentTimestamp(IMG_AnimationEncoder* encoder, Uint64 duration, int factor)
 {
     return (Uint64)SDL_round(((double)encoder->accumulated_pts + (double)duration) * factor * encoder->timebase_numerator / encoder->timebase_denominator);
-}
-
-IMG_CoderStatus IMG_GetAnimationEncoderStatus(IMG_AnimationEncoder* encoder)
-{
-    if (!encoder) {
-        return IMG_CODER_STATUS_INVALID;
-    }
-
-    return encoder->status;
 }
