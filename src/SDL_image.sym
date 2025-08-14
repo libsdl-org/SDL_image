@@ -83,5 +83,6 @@ SDL3_image_0.0.0 {
     IMG_ResetAnimationDecoder;
     IMG_CloseAnimationDecoder;
     IMG_GetAnimationDecoderProperties;
+    IMG_GetAnimationDecoderStatus;
   local: *;
 };
