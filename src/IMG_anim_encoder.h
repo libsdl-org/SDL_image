@@ -23,6 +23,8 @@ typedef struct IMG_AnimationEncoderContext IMG_AnimationEncoderContext;
 
 struct IMG_AnimationEncoder
 {
+    IMG_CoderStatus status;
+
     SDL_IOStream *dst;
     Sint64 start;
     bool closeio;
