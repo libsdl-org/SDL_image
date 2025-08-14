@@ -203,3 +203,12 @@ Uint64 IMG_GetCurrentTimestamp(IMG_AnimationEncoder* encoder, Uint64 duration, i
 {
     return (Uint64)SDL_round(((double)encoder->accumulated_pts + (double)duration) * factor * encoder->timebase_numerator / encoder->timebase_denominator);
 }
+
+IMG_CoderStatus IMG_GetAnimationEncoderStatus(IMG_AnimationEncoder* encoder)
+{
+    if (!encoder) {
+        return IMG_CODER_STATUS_INVALID;
+    }
+
+    return encoder->status;
+}
