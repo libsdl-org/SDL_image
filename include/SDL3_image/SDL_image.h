@@ -2689,7 +2689,8 @@ extern SDL_DECLSPEC SDL_PropertiesID SDLCALL IMG_GetAnimationDecoderProperties(I
  *                 `IMG_PROP_ANIMATION_DECODER_CREATE_TIMEBASE_DENOMINATOR_NUMBER`
  *                 property is set when creating the decoder.
  * \returns true on success or false on failure and when no more frames are
- *          available; call IMG_GetAnimationDecoderStatus() or SDL_GetError() for more information.
+ *          available; call IMG_GetAnimationDecoderStatus() or SDL_GetError()
+ *          for more information.
  *
  * \since This function is available since SDL_image 3.4.0.
  *
