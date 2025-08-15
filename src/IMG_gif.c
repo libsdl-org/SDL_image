@@ -531,6 +531,7 @@ struct IMG_AnimationDecoderContext
     bool global_grayscale;
 
     /* Frame info */
+    Uint64 last_duration;        /* The duration of the previous frame */
     int last_disposal;           /* Disposal method from previous frame */
     int restore_frame;           /* Frame to restore when using DISPOSE_PREVIOUS */
 
@@ -539,7 +540,7 @@ struct IMG_AnimationDecoderContext
     bool ignore_props;
 };
 
-static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder* decoder)
+static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
 {
     IMG_AnimationDecoderContext* ctx = decoder->ctx;
     if (SDL_SeekIO(decoder->src, decoder->start, SDL_IO_SEEK_SET) < 0) {
@@ -884,7 +885,12 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
             return SDL_SetError("Failed to duplicate frame surface");
         }
 
-        *duration = IMG_CalculateDuration(decoder, ctx->state.Gif89.delayTime, 100);
+        if (ctx->state.Gif89.delayTime <= 0) {
+            *duration = ctx->last_duration;
+        } else {
+            *duration = IMG_GetDecoderDuration(decoder, ctx->state.Gif89.delayTime, 100);
+        }
+        ctx->last_duration = *duration;
 
         ctx->last_disposal = ctx->state.Gif89.disposal;
 
@@ -900,7 +906,11 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
         ctx->frame_count++;
     }
 
-    if (framesLoaded == 0 && !ctx->got_eof) {
+    if (framesLoaded == 0) {
+        if (ctx->got_eof) {
+            decoder->status = IMG_DECODER_STATUS_COMPLETE;
+            return false;
+        }
         return SDL_SetError("Failed to load any frames");
     }
 
@@ -908,7 +918,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     return true;
 }
 
-static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder* decoder)
+static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder *decoder)
 {
     IMG_AnimationDecoderContext* ctx = decoder->ctx;
     if (ctx->canvas) {
@@ -929,9 +939,9 @@ static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder* decoder)
     return true;
 }
 
-bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_PropertiesID props)
+bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props)
 {
-    IMG_AnimationDecoderContext* ctx = (IMG_AnimationDecoderContext*)SDL_calloc(1, sizeof(IMG_AnimationDecoderContext));
+    IMG_AnimationDecoderContext *ctx = (IMG_AnimationDecoderContext*)SDL_calloc(1, sizeof(IMG_AnimationDecoderContext));
     if (!ctx) {
         return SDL_SetError("Out of memory for GIF decoder context");
     }
@@ -2593,7 +2603,7 @@ static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_
         }
     }
 
-    uint16_t resolvedDuration = (uint16_t)IMG_GetResolvedDuration(encoder, duration, 100);
+    uint16_t resolvedDuration = (uint16_t)IMG_GetEncoderDuration(encoder, duration, 100);
     uint8_t disposalMethod = (ctx->transparentColorIndex != -1) ? 2 : 1;
     if (writeGraphicsControlExtension(io, resolvedDuration, ctx->transparentColorIndex, disposalMethod) != 0) {
         goto error;

@@ -1176,7 +1176,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
 
     SDL_Surface *retval = NULL;
     apng_fcTL_chunk *fctl = &ctx->fctl_frames[ctx->current_frame_index];
-    *duration = IMG_CalculateDuration(decoder, fctl->delay_num, fctl->delay_den);
+    *duration = IMG_GetDecoderDuration(decoder, fctl->delay_num, fctl->delay_den);
 
     if (ctx->current_frame_index > 0) {
         apng_fcTL_chunk *prev_fctl = &ctx->fctl_frames[ctx->current_frame_index - 1];

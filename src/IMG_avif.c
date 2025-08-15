@@ -829,7 +829,6 @@ struct IMG_AnimationDecoderContext
 
     int width;                        /* Width of the animation */
     int height;                       /* Height of the animation */
-    uint64_t timescale;               /* Timescale of the media (Hz) */
     int repetitionCount;              /* Number of repetitions */
 };
 
@@ -1052,7 +1051,7 @@ bool IMG_CreateAVIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
         return false;
     }
 
-    IMG_AnimationDecoderContext *ctx = (IMG_AnimationDecoderContext *)SDL_calloc(1, sizeof(IMG_AnimationDecoderContext));
+    IMG_AnimationDecoderContext *ctx = (IMG_AnimationDecoderContext *)SDL_calloc(1, sizeof(*ctx));
     if (!ctx) {
         return SDL_SetError("Out of memory for AVIF decoder context");
     }
@@ -1119,7 +1118,6 @@ bool IMG_CreateAVIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
 
     ctx->width = ctx->decoder->image->width;
     ctx->height = ctx->decoder->image->height;
-    ctx->timescale = ctx->decoder->timescale;
     ctx->total_frames = ctx->decoder->imageCount;
     ctx->repetitionCount = ctx->decoder->repetitionCount;
 
@@ -1547,73 +1545,73 @@ bool IMG_CreateAVIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Propertie
         return false;
     }
 
-    encoder->ctx = (IMG_AnimationEncoderContext *)SDL_calloc(1, sizeof(IMG_AnimationEncoderContext));
-    if (!encoder->ctx) {
+    IMG_AnimationEncoderContext *ctx = (IMG_AnimationEncoderContext *)SDL_calloc(1, sizeof(*ctx));
+    if (!ctx) {
         return SDL_SetError("Out of memory for AVIF context");
     }
 
-    if (encoder->quality < 0)
-        encoder->quality = 75;
-    else if (encoder->quality > 100)
-        encoder->quality = 100;
-
-    encoder->ctx->encoder = lib.avifEncoderCreate();
-    if (!encoder->ctx->encoder) {
-        SDL_free(encoder->ctx);
-        encoder->ctx = NULL;
+    ctx->encoder = lib.avifEncoderCreate();
+    if (!ctx->encoder) {
+        SDL_free(ctx);
         return SDL_SetError("Couldn't create AVIF encoder");
     }
 
+    if (encoder->quality < 0) {
+        encoder->quality = 75;
+    } else if (encoder->quality > 100) {
+        encoder->quality = 100;
+    }
+
     int availableLCores = SDL_GetNumLogicalCPUCores();
-    int mThreads = (int)SDL_GetNumberProperty(props, "maxthreads", availableLCores / 2);
-    mThreads = SDL_clamp(mThreads, 1, availableLCores);
+    int threads = (int)SDL_GetNumberProperty(props, "maxthreads", availableLCores / 2);
+    threads = SDL_clamp(threads, 1, availableLCores);
 
     int keyFrameInterval = (int)SDL_GetNumberProperty(props, "keyframeinterval", 0);
 
-    encoder->ctx->encoder->maxThreads = mThreads;
-    encoder->ctx->encoder->quality = encoder->quality;
+    ctx->encoder->maxThreads = threads;
+    ctx->encoder->quality = encoder->quality;
 
-    encoder->ctx->encoder->qualityAlpha = AVIF_QUALITY_DEFAULT;
-    encoder->ctx->encoder->speed = AVIF_SPEED_FASTEST;
+    ctx->encoder->qualityAlpha = AVIF_QUALITY_DEFAULT;
+    ctx->encoder->speed = AVIF_SPEED_FASTEST;
 
-    if (encoder->ctx->encoder->quality >= 100) {
-        encoder->ctx->encoder->keyframeInterval = SDL_min(1, keyFrameInterval);
-        encoder->ctx->encoder->minQuantizer = 0;
-        encoder->ctx->encoder->maxQuantizer = 0;
+    if (ctx->encoder->quality >= 100) {
+        ctx->encoder->keyframeInterval = SDL_min(1, keyFrameInterval);
+        ctx->encoder->minQuantizer = 0;
+        ctx->encoder->maxQuantizer = 0;
 
-        encoder->ctx->encoder->minQuantizerAlpha = 0;
-        encoder->ctx->encoder->maxQuantizerAlpha = 0;
-        encoder->ctx->encoder->autoTiling = AVIF_FALSE;
+        ctx->encoder->minQuantizerAlpha = 0;
+        ctx->encoder->maxQuantizerAlpha = 0;
+        ctx->encoder->autoTiling = AVIF_FALSE;
     } else {
-        encoder->ctx->encoder->keyframeInterval = keyFrameInterval;
-        encoder->ctx->encoder->minQuantizer = 8;
-        encoder->ctx->encoder->maxQuantizer = 63;
+        ctx->encoder->keyframeInterval = keyFrameInterval;
+        ctx->encoder->minQuantizer = 8;
+        ctx->encoder->maxQuantizer = 63;
 
-        encoder->ctx->encoder->minQuantizerAlpha = 0;
-        encoder->ctx->encoder->maxQuantizerAlpha = 63;
-        encoder->ctx->encoder->autoTiling = AVIF_TRUE;
+        ctx->encoder->minQuantizerAlpha = 0;
+        ctx->encoder->maxQuantizerAlpha = 63;
+        ctx->encoder->autoTiling = AVIF_TRUE;
     }
 
-    encoder->ctx->encoder->tileRowsLog2 = 0;
-    encoder->ctx->encoder->tileColsLog2 = 0;
+    ctx->encoder->tileRowsLog2 = 0;
+    ctx->encoder->tileColsLog2 = 0;
 
-    encoder->ctx->encoder->timescale = (uint32_t)encoder->timebase_denominator;
+    ctx->encoder->timescale = encoder->timebase_denominator;
 
     bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
     if (!ignoreProps) {
-        encoder->ctx->encoder->repetitionCount = (int)SDL_GetNumberProperty(props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, -1);
-        if (encoder->ctx->encoder->repetitionCount < 1 && encoder->ctx->encoder->repetitionCount != -1) {
-            encoder->ctx->encoder->repetitionCount = -1;
+        ctx->encoder->repetitionCount = (int)SDL_GetNumberProperty(props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, -1);
+        if (ctx->encoder->repetitionCount < 1 && ctx->encoder->repetitionCount != -1) {
+            ctx->encoder->repetitionCount = -1;
         }
 
-        encoder->ctx->desc = SDL_GetStringProperty(props, IMG_PROP_METADATA_DESCRIPTION_STRING, NULL);
-        encoder->ctx->rights = SDL_GetStringProperty(props, IMG_PROP_METADATA_COPYRIGHT_STRING, NULL);
-        encoder->ctx->title = SDL_GetStringProperty(props, IMG_PROP_METADATA_TITLE_STRING, NULL);
-        encoder->ctx->creator = SDL_GetStringProperty(props, IMG_PROP_METADATA_AUTHOR_STRING, NULL);
-        encoder->ctx->createdate = SDL_GetStringProperty(props, IMG_PROP_METADATA_CREATION_TIME_STRING, NULL);
+        ctx->desc = SDL_GetStringProperty(props, IMG_PROP_METADATA_DESCRIPTION_STRING, NULL);
+        ctx->rights = SDL_GetStringProperty(props, IMG_PROP_METADATA_COPYRIGHT_STRING, NULL);
+        ctx->title = SDL_GetStringProperty(props, IMG_PROP_METADATA_TITLE_STRING, NULL);
+        ctx->creator = SDL_GetStringProperty(props, IMG_PROP_METADATA_AUTHOR_STRING, NULL);
+        ctx->createdate = SDL_GetStringProperty(props, IMG_PROP_METADATA_CREATION_TIME_STRING, NULL);
     }
 
-    encoder->ctx->first_frame_added = false;
+    encoder->ctx = ctx;
     encoder->AddFrame = AnimationEncoder_AddFrame;
     encoder->Close = AnimationEncoder_End;
 

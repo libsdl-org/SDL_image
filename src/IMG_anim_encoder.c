@@ -172,12 +172,7 @@ bool IMG_AddAnimationEncoderFrame(IMG_AnimationEncoder *encoder, SDL_Surface *su
         return SDL_InvalidParamError("surface");
     }
 
-    bool result = encoder->AddFrame(encoder, surface, duration);
-    if (result) {
-        encoder->accumulated_pts += duration;
-        encoder->last_duration = duration;
-    }
-    return result;
+    return encoder->AddFrame(encoder, surface, duration);
 }
 
 bool IMG_CloseAnimationEncoder(IMG_AnimationEncoder *encoder)
@@ -194,12 +189,9 @@ bool IMG_CloseAnimationEncoder(IMG_AnimationEncoder *encoder)
     return result;
 }
 
-Uint64 IMG_GetResolvedDuration(IMG_AnimationEncoder* encoder, Uint64 duration, int factor)
+Uint64 IMG_GetEncoderDuration(IMG_AnimationEncoder *encoder, Uint64 duration, Uint64 timebase_denominator)
 {
-    return (Uint64)(SDL_round(((double)encoder->accumulated_pts + duration) * factor * encoder->timebase_numerator / encoder->timebase_denominator) - SDL_round(((double)encoder->accumulated_pts * factor) * encoder->timebase_numerator / encoder->timebase_denominator));
-}
-
-Uint64 IMG_GetCurrentTimestamp(IMG_AnimationEncoder* encoder, Uint64 duration, int factor)
-{
-    return (Uint64)SDL_round(((double)encoder->accumulated_pts + (double)duration) * factor * encoder->timebase_numerator / encoder->timebase_denominator);
+    Uint64 value = IMG_TimebaseDuration(encoder->accumulated_pts, duration, encoder->timebase_numerator, encoder->timebase_denominator, 1, timebase_denominator);
+    encoder->accumulated_pts += duration;
+    return value;
 }

@@ -497,7 +497,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
         return SDL_SetError("Failed to duplicate the surface for the next frame");
     }
 
-    *duration = IMG_CalculateDuration(decoder, iter->duration, 1000);
+    *duration = IMG_GetDecoderDuration(decoder, iter->duration, 1000);
 
     dispose_method = iter->dispose_method;
     decoder->ctx->dispose_method = dispose_method;
@@ -836,12 +836,12 @@ struct IMG_AnimationEncoderContext
 {
     WebPAnimEncoder *encoder;
     WebPConfig config;
-    int frames;
     const char *desc;
     const char *rights;
     const char *title;
     const char *creator;
     const char *creationtime;
+    int timestamp;
     int loop_count;
 };
 
@@ -883,12 +883,11 @@ static bool IMG_AddWEBPAnimationFrame(IMG_AnimationEncoder *encoder, SDL_Surface
         goto done;
     }
 
-    int timestamp = (int)IMG_GetCurrentTimestamp(encoder, duration, 1000);
-    if (!lib.WebPAnimEncoderAdd(ctx->encoder, &pic, timestamp, &ctx->config)) {
+    if (!lib.WebPAnimEncoderAdd(ctx->encoder, &pic, ctx->timestamp, &ctx->config)) {
         error = GetWebPEncodingErrorStringInternal(pic.error_code);
         goto done;
     }
-    ++ctx->frames;
+    ctx->timestamp += (int)IMG_GetEncoderDuration(encoder, duration, 1000);
 
 done:
     if (pic_initialized) {
@@ -916,8 +915,7 @@ static bool IMG_CloseWEBPAnimation(IMG_AnimationEncoder *encoder)
         goto done;
     }
 
-    int timestamp = (int)IMG_GetCurrentTimestamp(encoder, encoder->last_duration, 1000);
-    if (!lib.WebPAnimEncoderAdd(ctx->encoder, NULL, timestamp, &ctx->config)) {
+    if (!lib.WebPAnimEncoderAdd(ctx->encoder, NULL, ctx->timestamp, &ctx->config)) {
         error = "WebPAnimEncoderAdd() failed";
         goto done;
     }

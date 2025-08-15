@@ -30,7 +30,6 @@ struct IMG_AnimationEncoder
     int timebase_numerator;
     int timebase_denominator;
     Uint64 accumulated_pts;
-    Uint64 last_duration;
 
     bool (*AddFrame)(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration);
     bool (*Close)(IMG_AnimationEncoder *encoder);
@@ -38,5 +37,5 @@ struct IMG_AnimationEncoder
     IMG_AnimationEncoderContext *ctx;
 };
 
-extern Uint64 IMG_GetResolvedDuration(IMG_AnimationEncoder *encoder, Uint64 duration, int factor);
-extern Uint64 IMG_GetCurrentTimestamp(IMG_AnimationEncoder *encoder, Uint64 duration, int factor);
+extern Uint64 IMG_TimebaseDuration(Uint64 pts, Uint64 duration, Uint64 src_numerator, Uint64 src_denominator, Uint64 dst_numerator, Uint64 dst_denominator);
+extern Uint64 IMG_GetEncoderDuration(IMG_AnimationEncoder *encoder, Uint64 duration, Uint64 timebase_denominator);

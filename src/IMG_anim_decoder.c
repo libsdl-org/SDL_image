@@ -202,9 +202,7 @@ bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **f
         SDL_DestroySurface(temp_frame);
     }
 
-    if (result) {
-        decoder->accumulated_pts += *duration;
-    } else {
+    if (!result) {
         if (decoder->status == IMG_DECODER_STATUS_COMPLETE) {
             SDL_ClearError();
         } else {
@@ -214,6 +212,23 @@ bool IMG_GetAnimationDecoderFrame(IMG_AnimationDecoder *decoder, SDL_Surface **f
         *duration = 0;
     }
     return result;
+}
+
+IMG_AnimationDecoderStatus IMG_GetAnimationDecoderStatus(IMG_AnimationDecoder* decoder)
+{
+    if (!decoder) {
+        return IMG_DECODER_STATUS_INVALID;
+    }
+    return decoder->status;
+}
+
+bool IMG_ResetAnimationDecoder(IMG_AnimationDecoder *decoder)
+{
+    if (!decoder) {
+        return SDL_InvalidParamError("decoder");
+    }
+
+    return decoder->Reset(decoder);
 }
 
 bool IMG_CloseAnimationDecoder(IMG_AnimationDecoder *decoder)
@@ -237,30 +252,11 @@ bool IMG_CloseAnimationDecoder(IMG_AnimationDecoder *decoder)
     return result;
 }
 
-bool IMG_ResetAnimationDecoder(IMG_AnimationDecoder *decoder)
+Uint64 IMG_GetDecoderDuration(IMG_AnimationDecoder *decoder, Uint64 duration, Uint64 timebase_denominator)
 {
-    if (!decoder) {
-        return SDL_InvalidParamError("decoder");
-    }
-
-    return decoder->Reset(decoder);
-}
-
-Uint64 IMG_CalculateDuration(IMG_AnimationDecoder* decoder, int delay_num, int delay_den)
-{
-    if (delay_den < 1) {
-        delay_den = 100;
-    }
-
-    return (Uint64)SDL_round(((double)delay_num / delay_den) * ((double)decoder->timebase_denominator / (double)decoder->timebase_numerator));
-}
-
-IMG_AnimationDecoderStatus IMG_GetAnimationDecoderStatus(IMG_AnimationDecoder* decoder)
-{
-    if (!decoder) {
-        return IMG_DECODER_STATUS_INVALID;
-    }
-    return decoder->status;
+    Uint64 value = IMG_TimebaseDuration(decoder->accumulated_pts, duration, 1, timebase_denominator, decoder->timebase_numerator, decoder->timebase_denominator);
+    decoder->accumulated_pts += duration;
+    return value;
 }
 
 IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int maxFrames)
@@ -290,14 +286,13 @@ IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int 
             break;
         }
 
-        Uint64 pts = 0;
-        SDL_Surface *nextFrame;
-        if (!IMG_GetAnimationDecoderFrame(decoder, &nextFrame, &pts)) {
-            goto error;
-        }
-
-        if (!nextFrame) {
-            // No more frames available or an error occurred.
+        Uint64 duration = 0;
+        SDL_Surface *nextFrame = NULL;
+        if (!IMG_GetAnimationDecoderFrame(decoder, &nextFrame, &duration)) {
+            if (IMG_GetAnimationDecoderStatus(decoder) == IMG_DECODER_STATUS_FAILED) {
+                goto error;
+            }
+            // Decoding complete
             break;
         }
 
@@ -317,7 +312,7 @@ IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int 
         }
 
         frames[actualCount] = nextFrame;
-        delays[actualCount] = pts;
+        delays[actualCount] = duration;
         ++actualCount;
     }
 

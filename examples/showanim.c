@@ -53,7 +53,6 @@ static void draw_background(SDL_Renderer *renderer, int w, int h)
 static void SaveAnimation(IMG_Animation *anim, const char *file)
 {
     int i;
-    Uint64 pts = 0;
     IMG_AnimationEncoder *encoder = IMG_CreateAnimationEncoder(file);
     if (!encoder) {
         SDL_Log("Couldn't save anim: %s\n", SDL_GetError());
@@ -61,11 +60,10 @@ static void SaveAnimation(IMG_Animation *anim, const char *file)
     }
 
     for (i = 0; i < anim->count; ++i) {
-        if (!IMG_AddAnimationEncoderFrame(encoder, anim->frames[i], pts)) {
+        if (!IMG_AddAnimationEncoderFrame(encoder, anim->frames[i], anim->delays[i])) {
             SDL_Log("Couldn't add anim frame: %s\n", SDL_GetError());
             break;
         }
-        pts += anim->delays[i];
     }
     IMG_CloseAnimationEncoder(encoder);
 }
