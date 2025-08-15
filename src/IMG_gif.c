@@ -646,9 +646,6 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
                         }
 
                         Uint8 app_data[256];
-                        if (app_block_size > sizeof(app_data)) {
-                            return SDL_SetError("Application extension name too long");
-                        }
                         if (!ReadOK(src, app_data, app_block_size)) {
                             return SDL_SetError("Error reading GIF application extension block");
                         }
