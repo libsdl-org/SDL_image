@@ -53,8 +53,11 @@ static const char *GetAnimationDecoderStatusString(IMG_AnimationDecoderStatus st
     }
 }
 
-int main()
+int main(int argc, char **argv)
 {
+    (void)argc;
+    (void)argv;
+
     printf("SDL Version: %i\n", SDL_GetVersion());
     printf("SDL_image Version: %i\n", IMG_Version());
 
