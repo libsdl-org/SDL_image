@@ -48,6 +48,7 @@ static const char *GetAnimationDecoderStatusString(IMG_AnimationDecoderStatus st
     case IMG_DECODER_STATUS_FAILED:
         return "IMG_DECODER_STATUS_FAILED";
     case IMG_DECODER_STATUS_INVALID:
+    default:
         return "IMG_DECODER_STATUS_INVALID";
     }
 }
