@@ -39,5 +39,7 @@ struct IMG_AnimationDecoder
     IMG_AnimationDecoderContext *ctx;
 };
 
-extern Uint64 IMG_CalculateDuration(IMG_AnimationDecoder *decoder, int delay_num, int delay_den);
+extern Uint64 IMG_TimebaseDuration(Uint64 pts, Uint64 duration, Uint64 src_numerator, Uint64 src_denominator, Uint64 dst_numerator, Uint64 dst_denominator);
+extern Uint64 IMG_GetDecoderDuration(IMG_AnimationDecoder *decoder, Uint64 duration, Uint64 timebase_denominator);
+
 extern IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int maxFrames);

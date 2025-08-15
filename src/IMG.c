@@ -410,3 +410,10 @@ done:
     }
     return result;
 }
+
+Uint64 IMG_TimebaseDuration(Uint64 pts, Uint64 duration, Uint64 src_numerator, Uint64 src_denominator, Uint64 dst_numerator, Uint64 dst_denominator)
+{
+    Uint64 a = ( ( ( ( pts + duration ) * 2 ) + 1 ) * src_numerator * dst_denominator ) / ( 2 * src_denominator * dst_numerator );
+    Uint64 b = ( ( ( pts * 2 ) + 1 ) * src_numerator * dst_denominator ) / ( 2 * src_denominator * dst_numerator );
+    return (a - b);
+}
