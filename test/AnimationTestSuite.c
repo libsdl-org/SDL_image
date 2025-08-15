@@ -66,9 +66,9 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    size_t numFormatInfo = sizeof(formatInfo) / sizeof(formatInfo[0]);
-    size_t numInputImages = sizeof(inputImages) / sizeof(inputImages[0]);
-    size_t numOutputImageFormats = sizeof(outputImageFormats) / sizeof(outputImageFormats[0]);
+    int numFormatInfo = sizeof(formatInfo) / sizeof(formatInfo[0]);
+    int numInputImages = sizeof(inputImages) / sizeof(inputImages[0]);
+    int numOutputImageFormats = sizeof(outputImageFormats) / sizeof(outputImageFormats[0]);
 
     printf("Starting Animation Decoder/Encoder Tests -- Decode, encode decoded frames then decode again to compare...\n");
 
