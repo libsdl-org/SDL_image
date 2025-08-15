@@ -1227,7 +1227,7 @@ static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_
         return SDL_SetError("Couldn't create AVIF image");
     }
 
-    if (!encoder->ctx->first_frame_added && (encoder->ctx->desc || encoder->ctx->rights)) {
+    if (!encoder->ctx->first_frame_added && (encoder->ctx->desc || encoder->ctx->rights || encoder->ctx->creator || encoder->ctx->title || encoder->ctx->createdate)) {
         size_t outlen = 0;
         uint8_t *xmp_data = __xmlman_ConstructXMPWithRDFDescription(encoder->ctx->title, encoder->ctx->creator, encoder->ctx->desc, encoder->ctx->rights, encoder->ctx->createdate, &outlen);
         if (!xmp_data || outlen < 1) {
