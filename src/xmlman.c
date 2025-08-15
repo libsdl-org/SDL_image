@@ -1,5 +1,124 @@
 #include <SDL3/SDL.h>
 
+static char* xml_escape(const char* str) {
+    size_t new_len = 0;
+    const char* p = str;
+    while (*p != '\0') {
+        switch (*p) {
+            case '<':
+            case '>':
+                new_len += 4;
+                break;
+            case '&':
+                new_len += 5;
+                break;
+            case '\'':
+                new_len += 6;
+                break;
+            case '"':
+                new_len += 6;
+                break;
+            default:
+                new_len++;
+                break;
+        }
+        p++;
+    }
+
+    char* escaped_str = (char*)SDL_malloc(new_len + 1);
+    if (escaped_str == NULL) {
+        return NULL;
+    }
+
+    size_t j = 0;
+    p = str;
+    while (*p != '\0') {
+        const char* replacement = NULL;
+        size_t replacement_len = 0;
+
+        switch (*p) {
+            case '<':
+                replacement = "&lt;";
+                replacement_len = 4;
+                break;
+            case '>':
+                replacement = "&gt;";
+                replacement_len = 4;
+                break;
+            case '&':
+                replacement = "&amp;";
+                replacement_len = 5;
+                break;
+            case '\'':
+                replacement = "&apos;";
+                replacement_len = 6;
+                break;
+            case '"':
+                replacement = "&quot;";
+                replacement_len = 6;
+                break;
+            default:
+                escaped_str[j++] = *p;
+                break;
+        }
+
+        if (replacement != NULL) {
+            for (size_t k = 0; k < replacement_len; k++) {
+                escaped_str[j + k] = replacement[k];
+            }
+            j += replacement_len;
+        }
+        p++;
+    }
+    escaped_str[j] = '\0';
+
+    return escaped_str;
+}
+
+static char* xml_unescape(const char* str) {
+    size_t original_len = SDL_strlen(str);
+    char* unescaped_str = (char*)SDL_malloc(original_len + 1);
+    if (unescaped_str == NULL) {
+        return NULL;
+    }
+
+    size_t i = 0;
+    size_t j = 0;
+
+    while (i < original_len) {
+        if (str[i] == '&') {
+            if (SDL_strncmp(str + i, "&lt;", 4) == 0) {
+                unescaped_str[j++] = '<';
+                i += 4;
+            } else if (SDL_strncmp(str + i, "&gt;", 4) == 0) {
+                unescaped_str[j++] = '>';
+                i += 4;
+            } else if (SDL_strncmp(str + i, "&amp;", 5) == 0) {
+                unescaped_str[j++] = '&';
+                i += 5;
+            } else if (SDL_strncmp(str + i, "&apos;", 6) == 0) {
+                unescaped_str[j++] = '\'';
+                i += 6;
+            } else if (SDL_strncmp(str + i, "&quot;", 6) == 0) {
+                unescaped_str[j++] = '"';
+                i += 6;
+            } else {
+                unescaped_str[j++] = str[i++];
+            }
+        } else {
+            unescaped_str[j++] = str[i++];
+        }
+    }
+    unescaped_str[j] = '\0';
+
+    char* final_unescaped_str = (char*)SDL_realloc(unescaped_str, j + 1);
+    if (final_unescaped_str == NULL) {
+        return unescaped_str;
+    }
+
+    return final_unescaped_str;
+}
+
 static const char* GetXMLContentFromTag(const uint8_t * data, size_t len, const char* tag) {
     if (!data || !tag || len == 0) {
         return NULL;
@@ -119,29 +238,40 @@ static const char* GetXMLContentFromTag(const uint8_t * data, size_t len, const 
     return final_content;
 }
 
+static const char *__gettag(const uint8_t *data, size_t len, const char* tag)
+{
+    const char *retval = GetXMLContentFromTag(data, len, tag);
+    if (!retval) {
+        return NULL;
+    }
+    char *unescaped = xml_unescape(retval);
+    SDL_free((void *)retval);
+    return unescaped;
+}
+
 const char* __xmlman_GetXMPDescription(const uint8_t* data, size_t len)
 {
-    return GetXMLContentFromTag(data, len, "dc:description");
+    return __gettag(data, len, "dc:description");
 }
 
 const char *__xmlman_GetXMPCopyright(const uint8_t *data, size_t len)
 {
-    return GetXMLContentFromTag(data, len, "dc:rights");
+    return __gettag(data, len, "dc:rights");
 }
 
 const char *__xmlman_GetXMPTitle(const uint8_t *data, size_t len)
 {
-    return GetXMLContentFromTag(data, len, "dc:title");
+    return __gettag(data, len, "dc:title");
 }
 
 const char *__xmlman_GetXMPCreator(const uint8_t *data, size_t len)
 {
-    return GetXMLContentFromTag(data, len, "dc:creator");
+    return __gettag(data, len, "dc:creator");
 }
 
 const char *__xmlman_GetXMPCreateDate(const uint8_t *data, size_t len)
 {
-    return GetXMLContentFromTag(data, len, "xmp:CreateDate");
+    return __gettag(data, len, "xmp:CreateDate");
 }
 
 uint8_t *__xmlman_ConstructXMPWithRDFDescription(const char *dctitle, const char *dccreator, const char *dcdescription, const char *dcrights, const char *xmpcreatedate, size_t *outlen)
@@ -151,6 +281,27 @@ uint8_t *__xmlman_ConstructXMPWithRDFDescription(const char *dctitle, const char
             *outlen = 0;
         }
         return NULL;
+    }
+
+    const char *escaped_title = dctitle ? xml_escape(dctitle) : NULL;
+    const char *escaped_creator = dccreator ? xml_escape(dccreator) : NULL;
+    const char *escaped_description = dcdescription ? xml_escape(dcdescription) : NULL;
+    const char *escaped_rights = dcrights ? xml_escape(dcrights) : NULL;
+    const char *escaped_createdate = xmpcreatedate ? xml_escape(xmpcreatedate) : NULL;
+    if (escaped_title) {
+        dctitle = escaped_title;
+    }
+    if (escaped_creator) {
+        dccreator = escaped_creator;
+    }
+    if (escaped_description) {
+        dcdescription = escaped_description;
+    }
+    if (escaped_rights) {
+        dcrights = escaped_rights;
+    }
+    if (escaped_createdate) {
+        xmpcreatedate = escaped_createdate;
     }
 
     const char *header =
@@ -174,7 +325,7 @@ uint8_t *__xmlman_ConstructXMPWithRDFDescription(const char *dctitle, const char
     const char *creator_suffix = "</rdf:li>\n"
                                  "        </rdf:Seq>\n"
                                  "      </dc:creator>\n";
-    
+
     const char *description_prefix =
         "      <dc:description>\n"
         "        <rdf:Alt>\n"
@@ -224,6 +375,12 @@ uint8_t *__xmlman_ConstructXMPWithRDFDescription(const char *dctitle, const char
         if (outlen) {
             *outlen = 0;
         }
+
+        SDL_free((void *)escaped_title);
+        SDL_free((void *)escaped_creator);
+        SDL_free((void *)escaped_description);
+        SDL_free((void *)escaped_rights);
+        SDL_free((void *)escaped_createdate);
         return NULL;
     }
 
@@ -231,26 +388,32 @@ uint8_t *__xmlman_ConstructXMPWithRDFDescription(const char *dctitle, const char
     p += SDL_snprintf(p, total_size, "%s", header);
 
     if (dctitle) {
-        p += SDL_snprintf(p, total_size - (p - (char*)buffer), "%s%s%s", title_prefix, dctitle, title_suffix);
+        p += SDL_snprintf(p, total_size - (p - (char *)buffer), "%s%s%s", title_prefix, dctitle, title_suffix);
     }
     if (dccreator) {
-        p += SDL_snprintf(p, total_size - (p - (char*)buffer), "%s%s%s", creator_prefix, dccreator, creator_suffix);
+        p += SDL_snprintf(p, total_size - (p - (char *)buffer), "%s%s%s", creator_prefix, dccreator, creator_suffix);
     }
     if (dcdescription) {
-        p += SDL_snprintf(p, total_size - (p - (char*)buffer), "%s%s%s", description_prefix, dcdescription, description_suffix);
+        p += SDL_snprintf(p, total_size - (p - (char *)buffer), "%s%s%s", description_prefix, dcdescription, description_suffix);
     }
     if (dcrights) {
-        p += SDL_snprintf(p, total_size - (p - (char*)buffer), "%s%s%s", rights_prefix, dcrights, rights_suffix);
+        p += SDL_snprintf(p, total_size - (p - (char *)buffer), "%s%s%s", rights_prefix, dcrights, rights_suffix);
     }
     if (xmpcreatedate) {
-        p += SDL_snprintf(p, total_size - (p - (char*)buffer), "%s%s%s", createdate_prefix, xmpcreatedate, createdate_suffix);
+        p += SDL_snprintf(p, total_size - (p - (char *)buffer), "%s%s%s", createdate_prefix, xmpcreatedate, createdate_suffix);
     }
 
-    p += SDL_snprintf(p, total_size - (p - (char*)buffer), "%s", footer);
+    p += SDL_snprintf(p, total_size - (p - (char *)buffer), "%s", footer);
 
     if (outlen) {
-        *outlen = p - (char*)buffer;
+        *outlen = p - (char *)buffer;
     }
+
+    SDL_free((void *)escaped_title);
+    SDL_free((void *)escaped_creator);
+    SDL_free((void *)escaped_description);
+    SDL_free((void *)escaped_rights);
+    SDL_free((void *)escaped_createdate);
 
     return buffer;
 }

@@ -621,6 +621,7 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
         if (!ctx->ignore_props) {
             Uint64 stream_pos = SDL_TellIO(src);
             bool processing_extensions = true;
+
             while (processing_extensions) {
                 uint8_t block_type;
                 if (!ReadOK(src, &block_type, 1)) {
@@ -638,13 +639,21 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
                     switch (extension_label) {
                     case 0xFF: // Application Extension
                     {
-                        Uint8 app_data[12];
-                        if (!ReadOK(src, app_data, 12)) {
+                        // Read the application block size first (should be 11 for "NETSCAPE2.0")
+                        Uint8 app_block_size;
+                        if (!ReadOK(src, &app_block_size, 1)) {
+                            return SDL_SetError("Error reading application extension block size");
+                        }
+
+                        Uint8 app_data[256];
+                        if (!ReadOK(src, app_data, app_block_size)) {
                             return SDL_SetError("Error reading GIF application extension block");
                         }
 
                         // Check for NETSCAPE2.0 extension (loop count)
-                        if (SDL_strncmp((char *)app_data, "NETSCAPE2.0", 11) == 0) {
+                        if (app_block_size == 11 &&
+                            SDL_strncmp((char *)app_data, "NETSCAPE2.0", 11) == 0) {
+
                             Uint8 sub_block_size;
                             if (!ReadOK(src, &sub_block_size, 1)) {
                                 return SDL_SetError("Error reading Netscape sub-block size");
@@ -657,10 +666,12 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
                                 if (sub_block_data[0] == 0x01) {
                                     ctx->loop_count = LM_to_uint(sub_block_data[1], sub_block_data[2]);
                                 }
+                                // Terminator
                                 if (!ReadOK(src, &sub_block_size, 1) || sub_block_size != 0x00) {
                                     return SDL_SetError("Netscape extension block not terminated correctly");
                                 }
                             } else {
+                                // Skip unexpected sub-block sizes
                                 SDL_SeekIO(src, sub_block_size, SDL_IO_SEEK_CUR);
                                 Uint8 terminator;
                                 if (!ReadOK(src, &terminator, 1) || terminator != 0) {
@@ -668,6 +679,7 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
                                 }
                             }
                         } else {
+                            // Skip all sub-blocks for non-Netscape extensions
                             Uint8 sub_block_size;
                             while (ReadOK(src, &sub_block_size, 1) && sub_block_size > 0) {
                                 SDL_SeekIO(src, sub_block_size, SDL_IO_SEEK_CUR);
@@ -705,6 +717,7 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
                     } break;
                     }
                 } break;
+
                 case 0x2C: // Image Descriptor
                     processing_extensions = false;
                     break;

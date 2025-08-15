@@ -920,7 +920,7 @@ static bool IMG_CloseWEBPAnimation(IMG_AnimationEncoder *encoder)
         goto done;
     }
 
-    if (!ctx->rights && !ctx->desc && ctx->loop_count == 0) {
+    if (!ctx->rights && !ctx->desc && !ctx->creationtime && !ctx->creator && !ctx->title && ctx->loop_count == 0) {
         if (!lib.WebPAnimEncoderAssemble(ctx->encoder, &data)) {
             error = "WebPAnimEncoderAssemble() failed";
             goto done;
@@ -933,40 +933,40 @@ static bool IMG_CloseWEBPAnimation(IMG_AnimationEncoder *encoder)
             goto done;
         }
 
+        if (!pdata.bytes || pdata.size < 1) {
+            error = "WebPAnimEncoderAssemble() returned invalid data";
+            goto done;
+        }
+
         mux = lib.WebPMuxCreateInternal(&pdata, 1, WEBP_MUX_ABI_VERSION);
         if (!mux) {
-            error = "WebPMuxCreate() failed";
+            error = "WebPMuxCreateInternal() failed. This usually happens if you tried to encode a single frame only.";
             goto done;
         }
 
         WebPMuxAnimParams params;
         muxErr = lib.WebPMuxGetAnimationParams(mux, &params);
         if (muxErr != WEBP_MUX_OK) {
-            lib.WebPMuxDelete(mux);
-            error = "WebPMuxCreate() failed";
+            error = "WebPMuxGetAnimationParams() failed";
             goto done;
         }
         params.loop_count = ctx->loop_count;
         muxErr = lib.WebPMuxSetAnimationParams(mux, &params);
         if (muxErr != WEBP_MUX_OK) {
-            lib.WebPMuxDelete(mux);
-            error = "WebPMuxCreate() failed";
+            error = "WebPMuxSetAnimationParams() failed";
             goto done;
         }
 
-        if (ctx->rights || ctx->desc) {
+        if (ctx->rights || ctx->desc || ctx->title || ctx->creator || ctx->creationtime) {
             size_t siz = 0;
             uint8_t *d = __xmlman_ConstructXMPWithRDFDescription(ctx->title, ctx->creator, ctx->desc, ctx->rights, ctx->creationtime, &siz);
             if (siz < 1 || !d) {
-                lib.WebPMuxDelete(mux);
                 error = "Failed to construct XMP data";
                 goto done;
             }
-
             WebPData xmp_data = { d, siz };
             muxErr = lib.WebPMuxSetChunk(mux, "XMP ", &xmp_data, 1);
             if (muxErr != WEBP_MUX_OK) {
-                lib.WebPMuxDelete(mux);
                 SDL_free(d);
                 error = "WebPMuxSetChunk() failed for XMP data";
                 goto done;
@@ -977,7 +977,6 @@ static bool IMG_CloseWEBPAnimation(IMG_AnimationEncoder *encoder)
 
         muxErr = lib.WebPMuxAssemble(mux, &data);
         if (muxErr != WEBP_MUX_OK) {
-            lib.WebPMuxDelete(mux);
             error = "WebPMuxAssemble() failed";
             goto done;
         }
