@@ -1110,8 +1110,8 @@ bool IMG_CreateAVIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
         return false;
     }
 
-    if (ctx->decoder->imageCount <= 1) {
-        SDL_SetError("Not an AVIF animation (only %i image found)", ctx->decoder->imageCount);
+    if (ctx->decoder->imageCount < 1) {
+        SDL_SetError("No frames found in AVIF");
         SDL_free(ctx);
         return false;
     }
