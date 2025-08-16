@@ -65,8 +65,13 @@ static const char *GetAnimationDecoderStatusString(IMG_AnimationDecoderStatus st
 
 int main(int argc, char **argv)
 {
-    (void)argc;
-    (void)argv;
+    bool apply_dummy_metadata = true;
+    for (int i = 1; i < argc; ++i) {
+        if (SDL_strcmp(argv[i], "--no-dummy-metadata") == 0) {
+            apply_dummy_metadata = false;
+            break;
+        }
+    }
 
     printf("SDL Version: %i\n", SDL_GetVersion());
     printf("SDL_image Version: %i\n", IMG_Version());
@@ -129,35 +134,38 @@ int main(int argc, char **argv)
                 SDL_SetBooleanProperty(encoderProps, IMG_PROP_ANIMATION_ENCODER_CREATE_IOSTREAM_AUTOCLOSE_BOOLEAN, false);
                 SDL_SetStringProperty(encoderProps, IMG_PROP_ANIMATION_ENCODER_CREATE_TYPE_STRING, outputImageFormat);
 
-                // Most formats hold metadata in the beginning of the file (except WEBP and AVIF since those are EXIF and XMP),
-                // when that is the case, the changes to metadata parser can destroy the reading of the frames as well since they
-                // might do modifications to the stream. For that reason we add dummy metadata to the encoder properties to make
-                // sure that the metadata code does not interfere with the frame reading process.
-                for (int k = 0; k < numFormatInfo; ++k) {
-                    const char *format = formatInfo[k].format;
-                    for (int mi = 0; mi < MAX_METADATA; ++mi) {
-                        const MetadataInfo *metadata = &formatInfo[k].availableMetadata[mi];
-                        if (!metadata || !metadata->metadata || !metadata->value) {
-                            continue;
-                        }
+                if (apply_dummy_metadata) {
+                    printf("Applying dummy metadata...\n");
+                    // Most formats hold metadata in the beginning of the file (except WEBP and AVIF since those are EXIF and XMP),
+                    // when that is the case, the changes to metadata parser can destroy the reading of the frames as well since they
+                    // might do modifications to the stream. For that reason we add dummy metadata to the encoder properties to make
+                    // sure that the metadata code does not interfere with the frame reading process.
+                    for (int k = 0; k < numFormatInfo; ++k) {
+                        const char *format = formatInfo[k].format;
+                        for (int mi = 0; mi < MAX_METADATA; ++mi) {
+                            const MetadataInfo *metadata = &formatInfo[k].availableMetadata[mi];
+                            if (!metadata || !metadata->metadata || !metadata->value) {
+                                continue;
+                            }
 
-                        switch (metadata->type) {
-                        case SDL_PROPERTY_TYPE_BOOLEAN:
-                            SDL_SetBooleanProperty(encoderProps, metadata->metadata, *(bool *)metadata->value);
-                            break;
-                        case SDL_PROPERTY_TYPE_NUMBER:
-                            SDL_SetNumberProperty(encoderProps, metadata->metadata, *(Sint64 *)metadata->value);
-                            break;
-                        case SDL_PROPERTY_TYPE_STRING:
-                            SDL_SetStringProperty(encoderProps, metadata->metadata, (const char *)metadata->value);
-                            break;
-                        default:
-                            fprintf(stderr, "ERROR: Unsupported metadata type for %s: %d\n", format, metadata->type);
-                            SDL_DestroyProperties(encoderProps);
-                            IMG_CloseAnimationDecoder(decoder);
-                            SDL_CloseIO(encoderIO);
-                            SDL_Quit();
-                            return 1;
+                            switch (metadata->type) {
+                            case SDL_PROPERTY_TYPE_BOOLEAN:
+                                SDL_SetBooleanProperty(encoderProps, metadata->metadata, *(bool *)metadata->value);
+                                break;
+                            case SDL_PROPERTY_TYPE_NUMBER:
+                                SDL_SetNumberProperty(encoderProps, metadata->metadata, *(Sint64 *)metadata->value);
+                                break;
+                            case SDL_PROPERTY_TYPE_STRING:
+                                SDL_SetStringProperty(encoderProps, metadata->metadata, (const char *)metadata->value);
+                                break;
+                            default:
+                                fprintf(stderr, "ERROR: Unsupported metadata type for %s: %d\n", format, metadata->type);
+                                SDL_DestroyProperties(encoderProps);
+                                IMG_CloseAnimationDecoder(decoder);
+                                SDL_CloseIO(encoderIO);
+                                SDL_Quit();
+                                return 1;
+                            }
                         }
                     }
                 }
