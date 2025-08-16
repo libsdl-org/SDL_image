@@ -1,5 +1,7 @@
 #include <SDL3/SDL.h>
 
+#define MAX_XML_CONTENT_LENGTH 128 * 1024 * 1024 // 128 MB
+
 static char* xml_escape(const char* str) {
     size_t new_len = 0;
     const char* p = str;
@@ -75,8 +77,8 @@ static char* xml_escape(const char* str) {
     return escaped_str;
 }
 
-static char* xml_unescape(const char* str) {
-    size_t original_len = SDL_strlen(str);
+static char* xml_unescape(const char* str, size_t maxLen) {
+    size_t original_len = SDL_strnlen(str, maxLen);
     char* unescaped_str = (char*)SDL_malloc(original_len + 1);
     if (unescaped_str == NULL) {
         return NULL;
@@ -128,13 +130,19 @@ static const char* GetXMLContentFromTag(const uint8_t * data, size_t len, const 
     const char* main_tag_start = NULL;
     const char* main_tag_end = NULL;
     const char* tag_search_start = xml_data;
+    const char* xml_end = xml_data + len;
 
-    while ((tag_search_start = SDL_strstr(tag_search_start, "<")) != NULL) {
+    while (tag_search_start < xml_end && (tag_search_start = SDL_strstr(tag_search_start, "<")) != NULL) {
+        if (tag_search_start >= xml_end) {
+            break;
+        }
         const char* tag_name_start = tag_search_start + 1;
-        while (SDL_isspace(*tag_name_start)) {
+        while (tag_name_start < xml_end && SDL_isspace(*tag_name_start)) {
             tag_name_start++;
         }
-        if (SDL_strncmp(tag_name_start, tag, SDL_strlen(tag)) == 0) {
+        size_t tag_len = SDL_strnlen(tag, xml_end - tag);
+        size_t compare_len = (xml_end - tag_name_start < tag_len) ? xml_end - tag_name_start : tag_len;
+        if (SDL_strncmp(tag_name_start, tag, compare_len) == 0) {
             const char* tag_end_brace = SDL_strstr(tag_name_start, ">");
             if (tag_end_brace) {
                 main_tag_start = tag_end_brace + 1;
@@ -168,24 +176,26 @@ static const char* GetXMLContentFromTag(const uint8_t * data, size_t len, const 
             content_start++;
             const char* li_end = SDL_strstr(content_start, "</rdf:li>");
             if (!li_end) {
-                 li_start++;
-                 continue;
+                li_start++;
+                continue;
             }
             const char* default_lang_attr = SDL_strstr(li_start, "xml:lang=\"x-default\"");
             if (default_lang_attr && default_lang_attr < content_start) {
-                size_t content_len = li_end - content_start;
-                char* final_content = (char*)SDL_malloc(content_len + 1);
+                size_t content_len_limit = li_end - content_start;
+                size_t actual_len = SDL_strnlen(content_start, content_len_limit);
+                char* final_content = (char*)SDL_malloc(actual_len + 1);
                 if (final_content) {
-                    SDL_strlcpy(final_content, content_start, content_len + 1);
+                    SDL_strlcpy(final_content, content_start, actual_len + 1);
                 }
                 return final_content;
             }
             const char* en_us_lang_attr = SDL_strstr(li_start, "xml:lang=\"en-us\"");
             if (en_us_lang_attr && en_us_lang_attr < content_start) {
-                size_t content_len = li_end - content_start;
-                char* final_content = (char*)SDL_malloc(content_len + 1);
+                size_t content_len_limit = li_end - content_start;
+                size_t actual_len = SDL_strnlen(content_start, content_len_limit);
+                char* final_content = (char*)SDL_malloc(actual_len + 1);
                 if (final_content) {
-                    SDL_strlcpy(final_content, content_start, content_len + 1);
+                    SDL_strlcpy(final_content, content_start, actual_len + 1);
                 }
                 return final_content;
             }
@@ -198,14 +208,14 @@ static const char* GetXMLContentFromTag(const uint8_t * data, size_t len, const 
         }
 
         if (fallback_content_start) {
-            size_t content_len = fallback_content_end - fallback_content_start;
-            char* final_content = (char*)SDL_malloc(content_len + 1);
+            size_t content_len_limit = fallback_content_end - fallback_content_start;
+            size_t actual_len = SDL_strnlen(fallback_content_start, content_len_limit);
+            char* final_content = (char*)SDL_malloc(actual_len + 1);
             if (final_content) {
-                SDL_strlcpy(final_content, fallback_content_start, content_len + 1);
+                SDL_strlcpy(final_content, fallback_content_start, actual_len + 1);
             }
             return final_content;
         }
-
         return NULL;
     }
 
@@ -218,10 +228,11 @@ static const char* GetXMLContentFromTag(const uint8_t * data, size_t len, const 
                 content_start++;
                 const char* li_end = SDL_strstr(content_start, "</rdf:li>");
                 if (li_end) {
-                    size_t content_len = li_end - content_start;
-                    char* final_content = (char*)SDL_malloc(content_len + 1);
+                    size_t content_len_limit = li_end - content_start;
+                    size_t actual_len = SDL_strnlen(content_start, content_len_limit);
+                    char* final_content = (char*)SDL_malloc(actual_len + 1);
                     if (final_content) {
-                        SDL_strlcpy(final_content, content_start, content_len + 1);
+                        SDL_strlcpy(final_content, content_start, actual_len + 1);
                     }
                     return final_content;
                 }
@@ -230,10 +241,11 @@ static const char* GetXMLContentFromTag(const uint8_t * data, size_t len, const 
         return NULL;
     }
 
-    size_t content_len = main_tag_end - main_tag_start;
-    char* final_content = (char*)SDL_malloc(content_len + 1);
+    size_t content_len_limit = main_tag_end - main_tag_start;
+    size_t actual_len = SDL_strnlen(main_tag_start, content_len_limit);
+    char* final_content = (char*)SDL_malloc(actual_len + 1);
     if (final_content) {
-        SDL_strlcpy(final_content, main_tag_start, content_len + 1);
+        SDL_strlcpy(final_content, main_tag_start, actual_len + 1);
     }
     return final_content;
 }
@@ -244,7 +256,7 @@ static const char *__gettag(const uint8_t *data, size_t len, const char* tag)
     if (!retval) {
         return NULL;
     }
-    char *unescaped = xml_unescape(retval);
+    char *unescaped = xml_unescape(retval, len);
     SDL_free((void *)retval);
     return unescaped;
 }
@@ -351,23 +363,23 @@ uint8_t *__xmlman_ConstructXMPWithRDFDescription(const char *dctitle, const char
         "</x:xmpmeta>\n"
         "<?xpacket end=\"w\"?>";
 
-    size_t total_size = SDL_strlen(header) +
-                        SDL_strlen(footer) + 1;
+    size_t total_size = SDL_strnlen(header, MAX_XML_CONTENT_LENGTH) +
+                        SDL_strnlen(footer, MAX_XML_CONTENT_LENGTH) + 1;
 
     if (dctitle) {
-        total_size += SDL_strlen(title_prefix) + SDL_strlen(dctitle) + SDL_strlen(title_suffix);
+        total_size += SDL_strnlen(title_prefix, MAX_XML_CONTENT_LENGTH) + SDL_strnlen(dctitle, MAX_XML_CONTENT_LENGTH) + SDL_strnlen(title_suffix, MAX_XML_CONTENT_LENGTH);
     }
     if (dccreator) {
-        total_size += SDL_strlen(creator_prefix) + SDL_strlen(dccreator) + SDL_strlen(creator_suffix);
+        total_size += SDL_strnlen(creator_prefix, MAX_XML_CONTENT_LENGTH) + SDL_strnlen(dccreator, MAX_XML_CONTENT_LENGTH) + SDL_strnlen(creator_suffix, MAX_XML_CONTENT_LENGTH);
     }
     if (dcdescription) {
-        total_size += SDL_strlen(description_prefix) + SDL_strlen(dcdescription) + SDL_strlen(description_suffix);
+        total_size += SDL_strnlen(description_prefix, MAX_XML_CONTENT_LENGTH) + SDL_strnlen(dcdescription, MAX_XML_CONTENT_LENGTH) + SDL_strnlen(description_suffix, MAX_XML_CONTENT_LENGTH);
     }
     if (dcrights) {
-        total_size += SDL_strlen(rights_prefix) + SDL_strlen(dcrights) + SDL_strlen(rights_suffix);
+        total_size += SDL_strnlen(rights_prefix, MAX_XML_CONTENT_LENGTH) + SDL_strnlen(dcrights, MAX_XML_CONTENT_LENGTH) + SDL_strnlen(rights_suffix, MAX_XML_CONTENT_LENGTH);
     }
     if (xmpcreatedate) {
-        total_size += SDL_strlen(createdate_prefix) + SDL_strlen(xmpcreatedate) + SDL_strlen(createdate_suffix);
+        total_size += SDL_strnlen(createdate_prefix, MAX_XML_CONTENT_LENGTH) + SDL_strnlen(xmpcreatedate, MAX_XML_CONTENT_LENGTH) + SDL_strnlen(createdate_suffix, MAX_XML_CONTENT_LENGTH);
     }
 
     uint8_t *buffer = (uint8_t *)SDL_malloc(total_size);
