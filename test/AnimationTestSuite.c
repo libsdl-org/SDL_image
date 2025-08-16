@@ -162,19 +162,18 @@ int main(int argc, char **argv)
                 if (encoder) {
                     Uint64 duration;
                     SDL_Surface *frame;
-                    Uint64 i = 0;
-                    Uint64 ii = 0;
+                    int i = 0, ii = 0;
                     while (IMG_GetAnimationDecoderFrame(decoder, &frame, &duration)) {
                         if (frame) {
-                            printf("Frame Duration (%llu): %llu ms\n", i, duration);
-                            printf("Frame Format (%llu): %s\n", i, SDL_GetPixelFormatName(frame->format));
-                            printf("Frame Size (%llu): %ix%i\n", i, frame->w, frame->h);
+                            printf("Frame Duration (%i): %" SDL_PRIu64 " ms\n", i, duration);
+                            printf("Frame Format (%i): %s\n", i, SDL_GetPixelFormatName(frame->format));
+                            printf("Frame Size (%i): %ix%i\n", i, frame->w, frame->h);
 
                             if (IMG_AddAnimationEncoderFrame(encoder, frame, duration)) {
-                                printf("Frame (%llu) added to encoder.\n", i);
+                                printf("Frame (%i) added to encoder.\n", i);
                                 ii++;
                             } else {
-                                fprintf(stderr, "ERROR: Failed to add frame (%llu) to encoder: %s\n", i, SDL_GetError());
+                                fprintf(stderr, "ERROR: Failed to add frame (%i) to encoder: %s\n", i, SDL_GetError());
                                 for (int ai = 0; ai < arraySize; ++ai) {
                                     SDL_free(decodedFrameData[ai]);
                                 }
@@ -242,11 +241,11 @@ int main(int argc, char **argv)
                         SDL_Quit();
                         return 1;
                     } else {
-                        printf("Encoder closed successfully after adding %llu frames.\n", ii);
+                        printf("Encoder closed successfully after adding %i frames.\n", ii);
                     }
 
                     if (ii != i) {
-                        fprintf(stderr, "ERROR: Not all frames were added teo the encoder. Added %llu, Total: %llu\n", ii, i);
+                        fprintf(stderr, "ERROR: Not all frames were added teo the encoder. Added %i, Total: %i\n", ii, i);
                         for (int ai = 0; ai < arraySize; ++ai) {
                             SDL_free(decodedFrameData[ai]);
                         }
@@ -257,7 +256,7 @@ int main(int argc, char **argv)
                         return 1;
                     } else {
                         printf("All frames added to the encoder successfully.\n");
-                        printf("Total frames processed: %llu\n", i);
+                        printf("Total frames processed: %i\n", i);
                         printf("Loading memory stream for %s back to IMG_AnimationDecoder to see if it results the same as %s\n", outputImageFormat, inputImage);
 
                         if (SDL_SeekIO(encoderIO, 0, SDL_IO_SEEK_SET) != 0) {
@@ -277,14 +276,14 @@ int main(int argc, char **argv)
 
                             Uint64 duration2;
                             SDL_Surface *frame2;
-                            Uint64 j = 0;
+                            int j = 0;
                             while (IMG_GetAnimationDecoderFrame(decoder2, &frame2, &duration2)) {
-                                printf("Reloaded Frame Duration (%llu): %llu ms\n", j, duration2);
-                                printf("Reloaded Frame Format (%llu): %s\n", j, SDL_GetPixelFormatName(frame2->format));
-                                printf("Reloaded Frame Size (%llu): %ix%i\n", j, frame2->w, frame2->h);
+                                printf("Reloaded Frame Duration (%i): %" SDL_PRIu64 " ms\n", j, duration2);
+                                printf("Reloaded Frame Format (%i): %s\n", j, SDL_GetPixelFormatName(frame2->format));
+                                printf("Reloaded Frame Size (%i): %ix%i\n", j, frame2->w, frame2->h);
 
                                 if (arraySize < j) {
-                                    fprintf(stderr, "ERROR: Reloaded frame index %llu exceeds decoded frame data size %d\n", j, arraySize);
+                                    fprintf(stderr, "ERROR: Reloaded frame index %i exceeds decoded frame data size %d\n", j, arraySize);
                                     for (int ai = 0; ai < arraySize; ++ai) {
                                         SDL_free(decodedFrameData[ai]);
                                     }
@@ -297,7 +296,7 @@ int main(int argc, char **argv)
                                 }
 
                                 if (decodedFrameData[j]->width != frame2->w || decodedFrameData[j]->height != frame2->h || decodedFrameData[j]->duration != duration2) {
-                                    fprintf(stderr, "ERROR: Frame data mismatch at index %llu. Expected (%i, %i, %llu), Got (%i, %i, %llu)\n",
+                                    fprintf(stderr, "ERROR: Frame data mismatch at index %i. Expected (%i, %i, %" SDL_PRIu64 "), Got (%i, %i, %" SDL_PRIu64 ")\n",
                                             j,
                                             decodedFrameData[j]->width, decodedFrameData[j]->height, decodedFrameData[j]->duration,
                                             frame2->w, frame2->h, duration2);
@@ -311,14 +310,14 @@ int main(int argc, char **argv)
                                     SDL_Quit();
                                     return 1;
                                 } else {
-                                    printf("Reloaded frame matches original frame data at index %llu.\n", j);
+                                    printf("Reloaded frame matches original frame data at index %i.\n", j);
                                 }
 
                                 j++;
                             }
 
                             if (j != i) {
-                                fprintf(stderr, "ERROR: Frame count mismatch after reloading output. Expected %llu, Got %llu\n", i, j);
+                                fprintf(stderr, "ERROR: Frame count mismatch after reloading output. Expected %i, Got %i\n", i, j);
                                 for (int ai = 0; ai < arraySize; ++ai) {
                                     SDL_free(decodedFrameData[ai]);
                                 }
@@ -329,7 +328,7 @@ int main(int argc, char **argv)
                                 SDL_Quit();
                                 return 1;
                             } else {
-                                printf("All frames reloaded successfully from memory stream for %s with frame count %llu.\n", outputImageFormat, j);
+                                printf("All frames reloaded successfully from memory stream for %s with frame count %i.\n", outputImageFormat, j);
                             }
 
                             IMG_CloseAnimationDecoder(decoder2);
@@ -624,10 +623,10 @@ int main(int argc, char **argv)
                     }
                 } else if (metadata->type == SDL_PROPERTY_TYPE_NUMBER) {
                     Sint64 propValue = SDL_GetNumberProperty(decodedProps, propName, 0);
-                    printf("Decoded Property %s: %llu\n", propName, propValue);
+                    printf("Decoded Property %s: %" SDL_PRIs64 "\n", propName, propValue);
                     Sint64 expectedValue = (Sint64)metadata->value;
                     if (propValue != expectedValue) {
-                        fprintf(stderr, "ERROR: Decoded number property %s does not match expected value. Expected: %llu, Got: %llu\n",
+                        fprintf(stderr, "ERROR: Decoded number property %s does not match expected value. Expected: %" SDL_PRIs64 ", Got: %" SDL_PRIu64 "\n",
                                 propName, expectedValue, propValue);
                         IMG_CloseAnimationDecoder(metadataDecoder);
                         SDL_CloseIO(metadataEncoderIO);
