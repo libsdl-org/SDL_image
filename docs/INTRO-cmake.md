@@ -5,6 +5,11 @@ The easiest way to use SDL_image is to include it along with SDL as subprojects 
 
 We'll start by creating a simple project to build and run [hello.c](hello.c)
 
+Clone the SDL Image repo using:
+```
+git clone git@github.com:libsdl-org/SDL_image.git vendored/SDL_image --recurse-submodules 
+```
+
 Create the file CMakeLists.txt
 ```cmake
 cmake_minimum_required(VERSION 3.16)
