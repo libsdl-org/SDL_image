@@ -141,7 +141,7 @@ static const char* GetXMLContentFromTag(const uint8_t * data, size_t len, const 
             tag_name_start++;
         }
         size_t tag_len = SDL_strnlen(tag, xml_end - tag);
-        size_t compare_len = (xml_end - tag_name_start < tag_len) ? xml_end - tag_name_start : tag_len;
+        size_t compare_len = ((size_t)(xml_end - tag_name_start) < tag_len) ? (size_t)(xml_end - tag_name_start) : tag_len;
         if (SDL_strncmp(tag_name_start, tag, compare_len) == 0) {
             const char* tag_end_brace = SDL_strstr(tag_name_start, ">");
             if (tag_end_brace) {
