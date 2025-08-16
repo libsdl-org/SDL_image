@@ -28,7 +28,7 @@ typedef struct {
     MetadataInfo availableMetadata[MAX_METADATA];
 } FormatInfo;
 
-static const int default_loop_count = 1;
+static const Sint64 default_loop_count = 1;
 #define DEFAULT_TITLE "Lorem ipsum dolor sit amet"
 #define DEFAULT_AUTHOR "consectetur adipiscing elit"
 #define DEFAULT_DESCRIPTION "sed do eiusmod tempor <xml escape test> incididunt ut labore et dolore magna aliqua"
