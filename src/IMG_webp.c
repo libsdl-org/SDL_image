@@ -460,7 +460,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     SDL_Surface *retval = NULL;
 
     if (totalFrames == availableFrames || dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
-        SDL_FillSurfaceRect(canvas, NULL, bgcolor);
+        SDL_FillSurfaceRect(canvas, NULL, iter->has_alpha ? 0 : bgcolor);
     }
 
     SDL_Surface *curr = SDL_CreateSurface(iter->width, iter->height, SDL_PIXELFORMAT_RGBA32);
