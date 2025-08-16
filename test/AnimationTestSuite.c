@@ -626,7 +626,7 @@ int main(int argc, char **argv)
                     printf("Decoded Property %s: %" SDL_PRIs64 "\n", propName, propValue);
                     Sint64 expectedValue = *(Sint64 *)metadata->value;
                     if (propValue != expectedValue) {
-                        fprintf(stderr, "ERROR: Decoded number property %s does not match expected value. Expected: %" SDL_PRIs64 ", Got: %" SDL_PRIu64 "\n",
+                        fprintf(stderr, "ERROR: Decoded number property %s does not match expected value. Expected: %" SDL_PRIs64 ", Got: %" SDL_PRIs64 "\n",
                                 propName, expectedValue, propValue);
                         IMG_CloseAnimationDecoder(metadataDecoder);
                         SDL_CloseIO(metadataEncoderIO);
