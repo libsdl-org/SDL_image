@@ -250,14 +250,26 @@ static const char* GetXMLContentFromTag(const uint8_t * data, size_t len, const 
     return final_content;
 }
 
-static const char *__gettag(const uint8_t *data, size_t len, const char* tag)
+static const char *__gettag(const uint8_t *data, size_t len, const char *tag)
 {
-    const char *retval = GetXMLContentFromTag(data, len, tag);
-    if (!retval) {
+    size_t xml_data_len = len + 1;
+    char *xml_data = (char *)SDL_malloc(xml_data_len);
+    if (!xml_data) {
         return NULL;
     }
-    char *unescaped = xml_unescape(retval, len);
+    SDL_memcpy(xml_data, data, len);
+    xml_data[len] = '\0'; // Null-terminate the buffer
+
+    const char *retval = GetXMLContentFromTag(xml_data, xml_data_len, tag);
+    if (!retval) {
+        SDL_free(xml_data);
+        xml_data = NULL;
+        return NULL;
+    }
+    char *unescaped = xml_unescape(retval, xml_data_len);
     SDL_free((void *)retval);
+    SDL_free(xml_data);
+    xml_data = NULL;
     return unescaped;
 }
 
