@@ -535,8 +535,6 @@ struct IMG_AnimationDecoderContext
     int last_disposal;           /* Disposal method from previous frame */
     int restore_frame;           /* Frame to restore when using DISPOSE_PREVIOUS */
 
-    char *comment;
-    int loop_count;
     bool ignore_props;
 };
 
@@ -573,8 +571,16 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
     return true;
 }
 
-static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
+static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder, const char** comment, int* loopCount)
 {
+    if (comment) {
+        *comment = NULL;
+    }
+
+    if (loopCount) {
+        *loopCount = 0;
+    }
+
     IMG_AnimationDecoderContext *ctx = decoder->ctx;
     SDL_IOStream *src = decoder->src;
     if (!ctx->got_header) {
@@ -663,8 +669,8 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
                                 if (!ReadOK(src, sub_block_data, 3)) {
                                     return SDL_SetError("Error reading Netscape sub-block data");
                                 }
-                                if (sub_block_data[0] == 0x01) {
-                                    ctx->loop_count = LM_to_uint(sub_block_data[1], sub_block_data[2]);
+                                if (sub_block_data[0] == 0x01 && loopCount) {
+                                    *loopCount = LM_to_uint(sub_block_data[1], sub_block_data[2]);
                                 }
                                 // Terminator
                                 if (!ReadOK(src, &sub_block_size, 1) || sub_block_size != 0x00) {
@@ -689,22 +695,27 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder)
 
                     case 0xFE: // Comment Extension
                     {
-                        Uint8 sub_block_size;
-                        size_t current_len = 0;
-                        while (ReadOK(src, &sub_block_size, 1) && sub_block_size > 0) {
-                            size_t new_len = current_len + sub_block_size;
-                            char *temp_comment = SDL_realloc(ctx->comment, new_len + 1);
-                            if (!temp_comment) {
-                                return SDL_SetError("Failed to allocate memory for GIF comment");
+                        if (comment) {
+                            char *c = NULL;
+                            Uint8 sub_block_size;
+                            size_t current_len = 0;
+                            while (ReadOK(src, &sub_block_size, 1) && sub_block_size > 0) {
+                                size_t new_len = current_len + sub_block_size;
+                                char *temp_comment = SDL_realloc(c, new_len + 1);
+                                if (!temp_comment) {
+                                    return SDL_SetError("Failed to allocate memory for GIF comment");
+                                }
+                                c = temp_comment;
+                                if (!ReadOK(src, c + current_len, sub_block_size)) {
+                                    return SDL_SetError("Error reading GIF comment data");
+                                }
+                                current_len = new_len;
                             }
-                            ctx->comment = temp_comment;
-                            if (!ReadOK(src, ctx->comment + current_len, sub_block_size)) {
-                                return SDL_SetError("Error reading GIF comment data");
+                            if (c && current_len > 0) {
+                                c[current_len] = '\0';
                             }
-                            current_len = new_len;
-                        }
-                        if (ctx->comment && current_len > 0) {
-                            ctx->comment[current_len] = '\0';
+
+                            *comment = (const char *)c;
                         }
                     } break;
 
@@ -775,7 +786,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
         return false;
     }
 
-    if (!IMG_AnimationDecoderGetGIFHeader(decoder)) {
+    if (!IMG_AnimationDecoderGetGIFHeader(decoder, NULL, NULL)) {
         return false;
     }
 
@@ -942,10 +953,6 @@ static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder *decoder)
         SDL_DestroySurface(ctx->prev_canvas);
     }
 
-    if (decoder->ctx->comment) {
-        SDL_free(decoder->ctx->comment);
-    }
-
     SDL_free(ctx);
     decoder->ctx = NULL;
 
@@ -979,7 +986,9 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Properties
     decoder->GetNextFrame = IMG_AnimationDecoderGetNextFrame_Internal;
     decoder->Close = IMG_AnimationDecoderClose_Internal;
 
-    if (!IMG_AnimationDecoderGetGIFHeader(decoder)) {
+    const char *comment;
+    int loop_count = 0;
+    if (!IMG_AnimationDecoderGetGIFHeader(decoder, &comment, &loop_count)) {
         return false;
     }
 
@@ -987,12 +996,17 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Properties
     ctx->ignore_props = ignoreProps;
     if (!ignoreProps) {
         // Set well-defined properties.
-        SDL_SetNumberProperty(decoder->props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (Sint64)ctx->loop_count);
+        SDL_SetNumberProperty(decoder->props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (Sint64)loop_count);
 
         // Get other well-defined properties and set them in our props.
-        if (ctx->comment) {
-            SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_DESCRIPTION_STRING, (const char *)ctx->comment);
+        if (comment) {
+            SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_DESCRIPTION_STRING, comment);
         }
+    }
+
+    if (comment) {
+        SDL_free((void *)comment);
+        comment = NULL;
     }
 
     return true;
@@ -1156,12 +1170,11 @@ struct IMG_AnimationEncoderContext
     uint8_t globalColorTable[256][3];
     uint16_t numGlobalColors;
     int transparentColorIndex;
-    uint16_t loopCount;
     bool firstFrame;
     uint8_t colorMapLUT[32][32][32];
     bool lut_initialized;
     bool use_lut;
-    const char *desc;
+    SDL_PropertiesID metadata;
 };
 
 #define LZW_MAX_CODES 4096
@@ -2586,12 +2599,19 @@ static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_
             goto error;
         }
 
-        if (writeNetscapeLoopExtension(io, ctx->loopCount) != 0) {
+        int loopCount = 0;
+        const char *description = NULL;
+        if (ctx->metadata) {
+            loopCount = (int)SDL_max(SDL_GetNumberProperty(ctx->metadata, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, 0), 0);
+            description = SDL_GetStringProperty(ctx->metadata, IMG_PROP_METADATA_DESCRIPTION_STRING, NULL);
+        }
+
+        if (writeNetscapeLoopExtension(io, loopCount) != 0) {
             goto error;
         }
 
-        if (ctx->desc) {
-            if (writeCommentExtension(io, ctx->desc) != 0) {
+        if (description) {
+            if (writeCommentExtension(io, description) != 0) {
                 goto error;
             }
         }
@@ -2676,6 +2696,11 @@ static bool AnimationEncoder_End(struct IMG_AnimationEncoder *encoder)
     SDL_IOStream *io = encoder->dst;
     bool success = true;
 
+    if (ctx->metadata) {
+        SDL_DestroyProperties(ctx->metadata);
+        ctx->metadata = 0;
+    }
+
     if (io) {
         if (writeGifTrailer(io) != 0) {
             SDL_SetError("Failed to write GIF trailer.");
@@ -2699,7 +2724,6 @@ bool IMG_CreateGIFAnimationEncoder(struct IMG_AnimationEncoder *encoder, SDL_Pro
     return SDL_SetError("GIF animation saving is not enabled in this build.");
 #else
     IMG_AnimationEncoderContext *ctx;
-    int loop_count = 0;
     int transparent_index = -1;
     uint16_t num_global_colors = 256;
 
@@ -2731,15 +2755,24 @@ bool IMG_CreateGIFAnimationEncoder(struct IMG_AnimationEncoder *encoder, SDL_Pro
 
     bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
     if (!ignoreProps) {
-        loop_count = (int)SDL_GetNumberProperty(props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, 0);
-        ctx->desc = SDL_GetStringProperty(props, IMG_PROP_METADATA_DESCRIPTION_STRING, NULL);
+        ctx->metadata = SDL_CreateProperties();
+        if (!ctx->metadata) {
+            SDL_SetError("Failed to create metadata properties for GIF encoder.");
+            SDL_free(ctx);
+            return false;
+        }
+        if (!SDL_CopyProperties(props, ctx->metadata)) {
+            SDL_SetError("Failed to copy properties to GIF encoder metadata.");
+            SDL_DestroyProperties(ctx->metadata);
+            SDL_free(ctx);
+            return false;
+        }
     }
 
     ctx->width = 0;
     ctx->height = 0;
     ctx->numGlobalColors = num_global_colors;
     ctx->transparentColorIndex = transparent_index;
-    ctx->loopCount = (uint16_t)loop_count;
     ctx->firstFrame = true;
     ctx->use_lut = SDL_GetBooleanProperty(props, "use_lut", false);
 

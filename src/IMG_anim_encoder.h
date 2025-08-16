@@ -39,3 +39,4 @@ struct IMG_AnimationEncoder
 
 extern Uint64 IMG_TimebaseDuration(Uint64 pts, Uint64 duration, Uint64 src_numerator, Uint64 src_denominator, Uint64 dst_numerator, Uint64 dst_denominator);
 extern Uint64 IMG_GetEncoderDuration(IMG_AnimationEncoder *encoder, Uint64 duration, Uint64 timebase_denominator);
+extern bool IMG_HasMetadata(SDL_PropertiesID props);
