@@ -253,7 +253,7 @@ static const char* GetXMLContentFromTag(const uint8_t * data, size_t len, const 
 static const char *__gettag(const uint8_t *data, size_t len, const char *tag)
 {
     size_t xml_data_len = len + 1;
-    char *xml_data = (char *)SDL_malloc(xml_data_len);
+    uint8_t *xml_data = (uint8_t *)SDL_malloc(xml_data_len);
     if (!xml_data) {
         return NULL;
     }
