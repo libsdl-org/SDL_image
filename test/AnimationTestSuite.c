@@ -3,7 +3,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <SDL3/SDL.h>
-#include <SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 
 #define MAX_METADATA 6
 
