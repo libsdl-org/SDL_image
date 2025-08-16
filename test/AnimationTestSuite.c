@@ -133,10 +133,10 @@ int main(int argc, char **argv)
 
                         switch (metadata->type) {
                         case SDL_PROPERTY_TYPE_BOOLEAN:
-                            SDL_SetBooleanProperty(encoderProps, metadata->metadata, (bool)metadata->value);
+                            SDL_SetBooleanProperty(encoderProps, metadata->metadata, *(bool *)metadata->value);
                             break;
                         case SDL_PROPERTY_TYPE_NUMBER:
-                            SDL_SetNumberProperty(encoderProps, metadata->metadata, (Sint64)metadata->value);
+                            SDL_SetNumberProperty(encoderProps, metadata->metadata, *(Sint64 *)metadata->value);
                             break;
                         case SDL_PROPERTY_TYPE_STRING:
                             SDL_SetStringProperty(encoderProps, metadata->metadata, (const char *)metadata->value);
@@ -515,10 +515,10 @@ int main(int argc, char **argv)
 
             switch (metadata->type) {
             case SDL_PROPERTY_TYPE_BOOLEAN:
-                SDL_SetBooleanProperty(metadataProps, metadata->metadata, (bool)metadata->value);
+                SDL_SetBooleanProperty(metadataProps, metadata->metadata, *(bool *)metadata->value);
                 break;
             case SDL_PROPERTY_TYPE_NUMBER:
-                SDL_SetNumberProperty(metadataProps, metadata->metadata, (Sint64)metadata->value);
+                SDL_SetNumberProperty(metadataProps, metadata->metadata, *(Sint64 *)metadata->value);
                 break;
             case SDL_PROPERTY_TYPE_STRING:
                 SDL_SetStringProperty(metadataProps, metadata->metadata, (const char *)metadata->value);
@@ -612,7 +612,7 @@ int main(int argc, char **argv)
                 if (metadata->type == SDL_PROPERTY_TYPE_BOOLEAN) {
                     bool propValue = SDL_GetBooleanProperty(decodedProps, propName, false);
                     printf("Decoded Property %s: %s\n", propName, propValue ? "true" : "false");
-                    bool expectedValue = (bool)metadata->value;
+                    bool expectedValue = *(bool *)metadata->value;
                     if (propValue != expectedValue) {
                         fprintf(stderr, "ERROR: Decoded boolean property %s does not match expected value. Expected: %s, Got: %s\n",
                                 propName, expectedValue ? "true" : "false", propValue ? "true" : "false");
@@ -624,7 +624,7 @@ int main(int argc, char **argv)
                 } else if (metadata->type == SDL_PROPERTY_TYPE_NUMBER) {
                     Sint64 propValue = SDL_GetNumberProperty(decodedProps, propName, 0);
                     printf("Decoded Property %s: %" SDL_PRIs64 "\n", propName, propValue);
-                    Sint64 expectedValue = (Sint64)metadata->value;
+                    Sint64 expectedValue = *(Sint64 *)metadata->value;
                     if (propValue != expectedValue) {
                         fprintf(stderr, "ERROR: Decoded number property %s does not match expected value. Expected: %" SDL_PRIs64 ", Got: %" SDL_PRIu64 "\n",
                                 propName, expectedValue, propValue);
