@@ -3,7 +3,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <SDL3/SDL.h>
-#include <SDL3_image/SDL_image.h>
+#include <SDL_image.h>
 
 #define MAX_METADATA 6
 
@@ -19,7 +19,7 @@ typedef struct {
 typedef struct
 {
     const char *metadata;
-    void *value;
+    const void *value;
     SDL_PropertyType type;
 } MetadataInfo;
 
@@ -28,11 +28,21 @@ typedef struct {
     MetadataInfo availableMetadata[MAX_METADATA];
 } FormatInfo;
 
+static const int default_loop_count = 1;
+#define DEFAULT_TITLE "Lorem ipsum dolor sit amet"
+#define DEFAULT_AUTHOR "consectetur adipiscing elit"
+#define DEFAULT_DESCRIPTION "sed do eiusmod tempor <xml escape test> incididunt ut labore et dolore magna aliqua"
+#define DEFAULT_CREATION_TIME "Ut enim ad minim veniam"
+#define DEFAULT_COPYRIGHT     "quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
+
 static const FormatInfo formatInfo[] = {
-    { "PNG", { { IMG_PROP_METADATA_TITLE_STRING, "Test Animation", SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_AUTHOR_STRING, "Xen", SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_DESCRIPTION_STRING, "Love SDL", SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (void*)(Sint64)1, SDL_PROPERTY_TYPE_NUMBER }, { IMG_PROP_METADATA_CREATION_TIME_STRING, "2077", SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_COPYRIGHT_STRING, "Copyright 2077 SDL_image Test Suite", SDL_PROPERTY_TYPE_STRING } } },
-    { "GIF", { { IMG_PROP_METADATA_DESCRIPTION_STRING, "Love SDL", SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (void*)(Sint64)1, SDL_PROPERTY_TYPE_NUMBER } } },
-    { "WEBP", { { IMG_PROP_METADATA_TITLE_STRING, "Test Animation", SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_AUTHOR_STRING, "Xen", SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_DESCRIPTION_STRING, "Love SDL", SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (void*)(Sint64)1, SDL_PROPERTY_TYPE_NUMBER }, { IMG_PROP_METADATA_CREATION_TIME_STRING, "2077", SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_COPYRIGHT_STRING, "Copyright 2077 SDL_image Test Suite", SDL_PROPERTY_TYPE_STRING } } },
-    { "AVIFS", { { IMG_PROP_METADATA_TITLE_STRING, "Test Animation", SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_AUTHOR_STRING, "Xen", SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_DESCRIPTION_STRING, "Love SDL", SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (void*)(Sint64)1, SDL_PROPERTY_TYPE_NUMBER }, { IMG_PROP_METADATA_CREATION_TIME_STRING, "2077", SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_COPYRIGHT_STRING, "Copyright 2077 SDL_image Test Suite", SDL_PROPERTY_TYPE_STRING } } },
+    { "PNG", { { IMG_PROP_METADATA_TITLE_STRING, (const void*)DEFAULT_TITLE, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_AUTHOR_STRING, (const void*)DEFAULT_AUTHOR, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_DESCRIPTION_STRING, (const void*)DEFAULT_DESCRIPTION, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (const void *)&default_loop_count, SDL_PROPERTY_TYPE_NUMBER }, { IMG_PROP_METADATA_CREATION_TIME_STRING, (const void*)DEFAULT_CREATION_TIME, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_COPYRIGHT_STRING, (const void*)DEFAULT_COPYRIGHT, SDL_PROPERTY_TYPE_STRING } } },
+
+    { "GIF", { { IMG_PROP_METADATA_DESCRIPTION_STRING, (const void*)DEFAULT_DESCRIPTION, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (const void *)&default_loop_count, SDL_PROPERTY_TYPE_NUMBER } } },
+
+    { "WEBP", { { IMG_PROP_METADATA_TITLE_STRING, (const void*)DEFAULT_TITLE, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_AUTHOR_STRING, (const void*)DEFAULT_AUTHOR, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_DESCRIPTION_STRING, (const void*)DEFAULT_DESCRIPTION, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (const void *)&default_loop_count, SDL_PROPERTY_TYPE_NUMBER }, { IMG_PROP_METADATA_CREATION_TIME_STRING, (const void*)DEFAULT_CREATION_TIME, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_COPYRIGHT_STRING, (const void*)DEFAULT_COPYRIGHT, SDL_PROPERTY_TYPE_STRING } } },
+
+    { "AVIFS", { { IMG_PROP_METADATA_TITLE_STRING, (const void*)DEFAULT_TITLE, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_AUTHOR_STRING, (const void*)DEFAULT_AUTHOR, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_DESCRIPTION_STRING, (const void*)DEFAULT_DESCRIPTION, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (const void *)&default_loop_count, SDL_PROPERTY_TYPE_NUMBER }, { IMG_PROP_METADATA_CREATION_TIME_STRING, (const void*)DEFAULT_CREATION_TIME, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_COPYRIGHT_STRING, (const void*)DEFAULT_COPYRIGHT, SDL_PROPERTY_TYPE_STRING } } },
 };
 
 static const char *inputImages[] = { "rgbrgb.png", "rgbrgb.gif", "rgbrgb.webp", "rgbrgb.avifs" };
@@ -612,7 +622,7 @@ int main(int argc, char **argv)
                 if (metadata->type == SDL_PROPERTY_TYPE_BOOLEAN) {
                     bool propValue = SDL_GetBooleanProperty(decodedProps, propName, false);
                     printf("Decoded Property %s: %s\n", propName, propValue ? "true" : "false");
-                    bool expectedValue = *(bool *)metadata->value;
+                    const bool expectedValue = *(const bool *)metadata->value;
                     if (propValue != expectedValue) {
                         fprintf(stderr, "ERROR: Decoded boolean property %s does not match expected value. Expected: %s, Got: %s\n",
                                 propName, expectedValue ? "true" : "false", propValue ? "true" : "false");
@@ -624,7 +634,7 @@ int main(int argc, char **argv)
                 } else if (metadata->type == SDL_PROPERTY_TYPE_NUMBER) {
                     Sint64 propValue = SDL_GetNumberProperty(decodedProps, propName, 0);
                     printf("Decoded Property %s: %" SDL_PRIs64 "\n", propName, propValue);
-                    Sint64 expectedValue = *(Sint64 *)metadata->value;
+                    const Sint64 expectedValue = *(const Sint64 *)metadata->value;
                     if (propValue != expectedValue) {
                         fprintf(stderr, "ERROR: Decoded number property %s does not match expected value. Expected: %" SDL_PRIs64 ", Got: %" SDL_PRIs64 "\n",
                                 propName, expectedValue, propValue);
