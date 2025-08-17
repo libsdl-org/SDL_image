@@ -1,6 +1,6 @@
 #include <SDL3/SDL.h>
 
-#define MAX_XML_CONTENT_LENGTH 128 * 1024 * 1024 // 128 MB
+#define MAX_XML_CONTENT_LENGTH 32 * 1024 * 1024 // 32 MB
 
 static char* xml_escape(const char* str) {
     size_t new_len = 0;
