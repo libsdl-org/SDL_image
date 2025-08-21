@@ -1660,18 +1660,23 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
         // Get other well-defined properties and set them in our props.
         if (desc) {
             SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_DESCRIPTION_STRING, desc);
+            SDL_free((void *)desc);
         }
         if (rights) {
             SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_COPYRIGHT_STRING, rights);
+            SDL_free((void *)rights);
         }
         if (title) {
             SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_TITLE_STRING, title);
+            SDL_free((void *)title);
         }
         if (author) {
             SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_AUTHOR_STRING, author);
+            SDL_free((void *)author);
         }
         if (creationtime) {
             SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_CREATION_TIME_STRING, creationtime);
+            SDL_free((void *)creationtime);
         }
     }
 
@@ -1690,12 +1695,7 @@ struct IMG_AnimationEncoderContext
     int compression_level;
     SDL_PixelFormat output_pixel_format;
     SDL_Palette *apng_palette_ptr;
-    int num_plays;
-    const char *desc;
-    const char *rights;
-    const char *title;
-    const char *author;
-    const char *creationtime;
+    SDL_PropertiesID metadata;
 };
 
 static bool write_png_chunk(SDL_IOStream *stream, const char *chunk_type_str, png_bytep data, png_size_t size)
@@ -2119,29 +2119,38 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationEncoder *encoder, SDL_Surfac
             }
         }
 
-        if (encoder->ctx->desc) {
-            if (!writetEXtchunk(encoder->dst, "Description", encoder->ctx->desc)) {
-                goto error;
+        if (IMG_HasMetadata(encoder->ctx->metadata)) {
+
+            const char *desc = SDL_GetStringProperty(encoder->ctx->metadata, IMG_PROP_METADATA_DESCRIPTION_STRING, NULL);
+            const char *rights = SDL_GetStringProperty(encoder->ctx->metadata, IMG_PROP_METADATA_COPYRIGHT_STRING, NULL);
+            const char *title = SDL_GetStringProperty(encoder->ctx->metadata, IMG_PROP_METADATA_TITLE_STRING, NULL);
+            const char *author = SDL_GetStringProperty(encoder->ctx->metadata, IMG_PROP_METADATA_AUTHOR_STRING, NULL);
+            const char *creationtime = SDL_GetStringProperty(encoder->ctx->metadata, IMG_PROP_METADATA_CREATION_TIME_STRING, NULL);
+
+            if (desc) {
+                if (!writetEXtchunk(encoder->dst, "Description", desc)) {
+                    goto error;
+                }
             }
-        }
-        if (encoder->ctx->rights) {
-            if (!writetEXtchunk(encoder->dst, "Copyright", encoder->ctx->rights)) {
-                goto error;
+            if (rights) {
+                if (!writetEXtchunk(encoder->dst, "Copyright", rights)) {
+                    goto error;
+                }
             }
-        }
-        if (encoder->ctx->title) {
-            if (!writetEXtchunk(encoder->dst, "Title", encoder->ctx->title)) {
-                goto error;
+            if (title) {
+                if (!writetEXtchunk(encoder->dst, "Title", title)) {
+                    goto error;
+                }
             }
-        }
-        if (encoder->ctx->author) {
-            if (!writetEXtchunk(encoder->dst, "Author", encoder->ctx->author)) {
-                goto error;
+            if (author) {
+                if (!writetEXtchunk(encoder->dst, "Author", author)) {
+                    goto error;
+                }
             }
-        }
-        if (encoder->ctx->creationtime) {
-            if (!writetEXtchunk(encoder->dst, "Creation Time", encoder->ctx->creationtime)) {
-                goto error;
+            if (creationtime) {
+                if (!writetEXtchunk(encoder->dst, "Creation Time", creationtime)) {
+                    goto error;
+                }
             }
         }
 
@@ -2285,7 +2294,12 @@ static bool SaveAPNGAnimationEnd(IMG_AnimationEncoder *encoder)
     custom_png_save_uint_32(actl_data, (png_uint_32)(encoder->ctx->current_frame_index == 0 ? 0 : (encoder->ctx->current_frame_index + 1) / 2));
 
     // num_plays
-    custom_png_save_uint_32(actl_data + 4, encoder->ctx->num_plays);
+    png_uint_32 numplays = 0;
+    if (IMG_HasMetadata(encoder->ctx->metadata)) {
+        numplays = (png_uint_32)SDL_max(SDL_GetNumberProperty(encoder->ctx->metadata, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, 0), 0);
+    }
+
+    custom_png_save_uint_32(actl_data + 4, numplays);
 
     // Re-write the updated acTL chunk. write_png_chunk will recalculate its CRC.
     if (!write_png_chunk(encoder->dst, "acTL", actl_data, 8)) {
@@ -2307,11 +2321,20 @@ static bool SaveAPNGAnimationEnd(IMG_AnimationEncoder *encoder)
         SDL_DestroyPalette(encoder->ctx->apng_palette_ptr);
     }
 
+    if (encoder->ctx->metadata) {
+        SDL_DestroyProperties(encoder->ctx->metadata);
+        encoder->ctx->metadata = 0;
+    }
+
     SDL_free(encoder->ctx);
     encoder->ctx = NULL;
     return true;
 
 error:
+    if (encoder->ctx->metadata) {
+        SDL_DestroyProperties(encoder->ctx->metadata);
+        encoder->ctx->metadata = 0;
+    }
     if (encoder->ctx->png_write_ptr) {
         lib.png_destroy_write_struct(&encoder->ctx->png_write_ptr, &encoder->ctx->info_write_ptr);
     }
@@ -2347,12 +2370,19 @@ bool IMG_CreateAPNGAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Propertie
 
     bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
     if (!ignoreProps) {
-        ctx->num_plays = (int)SDL_GetNumberProperty(props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, 0);
-        ctx->desc = SDL_GetStringProperty(props, IMG_PROP_METADATA_DESCRIPTION_STRING, NULL);
-        ctx->rights = SDL_GetStringProperty(props, IMG_PROP_METADATA_COPYRIGHT_STRING, NULL);
-        ctx->title = SDL_GetStringProperty(props, IMG_PROP_METADATA_TITLE_STRING, NULL);
-        ctx->author = SDL_GetStringProperty(props, IMG_PROP_METADATA_AUTHOR_STRING, NULL);
-        ctx->creationtime = SDL_GetStringProperty(props, IMG_PROP_METADATA_CREATION_TIME_STRING, NULL);
+        ctx->metadata = SDL_CreateProperties();
+        if (!ctx->metadata) {
+            SDL_SetError("Failed to create properties for APNG metadata");
+            SDL_free(ctx);
+            return false;
+        }
+
+        if (!SDL_CopyProperties(props, ctx->metadata)) {
+            SDL_DestroyProperties(ctx->metadata);
+            ctx->metadata = 0;
+            SDL_free(ctx);
+            return false;
+        }
     }
 
     encoder->start = SDL_TellIO(encoder->dst);

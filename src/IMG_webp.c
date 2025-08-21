@@ -460,7 +460,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     SDL_Surface *retval = NULL;
 
     if (totalFrames == availableFrames || dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
-        SDL_FillSurfaceRect(canvas, NULL, bgcolor);
+        SDL_FillSurfaceRect(canvas, NULL, iter->has_alpha ? 0 : bgcolor);
     }
 
     SDL_Surface *curr = SDL_CreateSurface(iter->width, iter->height, SDL_PIXELFORMAT_RGBA32);
@@ -601,18 +601,23 @@ bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
                 const char *createdate = __xmlman_GetXMPCreateDate(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
                 if (desc) {
                     SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_DESCRIPTION_STRING, desc);
+                    SDL_free((void *)desc);
                 }
                 if (rights) {
                     SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_COPYRIGHT_STRING, rights);
+                    SDL_free((void *)rights);
                 }
                 if (title) {
                     SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_TITLE_STRING, title);
+                    SDL_free((void *)title);
                 }
                 if (creator) {
                     SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_AUTHOR_STRING, creator);
+                    SDL_free((void *)creator);
                 }
                 if (createdate) {
                     SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_CREATION_TIME_STRING, createdate);
+                    SDL_free((void *)createdate);
                 }
             }
             lib.WebPDemuxReleaseChunkIterator(&xmp_iter);
@@ -836,13 +841,8 @@ struct IMG_AnimationEncoderContext
 {
     WebPAnimEncoder *encoder;
     WebPConfig config;
-    const char *desc;
-    const char *rights;
-    const char *title;
-    const char *creator;
-    const char *creationtime;
     int timestamp;
-    int loop_count;
+    SDL_PropertiesID metadata;
 };
 
 static bool IMG_AddWEBPAnimationFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration)
@@ -920,7 +920,7 @@ static bool IMG_CloseWEBPAnimation(IMG_AnimationEncoder *encoder)
         goto done;
     }
 
-    if (!ctx->rights && !ctx->desc && !ctx->creationtime && !ctx->creator && !ctx->title && ctx->loop_count == 0) {
+    if (!IMG_HasMetadata(ctx->metadata)) {
         if (!lib.WebPAnimEncoderAssemble(ctx->encoder, &data)) {
             error = "WebPAnimEncoderAssemble() failed";
             goto done;
@@ -950,30 +950,28 @@ static bool IMG_CloseWEBPAnimation(IMG_AnimationEncoder *encoder)
             error = "WebPMuxGetAnimationParams() failed";
             goto done;
         }
-        params.loop_count = ctx->loop_count;
+        params.loop_count = (int)SDL_max(SDL_GetNumberProperty(ctx->metadata, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, 0), 0);
         muxErr = lib.WebPMuxSetAnimationParams(mux, &params);
         if (muxErr != WEBP_MUX_OK) {
             error = "WebPMuxSetAnimationParams() failed";
             goto done;
         }
 
-        if (ctx->rights || ctx->desc || ctx->title || ctx->creator || ctx->creationtime) {
-            size_t siz = 0;
-            uint8_t *d = __xmlman_ConstructXMPWithRDFDescription(ctx->title, ctx->creator, ctx->desc, ctx->rights, ctx->creationtime, &siz);
-            if (siz < 1 || !d) {
-                error = "Failed to construct XMP data";
-                goto done;
-            }
-            WebPData xmp_data = { d, siz };
-            muxErr = lib.WebPMuxSetChunk(mux, "XMP ", &xmp_data, 1);
-            if (muxErr != WEBP_MUX_OK) {
-                SDL_free(d);
-                error = "WebPMuxSetChunk() failed for XMP data";
-                goto done;
-            }
-
-            SDL_free((void *)d);
+        size_t siz = 0;
+        uint8_t *d = __xmlman_ConstructXMPWithRDFDescription(SDL_GetStringProperty(ctx->metadata, IMG_PROP_METADATA_TITLE_STRING, NULL), SDL_GetStringProperty(ctx->metadata, IMG_PROP_METADATA_AUTHOR_STRING, NULL), SDL_GetStringProperty(ctx->metadata, IMG_PROP_METADATA_DESCRIPTION_STRING, NULL), SDL_GetStringProperty(ctx->metadata, IMG_PROP_METADATA_COPYRIGHT_STRING, NULL), SDL_GetStringProperty(ctx->metadata, IMG_PROP_METADATA_CREATION_TIME_STRING, NULL), &siz);
+        if (siz < 1 || !d) {
+            error = "Failed to construct XMP data";
+            goto done;
         }
+        WebPData xmp_data = { d, siz };
+        muxErr = lib.WebPMuxSetChunk(mux, "XMP ", &xmp_data, 1);
+        if (muxErr != WEBP_MUX_OK) {
+            SDL_free(d);
+            error = "WebPMuxSetChunk() failed for XMP data";
+            goto done;
+        }
+
+        SDL_free((void *)d);
 
         muxErr = lib.WebPMuxAssemble(mux, &data);
         if (muxErr != WEBP_MUX_OK) {
@@ -988,6 +986,11 @@ static bool IMG_CloseWEBPAnimation(IMG_AnimationEncoder *encoder)
     }
 
 done:
+    if (ctx->metadata) {
+        SDL_DestroyProperties(ctx->metadata);
+        ctx->metadata = 0;
+    }
+
     if (data.bytes) {
         lib.WebPFree((void *)data.bytes);
     }
@@ -1041,15 +1044,18 @@ bool IMG_CreateWEBPAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Propertie
 
     bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
     if (!ignoreProps) {
-        ctx->loop_count = (int)SDL_GetNumberProperty(props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, 0);
-        if (ctx->loop_count < 0) {
-            ctx->loop_count = 0;
+        ctx->metadata = SDL_CreateProperties();
+        if (!ctx->metadata) {
+            SDL_free(ctx);
+            return SDL_SetError("Failed to create properties for WebP metadata");
         }
-        ctx->desc = SDL_GetStringProperty(props, IMG_PROP_METADATA_DESCRIPTION_STRING, NULL);
-        ctx->rights = SDL_GetStringProperty(props, IMG_PROP_METADATA_COPYRIGHT_STRING, NULL);
-        ctx->title = SDL_GetStringProperty(props, IMG_PROP_METADATA_TITLE_STRING, NULL);
-        ctx->creator = SDL_GetStringProperty(props, IMG_PROP_METADATA_AUTHOR_STRING, NULL);
-        ctx->creationtime = SDL_GetStringProperty(props, IMG_PROP_METADATA_CREATION_TIME_STRING, NULL);
+
+        if (!SDL_CopyProperties(props, ctx->metadata)) {
+            SDL_DestroyProperties(ctx->metadata);
+            ctx->metadata = 0;
+            SDL_free(ctx);
+            return SDL_SetError("Failed to copy properties for WebP metadata");
+        }
     }
 
     return true;

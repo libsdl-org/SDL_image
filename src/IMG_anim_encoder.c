@@ -195,3 +195,17 @@ Uint64 IMG_GetEncoderDuration(IMG_AnimationEncoder *encoder, Uint64 duration, Ui
     encoder->accumulated_pts += duration;
     return value;
 }
+
+bool IMG_HasMetadata(SDL_PropertiesID props)
+{
+    if (!props) {
+        return false;
+    }
+
+    return SDL_HasProperty(props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER) ||
+           SDL_HasProperty(props, IMG_PROP_METADATA_AUTHOR_STRING) ||
+           SDL_HasProperty(props, IMG_PROP_METADATA_COPYRIGHT_STRING) ||
+           SDL_HasProperty(props, IMG_PROP_METADATA_CREATION_TIME_STRING) ||
+           SDL_HasProperty(props, IMG_PROP_METADATA_DESCRIPTION_STRING) ||
+           SDL_HasProperty(props, IMG_PROP_METADATA_TITLE_STRING);
+}
