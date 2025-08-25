@@ -121,7 +121,7 @@ static char* xml_unescape(const char* str, size_t maxLen) {
     return final_unescaped_str;
 }
 
-static const char* GetXMLContentFromTag(const uint8_t * data, size_t len, const char* tag) {
+static char* GetXMLContentFromTag(const uint8_t * data, size_t len, const char* tag) {
     if (!data || !tag || len == 0) {
         return NULL;
     }
@@ -250,11 +250,13 @@ static const char* GetXMLContentFromTag(const uint8_t * data, size_t len, const 
     return final_content;
 }
 
-static const char *__gettag(const uint8_t *data, size_t len, const char *tag)
+static char *__gettag(const uint8_t *data, size_t len, const char *tag)
 {
     if (!data || len < 4) /* The smallest well-formed XML file would consist of only four characters */
         return NULL;
 
+    // FIXME: We make three allocations: here, GetXMLContentFromTag(), xml_unescape()
+    //        We should be able to process const strings with length and then allocate the final string in xml_unescape()
     size_t xml_data_len = len + 1;
     uint8_t *xml_data = (uint8_t *)SDL_malloc(xml_data_len);
     if (!xml_data) {
@@ -263,40 +265,38 @@ static const char *__gettag(const uint8_t *data, size_t len, const char *tag)
     SDL_memcpy(xml_data, data, len);
     xml_data[len] = '\0'; // Null-terminate the buffer
 
-    const char *retval = GetXMLContentFromTag(xml_data, xml_data_len, tag);
+    char *retval = GetXMLContentFromTag(xml_data, xml_data_len, tag);
     if (!retval) {
         SDL_free(xml_data);
-        xml_data = NULL;
         return NULL;
     }
     char *unescaped = xml_unescape(retval, xml_data_len);
-    SDL_free((void *)retval);
+    SDL_free(retval);
     SDL_free(xml_data);
-    xml_data = NULL;
     return unescaped;
 }
 
-const char* __xmlman_GetXMPDescription(const uint8_t* data, size_t len)
+char* __xmlman_GetXMPDescription(const uint8_t* data, size_t len)
 {
     return __gettag(data, len, "dc:description");
 }
 
-const char *__xmlman_GetXMPCopyright(const uint8_t *data, size_t len)
+char *__xmlman_GetXMPCopyright(const uint8_t *data, size_t len)
 {
     return __gettag(data, len, "dc:rights");
 }
 
-const char *__xmlman_GetXMPTitle(const uint8_t *data, size_t len)
+char *__xmlman_GetXMPTitle(const uint8_t *data, size_t len)
 {
     return __gettag(data, len, "dc:title");
 }
 
-const char *__xmlman_GetXMPCreator(const uint8_t *data, size_t len)
+char *__xmlman_GetXMPCreator(const uint8_t *data, size_t len)
 {
     return __gettag(data, len, "dc:creator");
 }
 
-const char *__xmlman_GetXMPCreateDate(const uint8_t *data, size_t len)
+char *__xmlman_GetXMPCreateDate(const uint8_t *data, size_t len)
 {
     return __gettag(data, len, "xmp:CreateDate");
 }
