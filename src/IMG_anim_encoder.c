@@ -196,16 +196,22 @@ Uint64 IMG_GetEncoderDuration(IMG_AnimationEncoder *encoder, Uint64 duration, Ui
     return value;
 }
 
+static void SDLCALL HasMetadataCallback(void *userdata, SDL_PropertiesID props, const char *name)
+{
+    (void)props;
+    bool *has_metadata = (bool *)userdata;
+
+    if (SDL_strncmp(name, "SDL_image.metadata.", 19) == 0) {
+        *has_metadata = true;
+    }
+}
+
 bool IMG_HasMetadata(SDL_PropertiesID props)
 {
-    if (!props) {
-        return false;
-    }
+    bool has_metadata = false;
 
-    return SDL_HasProperty(props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER) ||
-           SDL_HasProperty(props, IMG_PROP_METADATA_AUTHOR_STRING) ||
-           SDL_HasProperty(props, IMG_PROP_METADATA_COPYRIGHT_STRING) ||
-           SDL_HasProperty(props, IMG_PROP_METADATA_CREATION_TIME_STRING) ||
-           SDL_HasProperty(props, IMG_PROP_METADATA_DESCRIPTION_STRING) ||
-           SDL_HasProperty(props, IMG_PROP_METADATA_TITLE_STRING);
+    if (props) {
+        SDL_EnumerateProperties(props, HasMetadataCallback, &has_metadata);
+    }
+    return has_metadata;
 }
