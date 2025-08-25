@@ -31,11 +31,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern const char *__xmlman_GetXMPDescription(const uint8_t *data, size_t len);
-extern const char *__xmlman_GetXMPCopyright(const uint8_t *data, size_t len);
-extern const char *__xmlman_GetXMPTitle(const uint8_t *data, size_t len);
-extern const char *__xmlman_GetXMPCreator(const uint8_t *data, size_t len);
-extern const char *__xmlman_GetXMPCreateDate(const uint8_t *data, size_t len);
+extern char *__xmlman_GetXMPDescription(const uint8_t *data, size_t len);
+extern char *__xmlman_GetXMPCopyright(const uint8_t *data, size_t len);
+extern char *__xmlman_GetXMPTitle(const uint8_t *data, size_t len);
+extern char *__xmlman_GetXMPCreator(const uint8_t *data, size_t len);
+extern char *__xmlman_GetXMPCreateDate(const uint8_t *data, size_t len);
 extern uint8_t *__xmlman_ConstructXMPWithRDFDescription(const char *dctitle, const char *dccreator, const char *dcdescription, const char *dcrights, const char *xmpcreatedate, size_t *outlen);
 #ifdef __cplusplus
 }

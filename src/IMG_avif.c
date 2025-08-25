@@ -1131,30 +1131,30 @@ bool IMG_CreateAVIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
             uint8_t *data = ctx->decoder->image->xmp.data;
             size_t len = ctx->decoder->image->xmp.size;
             if (data && len > 0) {
-                const char *desc = __xmlman_GetXMPDescription(data, len);
-                const char *rights = __xmlman_GetXMPCopyright(data, len);
-                const char *title = __xmlman_GetXMPTitle(data, len);
-                const char *creator = __xmlman_GetXMPCreator(data, len);
-                const char *createDate = __xmlman_GetXMPCreateDate(data, len);
+                char *desc = __xmlman_GetXMPDescription(data, len);
+                char *rights = __xmlman_GetXMPCopyright(data, len);
+                char *title = __xmlman_GetXMPTitle(data, len);
+                char *creator = __xmlman_GetXMPCreator(data, len);
+                char *createDate = __xmlman_GetXMPCreateDate(data, len);
                 if (desc) {
                     SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_DESCRIPTION_STRING, desc);
-                    SDL_free((void *)desc);
+                    SDL_free(desc);
                 }
                 if (rights) {
                     SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_COPYRIGHT_STRING, rights);
-                    SDL_free((void *)rights);
+                    SDL_free(rights);
                 }
                 if (title) {
                     SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_TITLE_STRING, title);
-                    SDL_free((void *)title);
+                    SDL_free(title);
                 }
                 if (creator) {
                     SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_AUTHOR_STRING, creator);
-                    SDL_free((void *)creator);
+                    SDL_free(creator);
                 }
                 if (createDate) {
                     SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_CREATION_TIME_STRING, createDate);
-                    SDL_free((void *)createDate);
+                    SDL_free(createDate);
                 }
             }
         }

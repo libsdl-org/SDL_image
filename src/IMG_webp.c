@@ -594,30 +594,30 @@ bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
         WebPChunkIterator xmp_iter;
         if (lib.WebPDemuxGetChunk(decoder->ctx->demuxer, "XMP ", 1, &xmp_iter)) {
             if (xmp_iter.chunk.bytes && xmp_iter.chunk.size > 0) {
-                const char *desc = __xmlman_GetXMPDescription(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
-                const char *rights = __xmlman_GetXMPCopyright(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
-                const char *title = __xmlman_GetXMPTitle(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
-                const char *creator = __xmlman_GetXMPCreator(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
-                const char *createdate = __xmlman_GetXMPCreateDate(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
+                char *desc = __xmlman_GetXMPDescription(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
+                char *rights = __xmlman_GetXMPCopyright(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
+                char *title = __xmlman_GetXMPTitle(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
+                char *creator = __xmlman_GetXMPCreator(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
+                char *createdate = __xmlman_GetXMPCreateDate(xmp_iter.chunk.bytes, xmp_iter.chunk.size);
                 if (desc) {
                     SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_DESCRIPTION_STRING, desc);
-                    SDL_free((void *)desc);
+                    SDL_free(desc);
                 }
                 if (rights) {
                     SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_COPYRIGHT_STRING, rights);
-                    SDL_free((void *)rights);
+                    SDL_free(rights);
                 }
                 if (title) {
                     SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_TITLE_STRING, title);
-                    SDL_free((void *)title);
+                    SDL_free(title);
                 }
                 if (creator) {
                     SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_AUTHOR_STRING, creator);
-                    SDL_free((void *)creator);
+                    SDL_free(creator);
                 }
                 if (createdate) {
                     SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_CREATION_TIME_STRING, createdate);
-                    SDL_free((void *)createdate);
+                    SDL_free(createdate);
                 }
             }
             lib.WebPDemuxReleaseChunkIterator(&xmp_iter);
