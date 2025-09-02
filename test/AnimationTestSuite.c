@@ -684,6 +684,77 @@ int main(int argc, char **argv)
         printf("Finished metadata encoding and decoding test for format %s.\n", format);
     }
 
+    printf("Finished test 'Encode Metadata and Decode Metadata Test'.\n");
+    printf("=========================================================\n");
+    printf("=========================================================\n");
+    printf("Starting test 'Decode Third Party Metadata Test'\n");
+
+    IMG_AnimationDecoder *thirdPartyDecoder = IMG_CreateAnimationDecoder("rgbrgb_thirdpartymetadata.webp");
+    if (thirdPartyDecoder) {
+        SDL_PropertiesID thirdPartyMetadata = IMG_GetAnimationDecoderProperties(thirdPartyDecoder);
+        if (!thirdPartyMetadata) {
+            fprintf(stderr, "ERROR: Failed to get properties from third party metadata decoder: %s\n", SDL_GetError());
+            IMG_CloseAnimationDecoder(thirdPartyDecoder);
+            SDL_Quit();
+            return 1;
+        }
+
+        const char *xmpDesc = SDL_GetStringProperty(thirdPartyMetadata, IMG_PROP_METADATA_DESCRIPTION_STRING, NULL);
+        const char *xmpRights = SDL_GetStringProperty(thirdPartyMetadata, IMG_PROP_METADATA_COPYRIGHT_STRING, NULL);
+
+        // Both of them has to be valid.
+        if (!xmpDesc || !xmpRights) {
+            fprintf(stderr, "ERROR: Failed to get XMP Description or Rights from third party metadata decoder. Description: %s, Rights: %s\n",
+                    xmpDesc ? xmpDesc : "NULL", xmpRights ? xmpRights : "NULL");
+            IMG_CloseAnimationDecoder(thirdPartyDecoder);
+            SDL_Quit();
+            return 1;
+        }
+
+        size_t descLen = SDL_strnlen(xmpDesc, 256);
+        size_t rightsLen = SDL_strnlen(xmpRights, 256);
+
+        if (descLen != 16) {
+            fprintf(stderr, "ERROR: XMP Description length mismatch. Expected: 16, Got: %zu\n", descLen);
+            IMG_CloseAnimationDecoder(thirdPartyDecoder);
+            SDL_Quit();
+            return 1;
+        }
+
+        if (rightsLen != 14) {
+            fprintf(stderr, "ERROR: XMP Rights length mismatch. Expected: 14, Got: %zu\n", rightsLen);
+            IMG_CloseAnimationDecoder(thirdPartyDecoder);
+            SDL_Quit();
+            return 1;
+        }
+
+        if (SDL_strncmp(xmpDesc, "Test Description", 16) != 0)
+        {
+            fprintf(stderr, "ERROR: XMP Description content mismatch. Expected: 'Test Description', Got: '%s'\n", xmpDesc);
+            IMG_CloseAnimationDecoder(thirdPartyDecoder);
+            SDL_Quit();
+            return 1;
+        }
+
+        if (SDL_strncmp(xmpRights, "Test Copyright", 14) != 0)
+        {
+            fprintf(stderr, "ERROR: XMP Rights content mismatch. Expected: 'Test Copyright', Got: '%s'\n", xmpRights);
+            IMG_CloseAnimationDecoder(thirdPartyDecoder);
+            SDL_Quit();
+            return 1;
+        }
+
+        printf("Third party metadata decoded successfully. Description: '%s', Rights: '%s'\n", xmpDesc, xmpRights);
+        IMG_CloseAnimationDecoder(thirdPartyDecoder);
+    } else {
+        fprintf(stderr, "ERROR: Failed to create animation decoder for third party metadata test image: %s\n", SDL_GetError());
+        SDL_Quit();
+        return 1;
+    }
+    printf("Finished test 'Decode Third Party Metadata Test'.\n");
+    printf("=========================================================\n");
+    printf("=========================================================\n");
+
     printf("All tests completed successfully.\n");
 
     SDL_Quit();
