@@ -3,6 +3,10 @@
 #define MAX_XML_CONTENT_LENGTH 32 * 1024 * 1024 // 32 MB
 
 static char* xml_escape(const char* str) {
+    if (!str) {
+        return NULL;
+    }
+
     size_t new_len = 0;
     const char* p = str;
     while (*p != '\0') {
@@ -15,8 +19,6 @@ static char* xml_escape(const char* str) {
                 new_len += 5;
                 break;
             case '\'':
-                new_len += 6;
-                break;
             case '"':
                 new_len += 6;
                 break;
@@ -27,277 +29,339 @@ static char* xml_escape(const char* str) {
         p++;
     }
 
+    if (new_len > SDL_SIZE_MAX - 1) {
+        return NULL;
+    }
+
     char* escaped_str = (char*)SDL_malloc(new_len + 1);
-    if (escaped_str == NULL) {
+    if (!escaped_str) {
         return NULL;
     }
 
     size_t j = 0;
     p = str;
     while (*p != '\0') {
-        const char* replacement = NULL;
-        size_t replacement_len = 0;
-
         switch (*p) {
             case '<':
-                replacement = "&lt;";
-                replacement_len = 4;
+                SDL_memcpy(&escaped_str[j], "&lt;", 4);
+                j += 4;
                 break;
             case '>':
-                replacement = "&gt;";
-                replacement_len = 4;
+                SDL_memcpy(&escaped_str[j], "&gt;", 4);
+                j += 4;
                 break;
             case '&':
-                replacement = "&amp;";
-                replacement_len = 5;
+                SDL_memcpy(&escaped_str[j], "&amp;", 5);
+                j += 5;
                 break;
             case '\'':
-                replacement = "&apos;";
-                replacement_len = 6;
+                SDL_memcpy(&escaped_str[j], "&apos;", 6);
+                j += 6;
                 break;
             case '"':
-                replacement = "&quot;";
-                replacement_len = 6;
+                SDL_memcpy(&escaped_str[j], "&quot;", 6);
+                j += 6;
                 break;
             default:
                 escaped_str[j++] = *p;
                 break;
         }
-
-        if (replacement != NULL) {
-            for (size_t k = 0; k < replacement_len; k++) {
-                escaped_str[j + k] = replacement[k];
-            }
-            j += replacement_len;
-        }
         p++;
     }
     escaped_str[j] = '\0';
-
     return escaped_str;
 }
 
-static char* xml_unescape(const char* str, size_t maxLen) {
-    size_t original_len = SDL_strnlen(str, maxLen);
-    char* unescaped_str = (char*)SDL_malloc(original_len + 1);
-    if (unescaped_str == NULL) {
-        return NULL;
+static size_t xml_unescape_inplace(char* str, size_t len) {
+    if (!str || len == 0) {
+        return 0;
     }
-
-    size_t i = 0;
-    size_t j = 0;
-
-    while (i < original_len) {
-        if (str[i] == '&') {
-            if (SDL_strncmp(str + i, "&lt;", 4) == 0) {
-                unescaped_str[j++] = '<';
+    
+    size_t i = 0, j = 0;
+    while (i < len && str[i] != '\0') {
+        if (str[i] == '&' && i + 3 < len) {
+            if (SDL_strncmp(&str[i], "&lt;", 4) == 0) {
+                str[j++] = '<';
                 i += 4;
-            } else if (SDL_strncmp(str + i, "&gt;", 4) == 0) {
-                unescaped_str[j++] = '>';
+            } else if (SDL_strncmp(&str[i], "&gt;", 4) == 0) {
+                str[j++] = '>';
                 i += 4;
-            } else if (SDL_strncmp(str + i, "&amp;", 5) == 0) {
-                unescaped_str[j++] = '&';
+            } else if (i + 4 < len && SDL_strncmp(&str[i], "&amp;", 5) == 0) {
+                str[j++] = '&';
                 i += 5;
-            } else if (SDL_strncmp(str + i, "&apos;", 6) == 0) {
-                unescaped_str[j++] = '\'';
+            } else if (i + 5 < len && SDL_strncmp(&str[i], "&apos;", 6) == 0) {
+                str[j++] = '\'';
                 i += 6;
-            } else if (SDL_strncmp(str + i, "&quot;", 6) == 0) {
-                unescaped_str[j++] = '"';
+            } else if (i + 5 < len && SDL_strncmp(&str[i], "&quot;", 6) == 0) {
+                str[j++] = '"';
                 i += 6;
             } else {
-                unescaped_str[j++] = str[i++];
+                str[j++] = str[i++];
             }
         } else {
-            unescaped_str[j++] = str[i++];
+            str[j++] = str[i++];
         }
     }
-    unescaped_str[j] = '\0';
 
-    char* final_unescaped_str = (char*)SDL_realloc(unescaped_str, j + 1);
-    if (final_unescaped_str == NULL) {
-        return unescaped_str;
-    }
-
-    return final_unescaped_str;
+    str[j] = '\0';
+    return j;
 }
 
-static char* GetXMLContentFromTag(const uint8_t * data, size_t len, const char* tag) {
+static const char* find_char_in_bounds(const char* str, const char* end, char c) {
+    while (str < end) {
+        if (*str == c) {
+            return str;
+        }
+        str++;
+    }
+    return NULL;
+}
+
+static int memcasecmp(const char* s1, const char* s2, size_t n) {
+    for (size_t i = 0; i < n; i++) {
+        unsigned char c1 = (unsigned char)s1[i];
+        unsigned char c2 = (unsigned char)s2[i];
+        if (SDL_tolower(c1) != SDL_tolower(c2)) {
+            return (int)SDL_tolower(c1) - (int)SDL_tolower(c2);
+        }
+    }
+    return 0;
+}
+
+static const char* find_substr_in_bounds(const char* haystack, const char* haystack_end, 
+                                       const char* needle, size_t needle_len, int case_sensitive) {
+    if (!haystack || !needle || needle_len == 0 || !haystack_end) {
+        return NULL;
+    }
+    if (haystack_end <= haystack || (size_t)(haystack_end - haystack) < needle_len) {
+        return NULL;
+    }
+    
+    const char* end_search = haystack_end - needle_len + 1;
+    for (const char* p = haystack; p < end_search; p++) {
+        if (case_sensitive ? (SDL_memcmp(p, needle, needle_len) == 0) : (memcasecmp(p, needle, needle_len) == 0)) {
+            return p;
+        }
+    }
+    return NULL;
+}
+
+static const char* find_tag_content(const char* data, const char* data_end, const char* tag, 
+                                  const char** content_end, int case_sensitive) {
+    if (!data || !tag || !content_end) return NULL;
+    
+    char start_tag[256];
+    char end_tag[256];
+    
+    SDL_snprintf(start_tag, sizeof(start_tag), "<%s", tag);
+    SDL_snprintf(end_tag, sizeof(end_tag), "</%s>", tag);
+    
+    size_t start_tag_len = SDL_strlen(start_tag);
+    size_t end_tag_len = SDL_strlen(end_tag);
+    const char* tag_start = data;
+
+    while (tag_start < data_end) {
+        if ((data_end - tag_start) >= 4 && SDL_memcmp(tag_start, "<!--", 4) == 0) {
+            const char* comment_end = find_substr_in_bounds(tag_start + 4, data_end, "-->", 3, 1);
+            if (!comment_end) return NULL;
+            tag_start = comment_end + 3;
+            continue;
+        }
+        if ((data_end - tag_start) >= 9 && SDL_memcmp(tag_start, "<![CDATA[", 9) == 0) {
+            const char *cdata_end = find_substr_in_bounds(tag_start + 9, data_end, "]]>", 3, 1);
+            if (!cdata_end)
+                return NULL;
+            tag_start = cdata_end + 3;
+            continue;
+        }
+
+        tag_start = find_substr_in_bounds(tag_start, data_end, start_tag, start_tag_len, case_sensitive);
+        if (!tag_start) {
+            return NULL;
+        }
+
+        const char* after_tag = tag_start + start_tag_len;
+        if (after_tag < data_end && ((*after_tag >= 9 && *after_tag <= 13) || *after_tag == 32 || *after_tag == '>')) {
+            const char* content_start = find_char_in_bounds(after_tag, data_end, '>');
+            if (content_start) {
+                content_start++;
+                *content_end = find_substr_in_bounds(content_start, data_end, end_tag, end_tag_len, case_sensitive);
+                if (*content_end) {
+                    return content_start;
+                }
+            }
+        }
+        tag_start += start_tag_len;
+    }
+    return NULL;
+}
+
+static char* GetXMLContentFromTag(const char* data, size_t len, const char* tag) {
     if (!data || !tag || len == 0) {
         return NULL;
     }
+    
+    const char* data_end = data + len;
+    const char* content_end;
+    const char* content_start = find_tag_content(data, data_end, tag, &content_end, 1);
+    
+    if (!content_start || !content_end) {
+        return NULL;
+    }
 
-    const char* xml_data = (const char*)data;
-    const char* main_tag_start = NULL;
-    const char* main_tag_end = NULL;
-    const char* tag_search_start = xml_data;
-    const char* xml_end = xml_data + len;
+    const char* alt_start = find_substr_in_bounds(content_start, content_end, "<rdf:Alt>", 9, 1);
+    if (alt_start && alt_start < content_end) {
+        const char* li_start = alt_start;
+        const char* fallback_content = NULL;
+        size_t fallback_len = 0;
 
-    while (tag_search_start < xml_end && (tag_search_start = SDL_strstr(tag_search_start, "<")) != NULL) {
-        if (tag_search_start >= xml_end) {
-            break;
-        }
-        const char* tag_name_start = tag_search_start + 1;
-        while (tag_name_start < xml_end && SDL_isspace(*tag_name_start)) {
-            tag_name_start++;
-        }
-        size_t tag_len = SDL_strnlen(tag, xml_end - tag);
-        size_t compare_len = ((size_t)(xml_end - tag_name_start) < tag_len) ? (size_t)(xml_end - tag_name_start) : tag_len;
-        if (SDL_strncmp(tag_name_start, tag, compare_len) == 0) {
-            const char* tag_end_brace = SDL_strstr(tag_name_start, ">");
-            if (tag_end_brace) {
-                main_tag_start = tag_end_brace + 1;
+        while ((li_start = find_substr_in_bounds(li_start, content_end, "<rdf:li", 7, 1)) != NULL) {
+            const char* li_content_start = find_char_in_bounds(li_start, content_end, '>');
+            if (!li_content_start) {
                 break;
             }
-        }
-        tag_search_start++;
-    }
-    if (!main_tag_start) {
-        return NULL;
-    }
-
-    char end_tag_str[256];
-    SDL_snprintf(end_tag_str, sizeof(end_tag_str), "</%s>", tag);
-    main_tag_end = SDL_strstr(main_tag_start, end_tag_str);
-    if (!main_tag_end) {
-        return NULL;
-    }
-
-    const char* alt_start = SDL_strstr(main_tag_start, "<rdf:Alt>");
-    if (alt_start && alt_start < main_tag_end) {
-        const char* li_start = alt_start;
-        const char* fallback_content_start = NULL;
-        const char* fallback_content_end = NULL;
-        while ((li_start = SDL_strstr(li_start, "<rdf:li")) != NULL && li_start < main_tag_end) {
-            const char* content_start = SDL_strstr(li_start, ">");
-            if (!content_start) {
-                li_start++;
-                continue;
-            }
-            content_start++;
-            const char* li_end = SDL_strstr(content_start, "</rdf:li>");
+            li_content_start++;
+            
+            const char* li_end = find_substr_in_bounds(li_content_start, content_end, "</rdf:li>", 9, 1);
             if (!li_end) {
-                li_start++;
-                continue;
-            }
-            const char* default_lang_attr = SDL_strstr(li_start, "xml:lang=\"x-default\"");
-            if (default_lang_attr && default_lang_attr < content_start) {
-                size_t content_len_limit = li_end - content_start;
-                size_t actual_len = SDL_strnlen(content_start, content_len_limit);
-                char* final_content = (char*)SDL_malloc(actual_len + 1);
-                if (final_content) {
-                    SDL_strlcpy(final_content, content_start, actual_len + 1);
-                }
-                return final_content;
-            }
-            const char* en_us_lang_attr = SDL_strstr(li_start, "xml:lang=\"en-us\"");
-            if (en_us_lang_attr && en_us_lang_attr < content_start) {
-                size_t content_len_limit = li_end - content_start;
-                size_t actual_len = SDL_strnlen(content_start, content_len_limit);
-                char* final_content = (char*)SDL_malloc(actual_len + 1);
-                if (final_content) {
-                    SDL_strlcpy(final_content, content_start, actual_len + 1);
-                }
-                return final_content;
-            }
-            if (!fallback_content_start) {
-                fallback_content_start = content_start;
-                fallback_content_end = li_end;
+                break;
             }
 
+            while (li_content_start < li_end && SDL_isspace((unsigned char)*li_content_start)) {
+                li_content_start++;
+            }
+            while (li_content_start < li_end && SDL_isspace((unsigned char)*(li_end - 1))) {
+                li_end--;
+            }
+            if (li_content_start >= li_end) {
+                li_start = li_end;
+                continue;
+            }
+
+            const char* default_lang = find_substr_in_bounds(li_start, li_content_start, 
+                                                           "xml:lang=\"x-default\"", 20, 0);
+            const char* en_us_lang = find_substr_in_bounds(li_start, li_content_start, 
+                                                         "xml:lang=\"en-us\"", 16, 0);
+            
+            if (default_lang || en_us_lang) {
+                size_t content_len = li_end - li_content_start;
+                char* result = (char*)SDL_malloc(content_len + 1);
+                if (result) {
+                    SDL_memcpy(result, li_content_start, content_len);
+                    result[content_len] = '\0';
+                    xml_unescape_inplace(result, content_len);
+                }
+                return result;
+            }
+
+            if (!fallback_content) {
+                fallback_content = li_content_start;
+                fallback_len = li_end - li_content_start;
+            }
+            
             li_start = li_end;
         }
 
-        if (fallback_content_start) {
-            size_t content_len_limit = fallback_content_end - fallback_content_start;
-            size_t actual_len = SDL_strnlen(fallback_content_start, content_len_limit);
-            char* final_content = (char*)SDL_malloc(actual_len + 1);
-            if (final_content) {
-                SDL_strlcpy(final_content, fallback_content_start, actual_len + 1);
+        if (fallback_content) {
+            while (fallback_content < fallback_content + fallback_len && SDL_isspace((unsigned char)*fallback_content)) {
+                fallback_content++;
+                fallback_len--;
             }
-            return final_content;
+            while (fallback_len > 0 && SDL_isspace((unsigned char)*(fallback_content + fallback_len - 1))) {
+                fallback_len--;
+            }
+
+            if (fallback_len == 0) {
+                return NULL;
+            }
+
+            char* result = (char*)SDL_malloc(fallback_len + 1);
+            if (result) {
+                SDL_memcpy(result, fallback_content, fallback_len);
+                result[fallback_len] = '\0';
+                xml_unescape_inplace(result, fallback_len);
+            }
+            return result;
         }
         return NULL;
     }
 
-    const char* seq_start = SDL_strstr(main_tag_start, "<rdf:Seq>");
-    if (seq_start && seq_start < main_tag_end) {
-        const char* li_start = SDL_strstr(seq_start, "<rdf:li");
+    const char* seq_start = find_substr_in_bounds(content_start, content_end, "<rdf:Seq>", 9, 1);
+    if (seq_start && seq_start < content_end) {
+        const char* li_start = find_substr_in_bounds(seq_start, content_end, "<rdf:li", 7, 1);
         if (li_start) {
-            const char* content_start = SDL_strstr(li_start, ">");
-            if (content_start) {
-                content_start++;
-                const char* li_end = SDL_strstr(content_start, "</rdf:li>");
+            const char* li_content_start = find_char_in_bounds(li_start, content_end, '>');
+            if (li_content_start) {
+                li_content_start++;
+                const char* li_end = find_substr_in_bounds(li_content_start, content_end, "</rdf:li>", 9, 1);
                 if (li_end) {
-                    size_t content_len_limit = li_end - content_start;
-                    size_t actual_len = SDL_strnlen(content_start, content_len_limit);
-                    char* final_content = (char*)SDL_malloc(actual_len + 1);
-                    if (final_content) {
-                        SDL_strlcpy(final_content, content_start, actual_len + 1);
+                    while (li_content_start < li_end && SDL_isspace((unsigned char)*li_content_start)) {
+                        li_content_start++;
                     }
-                    return final_content;
+                    while (li_content_start < li_end && SDL_isspace((unsigned char)*(li_end - 1))) {
+                        li_end--;
+                    }
+                    if (li_content_start >= li_end) {
+                        return NULL;
+                    }
+
+                    size_t content_len = li_end - li_content_start;
+                    char* result = (char*)SDL_malloc(content_len + 1);
+                    if (result) {
+                        SDL_memcpy(result, li_content_start, content_len);
+                        result[content_len] = '\0';
+                        xml_unescape_inplace(result, content_len);
+                    }
+                    return result;
                 }
             }
         }
         return NULL;
     }
 
-    size_t content_len_limit = main_tag_end - main_tag_start;
-    size_t actual_len = SDL_strnlen(main_tag_start, content_len_limit);
-    char* final_content = (char*)SDL_malloc(actual_len + 1);
-    if (final_content) {
-        SDL_strlcpy(final_content, main_tag_start, actual_len + 1);
+    while (content_start < content_end && SDL_isspace((unsigned char)*content_start)) {
+        content_start++;
     }
-    return final_content;
+    while (content_start < content_end && SDL_isspace((unsigned char)*(content_end - 1))) {
+        content_end--;
+    }
+    if (content_start >= content_end) {
+        return NULL;
+    }
+
+    size_t content_len = content_end - content_start;
+    char* result = (char*)SDL_malloc(content_len + 1);
+    if (result) {
+        SDL_memcpy(result, content_start, content_len);
+        result[content_len] = '\0';
+        xml_unescape_inplace(result, content_len);
+    }
+    return result;
 }
 
-static char *__gettag(const uint8_t *data, size_t len, const char *tag)
-{
-    if (!data || len < 4) /* The smallest well-formed XML file would consist of only four characters */
-        return NULL;
+static char *__gettag(const uint8_t *data, size_t len, const char *tag) {
+    if (!data || len < 4 || !tag) return NULL;
 
-    // FIXME: We make three allocations: here, GetXMLContentFromTag(), xml_unescape()
-    //        We should be able to process const strings with length and then allocate the final string in xml_unescape()
-    size_t xml_data_len = len + 1;
-    uint8_t *xml_data = (uint8_t *)SDL_malloc(xml_data_len);
-    if (!xml_data) {
-        return NULL;
-    }
-    SDL_memcpy(xml_data, data, len);
-    xml_data[len] = '\0'; // Null-terminate the buffer
-
-    char *retval = GetXMLContentFromTag(xml_data, xml_data_len, tag);
-    if (!retval) {
-        SDL_free(xml_data);
-        return NULL;
-    }
-    char *unescaped = xml_unescape(retval, xml_data_len);
-    SDL_free(retval);
-    SDL_free(xml_data);
-    return unescaped;
+    return GetXMLContentFromTag((const char*)data, len, tag);
 }
 
-char* __xmlman_GetXMPDescription(const uint8_t* data, size_t len)
-{
+char* __xmlman_GetXMPDescription(const uint8_t* data, size_t len) {
     return __gettag(data, len, "dc:description");
 }
 
-char *__xmlman_GetXMPCopyright(const uint8_t *data, size_t len)
-{
+char *__xmlman_GetXMPCopyright(const uint8_t *data, size_t len) {
     return __gettag(data, len, "dc:rights");
 }
 
-char *__xmlman_GetXMPTitle(const uint8_t *data, size_t len)
-{
+char *__xmlman_GetXMPTitle(const uint8_t *data, size_t len) {
     return __gettag(data, len, "dc:title");
 }
 
-char *__xmlman_GetXMPCreator(const uint8_t *data, size_t len)
-{
+char *__xmlman_GetXMPCreator(const uint8_t *data, size_t len) {
     return __gettag(data, len, "dc:creator");
 }
 
-char *__xmlman_GetXMPCreateDate(const uint8_t *data, size_t len)
-{
+char *__xmlman_GetXMPCreateDate(const uint8_t *data, size_t len) {
     return __gettag(data, len, "xmp:CreateDate");
 }
 
