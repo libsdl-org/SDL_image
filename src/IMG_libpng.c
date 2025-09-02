@@ -475,6 +475,7 @@ static bool LIBPNG_LoadPNG_IO_Internal(SDL_IOStream *src, struct png_load_vars *
                 for (int i = 0; i < vars->num_trans && i < vars->num_palette; i++) {
                     palette->colors[i].a = vars->trans[i];
                 }
+                SDL_SetSurfaceBlendMode(vars->surface, SDL_BLENDMODE_BLEND);
             }
 
             SDL_SetSurfacePalette(vars->surface, palette);
