@@ -714,31 +714,31 @@ int main(int argc, char **argv)
         size_t descLen = SDL_strnlen(xmpDesc, 256);
         size_t rightsLen = SDL_strnlen(xmpRights, 256);
 
-        if (descLen != 16) {
-            fprintf(stderr, "ERROR: XMP Description length mismatch. Expected: 16, Got: %zu\n", descLen);
+        if (descLen != 18) {
+            fprintf(stderr, "ERROR: XMP Description length mismatch. Expected: 18, Got: %zu\n", descLen);
             IMG_CloseAnimationDecoder(thirdPartyDecoder);
             SDL_Quit();
             return 1;
         }
 
-        if (rightsLen != 14) {
-            fprintf(stderr, "ERROR: XMP Rights length mismatch. Expected: 14, Got: %zu\n", rightsLen);
+        if (rightsLen != 16) {
+            fprintf(stderr, "ERROR: XMP Rights length mismatch. Expected: 16, Got: %zu\n", rightsLen);
             IMG_CloseAnimationDecoder(thirdPartyDecoder);
             SDL_Quit();
             return 1;
         }
 
-        if (SDL_strncmp(xmpDesc, "Test Description", 16) != 0)
+        if (SDL_strncmp(xmpDesc, "Test <Description>", 18) != 0)
         {
-            fprintf(stderr, "ERROR: XMP Description content mismatch. Expected: 'Test Description', Got: '%s'\n", xmpDesc);
+            fprintf(stderr, "ERROR: XMP Description content mismatch. Expected: 'Test <Description>', Got: '%s'\n", xmpDesc);
             IMG_CloseAnimationDecoder(thirdPartyDecoder);
             SDL_Quit();
             return 1;
         }
 
-        if (SDL_strncmp(xmpRights, "Test Copyright", 14) != 0)
+        if (SDL_strncmp(xmpRights, "Test <Copyright>", 16) != 0)
         {
-            fprintf(stderr, "ERROR: XMP Rights content mismatch. Expected: 'Test Copyright', Got: '%s'\n", xmpRights);
+            fprintf(stderr, "ERROR: XMP Rights content mismatch. Expected: 'Test <Copyright>', Got: '%s'\n", xmpRights);
             IMG_CloseAnimationDecoder(thirdPartyDecoder);
             SDL_Quit();
             return 1;
@@ -751,6 +751,7 @@ int main(int argc, char **argv)
         SDL_Quit();
         return 1;
     }
+    
     printf("Finished test 'Decode Third Party Metadata Test'.\n");
     printf("=========================================================\n");
     printf("=========================================================\n");
