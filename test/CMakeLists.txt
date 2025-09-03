@@ -7,6 +7,11 @@ set(CMAKE_POSITION_INDEPENDENT_CODE OFF)
 set(RESOURCE_FILES
     palette.bmp
     palette.gif
+    rgbrgb.avifs
+    rgbrgb.gif
+    rgbrgb.png
+    rgbrgb_thirdpartymetadata.webp
+    rgbrgb.webp
     sample.avif
     sample.bmp
     sample.cur
@@ -41,30 +46,6 @@ function(add_sdl_image_test_executable TARGET)
     sdl_add_warning_options(${TARGET} WARNING_AS_ERROR ${SDLIMAGE_WERROR})
     target_link_libraries(${TARGET} PRIVATE SDL3_image::SDL3_image SDL3::SDL3_test SDL3::SDL3)
 
-    add_test(
-        NAME ${TARGET}
-        COMMAND ${TARGET}
-        WORKING_DIRECTORY "$<TARGET_FILE_DIR:${TARGET}>"
-    )
-
-    set(TESTS_ENVIRONMENT
-        "SDL_TEST_SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}"
-        "SDL_TEST_BUILDDIR=$<TARGET_FILE_DIR:${TARGET}>"
-        "SDL_VIDEO_DRIVER=dummy"
-    )
-    set_tests_properties(${TARGET}
-        PROPERTIES
-            ENVIRONMENT "${TESTS_ENVIRONMENT}"
-            TIMEOUT 30
-    )
-    if(SDLIMAGE_TESTS_INSTALL)
-        set(installedtestsdir "${CMAKE_INSTALL_FULL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}")
-        configure_file(template.test.in "${TARGET}.test" @ONLY)
-        install(
-            FILES "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.test"
-            DESTINATION "${CMAKE_INSTALL_DATADIR}/installed-tests/${PROJECT_NAME}"
-        )
-    endif()
     if(SDLIMAGE_TESTS_INSTALL)
         install(
             TARGETS ${TARGET}
@@ -76,7 +57,41 @@ function(add_sdl_image_test_executable TARGET)
     endif()
 endfunction()
 
-add_sdl_image_test_executable(testimage main.c)
+function(add_sdl_image_test NAME)
+    cmake_parse_arguments(ARGS "" "" "COMMAND" ${ARGN})
+    add_test(
+        NAME ${NAME}
+        COMMAND ${ARGS_COMMAND}
+    )
+    list(GET ARGS_COMMAND 0 TARGET)
+
+    set(TESTS_ENVIRONMENT
+        "SDL_TEST_SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}"
+        "SDL_TEST_BUILDDIR=$<TARGET_FILE_DIR:${TARGET}>"
+        "SDL_VIDEO_DRIVER=dummy"
+    )
+    set_tests_properties(${NAME}
+        PROPERTIES
+            ENVIRONMENT "${TESTS_ENVIRONMENT}"
+            TIMEOUT 30
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+    if(SDLIMAGE_TESTS_INSTALL)
+        set(installedtestsdir "${CMAKE_INSTALL_FULL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}")
+        configure_file(template.test.in "${NAME}.test" @ONLY)
+        install(
+            FILES "${CMAKE_CURRENT_BINARY_DIR}/${NAME}.test"
+            DESTINATION "${CMAKE_INSTALL_DATADIR}/installed-tests/${PROJECT_NAME}"
+        )
+    endif()
+endfunction()
+
+add_sdl_image_test_executable(testimage testimage.c)
+add_sdl_image_test_executable(testanimation testanimation.c)
+
+add_sdl_image_test(testimage COMMAND testimage)
+add_sdl_image_test(testanimation_dummy_metadata COMMAND testanimation)
+add_sdl_image_test(testanimation COMMAND testanimation --no-dummy-metadata)
 
 if(SDLIMAGE_TESTS_INSTALL)
     install(
