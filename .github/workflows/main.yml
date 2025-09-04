@@ -125,7 +125,7 @@ jobs:
         fi
         echo "sdl_binpath=$sdl_binpath"
         export PATH="$sdl_binpath:$PATH"
-        export LD_LIBRARY_PATH="$PWD:$LD_LIBRARY_PATH"
+        export LD_LIBRARY_PATH="$PWD/build:$LD_LIBRARY_PATH"
         set -eu
 
         export SDL_IMAGE_TEST_REQUIRE_LOAD_AVIF=${{ (matrix.platform.noavif && '0') || '1' }}
