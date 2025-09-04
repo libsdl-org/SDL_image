@@ -101,7 +101,7 @@ SDL_Surface *IMG_Load(const char *file)
 
     data = emscripten_get_preloaded_image_data(file, &w, &h);
     if (data != NULL) {
-        surf = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_ABGR8888);
+        surf = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_RGBA32);
         if (surf != NULL) {
             SDL_memcpy(surf->pixels, data, w * h * 4);
         }
@@ -160,7 +160,7 @@ SDL_Surface *IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type)
 
         data = emscripten_get_preloaded_image_data_from_FILE(fp, &w, &h);
         if (data) {
-            surf = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_ABGR8888);
+            surf = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_RGBA32);
             if (surf != NULL) {
                 SDL_memcpy(surf->pixels, data, w * h * 4);
             }
