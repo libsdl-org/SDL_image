@@ -39,9 +39,6 @@ function(add_sdl_image_test_executable TARGET)
     target_compile_definitions(${TARGET}
         PRIVATE
             $<TARGET_PROPERTY:${sdl3_image_target_name},COMPILE_DEFINITIONS>
-            "SDL_IMAGE_SAVE_AVIF=$<BOOL:${SDLIMAGE_AVIF_SAVE}>"
-            "SDL_IMAGE_SAVE_JPG=$<BOOL:${SDLIMAGE_JPG_SAVE}>"
-            "SDL_IMAGE_SAVE_PNG=$<BOOL:${SDLIMAGE_PNG_SAVE}>"
     )
     sdl_add_warning_options(${TARGET} WARNING_AS_ERROR ${SDLIMAGE_WERROR})
     target_link_libraries(${TARGET} PRIVATE SDL3_image::SDL3_image SDL3::SDL3_test SDL3::SDL3)
@@ -69,6 +66,13 @@ function(add_sdl_image_test NAME)
         "SDL_TEST_SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}"
         "SDL_TEST_BUILDDIR=$<TARGET_FILE_DIR:${TARGET}>"
         "SDL_VIDEO_DRIVER=dummy"
+        "SDL_IMAGE_SAVE_AVIF=$<BOOL:${SDLIMAGE_AVIF_SAVE}>"
+        "SDL_IMAGE_SAVE_JPG=$<BOOL:${SDLIMAGE_JPG_SAVE}>"
+        "SDL_IMAGE_SAVE_PNG=$<BOOL:${SDLIMAGE_PNG_SAVE}>"
+        "SDL_IMAGE_ANIM_AVIFS=$<BOOL:${SDLIMAGE_AVIF_ENABLED}>"
+        "SDL_IMAGE_ANIM_PNG=$<AND:$<BOOL:${SDLIMAGE_PNG_ENABLED}>,$<NOT:$<OR:$<BOOL:${SDLIMAGE_BACKEND_WIC}>,$<BOOL:${SDLIMAGE_BACKEND_STB}>,$<BOOL:${SDLIMAGE_BACKEND_IMAGEIO}>>>>"
+        "SDL_IMAGE_ANIM_GIF=$<BOOL:${SDLIMAGE_GIF_ENABLED}>"
+        "SDL_IMAGE_ANIM_WEBP=$<BOOL:${SDLIMAGE_WEBP_ENABLED}>"
     )
     set_tests_properties(${NAME}
         PROPERTIES

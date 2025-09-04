@@ -54,7 +54,16 @@ static const FormatInfo formatInfo[] = {
     { "AVIFS", { { IMG_PROP_METADATA_TITLE_STRING, (const void*)DEFAULT_TITLE, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_AUTHOR_STRING, (const void*)DEFAULT_AUTHOR, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_DESCRIPTION_STRING, (const void*)DEFAULT_DESCRIPTION, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (const void *)&default_loop_count, SDL_PROPERTY_TYPE_NUMBER }, { IMG_PROP_METADATA_CREATION_TIME_STRING, (const void*)DEFAULT_CREATION_TIME, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_COPYRIGHT_STRING, (const void*)DEFAULT_COPYRIGHT, SDL_PROPERTY_TYPE_STRING } } },
 };
 
-static const char *inputImages[] = { "rgbrgb.png", "rgbrgb.gif", "rgbrgb.webp", "rgbrgb.avifs" };
+
+static const struct {
+    const char *format;
+    const char *filename;
+} inputImages[] = {
+    { "PNG", "rgbrgb.png" },
+    { "GIF", "rgbrgb.gif" },
+    { "WEBP", "rgbrgb.webp" },
+    { "AVIFS", "rgbrgb.avifs" }
+};
 static const char *outputImageFormats[] = { "PNG", "GIF", "WEBP", "AVIFS" };
 
 static const char *GetAnimationDecoderStatusString(IMG_AnimationDecoderStatus status)
@@ -70,6 +79,21 @@ static const char *GetAnimationDecoderStatusString(IMG_AnimationDecoderStatus st
     default:
         return "IMG_DECODER_STATUS_INVALID";
     }
+}
+
+static bool FormatAnimationEnabled(const char *format)
+{
+    char env_name[64];
+    SDL_snprintf(env_name, sizeof(env_name), "SDL_IMAGE_ANIM_%s", format);
+    SDL_strupr(env_name);
+    const char *env_value = SDL_getenv(env_name);
+    if (!env_value) {
+        return true;
+    }
+    if (env_value[0] == '\0' || SDL_strcmp(env_value, "0") == 0 || SDL_strcasecmp(env_value, "no") == 0 || SDL_strcasecmp(env_value, "false") == 0) {
+        return false;
+    }
+    return true;
 }
 
 /*
@@ -126,7 +150,7 @@ static int SDLCALL testDecodeEncode(void *args) {
     SDLTest_Log("--TESTS--");
     for (size_t cim = 0; cim < SDL_arraysize(inputImages); ++cim) {
         for (size_t com = 0; com < SDL_arraysize(outputImageFormats); ++com) {
-            const char *inputImage = inputImages[cim];
+            const char *inputImage = inputImages[cim].filename;
             const char *outputImageFormat = outputImageFormats[com];
             SDLTest_Log("%s >> %s == %s", inputImage, outputImageFormat, inputImage);
             if (com == 0) {
@@ -138,8 +162,17 @@ static int SDLCALL testDecodeEncode(void *args) {
 
     for (size_t cim = 0; cim < SDL_arraysize(inputImages); ++cim) {
         for (size_t com = 0; com < SDL_arraysize(outputImageFormats); ++com) {
-            const char *inputImage = inputImages[cim];
+            const char *inputImage = inputImages[cim].filename;
             const char *outputImageFormat = outputImageFormats[com];
+
+            if (!FormatAnimationEnabled(inputImages[cim].format)) {
+                SDLTest_Log("Animation format %s disabled (input)", inputImages[cim].format);
+                continue;
+            }
+            if (!FormatAnimationEnabled(outputImageFormats[com])) {
+                SDLTest_Log("animation format %s disabled (output)", outputImageFormats[com]);
+                continue;
+            }
 
             char *inputImagePath = GetTestFilename(inputImage);
             if (!inputImagePath) {
@@ -147,11 +180,8 @@ static int SDLCALL testDecodeEncode(void *args) {
                 return TEST_ABORTED;
             }
 
-            SDLTest_Log("=========================================================");
-            SDLTest_Log("=========================================================");
             SDLTest_Log("Input Image: %s (%s)", inputImage, inputImagePath);
             SDLTest_Log("Output Format: %s", outputImageFormat);
-            SDLTest_Log("=========================================================");
 
             IMG_AnimationDecoder *decoder = IMG_CreateAnimationDecoder(inputImagePath);
             SDL_free(inputImagePath);
@@ -447,6 +477,10 @@ static int SDLCALL testDecoderRewind(void *args)
     for (size_t cim = 0; cim < SDL_arraysize(outputImageFormats); ++cim) {
 
         const char *outputImageFormat = outputImageFormats[cim];
+        if (!FormatAnimationEnabled(outputImageFormats[cim])) {
+            SDLTest_Log("animation format %s disabled (output)", outputImageFormats[cim]);
+            continue;
+        }
 
         SDL_IOStream *rewindEncoderIO = SDL_IOFromDynamicMem();
         SDLTest_AssertCheck(rewindEncoderIO != NULL, "SDL_IOFromDynamicMem");
@@ -562,6 +596,10 @@ static int SDLCALL testEncodeDecodeMetadata(void *args) {
 
     for (size_t k = 0; k < SDL_arraysize(formatInfo); ++k) {
         const char *format = formatInfo[k].format;
+        if (!FormatAnimationEnabled(format)) {
+            SDLTest_Log("animation format %s disabled", format);
+            continue;
+        }
         SDLTest_Log("Testing format: %s", format);
         SDL_IOStream *metadataEncoderIO = SDL_IOFromDynamicMem();
         SDLTest_AssertCheck(metadataEncoderIO != NULL, "SDL_IOFromDynamicMem");
