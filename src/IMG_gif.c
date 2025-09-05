@@ -909,8 +909,11 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
             return SDL_SetError("Failed to duplicate frame surface");
         }
 
-        if (ctx->state.Gif89.delayTime <= 0) {
+        if (ctx->state.Gif89.delayTime < 0 && ctx->last_duration) {
             *duration = ctx->last_duration;
+        } else if (ctx->state.Gif89.delayTime < 2) {
+            /* Default animation delay, matching browser and Qt */
+            *duration = IMG_GetDecoderDuration(decoder, 10, 100);
         } else {
             *duration = IMG_GetDecoderDuration(decoder, ctx->state.Gif89.delayTime, 100);
         }
