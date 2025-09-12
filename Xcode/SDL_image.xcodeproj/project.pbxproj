@@ -68,10 +68,10 @@
 		F3DC38C42E4CFF2500CD73DE /* IMG_anim_encoder.c in Sources */ = {isa = PBXBuildFile; fileRef = F3DC38C02E4CFF2500CD73DE /* IMG_anim_encoder.c */; };
 		F3DC38C52E4CFF2500CD73DE /* IMG_libpng.c in Sources */ = {isa = PBXBuildFile; fileRef = F3DC38C12E4CFF2500CD73DE /* IMG_libpng.c */; };
 		F3DC38C62E4CFF2500CD73DE /* IMG_anim_decoder.c in Sources */ = {isa = PBXBuildFile; fileRef = F3DC38BF2E4CFF2500CD73DE /* IMG_anim_decoder.c */; };
-		F3E1AAEB281CBABD00740E39 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAEA281CBABD00740E39 /* CoreGraphics.framework */; platformFilters = (ios, tvos, ); };
-		F3E1AAEC281CBB1F00740E39 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */; platformFilters = (ios, tvos, ); };
-		F3E1AAEE281CBD9F00740E39 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAED281CBD9F00740E39 /* UIKit.framework */; platformFilters = (ios, tvos, ); };
-		F3E1AAF0281CBDD100740E39 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAEF281CBDD100740E39 /* MobileCoreServices.framework */; platformFilters = (ios, tvos, ); };
+		F3E1AAEB281CBABD00740E39 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAEA281CBABD00740E39 /* CoreGraphics.framework */; platformFilters = (ios, tvos, xros, ); };
+		F3E1AAEC281CBB1F00740E39 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAE8281CBA7B00740E39 /* ImageIO.framework */; platformFilters = (ios, tvos, xros, ); };
+		F3E1AAEE281CBD9F00740E39 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAED281CBD9F00740E39 /* UIKit.framework */; platformFilters = (ios, tvos, xros, ); };
+		F3E1AAF0281CBDD100740E39 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3E1AAEF281CBDD100740E39 /* MobileCoreServices.framework */; platformFilters = (ios, tvos, xros, ); };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -627,6 +627,7 @@
 				"FRAMEWORK_SEARCH_PATHS[sdk=appletv*]" = "\"$(PROJECT_DIR)/iOS\"";
 				"FRAMEWORK_SEARCH_PATHS[sdk=iphone*]" = "\"$(PROJECT_DIR)/iOS\"";
 				"FRAMEWORK_SEARCH_PATHS[sdk=macosx*]" = "\"$(PROJECT_DIR)/macOS\"";
+				"FRAMEWORK_SEARCH_PATHS[sdk=xr*]" = "\"$(PROJECT_DIR)/iOS\"";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					USE_STBIMAGE,
@@ -667,9 +668,10 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libsdl.SDL3-image";
 				PRODUCT_NAME = SDL3_image;
-				SUPPORTED_PLATFORMS = "watchsimulator watchos macosx iphonesimulator iphoneos driverkit appletvsimulator appletvos";
+				SUPPORTED_PLATFORMS = "xrsimulator xros macosx iphonesimulator iphoneos driverkit appletvsimulator appletvos";
 				SUPPORTS_MACCATALYST = YES;
 				TVOS_DEPLOYMENT_TARGET = 11.0;
+				XROS_DEPLOYMENT_TARGET = 1.3;
 			};
 			name = Debug;
 		};
@@ -692,6 +694,7 @@
 				"FRAMEWORK_SEARCH_PATHS[sdk=appletv*]" = "\"$(PROJECT_DIR)/iOS\"";
 				"FRAMEWORK_SEARCH_PATHS[sdk=iphone*]" = "\"$(PROJECT_DIR)/iOS\"";
 				"FRAMEWORK_SEARCH_PATHS[sdk=macosx*]" = "\"$(PROJECT_DIR)/macOS\"";
+				"FRAMEWORK_SEARCH_PATHS[sdk=xr*]" = "\"$(PROJECT_DIR)/iOS\"";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					USE_STBIMAGE,
@@ -731,9 +734,10 @@
 				MARKETING_VERSION = 3.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.libsdl.SDL3-image";
 				PRODUCT_NAME = SDL3_image;
-				SUPPORTED_PLATFORMS = "watchsimulator watchos macosx iphonesimulator iphoneos driverkit appletvsimulator appletvos";
+				SUPPORTED_PLATFORMS = "xrsimulator xros macosx iphonesimulator iphoneos driverkit appletvsimulator appletvos";
 				SUPPORTS_MACCATALYST = YES;
 				TVOS_DEPLOYMENT_TARGET = 11.0;
+				XROS_DEPLOYMENT_TARGET = 1.3;
 			};
 			name = Release;
 		};
