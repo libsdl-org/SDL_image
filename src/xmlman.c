@@ -1,8 +1,31 @@
+/*
+  SDL_image:  An example image loading library for use with SDL
+  Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
+
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+*/
+
+/* Simple XML manager written by Xen (@lordofxen) for managing XMP data of image formats. */
+
 #include <SDL3/SDL.h>
 
 #define MAX_XML_CONTENT_LENGTH 32 * 1024 * 1024 // 32 MB
 
-static char* xml_escape(const char* str) {
+static char* __xmlman_escape(const char* str) {
     if (!str) {
         return NULL;
     }
@@ -72,7 +95,7 @@ static char* xml_escape(const char* str) {
     return escaped_str;
 }
 
-static size_t xml_unescape_inplace(char* str, size_t len) {
+static size_t __xmlman_unescape_inplace(char* str, size_t len) {
     if (!str || len == 0) {
         return 0;
     }
@@ -103,11 +126,16 @@ static size_t xml_unescape_inplace(char* str, size_t len) {
         }
     }
 
-    str[j] = '\0';
+    if (j < len) {
+        str[j] = '\0';
+    } else if (len > 0) {
+        str[len - 1] = '\0';
+    }
+
     return j;
 }
 
-static const char* find_char_in_bounds(const char* str, const char* end, char c) {
+static const char* __xmlman_find_char_in_bounds(const char* str, const char* end, char c) {
     while (str < end) {
         if (*str == c) {
             return str;
@@ -117,7 +145,7 @@ static const char* find_char_in_bounds(const char* str, const char* end, char c)
     return NULL;
 }
 
-static int memcasecmp(const char* s1, const char* s2, size_t n) {
+static int __xmlman_memcasecmp(const char* s1, const char* s2, size_t n) {
     for (size_t i = 0; i < n; i++) {
         unsigned char c1 = (unsigned char)s1[i];
         unsigned char c2 = (unsigned char)s2[i];
@@ -128,7 +156,7 @@ static int memcasecmp(const char* s1, const char* s2, size_t n) {
     return 0;
 }
 
-static const char* find_substr_in_bounds(const char* haystack, const char* haystack_end, 
+static const char* __xmlman_find_substr_in_bounds(const char* haystack, const char* haystack_end, 
                                        const char* needle, size_t needle_len, int case_sensitive) {
     if (!haystack || !needle || needle_len == 0 || !haystack_end) {
         return NULL;
@@ -139,14 +167,14 @@ static const char* find_substr_in_bounds(const char* haystack, const char* hayst
     
     const char* end_search = haystack_end - needle_len + 1;
     for (const char* p = haystack; p < end_search; p++) {
-        if (case_sensitive ? (SDL_memcmp(p, needle, needle_len) == 0) : (memcasecmp(p, needle, needle_len) == 0)) {
+        if (case_sensitive ? (SDL_memcmp(p, needle, needle_len) == 0) : (__xmlman_memcasecmp(p, needle, needle_len) == 0)) {
             return p;
         }
     }
     return NULL;
 }
 
-static const char* find_tag_content(const char* data, const char* data_end, const char* tag, 
+static const char* __xmlman_find_tag_content(const char* data, const char* data_end, const char* tag, 
                                   const char** content_end, int case_sensitive) {
     if (!data || !tag || !content_end) return NULL;
     
@@ -162,30 +190,30 @@ static const char* find_tag_content(const char* data, const char* data_end, cons
 
     while (tag_start < data_end) {
         if ((data_end - tag_start) >= 4 && SDL_memcmp(tag_start, "<!--", 4) == 0) {
-            const char* comment_end = find_substr_in_bounds(tag_start + 4, data_end, "-->", 3, 1);
+            const char* comment_end = __xmlman_find_substr_in_bounds(tag_start + 4, data_end, "-->", 3, 1);
             if (!comment_end) return NULL;
             tag_start = comment_end + 3;
             continue;
         }
         if ((data_end - tag_start) >= 9 && SDL_memcmp(tag_start, "<![CDATA[", 9) == 0) {
-            const char *cdata_end = find_substr_in_bounds(tag_start + 9, data_end, "]]>", 3, 1);
+            const char *cdata_end = __xmlman_find_substr_in_bounds(tag_start + 9, data_end, "]]>", 3, 1);
             if (!cdata_end)
                 return NULL;
             tag_start = cdata_end + 3;
             continue;
         }
 
-        tag_start = find_substr_in_bounds(tag_start, data_end, start_tag, start_tag_len, case_sensitive);
+        tag_start = __xmlman_find_substr_in_bounds(tag_start, data_end, start_tag, start_tag_len, case_sensitive);
         if (!tag_start) {
             return NULL;
         }
 
         const char* after_tag = tag_start + start_tag_len;
         if (after_tag < data_end && ((*after_tag >= 9 && *after_tag <= 13) || *after_tag == 32 || *after_tag == '>')) {
-            const char* content_start = find_char_in_bounds(after_tag, data_end, '>');
+            const char* content_start = __xmlman_find_char_in_bounds(after_tag, data_end, '>');
             if (content_start) {
                 content_start++;
-                *content_end = find_substr_in_bounds(content_start, data_end, end_tag, end_tag_len, case_sensitive);
+                *content_end = __xmlman_find_substr_in_bounds(content_start, data_end, end_tag, end_tag_len, case_sensitive);
                 if (*content_end) {
                     return content_start;
                 }
@@ -196,33 +224,33 @@ static const char* find_tag_content(const char* data, const char* data_end, cons
     return NULL;
 }
 
-static char* GetXMLContentFromTag(const char* data, size_t len, const char* tag) {
+static char* __xmlman_GetXMLContentFromTag(const char* data, size_t len, const char* tag) {
     if (!data || !tag || len == 0) {
         return NULL;
     }
     
     const char* data_end = data + len;
     const char* content_end;
-    const char* content_start = find_tag_content(data, data_end, tag, &content_end, 1);
+    const char* content_start = __xmlman_find_tag_content(data, data_end, tag, &content_end, 1);
     
     if (!content_start || !content_end) {
         return NULL;
     }
 
-    const char* alt_start = find_substr_in_bounds(content_start, content_end, "<rdf:Alt>", 9, 1);
+    const char* alt_start = __xmlman_find_substr_in_bounds(content_start, content_end, "<rdf:Alt>", 9, 1);
     if (alt_start && alt_start < content_end) {
         const char* li_start = alt_start;
         const char* fallback_content = NULL;
         size_t fallback_len = 0;
 
-        while ((li_start = find_substr_in_bounds(li_start, content_end, "<rdf:li", 7, 1)) != NULL) {
-            const char* li_content_start = find_char_in_bounds(li_start, content_end, '>');
+        while ((li_start = __xmlman_find_substr_in_bounds(li_start, content_end, "<rdf:li", 7, 1)) != NULL) {
+            const char* li_content_start = __xmlman_find_char_in_bounds(li_start, content_end, '>');
             if (!li_content_start) {
                 break;
             }
             li_content_start++;
             
-            const char* li_end = find_substr_in_bounds(li_content_start, content_end, "</rdf:li>", 9, 1);
+            const char* li_end = __xmlman_find_substr_in_bounds(li_content_start, content_end, "</rdf:li>", 9, 1);
             if (!li_end) {
                 break;
             }
@@ -238,9 +266,9 @@ static char* GetXMLContentFromTag(const char* data, size_t len, const char* tag)
                 continue;
             }
 
-            const char* default_lang = find_substr_in_bounds(li_start, li_content_start, 
+            const char* default_lang = __xmlman_find_substr_in_bounds(li_start, li_content_start, 
                                                            "xml:lang=\"x-default\"", 20, 0);
-            const char* en_us_lang = find_substr_in_bounds(li_start, li_content_start, 
+            const char* en_us_lang = __xmlman_find_substr_in_bounds(li_start, li_content_start, 
                                                          "xml:lang=\"en-us\"", 16, 0);
             
             if (default_lang || en_us_lang) {
@@ -249,7 +277,7 @@ static char* GetXMLContentFromTag(const char* data, size_t len, const char* tag)
                 if (result) {
                     SDL_memcpy(result, li_content_start, content_len);
                     result[content_len] = '\0';
-                    xml_unescape_inplace(result, content_len);
+                    __xmlman_unescape_inplace(result, content_len);
                 }
                 return result;
             }
@@ -279,21 +307,21 @@ static char* GetXMLContentFromTag(const char* data, size_t len, const char* tag)
             if (result) {
                 SDL_memcpy(result, fallback_content, fallback_len);
                 result[fallback_len] = '\0';
-                xml_unescape_inplace(result, fallback_len);
+                __xmlman_unescape_inplace(result, fallback_len);
             }
             return result;
         }
         return NULL;
     }
 
-    const char* seq_start = find_substr_in_bounds(content_start, content_end, "<rdf:Seq>", 9, 1);
+    const char* seq_start = __xmlman_find_substr_in_bounds(content_start, content_end, "<rdf:Seq>", 9, 1);
     if (seq_start && seq_start < content_end) {
-        const char* li_start = find_substr_in_bounds(seq_start, content_end, "<rdf:li", 7, 1);
+        const char* li_start = __xmlman_find_substr_in_bounds(seq_start, content_end, "<rdf:li", 7, 1);
         if (li_start) {
-            const char* li_content_start = find_char_in_bounds(li_start, content_end, '>');
+            const char* li_content_start = __xmlman_find_char_in_bounds(li_start, content_end, '>');
             if (li_content_start) {
                 li_content_start++;
-                const char* li_end = find_substr_in_bounds(li_content_start, content_end, "</rdf:li>", 9, 1);
+                const char* li_end = __xmlman_find_substr_in_bounds(li_content_start, content_end, "</rdf:li>", 9, 1);
                 if (li_end) {
                     while (li_content_start < li_end && SDL_isspace((unsigned char)*li_content_start)) {
                         li_content_start++;
@@ -310,7 +338,7 @@ static char* GetXMLContentFromTag(const char* data, size_t len, const char* tag)
                     if (result) {
                         SDL_memcpy(result, li_content_start, content_len);
                         result[content_len] = '\0';
-                        xml_unescape_inplace(result, content_len);
+                        __xmlman_unescape_inplace(result, content_len);
                     }
                     return result;
                 }
@@ -334,7 +362,7 @@ static char* GetXMLContentFromTag(const char* data, size_t len, const char* tag)
     if (result) {
         SDL_memcpy(result, content_start, content_len);
         result[content_len] = '\0';
-        xml_unescape_inplace(result, content_len);
+        __xmlman_unescape_inplace(result, content_len);
     }
     return result;
 }
@@ -342,7 +370,7 @@ static char* GetXMLContentFromTag(const char* data, size_t len, const char* tag)
 static char *__gettag(const uint8_t *data, size_t len, const char *tag) {
     if (!data || len < 4 || !tag) return NULL;
 
-    return GetXMLContentFromTag((const char*)data, len, tag);
+    return __xmlman_GetXMLContentFromTag((const char*)data, len, tag);
 }
 
 char* __xmlman_GetXMPDescription(const uint8_t* data, size_t len) {
@@ -374,23 +402,28 @@ uint8_t *__xmlman_ConstructXMPWithRDFDescription(const char *dctitle, const char
         return NULL;
     }
 
-    const char *escaped_title = dctitle ? xml_escape(dctitle) : NULL;
-    const char *escaped_creator = dccreator ? xml_escape(dccreator) : NULL;
-    const char *escaped_description = dcdescription ? xml_escape(dcdescription) : NULL;
-    const char *escaped_rights = dcrights ? xml_escape(dcrights) : NULL;
-    const char *escaped_createdate = xmpcreatedate ? xml_escape(xmpcreatedate) : NULL;
+    const char *escaped_title = dctitle ? __xmlman_escape(dctitle) : NULL;
+    const char *escaped_creator = dccreator ? __xmlman_escape(dccreator) : NULL;
+    const char *escaped_description = dcdescription ? __xmlman_escape(dcdescription) : NULL;
+    const char *escaped_rights = dcrights ? __xmlman_escape(dcrights) : NULL;
+    const char *escaped_createdate = xmpcreatedate ? __xmlman_escape(xmpcreatedate) : NULL;
+
     if (escaped_title) {
         dctitle = escaped_title;
     }
+
     if (escaped_creator) {
         dccreator = escaped_creator;
     }
+
     if (escaped_description) {
         dcdescription = escaped_description;
     }
+
     if (escaped_rights) {
         dcrights = escaped_rights;
     }
+
     if (escaped_createdate) {
         xmpcreatedate = escaped_createdate;
     }
