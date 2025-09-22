@@ -273,10 +273,11 @@ static char* __xmlman_GetXMLContentFromTag(const char* data, size_t len, const c
             
             if (default_lang || en_us_lang) {
                 size_t content_len = li_end - li_content_start;
-                char* result = (char*)SDL_malloc(content_len + 1);
+                ++content_len;
+                char* result = (char*)SDL_malloc(content_len);
                 if (result) {
-                    SDL_memcpy(result, li_content_start, content_len);
-                    result[content_len] = '\0';
+                    SDL_memcpy(result, li_content_start, content_len - 1);
+                    result[content_len - 1] = '\0';
                     __xmlman_unescape_inplace(result, content_len);
                 }
                 return result;
@@ -303,10 +304,11 @@ static char* __xmlman_GetXMLContentFromTag(const char* data, size_t len, const c
                 return NULL;
             }
 
-            char* result = (char*)SDL_malloc(fallback_len + 1);
+            ++fallback_len;
+            char* result = (char*)SDL_malloc(fallback_len);
             if (result) {
-                SDL_memcpy(result, fallback_content, fallback_len);
-                result[fallback_len] = '\0';
+                SDL_memcpy(result, fallback_content, fallback_len - 1);
+                result[fallback_len - 1] = '\0';
                 __xmlman_unescape_inplace(result, fallback_len);
             }
             return result;
@@ -333,11 +335,11 @@ static char* __xmlman_GetXMLContentFromTag(const char* data, size_t len, const c
                         return NULL;
                     }
 
-                    size_t content_len = li_end - li_content_start;
-                    char* result = (char*)SDL_malloc(content_len + 1);
+                    size_t content_len = (li_end - li_content_start) + 1;
+                    char* result = (char*)SDL_malloc(content_len);
                     if (result) {
-                        SDL_memcpy(result, li_content_start, content_len);
-                        result[content_len] = '\0';
+                        SDL_memcpy(result, li_content_start, content_len - 1);
+                        result[content_len - 1] = '\0';
                         __xmlman_unescape_inplace(result, content_len);
                     }
                     return result;
@@ -357,11 +359,11 @@ static char* __xmlman_GetXMLContentFromTag(const char* data, size_t len, const c
         return NULL;
     }
 
-    size_t content_len = content_end - content_start;
-    char* result = (char*)SDL_malloc(content_len + 1);
+    size_t content_len = (content_end - content_start) + 1;
+    char* result = (char*)SDL_malloc(content_len);
     if (result) {
-        SDL_memcpy(result, content_start, content_len);
-        result[content_len] = '\0';
+        SDL_memcpy(result, content_start, content_len - 1);
+        result[content_len - 1] = '\0';
         __xmlman_unescape_inplace(result, content_len);
     }
     return result;
