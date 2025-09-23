@@ -1,8 +1,31 @@
+/*
+  SDL_image:  An example image loading library for use with SDL
+  Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
+
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+*/
+
+/* Simple XML manager written by Xen (@lordofxen) for managing XMP data of image formats. */
+
 #include <SDL3/SDL.h>
 
 #define MAX_XML_CONTENT_LENGTH 32 * 1024 * 1024 // 32 MB
 
-static char* xml_escape(const char* str) {
+static char* escape(const char* str) {
     if (!str) {
         return NULL;
     }
@@ -72,7 +95,7 @@ static char* xml_escape(const char* str) {
     return escaped_str;
 }
 
-static size_t xml_unescape_inplace(char* str, size_t len) {
+static size_t unescape_inplace(char* str, size_t len) {
     if (!str || len == 0) {
         return 0;
     }
@@ -103,7 +126,12 @@ static size_t xml_unescape_inplace(char* str, size_t len) {
         }
     }
 
-    str[j] = '\0';
+    if (j < len) {
+        str[j] = '\0';
+    } else if (len > 0) {
+        str[len - 1] = '\0';
+    }
+
     return j;
 }
 
@@ -196,7 +224,7 @@ static const char* find_tag_content(const char* data, const char* data_end, cons
     return NULL;
 }
 
-static char* GetXMLContentFromTag(const char* data, size_t len, const char* tag) {
+static char* get_content_from_tag(const char* data, size_t len, const char* tag) {
     if (!data || !tag || len == 0) {
         return NULL;
     }
@@ -245,11 +273,12 @@ static char* GetXMLContentFromTag(const char* data, size_t len, const char* tag)
             
             if (default_lang || en_us_lang) {
                 size_t content_len = li_end - li_content_start;
-                char* result = (char*)SDL_malloc(content_len + 1);
+                ++content_len;
+                char* result = (char*)SDL_malloc(content_len);
                 if (result) {
-                    SDL_memcpy(result, li_content_start, content_len);
-                    result[content_len] = '\0';
-                    xml_unescape_inplace(result, content_len);
+                    SDL_memcpy(result, li_content_start, content_len - 1);
+                    result[content_len - 1] = '\0';
+                    unescape_inplace(result, content_len);
                 }
                 return result;
             }
@@ -275,11 +304,12 @@ static char* GetXMLContentFromTag(const char* data, size_t len, const char* tag)
                 return NULL;
             }
 
-            char* result = (char*)SDL_malloc(fallback_len + 1);
+            ++fallback_len;
+            char* result = (char*)SDL_malloc(fallback_len);
             if (result) {
-                SDL_memcpy(result, fallback_content, fallback_len);
-                result[fallback_len] = '\0';
-                xml_unescape_inplace(result, fallback_len);
+                SDL_memcpy(result, fallback_content, fallback_len - 1);
+                result[fallback_len - 1] = '\0';
+                unescape_inplace(result, fallback_len);
             }
             return result;
         }
@@ -305,12 +335,12 @@ static char* GetXMLContentFromTag(const char* data, size_t len, const char* tag)
                         return NULL;
                     }
 
-                    size_t content_len = li_end - li_content_start;
-                    char* result = (char*)SDL_malloc(content_len + 1);
+                    size_t content_len = (li_end - li_content_start) + 1;
+                    char* result = (char*)SDL_malloc(content_len);
                     if (result) {
-                        SDL_memcpy(result, li_content_start, content_len);
-                        result[content_len] = '\0';
-                        xml_unescape_inplace(result, content_len);
+                        SDL_memcpy(result, li_content_start, content_len - 1);
+                        result[content_len - 1] = '\0';
+                        unescape_inplace(result, content_len);
                     }
                     return result;
                 }
@@ -329,40 +359,40 @@ static char* GetXMLContentFromTag(const char* data, size_t len, const char* tag)
         return NULL;
     }
 
-    size_t content_len = content_end - content_start;
-    char* result = (char*)SDL_malloc(content_len + 1);
+    size_t content_len = (content_end - content_start) + 1;
+    char* result = (char*)SDL_malloc(content_len);
     if (result) {
-        SDL_memcpy(result, content_start, content_len);
-        result[content_len] = '\0';
-        xml_unescape_inplace(result, content_len);
+        SDL_memcpy(result, content_start, content_len - 1);
+        result[content_len - 1] = '\0';
+        unescape_inplace(result, content_len);
     }
     return result;
 }
 
-static char *__gettag(const uint8_t *data, size_t len, const char *tag) {
+static char *get_tag(const uint8_t *data, size_t len, const char *tag) {
     if (!data || len < 4 || !tag) return NULL;
 
-    return GetXMLContentFromTag((const char*)data, len, tag);
+    return get_content_from_tag((const char*)data, len, tag);
 }
 
 char* __xmlman_GetXMPDescription(const uint8_t* data, size_t len) {
-    return __gettag(data, len, "dc:description");
+    return get_tag(data, len, "dc:description");
 }
 
 char *__xmlman_GetXMPCopyright(const uint8_t *data, size_t len) {
-    return __gettag(data, len, "dc:rights");
+    return get_tag(data, len, "dc:rights");
 }
 
 char *__xmlman_GetXMPTitle(const uint8_t *data, size_t len) {
-    return __gettag(data, len, "dc:title");
+    return get_tag(data, len, "dc:title");
 }
 
 char *__xmlman_GetXMPCreator(const uint8_t *data, size_t len) {
-    return __gettag(data, len, "dc:creator");
+    return get_tag(data, len, "dc:creator");
 }
 
 char *__xmlman_GetXMPCreateDate(const uint8_t *data, size_t len) {
-    return __gettag(data, len, "xmp:CreateDate");
+    return get_tag(data, len, "xmp:CreateDate");
 }
 
 uint8_t *__xmlman_ConstructXMPWithRDFDescription(const char *dctitle, const char *dccreator, const char *dcdescription, const char *dcrights, const char *xmpcreatedate, size_t *outlen)
@@ -374,23 +404,28 @@ uint8_t *__xmlman_ConstructXMPWithRDFDescription(const char *dctitle, const char
         return NULL;
     }
 
-    const char *escaped_title = dctitle ? xml_escape(dctitle) : NULL;
-    const char *escaped_creator = dccreator ? xml_escape(dccreator) : NULL;
-    const char *escaped_description = dcdescription ? xml_escape(dcdescription) : NULL;
-    const char *escaped_rights = dcrights ? xml_escape(dcrights) : NULL;
-    const char *escaped_createdate = xmpcreatedate ? xml_escape(xmpcreatedate) : NULL;
+    const char *escaped_title = dctitle ? escape(dctitle) : NULL;
+    const char *escaped_creator = dccreator ? escape(dccreator) : NULL;
+    const char *escaped_description = dcdescription ? escape(dcdescription) : NULL;
+    const char *escaped_rights = dcrights ? escape(dcrights) : NULL;
+    const char *escaped_createdate = xmpcreatedate ? escape(xmpcreatedate) : NULL;
+
     if (escaped_title) {
         dctitle = escaped_title;
     }
+
     if (escaped_creator) {
         dccreator = escaped_creator;
     }
+
     if (escaped_description) {
         dcdescription = escaped_description;
     }
+
     if (escaped_rights) {
         dcrights = escaped_rights;
     }
+
     if (escaped_createdate) {
         xmpcreatedate = escaped_createdate;
     }
