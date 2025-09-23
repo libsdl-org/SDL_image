@@ -126,11 +126,10 @@ static size_t unescape_inplace(char* str, size_t len) {
         }
     }
 
-    if (j < len) {
-        str[j] = '\0';
-    } else if (len > 0) {
-        str[len - 1] = '\0';
+    if (j >= len) {
+        j = len - 1;
     }
+    str[j] = '\0';
 
     return j;
 }
