@@ -99,7 +99,7 @@ static size_t unescape_inplace(char* str, size_t len) {
     if (!str || len == 0) {
         return 0;
     }
-    
+
     size_t i = 0, j = 0;
     while (i < len && str[i] != '\0') {
         if (str[i] == '&' && i + 3 < len) {
@@ -164,7 +164,7 @@ static const char* find_substr_in_bounds(const char* haystack, const char* hayst
     if (haystack_end <= haystack || (size_t)(haystack_end - haystack) < needle_len) {
         return NULL;
     }
-    
+
     const char* end_search = haystack_end - needle_len + 1;
     for (const char* p = haystack; p < end_search; p++) {
         if (case_sensitive ? (SDL_memcmp(p, needle, needle_len) == 0) : (memcasecmp(p, needle, needle_len) == 0)) {
@@ -176,14 +176,16 @@ static const char* find_substr_in_bounds(const char* haystack, const char* hayst
 
 static const char* find_tag_content(const char* data, const char* data_end, const char* tag, 
                                   const char** content_end, int case_sensitive) {
-    if (!data || !tag || !content_end) return NULL;
-    
+    if (!data || !tag || !content_end) {
+        return NULL;
+    }
+
     char start_tag[256];
     char end_tag[256];
-    
+
     SDL_snprintf(start_tag, sizeof(start_tag), "<%s", tag);
     SDL_snprintf(end_tag, sizeof(end_tag), "</%s>", tag);
-    
+
     size_t start_tag_len = SDL_strlen(start_tag);
     size_t end_tag_len = SDL_strlen(end_tag);
     const char* tag_start = data;
@@ -191,14 +193,17 @@ static const char* find_tag_content(const char* data, const char* data_end, cons
     while (tag_start < data_end) {
         if ((data_end - tag_start) >= 4 && SDL_memcmp(tag_start, "<!--", 4) == 0) {
             const char* comment_end = find_substr_in_bounds(tag_start + 4, data_end, "-->", 3, 1);
-            if (!comment_end) return NULL;
+            if (!comment_end) {
+                return NULL;
+            }
             tag_start = comment_end + 3;
             continue;
         }
         if ((data_end - tag_start) >= 9 && SDL_memcmp(tag_start, "<![CDATA[", 9) == 0) {
             const char *cdata_end = find_substr_in_bounds(tag_start + 9, data_end, "]]>", 3, 1);
-            if (!cdata_end)
+            if (!cdata_end) {
                 return NULL;
+            }
             tag_start = cdata_end + 3;
             continue;
         }
@@ -228,11 +233,11 @@ static char* get_content_from_tag(const char* data, size_t len, const char* tag)
     if (!data || !tag || len == 0) {
         return NULL;
     }
-    
+
     const char* data_end = data + len;
     const char* content_end;
     const char* content_start = find_tag_content(data, data_end, tag, &content_end, 1);
-    
+
     if (!content_start || !content_end) {
         return NULL;
     }
@@ -249,7 +254,7 @@ static char* get_content_from_tag(const char* data, size_t len, const char* tag)
                 break;
             }
             li_content_start++;
-            
+
             const char* li_end = find_substr_in_bounds(li_content_start, content_end, "</rdf:li>", 9, 1);
             if (!li_end) {
                 break;
@@ -270,7 +275,7 @@ static char* get_content_from_tag(const char* data, size_t len, const char* tag)
                                                            "xml:lang=\"x-default\"", 20, 0);
             const char* en_us_lang = find_substr_in_bounds(li_start, li_content_start, 
                                                          "xml:lang=\"en-us\"", 16, 0);
-            
+
             if (default_lang || en_us_lang) {
                 size_t content_len = li_end - li_content_start;
                 ++content_len;
@@ -287,7 +292,7 @@ static char* get_content_from_tag(const char* data, size_t len, const char* tag)
                 fallback_content = li_content_start;
                 fallback_len = li_end - li_content_start;
             }
-            
+
             li_start = li_end;
         }
 
@@ -370,7 +375,9 @@ static char* get_content_from_tag(const char* data, size_t len, const char* tag)
 }
 
 static char *get_tag(const uint8_t *data, size_t len, const char *tag) {
-    if (!data || len < 4 || !tag) return NULL;
+    if (!data || len < 4 || !tag) {
+        return NULL;
+    }
 
     return get_content_from_tag((const char*)data, len, tag);
 }
