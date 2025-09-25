@@ -62,7 +62,7 @@
         "-DSDLIMAGE_DYNAMIC_AVIF=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libavif-16.dll",
         "-DSDLIMAGE_DYNAMIC_TIF=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libtiff-6.dll",
         "-DSDLIMAGE_DYNAMIC_WEBP=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libwebp-7.dll",
-        "-DSDLIMAGE_DYNAMIC_WEBPDEMUX=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libwebpdemux-2.dll"
+        "-DSDLIMAGE_DYNAMIC_WEBPDEMUX=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libwebpdemux-2.dll",
         "-DSDLIMAGE_DYNAMIC_WEBPMUX=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libwebpmux-3.dll"
       ],
       "shared-static": "args"
