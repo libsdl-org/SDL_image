@@ -122,7 +122,6 @@ static struct
     void (*png_read_update_info)(png_structrp png_ptr, png_inforp info_ptr);
     void (*png_set_expand)(png_structrp png_ptr);
     void (*png_set_gray_to_rgb)(png_structrp png_ptr);
-    void (*png_set_packing)(png_structrp png_ptr);
     void (*png_set_read_fn)(png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr read_data_fn);
     void (*png_set_strip_16)(png_structrp png_ptr);
     int (*png_set_interlace_handling)(png_structrp png_ptr);
@@ -139,8 +138,6 @@ static struct
     void (*png_set_sig_bytes)(png_structrp png_ptr, int num_bytes);
     void (*png_set_compression_level)(png_structrp png_ptr, int level);
 
-    void (*png_set_bgr)(png_structrp png_ptr);
-    void (*png_set_swap_alpha)(png_structrp png_ptr);
     void (*png_set_filter)(png_structrp png_ptr, int method, int filters);
 
     png_structp (*png_create_write_struct)(png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn);
@@ -161,7 +158,6 @@ static struct
     png_byte (*png_get_color_type)(png_const_structrp png_ptr, png_const_inforp info_ptr);
     png_uint_32 (*png_get_image_width)(png_const_structrp png_ptr, png_const_inforp info_ptr);
     png_uint_32 (*png_get_image_height)(png_const_structrp png_ptr, png_const_inforp info_ptr);
-    void (*png_set_expand_gray_1_2_4_to_8)(png_structrp png_ptr);
 
     void (*png_write_flush)(png_structrp png_ptr);
 } lib;
@@ -226,7 +222,6 @@ static bool IMG_InitPNG(void)
         FUNCTION_LOADER_LIBPNG(png_read_update_info, void (*)(png_structrp png_ptr, png_inforp info_ptr))
         FUNCTION_LOADER_LIBPNG(png_set_expand, void (*)(png_structrp png_ptr))
         FUNCTION_LOADER_LIBPNG(png_set_gray_to_rgb, void (*)(png_structrp png_ptr))
-        FUNCTION_LOADER_LIBPNG(png_set_packing, void (*)(png_structrp png_ptr))
         FUNCTION_LOADER_LIBPNG(png_set_read_fn, void (*)(png_structrp png_ptr, png_voidp io_ptr, png_rw_ptr read_data_fn))
         FUNCTION_LOADER_LIBPNG(png_set_strip_16, void (*)(png_structrp png_ptr))
         FUNCTION_LOADER_LIBPNG(png_set_interlace_handling, int (*)(png_structrp png_ptr))
@@ -243,8 +238,6 @@ static bool IMG_InitPNG(void)
         FUNCTION_LOADER_LIBPNG(png_set_sig_bytes, void (*)(png_structrp png_ptr, int num_bytes))
         FUNCTION_LOADER_LIBPNG(png_set_compression_level, void (*)(png_structrp png_ptr, int level))
 
-        FUNCTION_LOADER_LIBPNG(png_set_bgr, void (*)(png_structrp png_ptr))
-        FUNCTION_LOADER_LIBPNG(png_set_swap_alpha, void (*)(png_structrp png_ptr))
         FUNCTION_LOADER_LIBPNG(png_set_filter, void (*)(png_structrp png_ptr, int method, int filters))
 
         FUNCTION_LOADER_LIBPNG(png_create_write_struct, png_structp(*)(png_const_charp user_png_ver, png_voidp error_ptr, png_error_ptr error_fn, png_error_ptr warn_fn))
@@ -265,7 +258,6 @@ static bool IMG_InitPNG(void)
         FUNCTION_LOADER_LIBPNG(png_get_color_type, png_byte(*)(png_const_structrp png_ptr, png_const_inforp info_ptr))
         FUNCTION_LOADER_LIBPNG(png_get_image_width, png_uint_32(*)(png_const_structrp png_ptr, png_const_inforp info_ptr))
         FUNCTION_LOADER_LIBPNG(png_get_image_height, png_uint_32(*)(png_const_structrp png_ptr, png_const_inforp info_ptr))
-        FUNCTION_LOADER_LIBPNG(png_set_expand_gray_1_2_4_to_8, void (*)(png_structrp png_ptr))
 
         FUNCTION_LOADER_LIBPNG(png_write_flush, void (*)(png_structrp png_ptr))
     }
@@ -407,45 +399,49 @@ static bool LIBPNG_LoadPNG_IO_Internal(SDL_IOStream *src, struct png_load_vars *
     lib.png_get_IHDR(vars->png_ptr, vars->info_ptr, &vars->width, &vars->height, &vars->bit_depth,
                      &vars->color_type, &vars->interlace_type, NULL, NULL);
 
-    // For grayscale with bit depth < 8, expand to 8 bits
-    if (vars->color_type == PNG_COLOR_TYPE_GRAY && vars->bit_depth < 8) {
-        lib.png_set_expand_gray_1_2_4_to_8(vars->png_ptr);
-    }
-
     // Only convert non-palette formats to RGB/RGBA
+    // TODO: Convert this to a colour key - the specs say that there's
+    // only one transparent colour for non-palette images
     if (vars->color_type != PNG_COLOR_TYPE_PALETTE) {
-        if (vars->color_type == PNG_COLOR_TYPE_GRAY || vars->color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
-            lib.png_set_gray_to_rgb(vars->png_ptr);
-        }
-
         if (lib.png_get_valid(vars->png_ptr, vars->info_ptr, PNG_INFO_tRNS)) {
             lib.png_set_tRNS_to_alpha(vars->png_ptr);
-        } else if (!(vars->color_type & PNG_COLOR_MASK_ALPHA)) {
-            lib.png_set_filler(vars->png_ptr, 0xFF, PNG_FILLER_AFTER);
+            vars->color_type |= PNG_COLOR_MASK_ALPHA;
         }
     }
 
-    lib.png_set_packing(vars->png_ptr);
+    /* SDL doesn't currently support this format, so we convert to RGB for now. */
+    if (vars->color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
+        lib.png_set_gray_to_rgb(vars->png_ptr);
+    }
+
+    if (vars->color_type == PNG_COLOR_TYPE_PALETTE ||
+        vars->color_type == PNG_COLOR_TYPE_GRAY) {
+        if (vars->bit_depth == 1) {
+            vars->format = SDL_PIXELFORMAT_INDEX1MSB;
+        } else if (vars->bit_depth == 2) {
+            vars->format = SDL_PIXELFORMAT_INDEX2MSB;
+        } else if (vars->bit_depth == 4) {
+            vars->format = SDL_PIXELFORMAT_INDEX4MSB;
+        } else /* if (vars->bit_depth == 8) */ {
+            vars->format = SDL_PIXELFORMAT_INDEX8;
+        }
+    } else if (vars->bit_depth == 16) {
+        if (vars->color_type & PNG_COLOR_MASK_ALPHA) {
+            vars->format = SDL_PIXELFORMAT_RGBA64;
+        } else {
+            vars->format = SDL_PIXELFORMAT_RGB48;
+        }
+    } else {
+        if (vars->color_type & PNG_COLOR_MASK_ALPHA) {
+            vars->format = SDL_PIXELFORMAT_RGBA32;
+        } else {
+            vars->format = SDL_PIXELFORMAT_RGB24;
+        }
+    }
 
     lib.png_read_update_info(vars->png_ptr, vars->info_ptr);
     lib.png_get_IHDR(vars->png_ptr, vars->info_ptr, &vars->width, &vars->height, &vars->bit_depth,
                      &vars->color_type, &vars->interlace_type, NULL, NULL);
-
-    if (vars->color_type == PNG_COLOR_TYPE_PALETTE) {
-        vars->format = SDL_PIXELFORMAT_INDEX8;
-    } else if (vars->bit_depth == 16) {
-        vars->format = SDL_PIXELFORMAT_RGBA64;
-        // Fallback to 8-bit RGBA if 16-bit not supported
-        int bpp;
-        Uint32 rmask, gmask, bmask, amask;
-        if (!SDL_GetMasksForPixelFormat(vars->format, &bpp, &rmask, &gmask, &bmask, &amask)) {
-            lib.png_set_strip_16(vars->png_ptr);
-            lib.png_read_update_info(vars->png_ptr, vars->info_ptr);
-            vars->format = SDL_PIXELFORMAT_RGBA32;
-        }
-    } else {
-        vars->format = SDL_PIXELFORMAT_RGBA32;
-    }
 
     vars->surface = SDL_CreateSurface(vars->width, vars->height, vars->format);
     if (vars->surface == NULL) {
@@ -456,30 +452,38 @@ static bool LIBPNG_LoadPNG_IO_Internal(SDL_IOStream *src, struct png_load_vars *
     // For palette images, set up the palette
     if (vars->color_type == PNG_COLOR_TYPE_PALETTE) {
         if (lib.png_get_PLTE(vars->png_ptr, vars->info_ptr, &vars->png_palette, &vars->num_palette)) {
-            SDL_Palette *palette = SDL_CreatePalette(vars->num_palette);
+            SDL_Palette *palette = SDL_CreateSurfacePalette(vars->surface);
             if (!palette) {
                 vars->error = "Failed to create palette for PNG image";
                 return false;
             }
 
-            for (int i = 0; i < vars->num_palette; i++) {
-                SDL_Color color;
-                color.r = vars->png_palette[i].red;
-                color.g = vars->png_palette[i].green;
-                color.b = vars->png_palette[i].blue;
-                color.a = 255;
-                SDL_SetPaletteColors(palette, &color, i, 1);
+            for (int i = 0; i < palette->ncolors; i++) {
+                palette->colors[i].r = vars->png_palette[i].red;
+                palette->colors[i].g = vars->png_palette[i].green;
+                palette->colors[i].b = vars->png_palette[i].blue;
+                palette->colors[i].a = 255;
             }
 
             if (lib.png_get_tRNS(vars->png_ptr, vars->info_ptr, &vars->trans, &vars->num_trans, &vars->trans_values)) {
-                for (int i = 0; i < vars->num_trans && i < vars->num_palette; i++) {
+                for (int i = 0; i < vars->num_trans && i < palette->ncolors; i++) {
                     palette->colors[i].a = vars->trans[i];
                 }
                 SDL_SetSurfaceBlendMode(vars->surface, SDL_BLENDMODE_BLEND);
             }
+        }
+    } else if (vars->color_type == PNG_COLOR_TYPE_GRAY) {
+        SDL_Palette *palette = SDL_CreateSurfacePalette(vars->surface);
+        if (!palette) {
+            vars->error = "Failed to create palette for PNG image";
+            return false;
+        }
 
-            SDL_SetSurfacePalette(vars->surface, palette);
-            SDL_DestroyPalette(palette);
+        for (int i = 0; i < palette->ncolors; i++) {
+            palette->colors[i].r = (i * 255) / palette->ncolors;
+            palette->colors[i].g = (i * 255) / palette->ncolors;
+            palette->colors[i].b = (i * 255) / palette->ncolors;
+            palette->colors[i].a = 255;
         }
     }
 
