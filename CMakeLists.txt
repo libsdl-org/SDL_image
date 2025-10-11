@@ -1283,6 +1283,7 @@ if(SDLIMAGE_SAMPLES)
     endfunction()
     add_sdl_image_example_executable(showanim examples/showanim.c)
     add_sdl_image_example_executable(showimage examples/showimage.c)
+    add_sdl_image_example_executable(showclipboard examples/showclipboard.c)
 endif()
 
 if(SDLIMAGE_TESTS)
