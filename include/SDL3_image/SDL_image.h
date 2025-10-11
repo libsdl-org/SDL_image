@@ -364,6 +364,18 @@ extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_IO(SDL_Renderer *rende
 extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_IO(SDL_Renderer *renderer, SDL_IOStream *src, bool closeio, const char *type);
 
 /**
+ * Get the image currently in the clipboard.
+ *
+ * When done with the returned surface, the app should dispose of it with a
+ * call to SDL_DestroySurface().
+ *
+ * \returns a new SDL surface, or NULL if no supported image is available.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ */
+extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_GetClipboardImage(void);
+
+/**
  * Detect AVIF image data on a readable/seekable SDL_IOStream.
  *
  * This function attempts to determine if a file is a given filetype, reading

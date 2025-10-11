@@ -411,6 +411,32 @@ done:
     return result;
 }
 
+SDL_Surface *IMG_GetClipboardImage(void)
+{
+    SDL_Surface *surface = NULL;
+
+    char **mime_types = SDL_GetClipboardMimeTypes(NULL);
+    if (mime_types) {
+        for (int i = 0; !surface && mime_types[i]; ++i) {
+            if (SDL_strncmp(mime_types[i], "image/", 6) == 0) {
+                size_t size = 0;
+                void *data = SDL_GetClipboardData(mime_types[i], &size);
+                if (data) {
+                    SDL_IOStream *src = SDL_IOFromConstMem(data, size);
+                    if (src) {
+                        surface = IMG_Load_IO(src, true);
+                    }
+                    SDL_free(data);
+                }
+            }
+        }
+    }
+    if (!surface) {
+        SDL_SetError("No clipboard image available");
+    }
+    return surface;
+}
+
 Uint64 IMG_TimebaseDuration(Uint64 pts, Uint64 duration, Uint64 src_numerator, Uint64 src_denominator, Uint64 dst_numerator, Uint64 dst_denominator)
 {
     Uint64 a = ( ( ( ( pts + duration ) * 2 ) + 1 ) * src_numerator * dst_denominator ) / ( 2 * src_denominator * dst_numerator );
