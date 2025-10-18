@@ -891,16 +891,18 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
                               BitSet(ctx->buf[8], INTERLACE), 0, &ctx->state);
         }
 
-        if (!image) {
-            // Incorrect animation is harder to detect than a direct failure,
-            // so it's better to fail than try to animate a GIF without a,
-            // full set of frames it has in the file.
+      if (!image) {
+          // Incorrect animation is harder to detect than a direct failure,
+          // so it's better to fail than try to animate a GIF without a,
+          // full set of frames it has in the file.
 
-            // Only set the error if ReadImage did not do it.
-            if (SDL_GetError()[0] == '\0') {
-                return SDL_SetError("Failed to decode frame.");
-            }
-        }
+          // Only set the error if ReadImage did not do it.
+          if (SDL_GetError()[0] == '\0') {
+              return SDL_SetError("Failed to decode frame.");
+          }
+
+          return false;
+      }
 
         /* Composite the frame onto the canvas */
         SDL_Rect dest = { left, top, width, height };
