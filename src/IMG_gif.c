@@ -147,9 +147,9 @@ static int DoExtension(SDL_IOStream * src, int label, State_t * state);
 static int GetDataBlock(SDL_IOStream * src, unsigned char *buf, State_t * state);
 static int GetCode(SDL_IOStream * src, int code_size, int flag, State_t * state);
 static int LWZReadByte(SDL_IOStream * src, int flag, int input_code_size, State_t * state);
-static Image *ReadImage(SDL_IOStream * src, int len, int height, int,
-			unsigned char cmap[3][MAXCOLORMAPSIZE],
-			int gray, int interlace, int ignore, State_t * state);
+static Image *ReadImage(SDL_IOStream *src, int len, int height, int cmapSize,
+          unsigned char cmap[3][MAXCOLORMAPSIZE],
+          int gray, int interlace, int ignore, State_t *state);
 
 static int
 ReadColorMap(SDL_IOStream *src, int number,
@@ -403,16 +403,16 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
           int gray, int interlace, int ignore, State_t * state)
 {
     Image *image;
-    SDL_Palette *palette;
     unsigned char c;
-    int i, v;
+    int v;
     int xpos = 0, ypos = 0, pass = 0;
-
+    int transparent_index;
+    Uint8 *dst;
+    int pixel_count = 0;
+    int total_pixels = len * height;
+    
     (void) gray; /* unused */
-
-    /*
-    **  Initialize the compression routines
-     */
+    
     if (!ReadOK(src, &c, 1)) {
         RWSetMsg("EOF / read error on image data");
         return NULL;
@@ -421,33 +421,45 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
         RWSetMsg("error reading image");
         return NULL;
     }
-    /*
-    **  If this is an "uninteresting picture" ignore it.
-     */
+    
     if (ignore) {
         while (LWZReadByte(src, FALSE, c, state) >= 0)
             ;
         return NULL;
     }
-    image = ImageNewCmap(len, height, cmapSize);
+    
+    /* Create RGBA32 surface with frame dimensions */
+    image = SDL_CreateSurface(len, height, SDL_PIXELFORMAT_RGBA32);
     if (!image) {
         return NULL;
     }
-
-    palette = SDL_CreateSurfacePalette(image);
-    if (!palette) {
-        return NULL;
-    }
-    if (cmapSize > palette->ncolors) {
-        cmapSize = palette->ncolors;
-    }
-    palette->ncolors = cmapSize;
-    for (i = 0; i < cmapSize; i++) {
-        ImageSetCmap(image, i, cmap[CM_RED][i], cmap[CM_GREEN][i], cmap[CM_BLUE][i]);
-    }
-
-    while ((v = LWZReadByte(src, FALSE, c, state)) >= 0) {
-        ((Uint8 *)image->pixels)[xpos + ypos * image->pitch] = (Uint8)v;
+    
+    /* Initialize entire surface to transparent */
+    SDL_memset(image->pixels, 0, image->pitch * height);
+    
+    transparent_index = state->Gif89.transparent;
+    
+    /* Decode and convert to RGBA */
+    while ((v = LWZReadByte(src, FALSE, c, state)) >= 0 && pixel_count < total_pixels) {
+        dst = (Uint8 *)image->pixels + (ypos * image->pitch) + (xpos * 4);
+        
+        /* Only write non-transparent pixels */
+        if (transparent_index < 0 || v != transparent_index) {
+            if (v < cmapSize) {
+                dst[0] = cmap[CM_RED][v];
+                dst[1] = cmap[CM_GREEN][v];
+                dst[2] = cmap[CM_BLUE][v];
+                dst[3] = 255;  /* Opaque */
+            } else {
+                /* Invalid color index */
+                dst[0] = 255;
+                dst[1] = 0;
+                dst[2] = 255;
+                dst[3] = 255;
+            }
+        }
+        
+        pixel_count++;
         ++xpos;
         if (xpos == len) {
             xpos = 0;
@@ -464,7 +476,6 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
                     ypos += 2;
                     break;
                 }
-
                 if (ypos >= height) {
                     ++pass;
                     switch (pass) {
@@ -488,9 +499,8 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
         if (ypos >= height)
             break;
     }
-
-  fini:
-
+    
+fini:
     return image;
 }
 
@@ -882,16 +892,13 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
         }
 
         if (!image) {
-            // TODO:
-            // Error reading image, but we'll continue with what we have, or should we??
-            continue;
-        }
+            // Incorrect animation is harder to detect than a direct failure,
+            // so it's better to fail than try to animate a GIF without a,
+            // full set of frames it has in the file.
 
-        /* Apply transparency if needed */
-        if (ctx->state.Gif89.transparent >= 0) {
-            if (!SDL_SetSurfaceColorKey(image, true, ctx->state.Gif89.transparent)) {
-                SDL_DestroySurface(image);
-                return SDL_SetError("Failed to set transparency on frame");
+            // Only set the error if ReadImage did not do it.
+            if (SDL_GetError()[0] == '\0') {
+                return SDL_SetError("Failed to decode frame.");
             }
         }
 
