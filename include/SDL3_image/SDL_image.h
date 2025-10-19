@@ -2222,6 +2222,7 @@ typedef struct IMG_Animation
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_CreateAnimatedCursor
  * \sa IMG_LoadAnimation_IO
  * \sa IMG_LoadAnimationTyped_IO
  * \sa IMG_LoadAPNGAnimation_IO
@@ -2249,6 +2250,7 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation(const char *file);
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_CreateAnimatedCursor
  * \sa IMG_LoadAnimation
  * \sa IMG_LoadAnimationTyped_IO
  * \sa IMG_LoadAPNGAnimation_IO
@@ -2283,6 +2285,7 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation_IO(SDL_IOStream *s
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_CreateAnimatedCursor
  * \sa IMG_LoadAnimation
  * \sa IMG_LoadAnimation_IO
  * \sa IMG_LoadAPNGAnimation_IO
@@ -2409,6 +2412,23 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadGIFAnimation_IO(SDL_IOStream
  * \sa IMG_FreeAnimation
  */
 extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadWEBPAnimation_IO(SDL_IOStream *src);
+
+/**
+ * Create an animated cursor from an animation.
+ *
+ * \param anim an animation to use to create an animated cursor.
+ * \param hot_x the x position of the cursor hot spot.
+ * \param hot_y the y position of the cursor hot spot.
+ * \returns the new cursor on success or NULL on failure; call SDL_GetError()
+ *          for more information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_LoadAnimation
+ * \sa IMG_LoadAnimation_IO
+ * \sa IMG_LoadAnimationTyped_IO
+ */
+extern SDL_DECLSPEC SDL_Cursor * SDLCALL IMG_CreateAnimatedCursor(IMG_Animation *anim, int hot_x, int hot_y);
 
 /**
  * An object representing the encoder context.

@@ -85,5 +85,6 @@ SDL3_image_0.0.0 {
     IMG_GetAnimationDecoderProperties;
     IMG_GetAnimationDecoderStatus;
     IMG_GetClipboardImage;
+    IMG_CreateAnimatedCursor;
   local: *;
 };
