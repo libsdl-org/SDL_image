@@ -775,7 +775,7 @@ typedef struct
     png_bytep *row_pointers;
 } DecompressionContext;
 
-static SDL_Surface *decompress_png_frame_data(DecompressionContext* context, png_bytep compressed_data, png_size_t compressed_size,
+static SDL_Surface *decompress_png_frame_data(DecompressionContext *context, png_bytep compressed_data, png_size_t compressed_size,
                                               int width, int height, int png_color_type, int bit_depth, SDL_Color *palette_colors, int palette_count)
 {
     /*
@@ -1124,9 +1124,9 @@ struct IMG_AnimationDecoderContext
     int trans_count;
 };
 
-static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder* decoder)
+static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
 {
-    IMG_AnimationDecoderContext* ctx = decoder->ctx;
+    IMG_AnimationDecoderContext *ctx = decoder->ctx;
 
     ctx->current_frame_index = 0;
     if (SDL_SeekIO(decoder->src, decoder->start, SDL_IO_SEEK_SET) < 0) {
@@ -1764,7 +1764,7 @@ typedef struct
     Sint64 mem_buffer_size;
 } CompressionContext;
 
-static png_bytep compress_surface_to_png_data(CompressionContext* context, SDL_Surface *surface, png_size_t *compressed_size, int compression_level, int png_color_type)
+static png_bytep compress_surface_to_png_data(CompressionContext *context, SDL_Surface *surface, png_size_t *compressed_size, int compression_level, int png_color_type)
 {
     *compressed_size = 0; // Reset compressed_size to accumulate IDAT data
 
@@ -1935,7 +1935,7 @@ error:
     return NULL;
 }
 
-static bool writetEXtchunk(SDL_IOStream* dst, const char *keyword, const char *value)
+static bool writetEXtchunk(SDL_IOStream *dst, const char *keyword, const char *value)
 {
     size_t total_len = SDL_strlen(keyword) + 1 + SDL_strlen(value) + 1;
     png_byte *buffer = (png_byte *)SDL_malloc(total_len);
@@ -2459,7 +2459,7 @@ bool IMG_CreateAPNGAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Propertie
     return SDL_SetError("SDL_image not built against libpng.");
 }
 
-bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_PropertiesID props)
+bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props)
 {
     (void)decoder;
     (void)props;
