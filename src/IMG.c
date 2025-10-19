@@ -321,6 +321,34 @@ IMG_Animation *IMG_LoadAnimationTyped_IO(SDL_IOStream *src, bool closeio, const 
     return NULL;
 }
 
+SDL_Cursor *IMG_CreateAnimatedCursor(IMG_Animation *anim, int hot_x, int hot_y)
+{
+    int i;
+    SDL_CursorFrameInfo *frames;
+    SDL_Cursor *cursor;
+
+    if (!anim) {
+        SDL_InvalidParamError("anim");
+        return NULL;
+    }
+
+    frames = (SDL_CursorFrameInfo *)SDL_calloc(anim->count, sizeof(*frames));
+    if (!frames) {
+        return NULL;
+    }
+
+    for (i = 0; i < anim->count; ++i) {
+        frames[i].surface = anim->frames[i];
+        frames[i].duration = (Uint32)anim->delays[i];
+    }
+
+    cursor = SDL_CreateAnimatedCursor(frames, anim->count, hot_x, hot_y);
+
+    SDL_free(frames);
+
+    return cursor;
+}
+
 void IMG_FreeAnimation(IMG_Animation *anim)
 {
     if (anim) {
