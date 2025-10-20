@@ -32,8 +32,6 @@
 
 #if defined(LOAD_PNG) && defined(USE_STBIMAGE)
 
-extern SDL_Surface *IMG_LoadSTB_IO(SDL_IOStream *src);
-
 /* FIXME: This is a copypaste from LIBPNG! Pull that out of the ifdefs */
 /* See if an image is contained in a data source */
 bool IMG_isPNG(SDL_IOStream *src)
@@ -63,7 +61,7 @@ bool IMG_isPNG(SDL_IOStream *src)
 /* Load a PNG type image from an SDL datasource */
 SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 {
-    return IMG_LoadSTB_IO(src);
+    return SDL_LoadPNG_IO(src, false);
 }
 
 #else
@@ -86,88 +84,38 @@ SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 
 #if SAVE_PNG
 
-static const Uint32 png_format = SDL_PIXELFORMAT_RGBA32;
-
-/* Replace C runtime functions with SDL C runtime functions for building on Windows */
-#define MINIZ_NO_STDIO
-#define MINIZ_NO_TIME
-#define MINIZ_SDL_MALLOC
-#define MZ_ASSERT(x) SDL_assert(x)
-#undef memcpy
-#define memcpy SDL_memcpy
-#undef memset
-#define memset SDL_memset
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-#define MINIZ_LITTLE_ENDIAN 1
-#else
-#define MINIZ_LITTLE_ENDIAN 0
-#endif
-#define MINIZ_USE_UNALIGNED_LOADS_AND_STORES 0
-#define MINIZ_SDL_NOUNUSED
-#include "miniz.h"
-
-static bool IMG_SavePNG_IO_miniz(SDL_Surface *surface, SDL_IOStream *dst)
+bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
-    size_t size = 0;
-    void *png = NULL;
-    bool result = false;
-
-    if (!dst) {
-        return SDL_SetError("Passed NULL dst");
-    }
-
-    if (surface->format == png_format) {
-        png = tdefl_write_image_to_png_file_in_memory(surface->pixels, surface->w, surface->h, SDL_BYTESPERPIXEL(surface->format), surface->pitch, &size);
-    } else {
-        SDL_Surface *cvt = SDL_ConvertSurface(surface, png_format);
-        if (cvt) {
-            png = tdefl_write_image_to_png_file_in_memory(cvt->pixels, cvt->w, cvt->h, SDL_BYTESPERPIXEL(cvt->format), cvt->pitch, &size);
-            SDL_DestroySurface(cvt);
-        }
-    }
-    if (png) {
-        if (SDL_WriteIO(dst, png, size)) {
-            result = true;
-        }
-        mz_free(png); /* calls SDL_free() */
-    } else {
-        return SDL_SetError("Failed to convert and save image");
-    }
-    return result;
+    return SDL_SavePNG_IO(surface, dst, closeio);
 }
-
-#endif /* SAVE_PNG */
 
 bool IMG_SavePNG(SDL_Surface *surface, const char *file)
 {
     SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
     if (dst) {
-        return IMG_SavePNG_IO(surface, dst, 1);
+        return IMG_SavePNG_IO(surface, dst, true);
     } else {
         return false;
     }
 }
 
+#else // !SAVE_PNG
+
 bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
-    bool result = false;
-
-    if (!dst) {
-        return SDL_SetError("Passed NULL dst");
-    }
-
-#if SAVE_PNG
-    if (!result) {
-        result = IMG_SavePNG_IO_miniz(surface, dst);
-    }
-#else
-    result = SDL_SetError("SDL_image built without PNG save support");
-#endif
-
-    if (closeio) {
-        SDL_CloseIO(dst);
-    }
-    return result;
+    (void)surface;
+    (void)dst;
+    (void)closeio;
+    return SDL_SetError("SDL_image built without PNG save support");
 }
+
+bool IMG_SavePNG(SDL_Surface *surface, const char *file)
+{
+    (void)surface;
+    (void)file;
+    return SDL_SetError("SDL_image built without PNG save support");
+}
+
+#endif // SAVE_PNG
 
 #endif /* SDL_IMAGE_LIBPNG */
