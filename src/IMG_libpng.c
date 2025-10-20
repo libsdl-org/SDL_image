@@ -1148,7 +1148,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
 {
     IMG_AnimationDecoderContext *ctx = decoder->ctx;
     if (!ctx->is_apng) {
-        return SDL_SetError("APNG decoder not properly initialized");
+        return false;
     }
 
     if (ctx->actl.num_frames - ctx->current_frame_index < 1) {
