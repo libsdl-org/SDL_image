@@ -110,6 +110,7 @@ option(SDLIMAGE_BACKEND_STB "Use stb_image for loading JPEG and PNG files" ON)
 cmake_dependent_option(SDLIMAGE_BACKEND_WIC "Add WIC backend (Windows Imaging Component)" OFF WIN32 OFF)
 cmake_dependent_option(SDLIMAGE_BACKEND_IMAGEIO "Use native Mac OS X frameworks for loading images" ON APPLE OFF)
 
+option(SDLIMAGE_ANI "Support loading ANI animations" ON)
 option(SDLIMAGE_AVIF "Support loading AVIF images" ON)
 option(SDLIMAGE_BMP "Support loading BMP images" ON)
 option(SDLIMAGE_GIF "Support loading GIF images" ON)
@@ -260,6 +261,7 @@ set(BUILD_SHARED_LIBS ${SDLIMAGE_BUILD_SHARED_LIBS})
 add_library(${sdl3_image_target_name}
     src/IMG.c
     src/IMG_WIC.c
+    src/IMG_ani.c
     src/IMG_anim_encoder.c
     src/IMG_anim_decoder.c
     src/IMG_avif.c
@@ -591,6 +593,20 @@ if(SDLIMAGE_AVIF)
     else()
         # Variable is used by test suite
         set(SDLIMAGE_AVIF_SAVE OFF)
+    endif()
+endif()
+
+list(APPEND SDLIMAGE_BACKENDS ANI)
+set(SDLIMAGE_ANI_ENABLED FALSE)
+if(SDLIMAGE_ANI)
+    set(SDLIMAGE_ANI_ENABLED TRUE)
+    if(SDLIMAGE_ANI_ENABLED)
+        target_compile_definitions(${sdl3_image_target_name} PRIVATE
+            LOAD_ANI
+        )
+    else()
+        # Variable is used by test suite
+        set(SDLIMAGE_ANI_SAVE OFF)
     endif()
 endif()
 

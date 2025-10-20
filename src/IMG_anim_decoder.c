@@ -26,6 +26,7 @@
 #include "IMG_libpng.h"
 #include "IMG_gif.h"
 #include "IMG_avif.h"
+#include "IMG_ani.h"
 
 IMG_AnimationDecoder *IMG_CreateAnimationDecoder(const char *file)
 {
@@ -146,6 +147,8 @@ IMG_AnimationDecoder *IMG_CreateAnimationDecoderWithProperties(SDL_PropertiesID 
         result = IMG_CreateGIFAnimationDecoder(decoder, props);
     } else if (SDL_strcasecmp(type, "avifs") == 0) {
         result = IMG_CreateAVIFAnimationDecoder(decoder, props);
+    } else if (SDL_strcasecmp(type, "ani") == 0) {
+        result = IMG_CreateANIAnimationDecoder(decoder, props);
     } else {
         SDL_SetError("Unrecognized output type");
     }
@@ -267,7 +270,7 @@ IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int 
     }
 
     // We do not rely on the metadata for the count of available frames because some
-    // formats like GIF only supports continous decoding and doesn't have any data that
+    // formats like GIF only supports continuous decoding and doesn't have any data that
     // states the total available frames inside the binary data.
     //
     // For this reason , we will decode frames until we reach the end of the stream or
