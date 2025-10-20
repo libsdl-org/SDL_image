@@ -971,7 +971,7 @@ static bool IMG_CloseWEBPAnimation(IMG_AnimationEncoder *encoder)
             goto done;
         }
 
-        SDL_free((void *)d);
+        SDL_free(d);
 
         muxErr = lib.WebPMuxAssemble(mux, &data);
         if (muxErr != WEBP_MUX_OK) {
