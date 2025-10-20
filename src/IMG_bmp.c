@@ -452,7 +452,7 @@ static SDL_Surface *LoadICOCUR_IO(SDL_IOStream *src, int type, bool closeio)
         if (SDL_SeekIO(src, -4, SDL_IO_SEEK_CUR) < 0) {
             goto done;
         }
-        surface = IMG_LoadPNG_IO(src);
+        surface = SDL_LoadPNG_IO(src, false);
     } else {
         SDL_SetError("Unsupported ICO bitmap format");
     }
