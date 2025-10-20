@@ -46,6 +46,25 @@
 #define ICON_TYPE_ICO   1
 #define ICON_TYPE_CUR   2
 
+typedef struct
+{
+    Sint64 offset;
+    int width;
+    int height;
+    int ncolors;
+    int hot_x;
+    int hot_y;
+    SDL_Surface *surface;
+} IconEntry;
+
+typedef struct
+{
+    int num_entries;
+    int max_entries;
+    IconEntry *entries;
+} IconEntries;
+
+
 /* See if an image is contained in a data source */
 bool IMG_isBMP(SDL_IOStream *src)
 {
@@ -122,18 +141,10 @@ static SDL_Surface *LoadBMP_IO(SDL_IOStream *src, bool closeio)
     return SDL_LoadBMP_IO(src, closeio);
 }
 
-static SDL_Surface *ReadBitmapSurface(SDL_IOStream *src)
+static bool GetBMPIconInfo(SDL_IOStream *src, int *width, int *height, int *ncolors)
 {
-    bool was_error = true;
-    int bmpPitch;
-    int i, j, pad;
-    SDL_Surface *surface = NULL;
-    Uint8 *bits;
-    int ExpandBMP;
-    Uint32 palette[256];
-
     /* The Win32 BITMAPINFOHEADER struct (40 bytes) */
-    /* Uint32 biSize; */
+    Uint32 biSize;
     Sint32 biWidth;
     Sint32 biHeight;
     /* Uint16 biPlanes; */
@@ -147,7 +158,63 @@ static SDL_Surface *ReadBitmapSurface(SDL_IOStream *src)
     */
     Uint32 biClrUsed;
 
-    if (!SDL_ReadS32LE(src, &biWidth) ||
+    if (!SDL_ReadU32LE(src, &biSize) ||
+        !SDL_ReadS32LE(src, &biWidth) ||
+        !SDL_ReadS32LE(src, &biHeight) ||
+        !SDL_ReadU16LE(src, NULL /* biPlanes */) ||
+        !SDL_ReadU16LE(src, &biBitCount) ||
+        !SDL_ReadU32LE(src, &biCompression) ||
+        !SDL_ReadU32LE(src, NULL /* biSizeImage */) ||
+        !SDL_ReadU32LE(src, NULL /* biXPelsPerMeter */) ||
+        !SDL_ReadU32LE(src, NULL /* biYPelsPerMeter */) ||
+        !SDL_ReadU32LE(src, &biClrUsed) ||
+        !SDL_ReadU32LE(src, NULL /* biClrImportant */)) {
+        return false;
+    }
+
+    biHeight >>= 1;
+
+    if (biBitCount <= 8) {
+        if (biClrUsed == 0) {
+            biClrUsed = 1 << biBitCount;
+        }
+    } else {
+        biClrUsed = 256;
+    }
+
+    *width = biWidth;
+    *height = biHeight;
+    *ncolors = biClrUsed;
+    return true;
+}
+
+static SDL_Surface *GetBMPSurface(SDL_IOStream *src)
+{
+    bool was_error = true;
+    int bmpPitch;
+    int i, j, pad;
+    SDL_Surface *surface = NULL;
+    Uint8 *bits;
+    int ExpandBMP;
+    Uint32 palette[256];
+
+    /* The Win32 BITMAPINFOHEADER struct (40 bytes) */
+    Uint32 biSize;
+    Sint32 biWidth;
+    Sint32 biHeight;
+    /* Uint16 biPlanes; */
+    Uint16 biBitCount;
+    Uint32 biCompression;
+    /*
+    Uint32 biSizeImage;
+    Sint32 biXPelsPerMeter;
+    Sint32 biYPelsPerMeter;
+    Uint32 biClrImportant;
+    */
+    Uint32 biClrUsed;
+
+    if (!SDL_ReadU32LE(src, &biSize) ||
+        !SDL_ReadS32LE(src, &biWidth) ||
         !SDL_ReadS32LE(src, &biHeight) ||
         !SDL_ReadU16LE(src, NULL /* biPlanes */) ||
         !SDL_ReadU16LE(src, &biBitCount) ||
@@ -348,16 +415,128 @@ done:
     return surface;
 }
 
+static bool GetPNGIconInfo(SDL_IOStream *src, int *width, int *height, int *ncolors)
+{
+    Uint8 magic[16];
+    Uint32 unWidth = 0;
+    Uint32 unHeight = 0;
+
+    if (SDL_ReadIO(src, magic, sizeof(magic)) != sizeof(magic) ||
+        !SDL_ReadU32BE(src, &unWidth) || unWidth > SDL_MAX_SINT32 ||
+        !SDL_ReadU32BE(src, &unHeight) || unHeight > SDL_MAX_SINT32) {
+        return false;
+    }
+
+    *width = (int)unWidth;
+    *height = (int)unHeight;
+    *ncolors = 256;
+    return true;
+}
+
+static bool GetIconInfo(SDL_IOStream *src, Sint64 offset, int *width, int *height, int *ncolors)
+{
+    bool result = false;
+    Uint32 biSize;
+    Sint64 start = SDL_TellIO(src);
+
+    if (SDL_SeekIO(src, offset, SDL_IO_SEEK_SET) < 0) {
+        return false;
+    }
+
+    if (!SDL_ReadU32LE(src, &biSize) ||
+        SDL_SeekIO(src, -4, SDL_IO_SEEK_CUR) < 0) {
+        goto done;
+    }
+    if (biSize == 40) {
+        result = GetBMPIconInfo(src, width, height, ncolors);
+    } else if (biSize == RIFF_FOURCC(0x89, 'P', 'N', 'G')) {
+        result = GetPNGIconInfo(src, width, height, ncolors);
+    } else {
+        SDL_SetError("Unsupported ICO bitmap format");
+    }
+
+done:
+    (void)SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
+    return result;
+}
+
+static bool AddIconEntry(IconEntries *entries, Sint64 offset, int width, int height, int ncolors, int hot_x, int hot_y)
+{
+    int i;
+
+    for (i = 0; i < entries->num_entries; ++i) {
+        IconEntry *entry = &entries->entries[i];
+        if (width == entry->width && height == entry->height) {
+            if (ncolors > entry->ncolors) {
+                // Replace the existing entry
+                entry->offset = offset;
+                entry->ncolors = ncolors;
+                entry->hot_x = hot_x;
+                entry->hot_y = hot_y;
+            } else {
+                // The existing entry is better
+            }
+            return true;
+        }
+    }
+
+    if (entries->num_entries == entries->max_entries) {
+        int max_entries = entries->max_entries + 8;
+        IconEntry *new_entries = (IconEntry *)SDL_realloc(entries->entries, max_entries * sizeof(*entries->entries));
+        if (!new_entries) {
+            return false;
+        }
+        entries->entries = new_entries;
+        entries->max_entries = max_entries;
+    }
+
+    IconEntry *entry = &entries->entries[entries->num_entries++];
+    entry->offset = offset;
+    entry->width = width;
+    entry->height = height;
+    entry->ncolors = ncolors;
+    entry->hot_x = hot_x;
+    entry->hot_y = hot_y;
+    return true;
+}
+
+static SDL_Surface *GetIconSurface(SDL_IOStream *src, Sint64 offset, int type, int hot_x, int hot_y)
+{
+    SDL_Surface *surface = NULL;
+    Uint32 biSize;
+
+    if (SDL_SeekIO(src, offset, SDL_IO_SEEK_SET) < 0) {
+        return false;
+    }
+
+    if (!SDL_ReadU32LE(src, &biSize) ||
+        SDL_SeekIO(src, -4, SDL_IO_SEEK_CUR) < 0) {
+        goto done;
+    }
+    if (biSize == 40) {
+        surface = GetBMPSurface(src);
+    } else if (biSize == RIFF_FOURCC(0x89, 'P', 'N', 'G')) {
+        surface = SDL_LoadPNG_IO(src, false);
+    } else {
+        SDL_SetError("Unsupported ICO bitmap format");
+    }
+
+    if (type == ICON_TYPE_CUR) {
+        SDL_PropertiesID props = SDL_GetSurfaceProperties(surface);
+        SDL_SetNumberProperty(props, SDL_PROP_SURFACE_HOTSPOT_X_NUMBER, hot_x);
+        SDL_SetNumberProperty(props, SDL_PROP_SURFACE_HOTSPOT_Y_NUMBER, hot_y);
+    }
+
+done:
+    return surface;
+}
+
 static SDL_Surface *LoadICOCUR_IO(SDL_IOStream *src, int type, bool closeio)
 {
     bool was_error = true;
-    Sint64 fp_offset = 0;
+    Sint64 start = 0;
     int i;
-    int maxCol = 0;
-    Uint32 icoOfs = 0;
-    int nHotX = 0;
-    int nHotY = 0;
-    Uint32 biSize;
+    IconEntries entries = { 0, 0, NULL };
     SDL_Surface *surface = NULL;
 
     /* The Win32 ICO file header (14 bytes) */
@@ -371,7 +550,7 @@ static SDL_Surface *LoadICOCUR_IO(SDL_IOStream *src, int type, bool closeio)
     }
 
     /* Read in the ICO file header */
-    fp_offset = SDL_TellIO(src);
+    start = SDL_TellIO(src);
 
     if (!SDL_ReadU16LE(src, &bfReserved) ||
         !SDL_ReadU16LE(src, &bfType) ||
@@ -382,7 +561,9 @@ static SDL_Surface *LoadICOCUR_IO(SDL_IOStream *src, int type, bool closeio)
     }
 
     /* Read the Win32 Icon Directory */
-    //SDL_Log("Icon directory: %d cursors", bfCount);
+#ifdef DEBUG_ICONDIR
+    SDL_Log("Icon directory: %d cursors", bfCount);
+#endif
     for (i = 0; i < bfCount; ++i) {
         /* Icon Directory Entries */
         Uint8 bWidth;       /* Uint8, but 0 = 256 ! */
@@ -393,7 +574,7 @@ static SDL_Surface *LoadICOCUR_IO(SDL_IOStream *src, int type, bool closeio)
         Uint16 wBitCount;
         Uint32 dwBytesInRes;
         Uint32 dwImageOffset;
-        int nWidth, nHeight, nColorCount;
+        int nWidth, nHeight, nColorCount, nHotX, nHotY;
 
         if (!SDL_ReadU8(src, &bWidth) ||
             !SDL_ReadU8(src, &bHeight) ||
@@ -406,75 +587,68 @@ static SDL_Surface *LoadICOCUR_IO(SDL_IOStream *src, int type, bool closeio)
             goto done;
         }
 
-        if (bWidth) {
-            nWidth = bWidth;
-        } else {
-            nWidth = 256;
-        }
-        if (bHeight) {
-            nHeight = bHeight;
-        } else {
-            nHeight = 256;
-        }
-        if (bColorCount) {
-            nColorCount = bColorCount;
-        } else {
-            nColorCount = 256;
-        }
-
         if (type == ICON_TYPE_CUR) {
             nHotX = wPlanes;
             nHotY = wBitCount;
+        } else {
+            nHotX = 0;
+            nHotY = 0;
         }
 
-        //SDL_Log("%dx%d@%d - %d", nWidth, nHeight, nColorCount, (int)dwImageOffset);
-        (void)nWidth;
-        (void)nHeight;
-        if (nColorCount > maxCol) {
-            //SDL_Log("%d > %d, marked", nColorCount, maxCol);
-            maxCol = nColorCount;
-            icoOfs = dwImageOffset;
+        if (!GetIconInfo(src, start + dwImageOffset, &nWidth, &nHeight, &nColorCount)) {
+            continue;
+        }
+
+#ifdef DEBUG_ICONDIR
+        SDL_Log("%dx%d@%d - %d, hot: %d,%d", nWidth, nHeight, nColorCount, (int)dwImageOffset, nHotX, nHotY);
+#endif
+        if (!AddIconEntry(&entries, start + dwImageOffset, nWidth, nHeight, nColorCount, nHotX, nHotY)) {
+            continue;
         }
     }
 
-    /* Advance to the DIB Data */
-    if (SDL_SeekIO(src, fp_offset + icoOfs, SDL_IO_SEEK_SET) < 0) {
+    if (entries.num_entries == 0) {
+        SDL_SetError("Couldn't find any valid icons");
         goto done;
     }
 
-    /* Read the Win32 BITMAPINFOHEADER */
-    if (!SDL_ReadU32LE(src, &biSize)) {
-        goto done;
-    }
-    if (biSize == 40) {
-        surface = ReadBitmapSurface(src);
-    } else if (biSize == RIFF_FOURCC(0x89, 'P', 'N', 'G')) {
-        if (SDL_SeekIO(src, -4, SDL_IO_SEEK_CUR) < 0) {
+    /* Load the icon surfaces */
+    for (i = 0; i < entries.num_entries; ++i) {
+        IconEntry *entry = &entries.entries[i];
+        entry->surface = GetIconSurface(src, entry->offset, type, entry->hot_x, entry->hot_y);
+        if (!entry->surface) {
             goto done;
         }
-        surface = SDL_LoadPNG_IO(src, false);
-    } else {
-        SDL_SetError("Unsupported ICO bitmap format");
+
+        if (i == 0) {
+            surface = entry->surface;
+            ++surface->refcount;
+        }
     }
-    if (!surface) {
-        goto done;
+    for (i = 0; i < entries.num_entries; ++i) {
+        IconEntry *entry = &entries.entries[i];
+        if (entry->surface != surface) {
+            SDL_AddSurfaceAlternateImage(surface, entry->surface);
+        }
     }
 
-    if (type == ICON_TYPE_CUR) {
-        SDL_PropertiesID props = SDL_GetSurfaceProperties(surface);
-        SDL_SetNumberProperty(props, SDL_PROP_SURFACE_HOTSPOT_X_NUMBER, nHotX);
-        SDL_SetNumberProperty(props, SDL_PROP_SURFACE_HOTSPOT_Y_NUMBER, nHotY);
-    }
-
+    /* All done! */
     was_error = false;
 
 done:
     if (closeio && src) {
         SDL_CloseIO(src);
     }
+
+    for (i = 0; i < entries.num_entries; ++i) {
+        IconEntry *entry = &entries.entries[i];
+        SDL_DestroySurface(entry->surface);
+    }
+    SDL_free(entries.entries);
+
     if (was_error) {
         if (src && !closeio) {
-            SDL_SeekIO(src, fp_offset, SDL_IO_SEEK_SET);
+            SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
         }
         if (surface) {
             SDL_DestroySurface(surface);
