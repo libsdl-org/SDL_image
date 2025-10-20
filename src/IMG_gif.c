@@ -2816,7 +2816,11 @@ bool IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 bool IMG_SaveGIF(SDL_Surface *surface, const char *file)
 {
     SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
-    return IMG_SaveGIF_IO(surface, dst, true);
+    if (dst) {
+        return IMG_SaveGIF_IO(surface, dst, true);
+    } else {
+        return false;
+    }
 }
 
 #else

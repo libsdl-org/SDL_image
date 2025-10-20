@@ -757,15 +757,7 @@ static bool IMG_SaveJPG_IO_tinyjpeg(SDL_Surface *surface, SDL_IOStream *dst, int
 
 #endif /* SAVE_JPG && (defined(LOAD_JPG_DYNAMIC) || !defined(WANT_JPEGLIB)) */
 
-bool IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality)
-{
-    SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
-    if (dst) {
-        return IMG_SaveJPG_IO(surface, dst, 1, quality);
-    } else {
-        return false;
-    }
-}
+#if SAVE_JPG
 
 bool IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality)
 {
@@ -773,11 +765,15 @@ bool IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int q
     (void)surface;
     (void)quality;
 
+    if (!surface) {
+        SDL_InvalidParamError("surface");
+        goto done;
+    }
     if (!dst) {
-        return SDL_SetError("Passed NULL dst");
+        SDL_InvalidParamError("dst");
+        goto done;
     }
 
-#if SAVE_JPG
 #ifdef USE_JPEGLIB
     if (!result) {
         result = IMG_SaveJPG_IO_jpeglib(surface, dst, quality);
@@ -790,12 +786,40 @@ bool IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int q
     }
 #endif
 
-#else
-    result = SDL_SetError("SDL_image built without JPEG save support");
-#endif
-
+done:
     if (closeio) {
         SDL_CloseIO(dst);
     }
     return result;
 }
+
+bool IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality)
+{
+    SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
+    if (dst) {
+        return IMG_SaveJPG_IO(surface, dst, true, quality);
+    } else {
+        return false;
+    }
+}
+
+#else // !SAVE_JPG
+
+bool IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality)
+{
+    (void)surface;
+    (void)dst;
+    (void)closeio;
+    (void)quality;
+    return SDL_SetError("SDL_image built without JPG save support");
+}
+
+bool IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality)
+{
+    (void)surface;
+    (void)file;
+    (void)quality;
+    return SDL_SetError("SDL_image built without JPG save support");
+}
+
+#endif // SAVE_JPG

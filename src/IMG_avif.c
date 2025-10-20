@@ -731,39 +731,60 @@ SDL_Surface *IMG_LoadAVIF_IO(SDL_IOStream *src)
 
 #endif /* LOAD_AVIF */
 
-bool IMG_SaveAVIF(SDL_Surface *surface, const char *file, int quality)
-{
-    SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
-    if (dst) {
-        return IMG_SaveAVIF_IO(surface, dst, 1, quality);
-    } else {
-        return false;
-    }
-}
+#if SAVE_AVIF
 
 bool IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality)
 {
     bool result = false;
 
+    if (!surface) {
+        SDL_InvalidParamError("surface");
+        goto done;
+    }
     if (!dst) {
-        return SDL_SetError("Passed NULL dst");
+        SDL_InvalidParamError("dst");
+        goto done;
     }
 
-#ifdef SAVE_AVIF
-    if (!result) {
-        result = IMG_SaveAVIF_IO_libavif(surface, dst, quality);
-    }
-#else
-    (void) surface;
-    (void) quality;
-    result = SDL_SetError("SDL_image built without AVIF save support");
-#endif
+    result = IMG_SaveAVIF_IO_libavif(surface, dst, quality);
 
+done:
     if (closeio) {
         SDL_CloseIO(dst);
     }
     return result;
 }
+
+bool IMG_SaveAVIF(SDL_Surface *surface, const char *file, int quality)
+{
+    SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
+    if (dst) {
+        return IMG_SaveAVIF_IO(surface, dst, true, quality);
+    } else {
+        return false;
+    }
+}
+
+#else
+
+bool IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality)
+{
+    (void)surface;
+    (void)dst;
+    (void)closeio;
+    (void)quality;
+    return SDL_SetError("SDL_image built without AVIF save support");
+}
+
+bool IMG_SaveAVIF(SDL_Surface *surface, const char *file, int quality)
+{
+    (void)surface;
+    (void)file;
+    (void)quality;
+    return SDL_SetError("SDL_image built without AVIF save support");
+}
+
+#endif // SAVE_AVIF
 
 #ifdef LOAD_AVIF
 

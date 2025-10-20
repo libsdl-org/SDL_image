@@ -733,7 +733,11 @@ bool IMG_SaveBMP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 bool IMG_SaveBMP(SDL_Surface *surface, const char *file)
 {
     SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
-    return IMG_SaveBMP_IO(surface, dst, true);
+    if (dst) {
+        return IMG_SaveBMP_IO(surface, dst, true);
+    } else {
+        return false;
+    }
 }
 
 #else // !SAVE_BMP

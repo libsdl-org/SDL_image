@@ -701,28 +701,30 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
     WebPPicture pic;
     WebPMemoryWriter writer;
     SDL_Surface *converted_surface = NULL;
-    bool ret = true;
-    const char *error = NULL;
+    bool result = false;
     bool pic_initialized = false;
     bool memorywriter_initialized = false;
     bool converted_surface_locked = false;
     Sint64 start = -1;
 
-    if (!surface || !dst) {
-        error = "Invalid input surface or destination stream.";
-        goto cleanup;
+    if (!surface) {
+        SDL_InvalidParamError("surface");
+        goto done;
+    }
+    if (!dst) {
+        SDL_InvalidParamError("dst");
+        goto done;
     }
 
     start = SDL_TellIO(dst);
 
     if (!IMG_InitWEBP()) {
-        error = SDL_GetError();
-        goto cleanup;
+        goto done;
     }
 
     if (!lib.WebPConfigInitInternal(&config, WEBP_PRESET_DEFAULT, quality, WEBP_ENCODER_ABI_VERSION)) {
-        error = "Failed to initialize WebPConfig.";
-        goto cleanup;
+        SDL_SetError("Failed to initialize WebPConfig");
+        goto done;
     }
 
     quality = SDL_clamp(quality, 0.0f, 100.0f);
@@ -734,13 +736,13 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
     config.method = 4;
 
     if (!lib.WebPValidateConfig(&config)) {
-        error = "Invalid WebP configuration.";
-        goto cleanup;
+        SDL_SetError("Invalid WebP configuration");
+        goto done;
     }
 
     if (!lib.WebPPictureInitInternal(&pic, WEBP_ENCODER_ABI_VERSION)) {
-        error = "Failed to initialize WebPPicture.";
-        goto cleanup;
+        SDL_SetError("Failed to initialize WebPPicture");
+        goto done;
     }
     pic_initialized = true;
 
@@ -750,8 +752,7 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
     if (surface->format != SDL_PIXELFORMAT_RGBA32) {
         converted_surface = SDL_ConvertSurface(surface, SDL_PIXELFORMAT_RGBA32);
         if (!converted_surface) {
-            error = SDL_GetError();
-            goto cleanup;
+            goto done;
         }
     } else {
         converted_surface = surface;
@@ -759,15 +760,14 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
 
     if (SDL_MUSTLOCK(converted_surface)) {
         if (!SDL_LockSurface(converted_surface)) {
-            error = SDL_GetError();
-            goto cleanup;
+            goto done;
         }
         converted_surface_locked = true;
     }
 
     if (!lib.WebPPictureImportRGBA(&pic, (const uint8_t *)converted_surface->pixels, converted_surface->pitch)) {
-        error = "Failed to import RGBA pixels into WebPPicture.";
-        goto cleanup;
+        SDL_SetError("Failed to import RGBA pixels into WebPPicture");
+        goto done;
     }
 
     if (converted_surface_locked) {
@@ -781,21 +781,22 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
     pic.custom_ptr = &writer;
 
     if (!lib.WebPEncode(&config, &pic)) {
-        error = GetWebPEncodingErrorStringInternal(pic.error_code);
-        goto cleanup;
+        SDL_SetError("Failed to encode WebP: %s", GetWebPEncodingErrorStringInternal(pic.error_code));
+        goto done;
     }
 
     if (writer.size > 0) {
         if (SDL_WriteIO(dst, writer.mem, writer.size) != writer.size) {
-            error = "Failed to write all WebP data to destination.";
-            goto cleanup;
+            goto done;
         }
     } else {
-        error = "No WebP data generated.";
-        goto cleanup;
+        SDL_SetError("No WebP data generated.");
+        goto done;
     }
 
-cleanup:
+    result = true;
+
+done:
     if (converted_surface_locked) {
         SDL_UnlockSurface(converted_surface);
     }
@@ -812,29 +813,25 @@ cleanup:
         lib.WebPMemoryWriterClear(&writer);
     }
 
-    if (error) {
-        if (!closeio && start != -1) {
-            SDL_SeekIO(dst, start, SDL_IO_SEEK_SET);
-        }
-        SDL_SetError("%s", error);
-        ret = false;
+    if (!result && !closeio && start != -1) {
+        SDL_SeekIO(dst, start, SDL_IO_SEEK_SET);
     }
 
     if (closeio) {
         SDL_CloseIO(dst);
     }
 
-    return ret;
+    return result;
 }
 
 bool IMG_SaveWEBP(SDL_Surface *surface, const char *file, float quality)
 {
     SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
-    if (!dst) {
+    if (dst) {
+        return IMG_SaveWEBP_IO(surface, dst, true, quality);
+    } else {
         return false;
     }
-
-   return IMG_SaveWEBP_IO(surface, dst, true, quality);
 }
 
 struct IMG_AnimationEncoderContext
@@ -1076,14 +1073,14 @@ bool IMG_isWEBP(SDL_IOStream *src)
 SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
 {
     (void)src;
-    SDL_SetError("SDL_image was not built with WEBP support");
+    SDL_SetError("SDL_image built without WEBP load support");
     return NULL;
 }
 
 IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
 {
     (void)src;
-    SDL_SetError("SDL_image was not built with WEBP support");
+    SDL_SetError("SDL_image built without WEBP load support");
     return NULL;
 }
 
@@ -1091,7 +1088,7 @@ bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
 {
     (void)decoder;
     (void)props;
-    return SDL_SetError("SDL_image was not built with WEBP load support");
+    return SDL_SetError("SDL_image built without WEBP load support");
 }
 
 #endif // !LOAD_WEBP
@@ -1104,7 +1101,7 @@ bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, floa
     (void)dst;
     (void)closeio;
     (void)quality;
-    return SDL_SetError("SDL_image was not built with WEBP save support");
+    return SDL_SetError("SDL_image built without WEBP save support");
 }
 
 bool IMG_SaveWEBP(SDL_Surface *surface, const char *file, float quality)
@@ -1112,14 +1109,14 @@ bool IMG_SaveWEBP(SDL_Surface *surface, const char *file, float quality)
     (void)surface;
     (void)file;
     (void)quality;
-    return SDL_SetError("SDL_image was not built with WEBP save support");
+    return SDL_SetError("SDL_image built without WEBP save support");
 }
 
 bool IMG_CreateWEBPAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
     (void)encoder;
     (void)props;
-    return SDL_SetError("SDL_image was not built with WEBP save support");
+    return SDL_SetError("SDL_image built without WEBP save support");
 }
 
 #endif // !SAVE_WEBP
