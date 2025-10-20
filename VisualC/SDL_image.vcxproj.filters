@@ -73,6 +73,9 @@
     <ClCompile Include="..\src\xmlman.c">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\IMG_ani.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Sources">
@@ -108,6 +111,9 @@
       <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="..\src\xmlman.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\IMG_ani.h">
       <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>

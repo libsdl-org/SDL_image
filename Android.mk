@@ -73,6 +73,7 @@ LOCAL_MODULE := SDL3_image
 
 LOCAL_SRC_FILES :=  		\
     src/IMG.c           	\
+    src/IMG_ani.c               \
     src/IMG_anim_encoder.c      \
     src/IMG_anim_decoder.c      \
     src/IMG_avif.c      	\
@@ -99,8 +100,8 @@ LOCAL_SRC_FILES :=  		\
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/include
 
-LOCAL_CFLAGS := -DLOAD_BMP -DSAVE_BMP -DLOAD_GIF -DSAVE_GIF -DLOAD_LBM \
-                -DLOAD_PCX -DLOAD_PNM -DLOAD_SVG -DLOAD_TGA -DSAVE_TGA \
+LOCAL_CFLAGS := -DLOAD_ANI -DLOAD_BMP -DLOAD_GIF -DLOAD_LBM \
+                -DLOAD_PCX -DLOAD_PNM -DLOAD_SVG -DLOAD_TGA \
                 -DLOAD_XCF -DLOAD_XPM -DLOAD_XV -DLOAD_QOI
 LOCAL_LDLIBS :=
 LOCAL_LDFLAGS := -Wl,--no-undefined -Wl,--version-script=$(LOCAL_PATH)/src/SDL_image.sym

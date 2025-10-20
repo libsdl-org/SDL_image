@@ -100,7 +100,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DLL_EXPORT;_DEBUG;WIN32;_WINDOWS;USE_STBIMAGE;LOAD_AVIF;LOAD_AVIF_DYNAMIC="libavif-16.dll";LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC="libtiff-6.dll";LOAD_WEBP;LOAD_WEBP_DYNAMIC="libwebp-7.dll";LOAD_WEBPDEMUX_DYNAMIC="libwebpdemux-2.dll";LOAD_WEBPMUX_DYNAMIC="libwebpmux-3.dll";LOAD_XCF;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DLL_EXPORT;_DEBUG;WIN32;_WINDOWS;USE_STBIMAGE;LOAD_ANI;LOAD_AVIF;LOAD_AVIF_DYNAMIC="libavif-16.dll";LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC="libtiff-6.dll";LOAD_WEBP;LOAD_WEBP_DYNAMIC="libwebp-7.dll";LOAD_WEBPDEMUX_DYNAMIC="libwebpdemux-2.dll";LOAD_WEBPMUX_DYNAMIC="libwebpmux-3.dll";LOAD_XCF;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
@@ -127,7 +127,7 @@
     </Midl>
     <ClCompile>
       <AdditionalIncludeDirectories>external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DLL_EXPORT;_DEBUG;WIN32;_WINDOWS;USE_STBIMAGE;LOAD_AVIF;LOAD_AVIF_DYNAMIC="libavif-16.dll";LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC="libtiff-6.dll";LOAD_WEBP;LOAD_WEBP_DYNAMIC="libwebp-7.dll";LOAD_WEBPDEMUX_DYNAMIC="libwebpdemux-2.dll";LOAD_WEBPMUX_DYNAMIC="libwebpmux-3.dll";LOAD_LIBPNG_DYNAMIC="libpng16-16.dll";SDL_IMAGE_LIBPNG;LOAD_XCF;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DLL_EXPORT;_DEBUG;WIN32;_WINDOWS;USE_STBIMAGE;LOAD_ANI;LOAD_AVIF;LOAD_AVIF_DYNAMIC="libavif-16.dll";LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC="libtiff-6.dll";LOAD_WEBP;LOAD_WEBP_DYNAMIC="libwebp-7.dll";LOAD_WEBPDEMUX_DYNAMIC="libwebpdemux-2.dll";LOAD_WEBPMUX_DYNAMIC="libwebpmux-3.dll";LOAD_LIBPNG_DYNAMIC="libpng16-16.dll";SDL_IMAGE_LIBPNG;LOAD_XCF;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
@@ -154,7 +154,7 @@
     </Midl>
     <ClCompile>
       <AdditionalIncludeDirectories>external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DLL_EXPORT;NDEBUG;WIN32;_WINDOWS;USE_STBIMAGE;LOAD_AVIF;LOAD_AVIF_DYNAMIC="libavif-16.dll";LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC="libtiff-6.dll";LOAD_WEBP;LOAD_WEBP_DYNAMIC="libwebp-7.dll";LOAD_WEBPDEMUX_DYNAMIC="libwebpdemux-2.dll";LOAD_XCF;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DLL_EXPORT;NDEBUG;WIN32;_WINDOWS;USE_STBIMAGE;LOAD_ANI;LOAD_AVIF;LOAD_AVIF_DYNAMIC="libavif-16.dll";LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC="libtiff-6.dll";LOAD_WEBP;LOAD_WEBP_DYNAMIC="libwebp-7.dll";LOAD_WEBPDEMUX_DYNAMIC="libwebpdemux-2.dll";LOAD_XCF;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
@@ -181,7 +181,7 @@
     </Midl>
     <ClCompile>
       <AdditionalIncludeDirectories>external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>DLL_EXPORT;NDEBUG;WIN32;_WINDOWS;USE_STBIMAGE;LOAD_AVIF;LOAD_AVIF_DYNAMIC="libavif-16.dll";LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC="libtiff-6.dll";LOAD_WEBP;LOAD_WEBP_DYNAMIC="libwebp-7.dll";LOAD_WEBPDEMUX_DYNAMIC="libwebpdemux-2.dll";LOAD_WEBPMUX_DYNAMIC="libwebpmux-3.dll";LOAD_LIBPNG_DYNAMIC="libpng16-16.dll";SDL_IMAGE_LIBPNG;LOAD_XCF;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DLL_EXPORT;NDEBUG;WIN32;_WINDOWS;USE_STBIMAGE;LOAD_ANI;LOAD_AVIF;LOAD_AVIF_DYNAMIC="libavif-16.dll";LOAD_BMP;LOAD_GIF;LOAD_JPG;LOAD_LBM;LOAD_PCX;LOAD_PNG;LOAD_PNM;LOAD_QOI;LOAD_SVG;LOAD_TGA;LOAD_TIF;LOAD_TIF_DYNAMIC="libtiff-6.dll";LOAD_WEBP;LOAD_WEBP_DYNAMIC="libwebp-7.dll";LOAD_WEBPDEMUX_DYNAMIC="libwebpdemux-2.dll";LOAD_WEBPMUX_DYNAMIC="libwebpmux-3.dll";LOAD_LIBPNG_DYNAMIC="libpng16-16.dll";SDL_IMAGE_LIBPNG;LOAD_XCF;LOAD_XPM;LOAD_XV;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
@@ -197,6 +197,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\IMG.c" />
+    <ClCompile Include="..\src\IMG_ani.c" />
     <ClCompile Include="..\src\IMG_anim_decoder.c" />
     <ClCompile Include="..\src\IMG_anim_encoder.c" />
     <ClCompile Include="..\src\IMG_avif.c" />
@@ -226,6 +227,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\SDL3_image\SDL_image.h" />
+    <ClInclude Include="..\src\IMG_ani.h" />
     <ClInclude Include="..\src\IMG_anim_decoder.h" />
     <ClInclude Include="..\src\IMG_anim_encoder.h" />
     <ClInclude Include="..\src\IMG_libpng.h" />

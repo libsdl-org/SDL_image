@@ -376,6 +376,50 @@ extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_IO(SDL_Renderer *
 extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_GetClipboardImage(void);
 
 /**
+ * Detect ANI animated cursor data on a readable/seekable SDL_IOStream.
+ *
+ * This function attempts to determine if a file is a given filetype, reading
+ * the least amount possible from the SDL_IOStream (usually a few bytes).
+ *
+ * There is no distinction made between "not the filetype in question" and
+ * basic i/o errors.
+ *
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
+ *
+ * You do not need to call this function to load data; SDL_image can work to
+ * determine file type in many cases in its standard load functions.
+ *
+ * \param src a seekable/readable SDL_IOStream to provide image data.
+ * \returns true if this is ANI animated cursor data, false otherwise.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_isAVIF
+ * \sa IMG_isICO
+ * \sa IMG_isCUR
+ * \sa IMG_isBMP
+ * \sa IMG_isGIF
+ * \sa IMG_isJPG
+ * \sa IMG_isJXL
+ * \sa IMG_isLBM
+ * \sa IMG_isPCX
+ * \sa IMG_isPNG
+ * \sa IMG_isPNM
+ * \sa IMG_isSVG
+ * \sa IMG_isQOI
+ * \sa IMG_isTIF
+ * \sa IMG_isXCF
+ * \sa IMG_isXPM
+ * \sa IMG_isXV
+ * \sa IMG_isWEBP
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_isANI(SDL_IOStream *src);
+
+/**
  * Detect AVIF image data on a readable/seekable SDL_IOStream.
  *
  * This function attempts to determine if a file is a given filetype, reading
@@ -394,11 +438,11 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_GetClipboardImage(void);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is AVIF data, zero otherwise.
+ * \returns true if this is AVIF data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
- * \sa IMG_isAVIF
+ * \sa IMG_isANI
  * \sa IMG_isICO
  * \sa IMG_isCUR
  * \sa IMG_isBMP
@@ -438,10 +482,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isAVIF(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is ICO data, zero otherwise.
+ * \returns true if this is ICO data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isANI
  * \sa IMG_isAVIF
  * \sa IMG_isCUR
  * \sa IMG_isBMP
@@ -481,10 +526,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isICO(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is CUR data, zero otherwise.
+ * \returns true if this is CUR data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isANI
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isBMP
@@ -524,10 +570,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isCUR(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is BMP data, zero otherwise.
+ * \returns true if this is BMP data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isANI
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -567,10 +614,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isBMP(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is GIF data, zero otherwise.
+ * \returns true if this is GIF data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isANI
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -610,10 +658,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isGIF(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is JPG data, zero otherwise.
+ * \returns true if this is JPG data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isANI
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -653,10 +702,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isJPG(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is JXL data, zero otherwise.
+ * \returns true if this is JXL data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isANI
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -696,10 +746,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isJXL(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is LBM data, zero otherwise.
+ * \returns true if this is LBM data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isANI
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -739,10 +790,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isLBM(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is PCX data, zero otherwise.
+ * \returns true if this is PCX data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isANI
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -782,10 +834,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isPCX(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is PNG data, zero otherwise.
+ * \returns true if this is PNG data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isANI
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -825,10 +878,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isPNG(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is PNM data, zero otherwise.
+ * \returns true if this is PNM data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isANI
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -868,10 +922,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isPNM(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is SVG data, zero otherwise.
+ * \returns true if this is SVG data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isANI
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -911,10 +966,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isSVG(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is QOI data, zero otherwise.
+ * \returns true if this is QOI data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isANI
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -954,10 +1010,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isQOI(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is TIFF data, zero otherwise.
+ * \returns true if this is TIFF data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isANI
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -997,10 +1054,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isTIF(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is XCF data, zero otherwise.
+ * \returns true if this is XCF data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isANI
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -1040,10 +1098,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isXCF(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is XPM data, zero otherwise.
+ * \returns true if this is XPM data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isANI
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -1083,10 +1142,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isXPM(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is XV data, zero otherwise.
+ * \returns true if this is XV data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isANI
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -1126,10 +1186,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isXV(SDL_IOStream *src);
  * determine file type in many cases in its standard load functions.
  *
  * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns non-zero if this is WEBP data, zero otherwise.
+ * \returns true if this is WEBP data, false otherwise.
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isANI
  * \sa IMG_isAVIF
  * \sa IMG_isICO
  * \sa IMG_isCUR
@@ -2225,6 +2286,7 @@ typedef struct IMG_Animation
  * \sa IMG_CreateAnimatedCursor
  * \sa IMG_LoadAnimation_IO
  * \sa IMG_LoadAnimationTyped_IO
+ * \sa IMG_LoadANIAnimation_IO
  * \sa IMG_LoadAPNGAnimation_IO
  * \sa IMG_LoadAVIFAnimation_IO
  * \sa IMG_LoadGIFAnimation_IO
@@ -2253,6 +2315,7 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation(const char *file);
  * \sa IMG_CreateAnimatedCursor
  * \sa IMG_LoadAnimation
  * \sa IMG_LoadAnimationTyped_IO
+ * \sa IMG_LoadANIAnimation_IO
  * \sa IMG_LoadAPNGAnimation_IO
  * \sa IMG_LoadAVIFAnimation_IO
  * \sa IMG_LoadGIFAnimation_IO
@@ -2288,6 +2351,7 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation_IO(SDL_IOStream *s
  * \sa IMG_CreateAnimatedCursor
  * \sa IMG_LoadAnimation
  * \sa IMG_LoadAnimation_IO
+ * \sa IMG_LoadANIAnimation_IO
  * \sa IMG_LoadAPNGAnimation_IO
  * \sa IMG_LoadAVIFAnimation_IO
  * \sa IMG_LoadGIFAnimation_IO
@@ -2308,12 +2372,41 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimationTyped_IO(SDL_IOStre
  * \sa IMG_LoadAnimation
  * \sa IMG_LoadAnimation_IO
  * \sa IMG_LoadAnimationTyped_IO
+ * \sa IMG_LoadANIAnimation_IO
  * \sa IMG_LoadAPNGAnimation_IO
  * \sa IMG_LoadAVIFAnimation_IO
  * \sa IMG_LoadGIFAnimation_IO
  * \sa IMG_LoadWEBPAnimation_IO
  */
 extern SDL_DECLSPEC void SDLCALL IMG_FreeAnimation(IMG_Animation *anim);
+
+/**
+ * Load an ANI animation directly from an SDL_IOStream.
+ *
+ * If you know you definitely have an ANI image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally, it's
+ * better to use the abstract interfaces; also, there is only an SDL_IOStream
+ * interface available here.
+ *
+ * When done with the returned animation, the app should dispose of it with a
+ * call to IMG_FreeAnimation().
+ *
+ * \param src an SDL_IOStream from which data will be read.
+ * \returns a new IMG_Animation, or NULL on error.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_isANI
+ * \sa IMG_LoadAnimation
+ * \sa IMG_LoadAnimation_IO
+ * \sa IMG_LoadAnimationTyped_IO
+ * \sa IMG_LoadAPNGAnimation_IO
+ * \sa IMG_LoadAVIFAnimation_IO
+ * \sa IMG_LoadGIFAnimation_IO
+ * \sa IMG_LoadWEBPAnimation_IO
+ * \sa IMG_FreeAnimation
+ */
+extern SDL_DECLSPEC IMG_Animation *SDLCALL IMG_LoadANIAnimation_IO(SDL_IOStream *src);
 
 /**
  * Load an APNG animation directly from an SDL_IOStream.
@@ -2331,9 +2424,11 @@ extern SDL_DECLSPEC void SDLCALL IMG_FreeAnimation(IMG_Animation *anim);
  *
  * \since This function is available since SDL_image 3.4.0.
  *
+ * \sa IMG_isPNG
  * \sa IMG_LoadAnimation
  * \sa IMG_LoadAnimation_IO
  * \sa IMG_LoadAnimationTyped_IO
+ * \sa IMG_LoadANIAnimation_IO
  * \sa IMG_LoadAVIFAnimation_IO
  * \sa IMG_LoadGIFAnimation_IO
  * \sa IMG_LoadWEBPAnimation_IO
@@ -2357,9 +2452,11 @@ extern SDL_DECLSPEC IMG_Animation *SDLCALL IMG_LoadAPNGAnimation_IO(SDL_IOStream
  *
  * \since This function is available since SDL_image 3.4.0.
  *
+ * \sa IMG_isAVIF
  * \sa IMG_LoadAnimation
  * \sa IMG_LoadAnimation_IO
  * \sa IMG_LoadAnimationTyped_IO
+ * \sa IMG_LoadANIAnimation_IO
  * \sa IMG_LoadAPNGAnimation_IO
  * \sa IMG_LoadGIFAnimation_IO
  * \sa IMG_LoadWEBPAnimation_IO
@@ -2380,9 +2477,11 @@ extern SDL_DECLSPEC IMG_Animation *SDLCALL IMG_LoadAVIFAnimation_IO(SDL_IOStream
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isGIF
  * \sa IMG_LoadAnimation
  * \sa IMG_LoadAnimation_IO
  * \sa IMG_LoadAnimationTyped_IO
+ * \sa IMG_LoadANIAnimation_IO
  * \sa IMG_LoadAPNGAnimation_IO
  * \sa IMG_LoadAVIFAnimation_IO
  * \sa IMG_LoadWEBPAnimation_IO
@@ -2403,9 +2502,11 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadGIFAnimation_IO(SDL_IOStream
  *
  * \since This function is available since SDL_image 3.0.0.
  *
+ * \sa IMG_isWEBP
  * \sa IMG_LoadAnimation
  * \sa IMG_LoadAnimation_IO
  * \sa IMG_LoadAnimationTyped_IO
+ * \sa IMG_LoadANIAnimation_IO
  * \sa IMG_LoadAPNGAnimation_IO
  * \sa IMG_LoadAVIFAnimation_IO
  * \sa IMG_LoadGIFAnimation_IO

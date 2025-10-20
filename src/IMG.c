@@ -83,6 +83,7 @@ static struct {
     { "WEBP", IMG_isWEBP, IMG_LoadWEBPAnimation_IO  },
     { "APNG", IMG_isPNG, IMG_LoadAPNGAnimation_IO   },
     { "AVIFS", IMG_isAVIF, IMG_LoadAVIFAnimation_IO },
+    { "ANI", IMG_isANI, IMG_LoadANIAnimation_IO },
 };
 
 int IMG_Version(void)
