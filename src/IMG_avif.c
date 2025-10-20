@@ -1236,10 +1236,10 @@ static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_
         avifResult ar = lib.avifImageSetMetadataXMP(image, xmp_data, outlen);
         if (ar != AVIF_RESULT_OK) {
             lib.avifImageDestroy(image);
-            SDL_free((void *)xmp_data);
+            SDL_free(xmp_data);
             return SDL_SetError("Couldn't set XMP metadata for AVIF image: %s", lib.avifResultToString(ar));
         }
-        SDL_free((void *)xmp_data);
+        SDL_free(xmp_data);
     }
 
     image->yuvRange = AVIF_RANGE_FULL;
@@ -1617,7 +1617,7 @@ bool IMG_CreateAVIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Propertie
         if (!SDL_CopyProperties(props, ctx->metadata)) {
             lib.avifEncoderDestroy(ctx->encoder);
             SDL_DestroyProperties(ctx->metadata);
-            SDL_free((void *)ctx);
+            SDL_free(ctx);
             return SDL_SetError("Couldn't copy properties to AVIF encoder metadata");
         }
     }

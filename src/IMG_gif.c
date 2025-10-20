@@ -410,9 +410,9 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
     Uint8 *dst;
     int pixel_count = 0;
     int total_pixels = len * height;
-    
+
     (void) gray; /* unused */
-    
+
     if (!ReadOK(src, &c, 1)) {
         RWSetMsg("EOF / read error on image data");
         return NULL;
@@ -421,28 +421,28 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
         RWSetMsg("error reading image");
         return NULL;
     }
-    
+
     if (ignore) {
         while (LWZReadByte(src, FALSE, c, state) >= 0)
             ;
         return NULL;
     }
-    
+
     /* Create RGBA32 surface with frame dimensions */
     image = SDL_CreateSurface(len, height, SDL_PIXELFORMAT_RGBA32);
     if (!image) {
         return NULL;
     }
-    
+
     /* Initialize entire surface to transparent */
     SDL_memset(image->pixels, 0, image->pitch * height);
-    
+
     transparent_index = state->Gif89.transparent;
-    
+
     /* Decode and convert to RGBA */
     while ((v = LWZReadByte(src, FALSE, c, state)) >= 0 && pixel_count < total_pixels) {
         dst = (Uint8 *)image->pixels + (ypos * image->pitch) + (xpos * 4);
-        
+
         /* Only write non-transparent pixels */
         if (transparent_index < 0 || v != transparent_index) {
             if (v < cmapSize) {
@@ -458,7 +458,7 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
                 dst[3] = 255;
             }
         }
-        
+
         pixel_count++;
         ++xpos;
         if (xpos == len) {
@@ -499,7 +499,7 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
         if (ypos >= height)
             break;
     }
-    
+
 fini:
     return image;
 }
@@ -581,7 +581,7 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
     return true;
 }
 
-static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder, const char** comment, int* loopCount)
+static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder, char**comment, int *loopCount)
 {
     if (comment) {
         *comment = NULL;
@@ -725,7 +725,7 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder, cons
                                 c[current_len] = '\0';
                             }
 
-                            *comment = (const char *)c;
+                            *comment = c;
                         }
                     } break;
 
@@ -998,7 +998,7 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Properties
     decoder->GetNextFrame = IMG_AnimationDecoderGetNextFrame_Internal;
     decoder->Close = IMG_AnimationDecoderClose_Internal;
 
-    const char *comment;
+    char *comment = NULL;
     int loop_count = 0;
     if (!IMG_AnimationDecoderGetGIFHeader(decoder, &comment, &loop_count)) {
         return false;
@@ -1015,11 +1015,7 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Properties
             SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_DESCRIPTION_STRING, comment);
         }
     }
-
-    if (comment) {
-        SDL_free((void *)comment);
-        comment = NULL;
-    }
+    SDL_free(comment);
 
     return true;
 }

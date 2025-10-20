@@ -1351,11 +1351,11 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
     }
 
     // Extracted metadata will be assigned to variables below
-    const char *desc = NULL;
-    const char *rights = NULL;
-    const char *title = NULL;
-    const char *author = NULL;
-    const char *creationtime = NULL;
+    char *desc = NULL;
+    char *rights = NULL;
+    char *title = NULL;
+    char *author = NULL;
+    char *creationtime = NULL;
 
     bool found_iend = false;
     while (!found_iend) {
@@ -1665,23 +1665,23 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
         // Get other well-defined properties and set them in our props.
         if (desc) {
             SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_DESCRIPTION_STRING, desc);
-            SDL_free((void *)desc);
+            SDL_free(desc);
         }
         if (rights) {
             SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_COPYRIGHT_STRING, rights);
-            SDL_free((void *)rights);
+            SDL_free(rights);
         }
         if (title) {
             SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_TITLE_STRING, title);
-            SDL_free((void *)title);
+            SDL_free(title);
         }
         if (author) {
             SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_AUTHOR_STRING, author);
-            SDL_free((void *)author);
+            SDL_free(author);
         }
         if (creationtime) {
             SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_CREATION_TIME_STRING, creationtime);
-            SDL_free((void *)creationtime);
+            SDL_free(creationtime);
         }
     }
 
