@@ -1052,7 +1052,7 @@ bool IMG_CreateAVIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
 
     IMG_AnimationDecoderContext *ctx = (IMG_AnimationDecoderContext *)SDL_calloc(1, sizeof(*ctx));
     if (!ctx) {
-        return SDL_SetError("Out of memory for AVIF decoder context");
+        return false;
     }
 
     ctx->start_pos = SDL_TellIO(decoder->src);
