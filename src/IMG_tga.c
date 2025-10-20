@@ -358,21 +358,19 @@ SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
 
 bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
-    Sint64 start;
-    const char *error = NULL;
+    Sint64 start = -1;
     struct TGAheader hdr;
-    bool retval = false;
     SDL_Palette *surface_palette = NULL;
     SDL_Surface *temp_surface = NULL;
+    bool result = false;
 
-    if (!surface || !dst) {
-
-        if (closeio && dst) {
-            SDL_CloseIO(dst);
-        }
-
-        SDL_SetError("Invalid parameters to IMG_SaveTGA_IO");
-        return false;
+    if (!surface) {
+        SDL_InvalidParamError("surface");
+        goto done;
+    }
+    if (!dst) {
+        SDL_InvalidParamError("dst");
+        goto done;
     }
 
     start = SDL_TellIO(dst);
@@ -393,8 +391,7 @@ bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 
     const SDL_PixelFormatDetails *pixelFormatDetails = SDL_GetPixelFormatDetails(surface->format);
     if (!pixelFormatDetails) {
-        error = "Failed to get SDL_PixelFormatDetails for surface format";
-        goto error;
+        goto done;
     }
 
     surface_palette = SDL_GetSurfacePalette(surface);
@@ -432,13 +429,12 @@ bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
         }
         break;
     default:
-        error = "Unsupported SDL_Surface format for TGA saving. Supported formats are INDEX8, BGR24, RGB24, BGRA32, RGBA32, XRGB8888, XRGB1555, ARGB1555.";
-        goto error;
+        SDL_SetError("Unsupported SDL_Surface format for TGA saving. Supported formats are INDEX8, BGR24, RGB24, BGRA32, RGBA32, XRGB8888, XRGB1555, ARGB1555.");
+        goto done;
     }
 
     if (SDL_WriteIO(dst, &hdr, sizeof(hdr)) != sizeof(hdr)) {
-        error = "Error writing TGA header";
-        goto error;
+        goto done;
     }
 
     if (hdr.has_cmap && surface_palette) {
@@ -452,8 +448,7 @@ bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
                 color_entry[1] = colors[i].g;
                 color_entry[2] = colors[i].r;
                 if (SDL_WriteIO(dst, color_entry, 3) != 3) {
-                    error = "Error writing TGA colormap entry (24-bit)";
-                    goto error;
+                    goto done;
                 }
                 break;
             case 32:
@@ -462,13 +457,12 @@ bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
                 color_entry[2] = colors[i].r;
                 color_entry[3] = colors[i].a;
                 if (SDL_WriteIO(dst, color_entry, 4) != 4) {
-                    error = "Error writing TGA colormap entry (32-bit)";
-                    goto error;
+                    goto done;
                 }
                 break;
             default:
-                error = "Unsupported TGA colormap bit depth for saving";
-                goto error;
+                SDL_SetError("Unsupported TGA colormap bit depth for saving");
+                goto done;
             }
         }
     }
@@ -497,8 +491,7 @@ bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
     if (target_format != SDL_PIXELFORMAT_UNKNOWN && target_format != surface->format) {
         temp_surface = SDL_ConvertSurface(surface, target_format);
         if (!temp_surface) {
-            error = "Failed to convert surface format for TGA saving";
-            goto error;
+            goto done;
         }
         pixels_to_write = (Uint8 *)temp_surface->pixels;
         pitch_to_write = temp_surface->pitch;
@@ -506,43 +499,39 @@ bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
         if (tempPixelFormatDetails) {
             bytes_per_pixel = tempPixelFormatDetails->bytes_per_pixel;
         } else {
-            error = "Failed to get SDL_PixelFormatDetails for converted surface format";
-            goto error;
+            goto done;
         }
     }
 
     for (int y = 0; y < surface->h; ++y) {
         if (SDL_WriteIO(dst, pixels_to_write + y * pitch_to_write, (size_t)surface->w * bytes_per_pixel) != (size_t)(surface->w * bytes_per_pixel)) {
-            error = "Error writing TGA pixel data";
-            goto error;
+            goto done;
         }
     }
 
-    retval = true;
+    result = true;
 
-error:
+done:
     if (temp_surface) {
         SDL_DestroySurface(temp_surface);
     }
-    if (!retval) {
+    if (!result && !closeio && start != -1) {
         SDL_SeekIO(dst, start, SDL_IO_SEEK_SET);
-        SDL_SetError("%s", error);
     }
-    if (closeio && dst) {
+    if (closeio) {
         SDL_CloseIO(dst);
     }
-    return retval;
+    return result;
 }
 
 bool IMG_SaveTGA(SDL_Surface *surface, const char *file)
 {
     SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
-    if (!dst) {
+    if (dst) {
+        return IMG_SaveTGA_IO(surface, dst, true);
+    } else {
         return false;
     }
-    bool retval = IMG_SaveTGA_IO(surface, dst, true);
-    SDL_CloseIO(dst);
-    return retval;
 }
 
 #else

@@ -666,13 +666,9 @@ static bool LIBPNG_SavePNG_IO_Internal(struct png_save_vars *vars, SDL_Surface *
 
     return true;
 }
-#endif // SAVE_PNG
 
 bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
-#if !SAVE_PNG
-    return false;
-#else
     if (!surface || !dst) {
         SDL_SetError("Surface or SDL_IOStream is NULL");
         return false;
@@ -707,29 +703,41 @@ bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
         SDL_SetError("%s", vars.error);
     }
 
-    if (closeio && dst) {
+    if (closeio) {
         SDL_CloseIO(dst);
     }
 
     return result;
-#endif
 }
 
 bool IMG_SavePNG(SDL_Surface *surface, const char *file)
 {
-    if (!surface || !file) {
-        SDL_SetError("Surface or file name is NULL");
-        return false;
-    }
-
     SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
-    if (!dst) {
-        SDL_SetError("Failed to open file %s for writing: %s", file, SDL_GetError());
+    if (dst) {
+        return IMG_SavePNG_IO(surface, dst, true);
+    } else {
         return false;
     }
-
-    return IMG_SavePNG_IO(surface, dst, true);
 }
+
+#else // !SAVE_PNG
+
+bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
+{
+    (void)surface;
+    (void)dst;
+    (void)closeio;
+    return SDL_SetError("SDL_image built without PNG save support");
+}
+
+bool IMG_SavePNG(SDL_Surface *surface, const char *file)
+{
+    (void)surface;
+    (void)file;
+    return SDL_SetError("SDL_image built without PNG save support");
+}
+
+#endif // SAVE_PNG
 
 typedef struct
 {
