@@ -230,7 +230,7 @@ static SDL_Surface *LoadICOCUR_IO(SDL_IOStream * src, int type, bool closeio)
     }
 
     /* Advance to the DIB Data */
-    if (SDL_SeekIO(src, icoOfs, SDL_IO_SEEK_SET) < 0) {
+    if (SDL_SeekIO(src, fp_offset + icoOfs, SDL_IO_SEEK_SET) < 0) {
         goto done;
     }
 
