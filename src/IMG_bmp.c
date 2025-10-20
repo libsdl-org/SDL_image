@@ -516,7 +516,7 @@ static SDL_Surface *GetIconSurface(SDL_IOStream *src, Sint64 offset, int type, i
     if (biSize == 40) {
         surface = GetBMPSurface(src);
     } else if (biSize == RIFF_FOURCC(0x89, 'P', 'N', 'G')) {
-        surface = SDL_LoadPNG_IO(src, false);
+        surface = IMG_LoadPNG_IO(src);
     } else {
         SDL_SetError("Unsupported ICO bitmap format");
     }
