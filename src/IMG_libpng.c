@@ -706,7 +706,7 @@ bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
     }
 
     if (closeio) {
-        SDL_CloseIO(dst);
+        result &= SDL_CloseIO(dst);
     }
 
     return result;

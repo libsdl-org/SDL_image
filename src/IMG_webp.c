@@ -818,7 +818,7 @@ done:
     }
 
     if (closeio) {
-        SDL_CloseIO(dst);
+        result &= SDL_CloseIO(dst);
     }
 
     return result;

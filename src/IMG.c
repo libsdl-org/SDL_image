@@ -435,7 +435,7 @@ bool IMG_SaveTyped_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, con
 
 done:
     if (dst && closeio) {
-        SDL_CloseIO(dst);
+        result &= SDL_CloseIO(dst);
     }
     return result;
 }
