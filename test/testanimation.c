@@ -798,6 +798,11 @@ static int SDLCALL testDecodeThirdPartyMetadata(void *args)
     (void)args;
     SDLTest_Log("Starting test 'Decode Third Party Metadata Test'");
 
+    if (!FormatAnimationEnabled("webp")) {
+        SDLTest_Log("Animation format webp disabled, skipping test");
+        return TEST_SKIPPED;
+    }
+
     IMG_AnimationDecoder *thirdPartyDecoder = IMG_CreateAnimationDecoder("rgbrgb_thirdpartymetadata.webp");
     SDLTest_AssertCheck(thirdPartyDecoder != NULL, "IMG_CreateAnimationDecoder");
     if (thirdPartyDecoder) {
