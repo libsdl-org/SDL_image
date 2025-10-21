@@ -28,6 +28,8 @@
  *******************************************************************************/
 
 #include <SDL3_image/SDL_image.h>
+
+#include "IMG_libpng.h"
 #include "IMG_anim_encoder.h"
 #include "IMG_anim_decoder.h"
 

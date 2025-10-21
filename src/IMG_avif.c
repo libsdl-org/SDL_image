@@ -22,6 +22,8 @@
 /* This is a AVIF image file loading framework */
 
 #include <SDL3_image/SDL_image.h>
+
+#include "IMG_avif.h"
 #include "IMG_anim_encoder.h"
 #include "IMG_anim_decoder.h"
 #include "xmlman.h"
@@ -1211,7 +1213,7 @@ struct IMG_AnimationEncoderContext
     SDL_PropertiesID metadata;
 };
 
-static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration)
+static bool AnimationEncoder_AddFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration)
 {
     avifImage *image = NULL;
     avifRGBImage rgb;
