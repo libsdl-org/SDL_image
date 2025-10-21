@@ -519,7 +519,7 @@ done:
         SDL_SeekIO(dst, start, SDL_IO_SEEK_SET);
     }
     if (closeio) {
-        SDL_CloseIO(dst);
+        result &= SDL_CloseIO(dst);
     }
     return result;
 }

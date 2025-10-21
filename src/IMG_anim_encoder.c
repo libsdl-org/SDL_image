@@ -183,7 +183,7 @@ bool IMG_CloseAnimationEncoder(IMG_AnimationEncoder *encoder)
 
     bool result = encoder->Close(encoder);
     if (encoder->closeio) {
-        SDL_CloseIO(encoder->dst);
+        result &= SDL_CloseIO(encoder->dst);
     }
     SDL_free(encoder);
     return result;
