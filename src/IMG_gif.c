@@ -22,6 +22,8 @@
 /* This is a GIF image file loading framework */
 
 #include <SDL3_image/SDL_image.h>
+
+#include "IMG_gif.h"
 #include "IMG_anim_encoder.h"
 #include "IMG_anim_decoder.h"
 
@@ -2546,7 +2548,7 @@ static int writeGifTrailer(SDL_IOStream *io)
     return 0;
 }
 
-static bool AnimationEncoder_AddFrame(struct IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration)
+static bool AnimationEncoder_AddFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration)
 {
     IMG_AnimationEncoderContext *ctx = encoder->ctx;
     SDL_IOStream *io = encoder->dst;
@@ -2698,7 +2700,7 @@ error:
     return false;
 }
 
-static bool AnimationEncoder_End(struct IMG_AnimationEncoder *encoder)
+static bool AnimationEncoder_End(IMG_AnimationEncoder *encoder)
 {
     IMG_AnimationEncoderContext *ctx = encoder->ctx;
     SDL_IOStream *io = encoder->dst;
@@ -2724,13 +2726,9 @@ static bool AnimationEncoder_End(struct IMG_AnimationEncoder *encoder)
 
     return success;
 }
-#endif /* SAVE_GIF */
 
-bool IMG_CreateGIFAnimationEncoder(struct IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
+bool IMG_CreateGIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
-#if !SAVE_GIF
-    return SDL_SetError("GIF animation saving is not enabled in this build.");
-#else
     IMG_AnimationEncoderContext *ctx;
     int transparent_index = -1;
     uint16_t num_global_colors = 256;
@@ -2738,21 +2736,17 @@ bool IMG_CreateGIFAnimationEncoder(struct IMG_AnimationEncoder *encoder, SDL_Pro
     transparent_index = (int)SDL_GetNumberProperty(props, "transparent_color_index", -1);
     Sint64 globalcolors = SDL_GetNumberProperty(props, "num_colors", 256);
     if (globalcolors <= 1 || (globalcolors & (globalcolors - 1)) != 0 || globalcolors > 256) {
-        SDL_SetError("GIF stream property 'num_colors' must be a power of 2 (starting from 2, up to 256).");
-        return false;
+        return SDL_SetError("GIF stream property 'num_colors' must be a power of 2 (starting from 2, up to 256).");
     }
 
     num_global_colors = (uint16_t)globalcolors;
 
     if (transparent_index >= (int)num_global_colors) {
-        SDL_SetError("Transparent color index %d exceeds palette size %d",
-                     transparent_index, num_global_colors);
-        return false;
+        return SDL_SetError("Transparent color index %d exceeds palette size %d", transparent_index, num_global_colors);
     }
 
     ctx = (IMG_AnimationEncoderContext *)SDL_calloc(1, sizeof(IMG_AnimationEncoderContext));
     if (!ctx) {
-        SDL_SetError("Failed to allocate animation stream context.");
         return false;
     }
 
@@ -2765,12 +2759,10 @@ bool IMG_CreateGIFAnimationEncoder(struct IMG_AnimationEncoder *encoder, SDL_Pro
     if (!ignoreProps) {
         ctx->metadata = SDL_CreateProperties();
         if (!ctx->metadata) {
-            SDL_SetError("Failed to create metadata properties for GIF encoder.");
             SDL_free(ctx);
             return false;
         }
         if (!SDL_CopyProperties(props, ctx->metadata)) {
-            SDL_SetError("Failed to copy properties to GIF encoder metadata.");
             SDL_DestroyProperties(ctx->metadata);
             SDL_free(ctx);
             return false;
@@ -2789,10 +2781,7 @@ bool IMG_CreateGIFAnimationEncoder(struct IMG_AnimationEncoder *encoder, SDL_Pro
     encoder->Close = AnimationEncoder_End;
 
     return true;
-#endif /*!SAVE_GIF*/
 }
-
-#ifdef SAVE_GIF
 
 bool IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
@@ -2824,6 +2813,13 @@ bool IMG_SaveGIF(SDL_Surface *surface, const char *file)
 }
 
 #else
+
+bool IMG_CreateGIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
+{
+    (void)encoder;
+    (void)props;
+    return SDL_SetError("SDL_image built without GIF save support");
+}
 
 bool IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {

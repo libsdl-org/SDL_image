@@ -23,9 +23,9 @@
 
 #include <SDL3_image/SDL_image.h>
 
+#include "IMG_webp.h"
 #include "IMG_anim_encoder.h"
 #include "IMG_anim_decoder.h"
-#include "IMG_webp.h"
 #include "xmlman.h"
 
 // We will have the saving WEBP feature by default
