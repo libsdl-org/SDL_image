@@ -64,6 +64,20 @@
 		F354743E2828CA66007E9EDA /* IMG_jxl.c in Sources */ = {isa = PBXBuildFile; fileRef = F354743B2828CA66007E9EDA /* IMG_jxl.c */; };
 		F35475FD2829BAF9007E9EDA /* IMG_avif.c in Sources */ = {isa = PBXBuildFile; fileRef = F35475FC2829BAF9007E9EDA /* IMG_avif.c */; };
 		F382070E284EF58C004DD584 /* CMake in Resources */ = {isa = PBXBuildFile; fileRef = F3820707284EF58C004DD584 /* CMake */; };
+		F3DB661D2EA7DDC000568044 /* IMG_ani.c in Sources */ = {isa = PBXBuildFile; fileRef = F3DB66102EA7DDC000568044 /* IMG_ani.c */; };
+		F3DB661E2EA7DDC000568044 /* nanosvg.h in Headers */ = {isa = PBXBuildFile; fileRef = F3DB66172EA7DDC000568044 /* nanosvg.h */; };
+		F3DB661F2EA7DDC000568044 /* IMG_ani.h in Headers */ = {isa = PBXBuildFile; fileRef = F3DB660F2EA7DDC000568044 /* IMG_ani.h */; };
+		F3DB66202EA7DDC000568044 /* IMG_anim_decoder.h in Headers */ = {isa = PBXBuildFile; fileRef = F3DB66112EA7DDC000568044 /* IMG_anim_decoder.h */; };
+		F3DB66212EA7DDC000568044 /* IMG_gif.h in Headers */ = {isa = PBXBuildFile; fileRef = F3DB66142EA7DDC000568044 /* IMG_gif.h */; };
+		F3DB66222EA7DDC000568044 /* nanosvgrast.h in Headers */ = {isa = PBXBuildFile; fileRef = F3DB66182EA7DDC000568044 /* nanosvgrast.h */; };
+		F3DB66232EA7DDC000568044 /* IMG_webp.h in Headers */ = {isa = PBXBuildFile; fileRef = F3DB66162EA7DDC000568044 /* IMG_webp.h */; };
+		F3DB66242EA7DDC000568044 /* tiny_jpeg.h in Headers */ = {isa = PBXBuildFile; fileRef = F3DB661B2EA7DDC000568044 /* tiny_jpeg.h */; };
+		F3DB66252EA7DDC000568044 /* IMG_anim_encoder.h in Headers */ = {isa = PBXBuildFile; fileRef = F3DB66122EA7DDC000568044 /* IMG_anim_encoder.h */; };
+		F3DB66262EA7DDC000568044 /* qoi.h in Headers */ = {isa = PBXBuildFile; fileRef = F3DB66192EA7DDC000568044 /* qoi.h */; };
+		F3DB66272EA7DDC000568044 /* xmlman.h in Headers */ = {isa = PBXBuildFile; fileRef = F3DB661C2EA7DDC000568044 /* xmlman.h */; };
+		F3DB66282EA7DDC000568044 /* IMG_avif.h in Headers */ = {isa = PBXBuildFile; fileRef = F3DB66132EA7DDC000568044 /* IMG_avif.h */; };
+		F3DB66292EA7DDC000568044 /* stb_image.h in Headers */ = {isa = PBXBuildFile; fileRef = F3DB661A2EA7DDC000568044 /* stb_image.h */; };
+		F3DB662A2EA7DDC000568044 /* IMG_libpng.h in Headers */ = {isa = PBXBuildFile; fileRef = F3DB66152EA7DDC000568044 /* IMG_libpng.h */; };
 		F3DC38C32E4CFF2500CD73DE /* xmlman.c in Sources */ = {isa = PBXBuildFile; fileRef = F3DC38C22E4CFF2500CD73DE /* xmlman.c */; };
 		F3DC38C42E4CFF2500CD73DE /* IMG_anim_encoder.c in Sources */ = {isa = PBXBuildFile; fileRef = F3DC38C02E4CFF2500CD73DE /* IMG_anim_encoder.c */; };
 		F3DC38C52E4CFF2500CD73DE /* IMG_libpng.c in Sources */ = {isa = PBXBuildFile; fileRef = F3DC38C12E4CFF2500CD73DE /* IMG_libpng.c */; };
@@ -190,6 +204,20 @@
 		F3547625282AE1C6007E9EDA /* config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = config.xcconfig; sourceTree = "<group>"; };
 		F3820707284EF58C004DD584 /* CMake */ = {isa = PBXFileReference; lastKnownFileType = folder; path = CMake; sourceTree = "<group>"; };
 		F3D87D15281EA88F005DA540 /* webp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = webp.xcodeproj; path = webp/webp.xcodeproj; sourceTree = "<group>"; };
+		F3DB660F2EA7DDC000568044 /* IMG_ani.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IMG_ani.h; path = ../src/IMG_ani.h; sourceTree = SOURCE_ROOT; };
+		F3DB66102EA7DDC000568044 /* IMG_ani.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = IMG_ani.c; path = ../src/IMG_ani.c; sourceTree = SOURCE_ROOT; };
+		F3DB66112EA7DDC000568044 /* IMG_anim_decoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IMG_anim_decoder.h; path = ../src/IMG_anim_decoder.h; sourceTree = SOURCE_ROOT; };
+		F3DB66122EA7DDC000568044 /* IMG_anim_encoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IMG_anim_encoder.h; path = ../src/IMG_anim_encoder.h; sourceTree = SOURCE_ROOT; };
+		F3DB66132EA7DDC000568044 /* IMG_avif.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IMG_avif.h; path = ../src/IMG_avif.h; sourceTree = SOURCE_ROOT; };
+		F3DB66142EA7DDC000568044 /* IMG_gif.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IMG_gif.h; path = ../src/IMG_gif.h; sourceTree = SOURCE_ROOT; };
+		F3DB66152EA7DDC000568044 /* IMG_libpng.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IMG_libpng.h; path = ../src/IMG_libpng.h; sourceTree = SOURCE_ROOT; };
+		F3DB66162EA7DDC000568044 /* IMG_webp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = IMG_webp.h; path = ../src/IMG_webp.h; sourceTree = SOURCE_ROOT; };
+		F3DB66172EA7DDC000568044 /* nanosvg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = nanosvg.h; path = ../src/nanosvg.h; sourceTree = SOURCE_ROOT; };
+		F3DB66182EA7DDC000568044 /* nanosvgrast.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = nanosvgrast.h; path = ../src/nanosvgrast.h; sourceTree = SOURCE_ROOT; };
+		F3DB66192EA7DDC000568044 /* qoi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = qoi.h; path = ../src/qoi.h; sourceTree = SOURCE_ROOT; };
+		F3DB661A2EA7DDC000568044 /* stb_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = stb_image.h; path = ../src/stb_image.h; sourceTree = SOURCE_ROOT; };
+		F3DB661B2EA7DDC000568044 /* tiny_jpeg.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tiny_jpeg.h; path = ../src/tiny_jpeg.h; sourceTree = SOURCE_ROOT; };
+		F3DB661C2EA7DDC000568044 /* xmlman.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = xmlman.h; path = ../src/xmlman.h; sourceTree = SOURCE_ROOT; };
 		F3DC38BF2E4CFF2500CD73DE /* IMG_anim_decoder.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = IMG_anim_decoder.c; path = ../src/IMG_anim_decoder.c; sourceTree = SOURCE_ROOT; };
 		F3DC38C02E4CFF2500CD73DE /* IMG_anim_encoder.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = IMG_anim_encoder.c; path = ../src/IMG_anim_encoder.c; sourceTree = SOURCE_ROOT; };
 		F3DC38C12E4CFF2500CD73DE /* IMG_libpng.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = IMG_libpng.c; path = ../src/IMG_libpng.c; sourceTree = SOURCE_ROOT; };
@@ -256,15 +284,22 @@
 			isa = PBXGroup;
 			children = (
 				AA579DF1161C07E6005F809B /* IMG.c */,
+				F3DB660F2EA7DDC000568044 /* IMG_ani.h */,
+				F3DB66102EA7DDC000568044 /* IMG_ani.c */,
+				F3DB66112EA7DDC000568044 /* IMG_anim_decoder.h */,
 				F3DC38BF2E4CFF2500CD73DE /* IMG_anim_decoder.c */,
+				F3DB66122EA7DDC000568044 /* IMG_anim_encoder.h */,
 				F3DC38C02E4CFF2500CD73DE /* IMG_anim_encoder.c */,
+				F3DB66132EA7DDC000568044 /* IMG_avif.h */,
 				F35475FC2829BAF9007E9EDA /* IMG_avif.c */,
 				AA579DE2161C07E6005F809B /* IMG_bmp.c */,
+				F3DB66142EA7DDC000568044 /* IMG_gif.h */,
 				AA579DE3161C07E6005F809B /* IMG_gif.c */,
 				AA579DE4161C07E6005F809B /* IMG_ImageIO.m */,
 				AA579DE5161C07E6005F809B /* IMG_jpg.c */,
 				F354743B2828CA66007E9EDA /* IMG_jxl.c */,
 				AA579DE6161C07E6005F809B /* IMG_lbm.c */,
+				F3DB66152EA7DDC000568044 /* IMG_libpng.h */,
 				F3DC38C12E4CFF2500CD73DE /* IMG_libpng.c */,
 				AA579DE7161C07E6005F809B /* IMG_pcx.c */,
 				AA579DE8161C07E6005F809B /* IMG_png.c */,
@@ -274,10 +309,17 @@
 				AA50AA461F9C7C50003B9C0C /* IMG_svg.c */,
 				AA579DEA161C07E6005F809B /* IMG_tga.c */,
 				AA579DEB161C07E6005F809B /* IMG_tif.c */,
+				F3DB66162EA7DDC000568044 /* IMG_webp.h */,
 				AA579DEC161C07E6005F809B /* IMG_webp.c */,
 				AA579DED161C07E6005F809B /* IMG_xcf.c */,
 				AA579DEE161C07E6005F809B /* IMG_xpm.c */,
 				AA579DEF161C07E6005F809B /* IMG_xv.c */,
+				F3DB66172EA7DDC000568044 /* nanosvg.h */,
+				F3DB66182EA7DDC000568044 /* nanosvgrast.h */,
+				F3DB66192EA7DDC000568044 /* qoi.h */,
+				F3DB661A2EA7DDC000568044 /* stb_image.h */,
+				F3DB661B2EA7DDC000568044 /* tiny_jpeg.h */,
+				F3DB661C2EA7DDC000568044 /* xmlman.h */,
 				F3DC38C22E4CFF2500CD73DE /* xmlman.c */,
 			);
 			name = "Library Source";
@@ -362,6 +404,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				BE1FA71A07AF4C44004B6283 /* SDL_image.h in Headers */,
+				F3DB661E2EA7DDC000568044 /* nanosvg.h in Headers */,
+				F3DB661F2EA7DDC000568044 /* IMG_ani.h in Headers */,
+				F3DB66202EA7DDC000568044 /* IMG_anim_decoder.h in Headers */,
+				F3DB66212EA7DDC000568044 /* IMG_gif.h in Headers */,
+				F3DB66222EA7DDC000568044 /* nanosvgrast.h in Headers */,
+				F3DB66232EA7DDC000568044 /* IMG_webp.h in Headers */,
+				F3DB66242EA7DDC000568044 /* tiny_jpeg.h in Headers */,
+				F3DB66252EA7DDC000568044 /* IMG_anim_encoder.h in Headers */,
+				F3DB66262EA7DDC000568044 /* qoi.h in Headers */,
+				F3DB66272EA7DDC000568044 /* xmlman.h in Headers */,
+				F3DB66282EA7DDC000568044 /* IMG_avif.h in Headers */,
+				F3DB66292EA7DDC000568044 /* stb_image.h in Headers */,
+				F3DB662A2EA7DDC000568044 /* IMG_libpng.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -577,6 +632,7 @@
 				F35475FD2829BAF9007E9EDA /* IMG_avif.c in Sources */,
 				AA579E04161C07E7005F809B /* IMG_tif.c in Sources */,
 				AA579E06161C07E7005F809B /* IMG_webp.c in Sources */,
+				F3DB661D2EA7DDC000568044 /* IMG_ani.c in Sources */,
 				AA579E08161C07E7005F809B /* IMG_xcf.c in Sources */,
 				AA579E0A161C07E7005F809B /* IMG_xpm.c in Sources */,
 				F354743E2828CA66007E9EDA /* IMG_jxl.c in Sources */,
