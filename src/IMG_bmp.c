@@ -623,6 +623,11 @@ static SDL_Surface *LoadICOCUR_IO(SDL_IOStream *src, int type, bool closeio)
         if (i == 0) {
             surface = entry->surface;
             ++surface->refcount;
+        } else if (type == ICON_TYPE_CUR && entry->surface->w == 32 && entry->surface->h == 32) {
+            // Windows defaults to 32x32 pixel cursors, adjusting for DPI scale, so use that as the primary surface
+            --surface->refcount;
+            surface = entry->surface;
+            ++surface->refcount;
         }
     }
     for (i = 0; i < entries.num_entries; ++i) {
