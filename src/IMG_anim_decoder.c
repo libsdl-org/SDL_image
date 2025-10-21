@@ -22,11 +22,11 @@
 #include <SDL3_image/SDL_image.h>
 
 #include "IMG_anim_decoder.h"
-#include "IMG_webp.h"
-#include "IMG_libpng.h"
-#include "IMG_gif.h"
-#include "IMG_avif.h"
 #include "IMG_ani.h"
+#include "IMG_avif.h"
+#include "IMG_gif.h"
+#include "IMG_libpng.h"
+#include "IMG_webp.h"
 
 IMG_AnimationDecoder *IMG_CreateAnimationDecoder(const char *file)
 {
@@ -139,16 +139,16 @@ IMG_AnimationDecoder *IMG_CreateAnimationDecoderWithProperties(SDL_PropertiesID 
     }
 
     bool result = false;
-    if (SDL_strcasecmp(type, "webp") == 0) {
-        result = IMG_CreateWEBPAnimationDecoder(decoder, props);
-    } else if (SDL_strcasecmp(type, "png") == 0) {
+    if (SDL_strcasecmp(type, "ani") == 0) {
+        result = IMG_CreateANIAnimationDecoder(decoder, props);
+    } else if (SDL_strcasecmp(type, "apng") == 0 || SDL_strcasecmp(type, "png") == 0) {
         result = IMG_CreateAPNGAnimationDecoder(decoder, props);
-    } else if (SDL_strcasecmp(type, "gif") == 0) {
-        result = IMG_CreateGIFAnimationDecoder(decoder, props);
     } else if (SDL_strcasecmp(type, "avifs") == 0) {
         result = IMG_CreateAVIFAnimationDecoder(decoder, props);
-    } else if (SDL_strcasecmp(type, "ani") == 0) {
-        result = IMG_CreateANIAnimationDecoder(decoder, props);
+    } else if (SDL_strcasecmp(type, "gif") == 0) {
+        result = IMG_CreateGIFAnimationDecoder(decoder, props);
+    } else if (SDL_strcasecmp(type, "webp") == 0) {
+        result = IMG_CreateWEBPAnimationDecoder(decoder, props);
     } else {
         SDL_SetError("Unrecognized output type");
     }

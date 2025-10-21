@@ -22,7 +22,13 @@
 #include <SDL3_image/SDL_image.h>
 
 #include "IMG_ani.h"
+#include "IMG_anim_encoder.h"
 #include "IMG_anim_decoder.h"
+
+// We will have the saving ANI feature by default
+#if !defined(SAVE_ANI)
+#define SAVE_ANI 1
+#endif
 
 #ifdef LOAD_ANI
 
@@ -480,3 +486,218 @@ bool IMG_CreateANIAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Properties
 
 #endif // LOAD_ANI
 
+#if SAVE_ANI
+
+struct IMG_AnimationEncoderContext
+{
+    char *author;
+    char *title;
+    int num_frames;
+    int max_frames;
+    SDL_Surface **frames;
+    Uint64 *durations;
+};
+
+
+static bool AnimationEncoder_AddFrame(IMG_AnimationEncoder *encoder, SDL_Surface *surface, Uint64 duration)
+{
+    IMG_AnimationEncoderContext *ctx = encoder->ctx;
+
+    if (ctx->num_frames == ctx->max_frames) {
+        int max_frames = ctx->max_frames + 8;
+
+        SDL_Surface **frames = (SDL_Surface **)SDL_realloc(ctx->frames, max_frames * sizeof(*frames));
+        if (!frames) {
+            return false;
+        }
+
+        Uint64 *durations = (Uint64 *)SDL_realloc(ctx->durations, max_frames * sizeof(*durations));
+        if (!durations) {
+            SDL_free(frames);
+            return false;
+        }
+
+        ctx->frames = frames;
+        ctx->durations = durations;
+        ctx->max_frames = max_frames;
+    }
+
+    ctx->frames[ctx->num_frames] = surface;
+    ++surface->refcount;
+    ctx->durations[ctx->num_frames] = duration;
+    ++ctx->num_frames;
+
+    return true;
+}
+
+static bool SaveChunkSize(SDL_IOStream *dst, Sint64 offset)
+{
+    Sint64 here = SDL_TellIO(dst);
+    if (here < 0) {
+        return false;
+    }
+    if (SDL_SeekIO(dst, offset, SDL_IO_SEEK_SET) < 0) {
+        return false;
+    }
+
+    Uint32 size = (Uint32)(here - (offset + sizeof(Uint32)));
+    if (!SDL_WriteU32LE(dst, size)) {
+        return false;
+    }
+    return SDL_SeekIO(dst, here, SDL_IO_SEEK_SET);
+}
+
+static bool WriteIconFrame(SDL_Surface *surface, SDL_IOStream *dst)
+{
+    bool result = true;
+
+    result &= SDL_WriteU32LE(dst, RIFF_FOURCC('i', 'c', 'o', 'n'));
+    Sint64 icon_size_offset = SDL_TellIO(dst);
+    result &= SDL_WriteU32LE(dst, 0);
+    // Technically this could be ICO format, but it's generally animated cursors
+    result &= IMG_SaveCUR_IO(surface, dst, false);
+    result &= SaveChunkSize(dst, icon_size_offset);
+
+    return result;
+}
+
+static bool WriteAnimInfo(IMG_AnimationEncoderContext *ctx, SDL_IOStream *dst)
+{
+    bool result = true;
+
+    result &= SDL_WriteU32LE(dst, RIFF_FOURCC('L', 'I', 'S', 'T'));
+    Sint64 list_size_offset = SDL_TellIO(dst);
+    result &= SDL_WriteU32LE(dst, 0);
+    result &= SDL_WriteU32LE(dst, RIFF_FOURCC('I', 'N', 'F', 'O'));
+
+    if (ctx->title) {
+        Uint32 size = (Uint32)(SDL_strlen(ctx->title) + 1);
+        result &= SDL_WriteU32LE(dst, RIFF_FOURCC('I', 'N', 'A', 'M'));
+        result &= SDL_WriteU32LE(dst, size);
+        result &= (SDL_WriteIO(dst, ctx->title, size) == size);
+    }
+
+    if (ctx->author) {
+        Uint32 size = (Uint32)(SDL_strlen(ctx->author) + 1);
+        result &= SDL_WriteU32LE(dst, RIFF_FOURCC('I', 'A', 'R', 'T'));
+        result &= SDL_WriteU32LE(dst, size);
+        result &= (SDL_WriteIO(dst, ctx->author, size) == size);
+    }
+
+    result &= SaveChunkSize(dst, list_size_offset);
+
+    return result;
+}
+
+static bool WriteAnimation(IMG_AnimationEncoder *encoder)
+{
+    IMG_AnimationEncoderContext *ctx = encoder->ctx;
+    SDL_IOStream *dst = encoder->dst;
+    bool result = true;
+
+    // RIFF header
+    result &= SDL_WriteU32LE(dst, RIFF_FOURCC('R', 'I', 'F', 'F'));
+    Sint64 riff_size_offset = SDL_TellIO(dst);
+    result &= SDL_WriteU32LE(dst, 0);
+    result &= SDL_WriteU32LE(dst, RIFF_FOURCC('A', 'C', 'O', 'N'));
+
+    // anih header chunk
+    result &= SDL_WriteU32LE(dst, RIFF_FOURCC('a', 'n', 'i', 'h'));
+    result &= SDL_WriteU32LE(dst, sizeof(ANIHEADER));
+
+    ANIHEADER anih;
+    SDL_zero(anih);
+    anih.cbSizeof = sizeof(anih);
+    anih.frames = ctx->num_frames;
+    anih.steps = ctx->num_frames;
+    anih.jifRate = 1;
+    anih.fl = ANI_FLAG_ICON;
+    result &= (SDL_WriteIO(dst, &anih, sizeof(anih)) == sizeof(anih));
+
+    // Info list
+    if (ctx->author || ctx->title) {
+        WriteAnimInfo(ctx, dst);
+    }
+
+    // Rate chunk
+    result &= SDL_WriteU32LE(dst, RIFF_FOURCC('r', 'a', 't', 'e'));
+    result &= SDL_WriteU32LE(dst, sizeof(Uint32) * ctx->num_frames);
+    for (int i = 0; i < ctx->num_frames; ++i) {
+        Uint32 duration = (Uint32)IMG_GetEncoderDuration(encoder, ctx->durations[i], 60);
+        result &= SDL_WriteU32LE(dst, duration);
+    }
+
+    // Frame list
+    result &= SDL_WriteU32LE(dst, RIFF_FOURCC('L', 'I', 'S', 'T'));
+    Sint64 frame_list_size_offset = SDL_TellIO(dst);
+    result &= SDL_WriteU32LE(dst, 0);
+    result &= SDL_WriteU32LE(dst, RIFF_FOURCC('f', 'r', 'a', 'm'));
+
+    for (int i = 0; i < ctx->num_frames; ++i) {
+        result &= WriteIconFrame(ctx->frames[i], dst);
+    }
+    result &= SaveChunkSize(dst, frame_list_size_offset);
+
+    // All done!
+    result &= SaveChunkSize(dst, riff_size_offset);
+
+    return result;
+}
+
+static bool AnimationEncoder_End(IMG_AnimationEncoder *encoder)
+{
+    IMG_AnimationEncoderContext *ctx = encoder->ctx;
+    bool result = true;
+
+    if (ctx->num_frames > 0) {
+        result = WriteAnimation(encoder);
+
+        for (int i = 0; i < ctx->num_frames; ++i) {
+            SDL_DestroySurface(ctx->frames[i]);
+        }
+        SDL_free(ctx->frames);
+        SDL_free(ctx->durations);
+    }
+
+    SDL_free(ctx->author);
+    SDL_free(ctx->title);
+    SDL_free(ctx);
+    encoder->ctx = NULL;
+
+    return result;
+}
+
+bool IMG_CreateANIAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
+{
+    IMG_AnimationEncoderContext *ctx;
+
+    ctx = (IMG_AnimationEncoderContext *)SDL_calloc(1, sizeof(IMG_AnimationEncoderContext));
+    if (!ctx) {
+        return false;
+    }
+
+    const char *author = SDL_GetStringProperty(props, IMG_PROP_METADATA_AUTHOR_STRING, NULL);
+    if (author && *author) {
+        ctx->author = SDL_strdup(author);
+    }
+
+    const char *title = SDL_GetStringProperty(props, IMG_PROP_METADATA_TITLE_STRING, NULL);
+    if (title && *title) {
+        ctx->title = SDL_strdup(title);
+    }
+
+    encoder->ctx = ctx;
+    encoder->AddFrame = AnimationEncoder_AddFrame;
+    encoder->Close = AnimationEncoder_End;
+
+    return true;
+}
+
+#else
+
+bool IMG_CreateANIAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
+{
+    return SDL_SetError("SDL_image built without ANI save support");
+}
+
+#endif // SAVE_ANI
