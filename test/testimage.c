@@ -172,7 +172,7 @@ static const Format formats[] =
 #else
         false,
 #endif
-        false,      /* can save */
+        true,      /* can save */
         IMG_isCUR,
         IMG_LoadCUR_IO,
     },
@@ -208,7 +208,7 @@ static const Format formats[] =
 #else
         false,
 #endif
-        false,      /* can save */
+        true,      /* can save */
         IMG_isICO,
         IMG_LoadICO_IO,
     },

@@ -46,6 +46,29 @@
 #define ICON_TYPE_ICO   1
 #define ICON_TYPE_CUR   2
 
+#pragma pack(push, 1)
+
+typedef struct
+{
+    Uint8 bWidth;
+    Uint8 bHeight;
+    Uint8 bColorCount;
+    Uint8 bReserved;
+    Uint16 xHotspot;
+    Uint16 yHotspot;
+    Uint32 dwImageSize;
+    Uint32 dwImageOffset;
+} CURSORICONFILEDIRENTRY;
+
+typedef struct
+{
+    Uint16 idReserved;
+    Uint16 idType;
+    Uint16 idCount;
+} CURSORICONFILEDIR;
+
+#pragma pack(pop)
+
 typedef struct
 {
     Sint64 offset;
@@ -92,7 +115,7 @@ static bool IMG_isICOCUR(SDL_IOStream *src, int type)
     Sint64 start;
     bool is_ICOCUR;
 
-    /* The Win32 ICO file header (14 bytes) */
+    /* The Win32 ICO file header (12 bytes) */
     Uint16 bfReserved;
     Uint16 bfType;
     Uint16 bfCount;
@@ -745,6 +768,149 @@ bool IMG_SaveBMP(SDL_Surface *surface, const char *file)
     }
 }
 
+static bool FillIconEntry(CURSORICONFILEDIRENTRY *entry, SDL_Surface *surface, int type, Uint32 dwImageSize, Uint32 dwImageOffset)
+{
+    int hot_x = 0, hot_y = 0;
+
+    if (type == ICON_TYPE_CUR) {
+        SDL_PropertiesID props = SDL_GetSurfaceProperties(surface);
+        hot_x = (int)SDL_GetNumberProperty(props, SDL_PROP_SURFACE_HOTSPOT_X_NUMBER, hot_x);
+        hot_y = (int)SDL_GetNumberProperty(props, SDL_PROP_SURFACE_HOTSPOT_Y_NUMBER, hot_y);
+    }
+
+    SDL_zerop(entry);
+    entry->bWidth = surface->w < 256 ? surface->w : 0;  // 0 means a width of 256
+    entry->bHeight = surface->h < 256 ? surface->h : 0; // 0 means a height of 256
+    entry->xHotspot = hot_x;
+    entry->yHotspot = hot_y;
+    entry->dwImageSize = dwImageSize;
+    entry->dwImageOffset = dwImageOffset;
+    return true;
+}
+
+static bool WriteIconSurface(SDL_Surface *surface, SDL_IOStream *dst)
+{
+    // We'll use PNG format, for simplicity
+    if (!IMG_SavePNG_IO(surface, dst, false)) {
+        return false;
+    }
+
+    // Image data offsets must be WORD aligned
+    Sint64 offset = SDL_TellIO(dst);
+    if (offset & 1) {
+        if (!SDL_WriteU8(dst, 0)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+static bool SaveICOCUR(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int type)
+{
+    bool result = false;
+    int count = 0;
+    SDL_Surface **surfaces = NULL;
+    Sint64 start = -1;
+
+    if (!surface) {
+        SDL_InvalidParamError("surface");
+        goto done;
+    }
+    if (!dst) {
+        SDL_InvalidParamError("dst");
+        goto done;
+    }
+
+    start = SDL_TellIO(dst);
+    if (start < 0) {
+        // We need to be able to seek in the stream
+        goto done;
+    }
+
+    surfaces = SDL_GetSurfaceImages(surface, &count);
+    if (!surfaces) {
+        goto done;
+    }
+
+    // Raymond Chen has more insight into this format at:
+    // https://devblogs.microsoft.com/oldnewthing/20101018-00/?p=12513
+    CURSORICONFILEDIR dir;
+    dir.idReserved = 0;
+    dir.idType = type;
+    dir.idCount = count;
+    result = (SDL_WriteIO(dst, &dir, sizeof(dir)) == sizeof(dir));
+
+    Uint32 entries_size = count * sizeof(CURSORICONFILEDIRENTRY);
+    CURSORICONFILEDIRENTRY *entries = (CURSORICONFILEDIRENTRY *)SDL_malloc(entries_size);
+    if (!entries) {
+        result = false;
+        goto done;
+    }
+    result &= (SDL_WriteIO(dst, entries, entries_size) == entries_size);
+
+    Sint64 image_offset = SDL_TellIO(dst);
+    for (int i = 0; i < count; ++i) {
+        result &= WriteIconSurface(surfaces[i], dst);
+
+        Sint64 next_offset = SDL_TellIO(dst);
+        Uint32 dwImageSize = (Uint32)(next_offset - image_offset);
+        Uint32 dwImageOffset = (Uint32)(image_offset - start);
+
+        result &= FillIconEntry(&entries[i], surfaces[i], type, dwImageSize, dwImageOffset);
+
+        image_offset = next_offset;
+    }
+
+    // Now that we have the icon entries filled out, rewrite them
+    result &= (SDL_SeekIO(dst, start + sizeof(dir), SDL_IO_SEEK_SET) >= 0);
+    result &= (SDL_WriteIO(dst, entries, entries_size) == entries_size);
+    result &= (SDL_SeekIO(dst, image_offset, SDL_IO_SEEK_SET) >= 0);
+    SDL_free(entries);
+
+done:
+    SDL_free(surfaces);
+
+    if (!result && !closeio && start != -1) {
+        SDL_SeekIO(dst, start, SDL_IO_SEEK_SET);
+    }
+
+    if (closeio) {
+        SDL_CloseIO(dst);
+    }
+
+    return result;
+}
+
+bool IMG_SaveCUR_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
+{
+    return SaveICOCUR(surface, dst, closeio, ICON_TYPE_CUR);
+}
+
+bool IMG_SaveCUR(SDL_Surface *surface, const char *file)
+{
+    SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
+    if (dst) {
+        return SaveICOCUR(surface, dst, true, ICON_TYPE_CUR);
+    } else {
+        return false;
+    }
+}
+
+bool IMG_SaveICO_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
+{
+    return SaveICOCUR(surface, dst, closeio, ICON_TYPE_ICO);
+}
+
+bool IMG_SaveICO(SDL_Surface *surface, const char *file)
+{
+    SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
+    if (dst) {
+        return SaveICOCUR(surface, dst, true, ICON_TYPE_ICO);
+    } else {
+        return false;
+    }
+}
+
 #else // !SAVE_BMP
 
 bool IMG_SaveBMP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
@@ -756,6 +922,36 @@ bool IMG_SaveBMP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 }
 
 bool IMG_SaveBMP(SDL_Surface *surface, const char *file)
+{
+    (void)surface;
+    (void)file;
+    return SDL_SetError("SDL_image built without BMP save support");
+}
+
+bool IMG_SaveCUR_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
+{
+    (void)surface;
+    (void)dst;
+    (void)closeio;
+    return SDL_SetError("SDL_image built without BMP save support");
+}
+
+bool IMG_SaveCUR(SDL_Surface *surface, const char *file)
+{
+    (void)surface;
+    (void)file;
+    return SDL_SetError("SDL_image built without BMP save support");
+}
+
+bool IMG_SaveICO_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
+{
+    (void)surface;
+    (void)dst;
+    (void)closeio;
+    return SDL_SetError("SDL_image built without BMP save support");
+}
+
+bool IMG_SaveICO(SDL_Surface *surface, const char *file)
 {
     (void)surface;
     (void)file;

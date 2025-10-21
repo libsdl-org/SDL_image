@@ -1933,7 +1933,9 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_ReadXPMFromArrayToRGB888(char **xp
  * \sa IMG_SaveTyped_IO
  * \sa IMG_SaveAVIF
  * \sa IMG_SaveBMP
+ * \sa IMG_SaveCUR
  * \sa IMG_SaveGIF
+ * \sa IMG_SaveICO
  * \sa IMG_SaveJPG
  * \sa IMG_SavePNG
  * \sa IMG_SaveTGA
@@ -1965,7 +1967,9 @@ extern SDL_DECLSPEC bool SDLCALL IMG_Save(SDL_Surface *surface, const char *file
  * \sa IMG_Save
  * \sa IMG_SaveAVIF_IO
  * \sa IMG_SaveBMP_IO
+ * \sa IMG_SaveCUR_IO
  * \sa IMG_SaveGIF_IO
+ * \sa IMG_SaveICO_IO
  * \sa IMG_SaveJPG_IO
  * \sa IMG_SavePNG_IO
  * \sa IMG_SaveTGA_IO
@@ -2027,12 +2031,6 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStr
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveBMP_IO
- * \sa IMG_SaveAVIF
- * \sa IMG_SaveGIF
- * \sa IMG_SaveJPG
- * \sa IMG_SavePNG
- * \sa IMG_SaveTGA
- * \sa IMG_SaveWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveBMP(SDL_Surface *surface, const char *file);
 
@@ -2054,14 +2052,45 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveBMP(SDL_Surface *surface, const char *f
  * \since This function is available since SDL_image 3.4.0.
  *
  * \sa IMG_SaveBMP
- * \sa IMG_SaveAVIF_IO
- * \sa IMG_SaveGIF_IO
- * \sa IMG_SaveJPG_IO
- * \sa IMG_SavePNG_IO
- * \sa IMG_SaveTGA_IO
- * \sa IMG_SaveWEBP_IO
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveBMP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
+
+/**
+ * Save an SDL_Surface into a CUR image file.
+ *
+ * If the file already exists, it will be overwritten.
+ *
+ * \param surface the SDL surface to save.
+ * \param file path on the filesystem to write new file to.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveCUR_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveCUR(SDL_Surface *surface, const char *file);
+
+/**
+ * Save an SDL_Surface into CUR image data, via an SDL_IOStream.
+ *
+ * If you just want to save to a filename, you can use IMG_SaveCUR() instead.
+ *
+ * If `closeio` is true, `dst` will be closed before returning, whether this
+ * function succeeds or not.
+ *
+ * \param surface the SDL surface to save.
+ * \param dst the SDL_IOStream to save the image data to.
+ * \param closeio true to close/free the SDL_IOStream before returning, false
+ *                to leave it open.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveCUR
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveCUR_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
 
 /**
  * Save an SDL_Surface into a GIF image file.
@@ -2099,6 +2128,43 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF(SDL_Surface *surface, const char *f
  * \sa IMG_SaveGIF
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
+
+/**
+ * Save an SDL_Surface into a ICO image file.
+ *
+ * If the file already exists, it will be overwritten.
+ *
+ * \param surface the SDL surface to save.
+ * \param file path on the filesystem to write new file to.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveICO_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveICO(SDL_Surface *surface, const char *file);
+
+/**
+ * Save an SDL_Surface into ICO image data, via an SDL_IOStream.
+ *
+ * If you just want to save to a filename, you can use IMG_SaveICO() instead.
+ *
+ * If `closeio` is true, `dst` will be closed before returning, whether this
+ * function succeeds or not.
+ *
+ * \param surface the SDL surface to save.
+ * \param dst the SDL_IOStream to save the image data to.
+ * \param closeio true to close/free the SDL_IOStream before returning, false
+ *                to leave it open.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveICO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveICO_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
 
 /**
  * Save an SDL_Surface into a JPEG image file.
