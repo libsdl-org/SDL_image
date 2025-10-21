@@ -86,5 +86,9 @@ SDL3_image_0.0.0 {
     IMG_GetAnimationDecoderStatus;
     IMG_GetClipboardImage;
     IMG_CreateAnimatedCursor;
+    IMG_SaveCUR;
+    IMG_SaveCUR_IO;
+    IMG_SaveICO;
+    IMG_SaveICO_IO;
   local: *;
 };

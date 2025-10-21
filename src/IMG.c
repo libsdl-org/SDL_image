@@ -418,8 +418,12 @@ bool IMG_SaveTyped_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, con
         result = IMG_SaveAVIF_IO(surface, dst, false, 90);
     } else if (SDL_strcasecmp(type, "bmp") == 0) {
         result = IMG_SaveBMP_IO(surface, dst, false);
+    } else if (SDL_strcasecmp(type, "cur") == 0) {
+        result = IMG_SaveCUR_IO(surface, dst, false);
     } else if (SDL_strcasecmp(type, "gif") == 0) {
         result = IMG_SaveGIF_IO(surface, dst, false);
+    } else if (SDL_strcasecmp(type, "ico") == 0) {
+        result = IMG_SaveICO_IO(surface, dst, false);
     } else if (SDL_strcasecmp(type, "jpg") == 0 ||
                SDL_strcasecmp(type, "jpeg") == 0) {
         result = IMG_SaveJPG_IO(surface, dst, false, 90);
