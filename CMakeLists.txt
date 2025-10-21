@@ -129,6 +129,7 @@ option(SDLIMAGE_XCF "Support loading XCF images" ON)
 option(SDLIMAGE_XPM "Support loading XPM images" ON)
 option(SDLIMAGE_XV "Support loading XV images" ON)
 
+cmake_dependent_option(SDLIMAGE_ANI_SAVE "Add ANI save support" ON SDLIMAGE_ANI OFF)
 cmake_dependent_option(SDLIMAGE_AVIF_SAVE "Add AVIF save support" ON SDLIMAGE_AVIF OFF)
 cmake_dependent_option(SDLIMAGE_BMP_SAVE "Add BMP save support" ON SDLIMAGE_BMP OFF)
 cmake_dependent_option(SDLIMAGE_GIF_SAVE "Add GIF save support" ON SDLIMAGE_GIF OFF)
@@ -603,6 +604,7 @@ if(SDLIMAGE_ANI)
     if(SDLIMAGE_ANI_ENABLED)
         target_compile_definitions(${sdl3_image_target_name} PRIVATE
             LOAD_ANI
+            SAVE_ANI=$<BOOL:${SDLIMAGE_ANI_SAVE}>
         )
     else()
         # Variable is used by test suite

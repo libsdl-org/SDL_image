@@ -45,13 +45,15 @@ static const Sint64 default_loop_count = 1;
 #define DEFAULT_COPYRIGHT     "quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
 
 static const FormatInfo formatInfo[] = {
-    { "PNG", { { IMG_PROP_METADATA_TITLE_STRING, (const void*)DEFAULT_TITLE, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_AUTHOR_STRING, (const void*)DEFAULT_AUTHOR, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_DESCRIPTION_STRING, (const void*)DEFAULT_DESCRIPTION, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (const void *)&default_loop_count, SDL_PROPERTY_TYPE_NUMBER }, { IMG_PROP_METADATA_CREATION_TIME_STRING, (const void*)DEFAULT_CREATION_TIME, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_COPYRIGHT_STRING, (const void*)DEFAULT_COPYRIGHT, SDL_PROPERTY_TYPE_STRING } } },
+    { "ANI", { { IMG_PROP_METADATA_TITLE_STRING, (const void*)DEFAULT_TITLE, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_AUTHOR_STRING, (const void*)DEFAULT_AUTHOR, SDL_PROPERTY_TYPE_STRING } } },
+
+    { "APNG", { { IMG_PROP_METADATA_TITLE_STRING, (const void*)DEFAULT_TITLE, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_AUTHOR_STRING, (const void*)DEFAULT_AUTHOR, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_DESCRIPTION_STRING, (const void*)DEFAULT_DESCRIPTION, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (const void *)&default_loop_count, SDL_PROPERTY_TYPE_NUMBER }, { IMG_PROP_METADATA_CREATION_TIME_STRING, (const void*)DEFAULT_CREATION_TIME, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_COPYRIGHT_STRING, (const void*)DEFAULT_COPYRIGHT, SDL_PROPERTY_TYPE_STRING } } },
+
+    { "AVIFS", { { IMG_PROP_METADATA_TITLE_STRING, (const void*)DEFAULT_TITLE, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_AUTHOR_STRING, (const void*)DEFAULT_AUTHOR, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_DESCRIPTION_STRING, (const void*)DEFAULT_DESCRIPTION, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (const void *)&default_loop_count, SDL_PROPERTY_TYPE_NUMBER }, { IMG_PROP_METADATA_CREATION_TIME_STRING, (const void*)DEFAULT_CREATION_TIME, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_COPYRIGHT_STRING, (const void*)DEFAULT_COPYRIGHT, SDL_PROPERTY_TYPE_STRING } } },
 
     { "GIF", { { IMG_PROP_METADATA_DESCRIPTION_STRING, (const void*)DEFAULT_DESCRIPTION, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (const void *)&default_loop_count, SDL_PROPERTY_TYPE_NUMBER } } },
 
     { "WEBP", { { IMG_PROP_METADATA_TITLE_STRING, (const void*)DEFAULT_TITLE, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_AUTHOR_STRING, (const void*)DEFAULT_AUTHOR, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_DESCRIPTION_STRING, (const void*)DEFAULT_DESCRIPTION, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (const void *)&default_loop_count, SDL_PROPERTY_TYPE_NUMBER }, { IMG_PROP_METADATA_CREATION_TIME_STRING, (const void*)DEFAULT_CREATION_TIME, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_COPYRIGHT_STRING, (const void*)DEFAULT_COPYRIGHT, SDL_PROPERTY_TYPE_STRING } } },
-
-    { "AVIFS", { { IMG_PROP_METADATA_TITLE_STRING, (const void*)DEFAULT_TITLE, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_AUTHOR_STRING, (const void*)DEFAULT_AUTHOR, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_DESCRIPTION_STRING, (const void*)DEFAULT_DESCRIPTION, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (const void *)&default_loop_count, SDL_PROPERTY_TYPE_NUMBER }, { IMG_PROP_METADATA_CREATION_TIME_STRING, (const void*)DEFAULT_CREATION_TIME, SDL_PROPERTY_TYPE_STRING }, { IMG_PROP_METADATA_COPYRIGHT_STRING, (const void*)DEFAULT_COPYRIGHT, SDL_PROPERTY_TYPE_STRING } } },
 };
 
 
@@ -59,12 +61,13 @@ static const struct {
     const char *format;
     const char *filename;
 } inputImages[] = {
-    { "PNG", "rgbrgb.png" },
+    { "ANI", "rgbrgb.ani" },
+    { "APNG", "rgbrgb.png" },
+    { "AVIFS", "rgbrgb.avifs" },
     { "GIF", "rgbrgb.gif" },
-    { "WEBP", "rgbrgb.webp" },
-    { "AVIFS", "rgbrgb.avifs" }
+    { "WEBP", "rgbrgb.webp" }
 };
-static const char *outputImageFormats[] = { "PNG", "GIF", "WEBP", "AVIFS" };
+static const char *outputImageFormats[] = { "ANI", "APNG", "AVIFS", "GIF", "WEBP" };
 
 static const char *GetAnimationDecoderStatusString(IMG_AnimationDecoderStatus status)
 {
@@ -341,7 +344,7 @@ static int SDLCALL testDecodeEncode(void *args) {
                     SDLTest_AssertPass("Encoder closed successfully after adding %i frames.", ii);
                 }
 
-                SDLTest_AssertCheck(ii == i, "All frames were added teo the encoder. Added %i, Total: %i", ii, i);
+                SDLTest_AssertCheck(ii == i, "All frames were added to the encoder. Added %i, Total: %i", ii, i);
                 if (ii != i) {
                     for (int ai = 0; ai < arraySize; ++ai) {
                         SDL_free(decodedFrameData[ai]);
@@ -375,10 +378,16 @@ static int SDLCALL testDecodeEncode(void *args) {
                                                                                    outputImageFormat);
                     SDLTest_AssertCheck(decoder2 != NULL, "IMG_CreateAnimationDecoder_IO");
                     if (decoder2) {
-
+                        bool check_duration = true;
                         Uint64 duration2;
                         SDL_Surface *frame2;
                         int j = 0;
+                        if (SDL_strcmp(inputImages[cim].format, "ANI") == 0  || SDL_strcmp(outputImageFormat, "ANI") == 0) {
+                            /* ANI uses 1/60 time units which can't represent our 20 ms sample frame durations.
+                             * If we switched the sample data to be 100 FPS, that would work for both, but as-is...
+                             */
+                            check_duration = false;
+                        }
                         while (IMG_GetAnimationDecoderFrame(decoder2, &frame2, &duration2)) {
                             SDLTest_Log("Reloaded Frame Duration (%i): %" SDL_PRIu64 " ms", j, duration2);
                             SDLTest_Log("Reloaded Frame Format (%i): %s", j, SDL_GetPixelFormatName(frame2->format));
@@ -398,7 +407,7 @@ static int SDLCALL testDecodeEncode(void *args) {
 
                             if (decodedFrameData[j]->width != frame2->w ||
                                 decodedFrameData[j]->height != frame2->h ||
-                                decodedFrameData[j]->duration != duration2) {
+                                (check_duration && decodedFrameData[j]->duration != duration2)) {
                                 SDLTest_LogError("Frame data mismatch at index %i. Expected (%i, %i, %" SDL_PRIu64 "), Got (%i, %i, %" SDL_PRIu64 ")",
                                     j, decodedFrameData[j]->width, decodedFrameData[j]->height, decodedFrameData[j]->duration, frame2->w, frame2->h, duration2);
                                 for (int ai = 0; ai < arraySize; ++ai) {

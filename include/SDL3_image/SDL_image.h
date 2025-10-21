@@ -2605,6 +2605,14 @@ typedef struct IMG_AnimationEncoder IMG_AnimationEncoder;
 /**
  * Create an encoder to save a series of images to a file.
  *
+ * These animation types are currently supported:
+ *
+ * - ANI
+ * - APNG
+ * - AVIFS
+ * - GIF
+ * - WEBP
+ *
  * The file type is determined from the file extension, e.g. "file.webp" will
  * be encoded using WEBP.
  *
@@ -2623,6 +2631,14 @@ extern SDL_DECLSPEC IMG_AnimationEncoder * SDLCALL IMG_CreateAnimationEncoder(co
 
 /**
  * Create an encoder to save a series of images to an IOStream.
+ *
+ * These animation types are currently supported:
+ *
+ * - ANI
+ * - APNG
+ * - AVIFS
+ * - GIF
+ * - WEBP
  *
  * If `closeio` is true, `dst` will be closed before returning if this
  * function fails, or when the animation encoder is closed if this function
@@ -2646,6 +2662,14 @@ extern SDL_DECLSPEC IMG_AnimationEncoder * SDLCALL IMG_CreateAnimationEncoder_IO
 
 /**
  * Create an animation encoder with the specified properties.
+ *
+ * These animation types are currently supported:
+ *
+ * - ANI
+ * - APNG
+ * - AVIFS
+ * - GIF
+ * - WEBP
  *
  * These are the supported properties:
  *
@@ -2754,6 +2778,14 @@ typedef struct IMG_AnimationDecoder IMG_AnimationDecoder;
 /**
  * Create a decoder to read a series of images from a file.
  *
+ * These animation types are currently supported:
+ *
+ * - ANI
+ * - APNG
+ * - AVIFS
+ * - GIF
+ * - WEBP
+ *
  * The file type is determined from the file extension, e.g. "file.webp" will
  * be decoded using WEBP.
  *
@@ -2773,6 +2805,14 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoder(co
 
 /**
  * Create a decoder to read a series of images from an IOStream.
+ *
+ * These animation types are currently supported:
+ *
+ * - ANI
+ * - APNG
+ * - AVIFS
+ * - GIF
+ * - WEBP
  *
  * If `closeio` is true, `src` will be closed before returning if this
  * function fails, or when the animation decoder is closed if this function
@@ -2797,6 +2837,14 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoder_IO
 
 /**
  * Create an animation decoder with the specified properties.
+ *
+ * These animation types are currently supported:
+ *
+ * - ANI
+ * - APNG
+ * - AVIFS
+ * - GIF
+ * - WEBP
  *
  * These are the supported properties:
  *
