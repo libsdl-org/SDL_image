@@ -24,6 +24,11 @@
 #define SAVE_BMP 1
 #endif
 
+#ifndef LOAD_BMP
+#undef SAVE_BMP
+#define SAVE_BMP 0
+#endif
+
 #if (!defined(__APPLE__) || defined(SDL_IMAGE_USE_COMMON_BACKEND)) || !defined(BMP_USES_IMAGEIO)
 
 /* This is a BMP image file loading framework
