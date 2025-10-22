@@ -597,7 +597,8 @@ static SDL_Surface *LoadICOCUR_IO(SDL_IOStream *src, int type, bool closeio)
         Uint16 wBitCount;
         Uint32 dwBytesInRes;
         Uint32 dwImageOffset;
-        int nWidth, nHeight, nColorCount, nHotX, nHotY;
+        int nWidth, nHeight, nColorCount;
+        int nHotX, nHotY;
 
         if (!SDL_ReadU8(src, &bWidth) ||
             !SDL_ReadU8(src, &bHeight) ||
@@ -618,6 +619,7 @@ static SDL_Surface *LoadICOCUR_IO(SDL_IOStream *src, int type, bool closeio)
             nHotY = 0;
         }
 
+        nWidth = nHeight = nColorCount = 0;
         if (!GetIconInfo(src, start + dwImageOffset, &nWidth, &nHeight, &nColorCount)) {
             continue;
         }
