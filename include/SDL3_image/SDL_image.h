@@ -2587,7 +2587,8 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveAnimation(IMG_Animation *anim, const ch
 /**
  * Save an animation to an SDL_IOStream.
  *
- * If you just want to save to a filename, you can use IMG_SaveAnimation() instead.
+ * If you just want to save to a filename, you can use IMG_SaveAnimation()
+ * instead.
  *
  * If `closeio` is true, `dst` will be closed before returning, whether this
  * function succeeds or not.
