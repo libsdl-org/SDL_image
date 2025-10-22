@@ -30,6 +30,12 @@
 #define SAVE_ANI 1
 #endif
 
+
+#ifndef LOAD_ANI
+#undef SAVE_ANI
+#define SAVE_ANI 0
+#endif
+
 #ifdef LOAD_ANI
 
 #define RIFF_FOURCC(c0, c1, c2, c3)                 \
