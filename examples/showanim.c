@@ -50,24 +50,6 @@ static void draw_background(SDL_Renderer *renderer, int w, int h)
     }
 }
 
-static void SaveAnimation(IMG_Animation *anim, const char *file)
-{
-    int i;
-    IMG_AnimationEncoder *encoder = IMG_CreateAnimationEncoder(file);
-    if (!encoder) {
-        SDL_Log("Couldn't save anim: %s\n", SDL_GetError());
-        return;
-    }
-
-    for (i = 0; i < anim->count; ++i) {
-        if (!IMG_AddAnimationEncoderFrame(encoder, anim->frames[i], anim->delays[i])) {
-            SDL_Log("Couldn't add anim frame: %s\n", SDL_GetError());
-            break;
-        }
-    }
-    IMG_CloseAnimationEncoder(encoder);
-}
-
 int main(int argc, char *argv[])
 {
     SDL_Window *window;
@@ -133,7 +115,9 @@ int main(int argc, char *argv[])
         h = anim->h;
 
         if (saveFile) {
-            SaveAnimation(anim, saveFile);
+            if (!IMG_SaveAnimation(anim, saveFile)) {
+                SDL_Log("Couldn't save animation: %s", SDL_GetError());
+            }
         }
 
         textures = (SDL_Texture **)SDL_calloc(anim->count, sizeof(*textures));

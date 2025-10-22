@@ -401,6 +401,72 @@ done:
     return result;
 }
 
+bool IMG_SaveAnimation(IMG_Animation *anim, const char *file)
+{
+    if (!anim) {
+        return SDL_InvalidParamError("anim");
+    }
+
+    if (!file || !*file) {
+        return SDL_InvalidParamError("file");
+    }
+
+    const char *type = SDL_strrchr(file, '.');
+    if (type) {
+        // Skip the '.' in the file extension
+        ++type;
+    } else {
+        return SDL_SetError("Couldn't determine file type");
+    }
+
+    SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
+    if (!dst) {
+        return false;
+    }
+
+    return IMG_SaveAnimationTyped_IO(anim, dst, true, type);
+}
+
+bool IMG_SaveAnimationTyped_IO(IMG_Animation *anim, SDL_IOStream *dst, bool closeio, const char *type)
+{
+    bool result = false;
+
+    if (!anim) {
+        SDL_InvalidParamError("anim");
+        goto done;
+    }
+
+    if (!dst) {
+        SDL_InvalidParamError("dst");
+        goto done;
+    }
+
+    if (!type || !*type) {
+        SDL_InvalidParamError("type");
+        goto done;
+    }
+
+    if (SDL_strcasecmp(type, "ani") == 0) {
+        result = IMG_SaveANIAnimation_IO(anim, dst, false);
+    } else if (SDL_strcasecmp(type, "apng") == 0 || SDL_strcasecmp(type, "png") == 0) {
+        result = IMG_SaveAPNGAnimation_IO(anim, dst, false);
+    } else if (SDL_strcasecmp(type, "avif") == 0) {
+        result = IMG_SaveAVIFAnimation_IO(anim, dst, false, 90);
+    } else if (SDL_strcasecmp(type, "gif") == 0) {
+        result = IMG_SaveGIFAnimation_IO(anim, dst, false);
+    } else if (SDL_strcasecmp(type, "webp") == 0) {
+        result = IMG_SaveWEBPAnimation_IO(anim, dst, false, 90);
+    } else {
+        result = SDL_SetError("Unsupported image format");
+    }
+
+done:
+    if (dst && closeio) {
+        result &= SDL_CloseIO(dst);
+    }
+    return result;
+}
+
 SDL_Surface *IMG_GetClipboardImage(void)
 {
     SDL_Surface *surface = NULL;

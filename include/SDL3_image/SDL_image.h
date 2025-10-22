@@ -2394,7 +2394,7 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation(const char *file);
 extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation_IO(SDL_IOStream *src, bool closeio);
 
 /**
- * Load an animation from an SDL datasource
+ * Load an animation from an SDL_IOStream.
  *
  * Even though this function accepts a file type, SDL_image may still try
  * other decoders that are capable of detecting file type from the contents of
@@ -2428,26 +2428,6 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimation_IO(SDL_IOStream *s
  * \sa IMG_FreeAnimation
  */
 extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadAnimationTyped_IO(SDL_IOStream *src, bool closeio, const char *type);
-
-/**
- * Dispose of an IMG_Animation and free its resources.
- *
- * The provided `anim` pointer is not valid once this call returns.
- *
- * \param anim IMG_Animation to dispose of.
- *
- * \since This function is available since SDL_image 3.0.0.
- *
- * \sa IMG_LoadAnimation
- * \sa IMG_LoadAnimation_IO
- * \sa IMG_LoadAnimationTyped_IO
- * \sa IMG_LoadANIAnimation_IO
- * \sa IMG_LoadAPNGAnimation_IO
- * \sa IMG_LoadAVIFAnimation_IO
- * \sa IMG_LoadGIFAnimation_IO
- * \sa IMG_LoadWEBPAnimation_IO
- */
-extern SDL_DECLSPEC void SDLCALL IMG_FreeAnimation(IMG_Animation *anim);
 
 /**
  * Load an ANI animation directly from an SDL_IOStream.
@@ -2584,6 +2564,182 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadGIFAnimation_IO(SDL_IOStream
 extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadWEBPAnimation_IO(SDL_IOStream *src);
 
 /**
+ * Save an animation to a file.
+ *
+ * For formats that accept a quality, a default quality of 90 will be used.
+ *
+ * \param anim the animation to save.
+ * \param file path on the filesystem containing an animated image.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveAnimationTyped_IO
+ * \sa IMG_SaveANIAnimation_IO
+ * \sa IMG_SaveAPNGAnimation_IO
+ * \sa IMG_SaveAVIFAnimation_IO
+ * \sa IMG_SaveGIFAnimation_IO
+ * \sa IMG_SaveWEBPAnimation_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveAnimation(IMG_Animation *anim, const char *file);
+
+/**
+ * Save an animation to an SDL_IOStream.
+ *
+ * If you just want to save to a filename, you can use IMG_SaveAnimation() instead.
+ *
+ * If `closeio` is true, `dst` will be closed before returning, whether this
+ * function succeeds or not.
+ *
+ * For formats that accept a quality, a default quality of 90 will be used.
+ *
+ * \param anim the animation to save.
+ * \param dst an SDL_IOStream that data will be written to.
+ * \param closeio true to close/free the SDL_IOStream before returning, false
+ *                to leave it open.
+ * \param type a filename extension that represent this data ("GIF", etc).
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveAnimation
+ * \sa IMG_SaveANIAnimation_IO
+ * \sa IMG_SaveAPNGAnimation_IO
+ * \sa IMG_SaveAVIFAnimation_IO
+ * \sa IMG_SaveGIFAnimation_IO
+ * \sa IMG_SaveWEBPAnimation_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveAnimationTyped_IO(IMG_Animation *anim, SDL_IOStream *dst, bool closeio, const char *type);
+
+/**
+ * Save an animation in ANI format to an SDL_IOStream.
+ *
+ * If `closeio` is true, `dst` will be closed before returning, whether this
+ * function succeeds or not.
+ *
+ * \param anim the animation to save.
+ * \param dst an SDL_IOStream from which data will be written to.
+ * \param closeio true to close/free the SDL_IOStream before returning, false
+ *                to leave it open.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveAnimation
+ * \sa IMG_SaveAnimationTyped_IO
+ * \sa IMG_SaveAPNGAnimation_IO
+ * \sa IMG_SaveAVIFAnimation_IO
+ * \sa IMG_SaveGIFAnimation_IO
+ * \sa IMG_SaveWEBPAnimation_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveANIAnimation_IO(IMG_Animation *anim, SDL_IOStream *dst, bool closeio);
+
+/**
+ * Save an animation in APNG format to an SDL_IOStream.
+ *
+ * If `closeio` is true, `dst` will be closed before returning, whether this
+ * function succeeds or not.
+ *
+ * \param anim the animation to save.
+ * \param dst an SDL_IOStream from which data will be written to.
+ * \param closeio true to close/free the SDL_IOStream before returning, false
+ *                to leave it open.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveAnimation
+ * \sa IMG_SaveAnimationTyped_IO
+ * \sa IMG_SaveANIAnimation_IO
+ * \sa IMG_SaveAVIFAnimation_IO
+ * \sa IMG_SaveGIFAnimation_IO
+ * \sa IMG_SaveWEBPAnimation_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveAPNGAnimation_IO(IMG_Animation *anim, SDL_IOStream *dst, bool closeio);
+
+/**
+ * Save an animation in AVIF format to an SDL_IOStream.
+ *
+ * If `closeio` is true, `dst` will be closed before returning, whether this
+ * function succeeds or not.
+ *
+ * \param anim the animation to save.
+ * \param dst an SDL_IOStream from which data will be written to.
+ * \param closeio true to close/free the SDL_IOStream before returning, false
+ *                to leave it open.
+ * \param quality the desired quality, ranging between 0 (lowest) and 100
+ *                (highest).
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveAnimation
+ * \sa IMG_SaveAnimationTyped_IO
+ * \sa IMG_SaveANIAnimation_IO
+ * \sa IMG_SaveAPNGAnimation_IO
+ * \sa IMG_SaveGIFAnimation_IO
+ * \sa IMG_SaveWEBPAnimation_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveAVIFAnimation_IO(IMG_Animation *anim, SDL_IOStream *dst, bool closeio, int quality);
+
+/**
+ * Save an animation in GIF format to an SDL_IOStream.
+ *
+ * If `closeio` is true, `dst` will be closed before returning, whether this
+ * function succeeds or not.
+ *
+ * \param anim the animation to save.
+ * \param dst an SDL_IOStream from which data will be written to.
+ * \param closeio true to close/free the SDL_IOStream before returning, false
+ *                to leave it open.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveAnimation
+ * \sa IMG_SaveAnimationTyped_IO
+ * \sa IMG_SaveANIAnimation_IO
+ * \sa IMG_SaveAPNGAnimation_IO
+ * \sa IMG_SaveAVIFAnimation_IO
+ * \sa IMG_SaveWEBPAnimation_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveGIFAnimation_IO(IMG_Animation *anim, SDL_IOStream *dst, bool closeio);
+
+/**
+ * Save an animation in WEBP format to an SDL_IOStream.
+ *
+ * If `closeio` is true, `dst` will be closed before returning, whether this
+ * function succeeds or not.
+ *
+ * \param anim the animation to save.
+ * \param dst an SDL_IOStream from which data will be written to.
+ * \param closeio true to close/free the SDL_IOStream before returning, false
+ *                to leave it open.
+ * \param quality between 0 and 100. For lossy, 0 gives the smallest size and
+ *                100 the largest. For lossless, this parameter is the amount
+ *                of effort put into the compression: 0 is the fastest but
+ *                gives larger files compared to the slowest, but best, 100.
+ * \returns true on success or false on failure; call SDL_GetError() for more
+ *          information.
+ *
+ * \since This function is available since SDL_image 3.4.0.
+ *
+ * \sa IMG_SaveAnimation
+ * \sa IMG_SaveAnimationTyped_IO
+ * \sa IMG_SaveANIAnimation_IO
+ * \sa IMG_SaveAPNGAnimation_IO
+ * \sa IMG_SaveAVIFAnimation_IO
+ * \sa IMG_SaveGIFAnimation_IO
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_SaveWEBPAnimation_IO(IMG_Animation *anim, SDL_IOStream *dst, bool closeio, int quality);
+
+/**
  * Create an animated cursor from an animation.
  *
  * \param anim an animation to use to create an animated cursor.
@@ -2599,6 +2755,26 @@ extern SDL_DECLSPEC IMG_Animation * SDLCALL IMG_LoadWEBPAnimation_IO(SDL_IOStrea
  * \sa IMG_LoadAnimationTyped_IO
  */
 extern SDL_DECLSPEC SDL_Cursor * SDLCALL IMG_CreateAnimatedCursor(IMG_Animation *anim, int hot_x, int hot_y);
+
+/**
+ * Dispose of an IMG_Animation and free its resources.
+ *
+ * The provided `anim` pointer is not valid once this call returns.
+ *
+ * \param anim IMG_Animation to dispose of.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_LoadAnimation
+ * \sa IMG_LoadAnimation_IO
+ * \sa IMG_LoadAnimationTyped_IO
+ * \sa IMG_LoadANIAnimation_IO
+ * \sa IMG_LoadAPNGAnimation_IO
+ * \sa IMG_LoadAVIFAnimation_IO
+ * \sa IMG_LoadGIFAnimation_IO
+ * \sa IMG_LoadWEBPAnimation_IO
+ */
+extern SDL_DECLSPEC void SDLCALL IMG_FreeAnimation(IMG_Animation *anim);
 
 /**
  * An object representing the encoder context.
