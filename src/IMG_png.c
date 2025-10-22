@@ -77,6 +77,7 @@ bool IMG_isPNG(SDL_IOStream *src)
 SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 {
     (void)src;
+    SDL_SetError("SDL_image built without PNG support");
     return NULL;
 }
 

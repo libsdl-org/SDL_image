@@ -506,12 +506,6 @@ fini:
     return image;
 }
 
-/* Load a GIF type animation from an SDL datasource */
-IMG_Animation *IMG_LoadGIFAnimation_IO(SDL_IOStream *src)
-{
-    return IMG_DecodeAsAnimation(src, "gif", 0);
-}
-
 struct IMG_AnimationDecoderContext
 {
     State_t state;                /* GIF decoding state */
@@ -1024,17 +1018,11 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Properties
 
 #else
 
-/* Load a GIF type animation from an SDL datasource */
-IMG_Animation *IMG_LoadGIFAnimation_IO(SDL_IOStream *src)
-{
-    (void)src;
-    return NULL;
-}
-
 bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props)
 {
     (void)decoder;
     (void)props;
+    SDL_SetError("SDL_image built without GIF support");
     return false;
 }
 
@@ -1097,6 +1085,7 @@ bool IMG_isGIF(SDL_IOStream *src)
 SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
 {
     (void)src;
+    SDL_SetError("SDL_image built without GIF support");
     return NULL;
 }
 

@@ -71,67 +71,6 @@ extern "C" {
 extern SDL_DECLSPEC int SDLCALL IMG_Version(void);
 
 /**
- * Load an image from an SDL data source into a software surface.
- *
- * An SDL_Surface is a buffer of pixels in memory accessible by the CPU. Use
- * this if you plan to hand the data to something else or manipulate it
- * further in code.
- *
- * There are no guarantees about what format the new SDL_Surface data will be;
- * in many cases, SDL_image will attempt to supply a surface that exactly
- * matches the provided image, but in others it might have to convert (either
- * because the image is in a format that SDL doesn't directly support or
- * because it's compressed data that could reasonably uncompress to various
- * formats and SDL_image had to pick one). You can inspect an SDL_Surface for
- * its specifics, and use SDL_ConvertSurface to then migrate to any supported
- * format.
- *
- * If the image format supports a transparent pixel, SDL will set the colorkey
- * for the surface. You can enable RLE acceleration on the surface afterwards
- * by calling: SDL_SetSurfaceColorKey(image, SDL_RLEACCEL,
- * image->format->colorkey);
- *
- * If `closeio` is true, `src` will be closed before returning, whether this
- * function succeeds or not. SDL_image reads everything it needs from `src`
- * during this call in any case.
- *
- * Even though this function accepts a file type, SDL_image may still try
- * other decoders that are capable of detecting file type from the contents of
- * the image data, but may rely on the caller-provided type string for formats
- * that it cannot autodetect. If `type` is NULL, SDL_image will rely solely on
- * its ability to guess the format.
- *
- * There is a separate function to read files from disk without having to deal
- * with SDL_IOStream: `IMG_Load("filename.jpg")` will call this function and
- * manage those details for you, determining the file type from the filename's
- * extension.
- *
- * There is also IMG_Load_IO(), which is equivalent to this function except
- * that it will rely on SDL_image to determine what type of data it is
- * loading, much like passing a NULL for type.
- *
- * If you are using SDL's 2D rendering API, there is an equivalent call to
- * load images directly into an SDL_Texture for use by the GPU without using a
- * software surface: call IMG_LoadTextureTyped_IO() instead.
- *
- * When done with the returned surface, the app should dispose of it with a
- * call to SDL_DestroySurface().
- *
- * \param src an SDL_IOStream that data will be read from.
- * \param closeio true to close/free the SDL_IOStream before returning, false
- *                to leave it open.
- * \param type a filename extension that represent this data ("BMP", "GIF",
- *             "PNG", etc).
- * \returns a new SDL surface, or NULL on error.
- *
- * \since This function is available since SDL_image 3.0.0.
- *
- * \sa IMG_Load
- * \sa IMG_Load_IO
- */
-extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type);
-
-/**
  * Load an image from a filesystem path into a software surface.
  *
  * An SDL_Surface is a buffer of pixels in memory accessible by the CPU. Use
@@ -227,6 +166,67 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_Load(const char *file);
  * \sa IMG_LoadTyped_IO
  */
 extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_Load_IO(SDL_IOStream *src, bool closeio);
+
+/**
+ * Load an image from an SDL data source into a software surface.
+ *
+ * An SDL_Surface is a buffer of pixels in memory accessible by the CPU. Use
+ * this if you plan to hand the data to something else or manipulate it
+ * further in code.
+ *
+ * There are no guarantees about what format the new SDL_Surface data will be;
+ * in many cases, SDL_image will attempt to supply a surface that exactly
+ * matches the provided image, but in others it might have to convert (either
+ * because the image is in a format that SDL doesn't directly support or
+ * because it's compressed data that could reasonably uncompress to various
+ * formats and SDL_image had to pick one). You can inspect an SDL_Surface for
+ * its specifics, and use SDL_ConvertSurface to then migrate to any supported
+ * format.
+ *
+ * If the image format supports a transparent pixel, SDL will set the colorkey
+ * for the surface. You can enable RLE acceleration on the surface afterwards
+ * by calling: SDL_SetSurfaceColorKey(image, SDL_RLEACCEL,
+ * image->format->colorkey);
+ *
+ * If `closeio` is true, `src` will be closed before returning, whether this
+ * function succeeds or not. SDL_image reads everything it needs from `src`
+ * during this call in any case.
+ *
+ * Even though this function accepts a file type, SDL_image may still try
+ * other decoders that are capable of detecting file type from the contents of
+ * the image data, but may rely on the caller-provided type string for formats
+ * that it cannot autodetect. If `type` is NULL, SDL_image will rely solely on
+ * its ability to guess the format.
+ *
+ * There is a separate function to read files from disk without having to deal
+ * with SDL_IOStream: `IMG_Load("filename.jpg")` will call this function and
+ * manage those details for you, determining the file type from the filename's
+ * extension.
+ *
+ * There is also IMG_Load_IO(), which is equivalent to this function except
+ * that it will rely on SDL_image to determine what type of data it is
+ * loading, much like passing a NULL for type.
+ *
+ * If you are using SDL's 2D rendering API, there is an equivalent call to
+ * load images directly into an SDL_Texture for use by the GPU without using a
+ * software surface: call IMG_LoadTextureTyped_IO() instead.
+ *
+ * When done with the returned surface, the app should dispose of it with a
+ * call to SDL_DestroySurface().
+ *
+ * \param src an SDL_IOStream that data will be read from.
+ * \param closeio true to close/free the SDL_IOStream before returning, false
+ *                to leave it open.
+ * \param type a filename extension that represent this data ("BMP", "GIF",
+ *             "PNG", etc).
+ * \returns a new SDL surface, or NULL on error.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_Load
+ * \sa IMG_Load_IO
+ */
+extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadTyped_IO(SDL_IOStream *src, bool closeio, const char *type);
 
 /**
  * Load an image from a filesystem path into a GPU texture.
@@ -399,23 +399,23 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_GetClipboardImage(void);
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_isAVIF
- * \sa IMG_isICO
- * \sa IMG_isCUR
  * \sa IMG_isBMP
+ * \sa IMG_isCUR
  * \sa IMG_isGIF
+ * \sa IMG_isICO
  * \sa IMG_isJPG
  * \sa IMG_isJXL
  * \sa IMG_isLBM
  * \sa IMG_isPCX
  * \sa IMG_isPNG
  * \sa IMG_isPNM
- * \sa IMG_isSVG
  * \sa IMG_isQOI
+ * \sa IMG_isSVG
  * \sa IMG_isTIF
+ * \sa IMG_isWEBP
  * \sa IMG_isXCF
  * \sa IMG_isXPM
  * \sa IMG_isXV
- * \sa IMG_isWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_isANI(SDL_IOStream *src);
 
@@ -443,69 +443,25 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isANI(SDL_IOStream *src);
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_isANI
- * \sa IMG_isICO
- * \sa IMG_isCUR
  * \sa IMG_isBMP
+ * \sa IMG_isCUR
  * \sa IMG_isGIF
+ * \sa IMG_isICO
  * \sa IMG_isJPG
  * \sa IMG_isJXL
  * \sa IMG_isLBM
  * \sa IMG_isPCX
  * \sa IMG_isPNG
  * \sa IMG_isPNM
- * \sa IMG_isSVG
  * \sa IMG_isQOI
+ * \sa IMG_isSVG
  * \sa IMG_isTIF
+ * \sa IMG_isWEBP
  * \sa IMG_isXCF
  * \sa IMG_isXPM
  * \sa IMG_isXV
- * \sa IMG_isWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_isAVIF(SDL_IOStream *src);
-
-/**
- * Detect ICO image data on a readable/seekable SDL_IOStream.
- *
- * This function attempts to determine if a file is a given filetype, reading
- * the least amount possible from the SDL_IOStream (usually a few bytes).
- *
- * There is no distinction made between "not the filetype in question" and
- * basic i/o errors.
- *
- * This function will always attempt to seek `src` back to where it started
- * when this function was called, but it will not report any errors in doing
- * so, but assuming seeking works, this means you can immediately use this
- * with a different IMG_isTYPE function, or load the image without further
- * seeking.
- *
- * You do not need to call this function to load data; SDL_image can work to
- * determine file type in many cases in its standard load functions.
- *
- * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns true if this is ICO data, false otherwise.
- *
- * \since This function is available since SDL_image 3.0.0.
- *
- * \sa IMG_isANI
- * \sa IMG_isAVIF
- * \sa IMG_isCUR
- * \sa IMG_isBMP
- * \sa IMG_isGIF
- * \sa IMG_isJPG
- * \sa IMG_isJXL
- * \sa IMG_isLBM
- * \sa IMG_isPCX
- * \sa IMG_isPNG
- * \sa IMG_isPNM
- * \sa IMG_isSVG
- * \sa IMG_isQOI
- * \sa IMG_isTIF
- * \sa IMG_isXCF
- * \sa IMG_isXPM
- * \sa IMG_isXV
- * \sa IMG_isWEBP
- */
-extern SDL_DECLSPEC bool SDLCALL IMG_isICO(SDL_IOStream *src);
 
 /**
  * Detect CUR image data on a readable/seekable SDL_IOStream.
@@ -532,22 +488,22 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isICO(SDL_IOStream *src);
  *
  * \sa IMG_isANI
  * \sa IMG_isAVIF
- * \sa IMG_isICO
  * \sa IMG_isBMP
  * \sa IMG_isGIF
+ * \sa IMG_isICO
  * \sa IMG_isJPG
  * \sa IMG_isJXL
  * \sa IMG_isLBM
  * \sa IMG_isPCX
  * \sa IMG_isPNG
  * \sa IMG_isPNM
- * \sa IMG_isSVG
  * \sa IMG_isQOI
+ * \sa IMG_isSVG
  * \sa IMG_isTIF
+ * \sa IMG_isWEBP
  * \sa IMG_isXCF
  * \sa IMG_isXPM
  * \sa IMG_isXV
- * \sa IMG_isWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_isCUR(SDL_IOStream *src);
 
@@ -576,22 +532,22 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isCUR(SDL_IOStream *src);
  *
  * \sa IMG_isANI
  * \sa IMG_isAVIF
- * \sa IMG_isICO
  * \sa IMG_isCUR
  * \sa IMG_isGIF
+ * \sa IMG_isICO
  * \sa IMG_isJPG
  * \sa IMG_isJXL
  * \sa IMG_isLBM
  * \sa IMG_isPCX
  * \sa IMG_isPNG
  * \sa IMG_isPNM
- * \sa IMG_isSVG
  * \sa IMG_isQOI
+ * \sa IMG_isSVG
  * \sa IMG_isTIF
+ * \sa IMG_isWEBP
  * \sa IMG_isXCF
  * \sa IMG_isXPM
  * \sa IMG_isXV
- * \sa IMG_isWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_isBMP(SDL_IOStream *src);
 
@@ -620,24 +576,68 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isBMP(SDL_IOStream *src);
  *
  * \sa IMG_isANI
  * \sa IMG_isAVIF
- * \sa IMG_isICO
- * \sa IMG_isCUR
  * \sa IMG_isBMP
+ * \sa IMG_isCUR
+ * \sa IMG_isICO
  * \sa IMG_isJPG
  * \sa IMG_isJXL
  * \sa IMG_isLBM
  * \sa IMG_isPCX
  * \sa IMG_isPNG
  * \sa IMG_isPNM
- * \sa IMG_isSVG
  * \sa IMG_isQOI
+ * \sa IMG_isSVG
  * \sa IMG_isTIF
+ * \sa IMG_isWEBP
  * \sa IMG_isXCF
  * \sa IMG_isXPM
  * \sa IMG_isXV
- * \sa IMG_isWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_isGIF(SDL_IOStream *src);
+
+/**
+ * Detect ICO image data on a readable/seekable SDL_IOStream.
+ *
+ * This function attempts to determine if a file is a given filetype, reading
+ * the least amount possible from the SDL_IOStream (usually a few bytes).
+ *
+ * There is no distinction made between "not the filetype in question" and
+ * basic i/o errors.
+ *
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
+ *
+ * You do not need to call this function to load data; SDL_image can work to
+ * determine file type in many cases in its standard load functions.
+ *
+ * \param src a seekable/readable SDL_IOStream to provide image data.
+ * \returns true if this is ICO data, false otherwise.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_isANI
+ * \sa IMG_isAVIF
+ * \sa IMG_isBMP
+ * \sa IMG_isCUR
+ * \sa IMG_isGIF
+ * \sa IMG_isJPG
+ * \sa IMG_isJXL
+ * \sa IMG_isLBM
+ * \sa IMG_isPCX
+ * \sa IMG_isPNG
+ * \sa IMG_isPNM
+ * \sa IMG_isQOI
+ * \sa IMG_isSVG
+ * \sa IMG_isTIF
+ * \sa IMG_isWEBP
+ * \sa IMG_isXCF
+ * \sa IMG_isXPM
+ * \sa IMG_isXV
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_isICO(SDL_IOStream *src);
 
 /**
  * Detect JPG image data on a readable/seekable SDL_IOStream.
@@ -664,22 +664,22 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isGIF(SDL_IOStream *src);
  *
  * \sa IMG_isANI
  * \sa IMG_isAVIF
- * \sa IMG_isICO
- * \sa IMG_isCUR
  * \sa IMG_isBMP
+ * \sa IMG_isCUR
  * \sa IMG_isGIF
+ * \sa IMG_isICO
  * \sa IMG_isJXL
  * \sa IMG_isLBM
  * \sa IMG_isPCX
  * \sa IMG_isPNG
  * \sa IMG_isPNM
- * \sa IMG_isSVG
  * \sa IMG_isQOI
+ * \sa IMG_isSVG
  * \sa IMG_isTIF
+ * \sa IMG_isWEBP
  * \sa IMG_isXCF
  * \sa IMG_isXPM
  * \sa IMG_isXV
- * \sa IMG_isWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_isJPG(SDL_IOStream *src);
 
@@ -708,22 +708,22 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isJPG(SDL_IOStream *src);
  *
  * \sa IMG_isANI
  * \sa IMG_isAVIF
- * \sa IMG_isICO
- * \sa IMG_isCUR
  * \sa IMG_isBMP
+ * \sa IMG_isCUR
  * \sa IMG_isGIF
+ * \sa IMG_isICO
  * \sa IMG_isJPG
  * \sa IMG_isLBM
  * \sa IMG_isPCX
  * \sa IMG_isPNG
  * \sa IMG_isPNM
- * \sa IMG_isSVG
  * \sa IMG_isQOI
+ * \sa IMG_isSVG
  * \sa IMG_isTIF
+ * \sa IMG_isWEBP
  * \sa IMG_isXCF
  * \sa IMG_isXPM
  * \sa IMG_isXV
- * \sa IMG_isWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_isJXL(SDL_IOStream *src);
 
@@ -752,22 +752,22 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isJXL(SDL_IOStream *src);
  *
  * \sa IMG_isANI
  * \sa IMG_isAVIF
- * \sa IMG_isICO
- * \sa IMG_isCUR
  * \sa IMG_isBMP
+ * \sa IMG_isCUR
  * \sa IMG_isGIF
+ * \sa IMG_isICO
  * \sa IMG_isJPG
  * \sa IMG_isJXL
  * \sa IMG_isPCX
  * \sa IMG_isPNG
  * \sa IMG_isPNM
- * \sa IMG_isSVG
  * \sa IMG_isQOI
+ * \sa IMG_isSVG
  * \sa IMG_isTIF
+ * \sa IMG_isWEBP
  * \sa IMG_isXCF
  * \sa IMG_isXPM
  * \sa IMG_isXV
- * \sa IMG_isWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_isLBM(SDL_IOStream *src);
 
@@ -796,22 +796,22 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isLBM(SDL_IOStream *src);
  *
  * \sa IMG_isANI
  * \sa IMG_isAVIF
- * \sa IMG_isICO
- * \sa IMG_isCUR
  * \sa IMG_isBMP
+ * \sa IMG_isCUR
  * \sa IMG_isGIF
+ * \sa IMG_isICO
  * \sa IMG_isJPG
  * \sa IMG_isJXL
  * \sa IMG_isLBM
  * \sa IMG_isPNG
  * \sa IMG_isPNM
- * \sa IMG_isSVG
  * \sa IMG_isQOI
+ * \sa IMG_isSVG
  * \sa IMG_isTIF
+ * \sa IMG_isWEBP
  * \sa IMG_isXCF
  * \sa IMG_isXPM
  * \sa IMG_isXV
- * \sa IMG_isWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_isPCX(SDL_IOStream *src);
 
@@ -840,22 +840,22 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isPCX(SDL_IOStream *src);
  *
  * \sa IMG_isANI
  * \sa IMG_isAVIF
- * \sa IMG_isICO
- * \sa IMG_isCUR
  * \sa IMG_isBMP
+ * \sa IMG_isCUR
  * \sa IMG_isGIF
+ * \sa IMG_isICO
  * \sa IMG_isJPG
  * \sa IMG_isJXL
  * \sa IMG_isLBM
  * \sa IMG_isPCX
  * \sa IMG_isPNM
- * \sa IMG_isSVG
  * \sa IMG_isQOI
+ * \sa IMG_isSVG
  * \sa IMG_isTIF
+ * \sa IMG_isWEBP
  * \sa IMG_isXCF
  * \sa IMG_isXPM
  * \sa IMG_isXV
- * \sa IMG_isWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_isPNG(SDL_IOStream *src);
 
@@ -884,68 +884,24 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isPNG(SDL_IOStream *src);
  *
  * \sa IMG_isANI
  * \sa IMG_isAVIF
- * \sa IMG_isICO
- * \sa IMG_isCUR
  * \sa IMG_isBMP
+ * \sa IMG_isCUR
  * \sa IMG_isGIF
+ * \sa IMG_isICO
  * \sa IMG_isJPG
  * \sa IMG_isJXL
  * \sa IMG_isLBM
  * \sa IMG_isPCX
  * \sa IMG_isPNG
- * \sa IMG_isSVG
  * \sa IMG_isQOI
+ * \sa IMG_isSVG
  * \sa IMG_isTIF
+ * \sa IMG_isWEBP
  * \sa IMG_isXCF
  * \sa IMG_isXPM
  * \sa IMG_isXV
- * \sa IMG_isWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_isPNM(SDL_IOStream *src);
-
-/**
- * Detect SVG image data on a readable/seekable SDL_IOStream.
- *
- * This function attempts to determine if a file is a given filetype, reading
- * the least amount possible from the SDL_IOStream (usually a few bytes).
- *
- * There is no distinction made between "not the filetype in question" and
- * basic i/o errors.
- *
- * This function will always attempt to seek `src` back to where it started
- * when this function was called, but it will not report any errors in doing
- * so, but assuming seeking works, this means you can immediately use this
- * with a different IMG_isTYPE function, or load the image without further
- * seeking.
- *
- * You do not need to call this function to load data; SDL_image can work to
- * determine file type in many cases in its standard load functions.
- *
- * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns true if this is SVG data, false otherwise.
- *
- * \since This function is available since SDL_image 3.0.0.
- *
- * \sa IMG_isANI
- * \sa IMG_isAVIF
- * \sa IMG_isICO
- * \sa IMG_isCUR
- * \sa IMG_isBMP
- * \sa IMG_isGIF
- * \sa IMG_isJPG
- * \sa IMG_isJXL
- * \sa IMG_isLBM
- * \sa IMG_isPCX
- * \sa IMG_isPNG
- * \sa IMG_isPNM
- * \sa IMG_isQOI
- * \sa IMG_isTIF
- * \sa IMG_isXCF
- * \sa IMG_isXPM
- * \sa IMG_isXV
- * \sa IMG_isWEBP
- */
-extern SDL_DECLSPEC bool SDLCALL IMG_isSVG(SDL_IOStream *src);
 
 /**
  * Detect QOI image data on a readable/seekable SDL_IOStream.
@@ -972,10 +928,10 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isSVG(SDL_IOStream *src);
  *
  * \sa IMG_isANI
  * \sa IMG_isAVIF
- * \sa IMG_isICO
- * \sa IMG_isCUR
  * \sa IMG_isBMP
+ * \sa IMG_isCUR
  * \sa IMG_isGIF
+ * \sa IMG_isICO
  * \sa IMG_isJPG
  * \sa IMG_isJXL
  * \sa IMG_isLBM
@@ -984,12 +940,56 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isSVG(SDL_IOStream *src);
  * \sa IMG_isPNM
  * \sa IMG_isSVG
  * \sa IMG_isTIF
+ * \sa IMG_isWEBP
  * \sa IMG_isXCF
  * \sa IMG_isXPM
  * \sa IMG_isXV
- * \sa IMG_isWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_isQOI(SDL_IOStream *src);
+
+/**
+ * Detect SVG image data on a readable/seekable SDL_IOStream.
+ *
+ * This function attempts to determine if a file is a given filetype, reading
+ * the least amount possible from the SDL_IOStream (usually a few bytes).
+ *
+ * There is no distinction made between "not the filetype in question" and
+ * basic i/o errors.
+ *
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
+ *
+ * You do not need to call this function to load data; SDL_image can work to
+ * determine file type in many cases in its standard load functions.
+ *
+ * \param src a seekable/readable SDL_IOStream to provide image data.
+ * \returns true if this is SVG data, false otherwise.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_isANI
+ * \sa IMG_isAVIF
+ * \sa IMG_isBMP
+ * \sa IMG_isCUR
+ * \sa IMG_isGIF
+ * \sa IMG_isICO
+ * \sa IMG_isJPG
+ * \sa IMG_isJXL
+ * \sa IMG_isLBM
+ * \sa IMG_isPCX
+ * \sa IMG_isPNG
+ * \sa IMG_isPNM
+ * \sa IMG_isQOI
+ * \sa IMG_isTIF
+ * \sa IMG_isWEBP
+ * \sa IMG_isXCF
+ * \sa IMG_isXPM
+ * \sa IMG_isXV
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_isSVG(SDL_IOStream *src);
 
 /**
  * Detect TIFF image data on a readable/seekable SDL_IOStream.
@@ -1016,24 +1016,68 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isQOI(SDL_IOStream *src);
  *
  * \sa IMG_isANI
  * \sa IMG_isAVIF
- * \sa IMG_isICO
- * \sa IMG_isCUR
  * \sa IMG_isBMP
+ * \sa IMG_isCUR
  * \sa IMG_isGIF
+ * \sa IMG_isICO
  * \sa IMG_isJPG
  * \sa IMG_isJXL
  * \sa IMG_isLBM
  * \sa IMG_isPCX
  * \sa IMG_isPNG
  * \sa IMG_isPNM
- * \sa IMG_isSVG
  * \sa IMG_isQOI
+ * \sa IMG_isSVG
+ * \sa IMG_isWEBP
  * \sa IMG_isXCF
  * \sa IMG_isXPM
  * \sa IMG_isXV
- * \sa IMG_isWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_isTIF(SDL_IOStream *src);
+
+/**
+ * Detect WEBP image data on a readable/seekable SDL_IOStream.
+ *
+ * This function attempts to determine if a file is a given filetype, reading
+ * the least amount possible from the SDL_IOStream (usually a few bytes).
+ *
+ * There is no distinction made between "not the filetype in question" and
+ * basic i/o errors.
+ *
+ * This function will always attempt to seek `src` back to where it started
+ * when this function was called, but it will not report any errors in doing
+ * so, but assuming seeking works, this means you can immediately use this
+ * with a different IMG_isTYPE function, or load the image without further
+ * seeking.
+ *
+ * You do not need to call this function to load data; SDL_image can work to
+ * determine file type in many cases in its standard load functions.
+ *
+ * \param src a seekable/readable SDL_IOStream to provide image data.
+ * \returns true if this is WEBP data, false otherwise.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_isANI
+ * \sa IMG_isAVIF
+ * \sa IMG_isBMP
+ * \sa IMG_isCUR
+ * \sa IMG_isGIF
+ * \sa IMG_isICO
+ * \sa IMG_isJPG
+ * \sa IMG_isJXL
+ * \sa IMG_isLBM
+ * \sa IMG_isPCX
+ * \sa IMG_isPNG
+ * \sa IMG_isPNM
+ * \sa IMG_isQOI
+ * \sa IMG_isSVG
+ * \sa IMG_isTIF
+ * \sa IMG_isXCF
+ * \sa IMG_isXPM
+ * \sa IMG_isXV
+ */
+extern SDL_DECLSPEC bool SDLCALL IMG_isWEBP(SDL_IOStream *src);
 
 /**
  * Detect XCF image data on a readable/seekable SDL_IOStream.
@@ -1060,22 +1104,22 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isTIF(SDL_IOStream *src);
  *
  * \sa IMG_isANI
  * \sa IMG_isAVIF
- * \sa IMG_isICO
- * \sa IMG_isCUR
  * \sa IMG_isBMP
+ * \sa IMG_isCUR
  * \sa IMG_isGIF
+ * \sa IMG_isICO
  * \sa IMG_isJPG
  * \sa IMG_isJXL
  * \sa IMG_isLBM
  * \sa IMG_isPCX
  * \sa IMG_isPNG
  * \sa IMG_isPNM
- * \sa IMG_isSVG
  * \sa IMG_isQOI
+ * \sa IMG_isSVG
  * \sa IMG_isTIF
+ * \sa IMG_isWEBP
  * \sa IMG_isXPM
  * \sa IMG_isXV
- * \sa IMG_isWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_isXCF(SDL_IOStream *src);
 
@@ -1104,22 +1148,22 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isXCF(SDL_IOStream *src);
  *
  * \sa IMG_isANI
  * \sa IMG_isAVIF
- * \sa IMG_isICO
- * \sa IMG_isCUR
  * \sa IMG_isBMP
+ * \sa IMG_isCUR
  * \sa IMG_isGIF
+ * \sa IMG_isICO
  * \sa IMG_isJPG
  * \sa IMG_isJXL
  * \sa IMG_isLBM
  * \sa IMG_isPCX
  * \sa IMG_isPNG
  * \sa IMG_isPNM
- * \sa IMG_isSVG
  * \sa IMG_isQOI
+ * \sa IMG_isSVG
  * \sa IMG_isTIF
+ * \sa IMG_isWEBP
  * \sa IMG_isXCF
  * \sa IMG_isXV
- * \sa IMG_isWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_isXPM(SDL_IOStream *src);
 
@@ -1148,68 +1192,24 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isXPM(SDL_IOStream *src);
  *
  * \sa IMG_isANI
  * \sa IMG_isAVIF
- * \sa IMG_isICO
- * \sa IMG_isCUR
  * \sa IMG_isBMP
+ * \sa IMG_isCUR
  * \sa IMG_isGIF
+ * \sa IMG_isICO
  * \sa IMG_isJPG
  * \sa IMG_isJXL
  * \sa IMG_isLBM
  * \sa IMG_isPCX
  * \sa IMG_isPNG
  * \sa IMG_isPNM
- * \sa IMG_isSVG
  * \sa IMG_isQOI
+ * \sa IMG_isSVG
  * \sa IMG_isTIF
+ * \sa IMG_isWEBP
  * \sa IMG_isXCF
  * \sa IMG_isXPM
- * \sa IMG_isWEBP
  */
 extern SDL_DECLSPEC bool SDLCALL IMG_isXV(SDL_IOStream *src);
-
-/**
- * Detect WEBP image data on a readable/seekable SDL_IOStream.
- *
- * This function attempts to determine if a file is a given filetype, reading
- * the least amount possible from the SDL_IOStream (usually a few bytes).
- *
- * There is no distinction made between "not the filetype in question" and
- * basic i/o errors.
- *
- * This function will always attempt to seek `src` back to where it started
- * when this function was called, but it will not report any errors in doing
- * so, but assuming seeking works, this means you can immediately use this
- * with a different IMG_isTYPE function, or load the image without further
- * seeking.
- *
- * You do not need to call this function to load data; SDL_image can work to
- * determine file type in many cases in its standard load functions.
- *
- * \param src a seekable/readable SDL_IOStream to provide image data.
- * \returns true if this is WEBP data, false otherwise.
- *
- * \since This function is available since SDL_image 3.0.0.
- *
- * \sa IMG_isANI
- * \sa IMG_isAVIF
- * \sa IMG_isICO
- * \sa IMG_isCUR
- * \sa IMG_isBMP
- * \sa IMG_isGIF
- * \sa IMG_isJPG
- * \sa IMG_isJXL
- * \sa IMG_isLBM
- * \sa IMG_isPCX
- * \sa IMG_isPNG
- * \sa IMG_isPNM
- * \sa IMG_isSVG
- * \sa IMG_isQOI
- * \sa IMG_isTIF
- * \sa IMG_isXCF
- * \sa IMG_isXPM
- * \sa IMG_isXV
- */
-extern SDL_DECLSPEC bool SDLCALL IMG_isWEBP(SDL_IOStream *src);
 
 /**
  * Load a AVIF image directly.
@@ -1224,94 +1224,26 @@ extern SDL_DECLSPEC bool SDLCALL IMG_isWEBP(SDL_IOStream *src);
  *
  * \since This function is available since SDL_image 3.0.0.
  *
- * \sa IMG_LoadICO_IO
- * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadICO_IO
  * \sa IMG_LoadJPG_IO
  * \sa IMG_LoadJXL_IO
  * \sa IMG_LoadLBM_IO
  * \sa IMG_LoadPCX_IO
  * \sa IMG_LoadPNG_IO
  * \sa IMG_LoadPNM_IO
- * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadTGA_IO
  * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadWEBP_IO
  * \sa IMG_LoadXCF_IO
  * \sa IMG_LoadXPM_IO
  * \sa IMG_LoadXV_IO
- * \sa IMG_LoadWEBP_IO
  */
 extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadAVIF_IO(SDL_IOStream *src);
-
-/**
- * Load a ICO image directly.
- *
- * If you know you definitely have a ICO image, you can call this function,
- * which will skip SDL_image's file format detection routines. Generally it's
- * better to use the abstract interfaces; also, there is only an SDL_IOStream
- * interface available here.
- *
- * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error.
- *
- * \since This function is available since SDL_image 3.0.0.
- *
- * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadCUR_IO
- * \sa IMG_LoadBMP_IO
- * \sa IMG_LoadGIF_IO
- * \sa IMG_LoadJPG_IO
- * \sa IMG_LoadJXL_IO
- * \sa IMG_LoadLBM_IO
- * \sa IMG_LoadPCX_IO
- * \sa IMG_LoadPNG_IO
- * \sa IMG_LoadPNM_IO
- * \sa IMG_LoadSVG_IO
- * \sa IMG_LoadQOI_IO
- * \sa IMG_LoadTGA_IO
- * \sa IMG_LoadTIF_IO
- * \sa IMG_LoadXCF_IO
- * \sa IMG_LoadXPM_IO
- * \sa IMG_LoadXV_IO
- * \sa IMG_LoadWEBP_IO
- */
-extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadICO_IO(SDL_IOStream *src);
-
-/**
- * Load a CUR image directly.
- *
- * If you know you definitely have a CUR image, you can call this function,
- * which will skip SDL_image's file format detection routines. Generally it's
- * better to use the abstract interfaces; also, there is only an SDL_IOStream
- * interface available here.
- *
- * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error.
- *
- * \since This function is available since SDL_image 3.0.0.
- *
- * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadICO_IO
- * \sa IMG_LoadBMP_IO
- * \sa IMG_LoadGIF_IO
- * \sa IMG_LoadJPG_IO
- * \sa IMG_LoadJXL_IO
- * \sa IMG_LoadLBM_IO
- * \sa IMG_LoadPCX_IO
- * \sa IMG_LoadPNG_IO
- * \sa IMG_LoadPNM_IO
- * \sa IMG_LoadSVG_IO
- * \sa IMG_LoadQOI_IO
- * \sa IMG_LoadTGA_IO
- * \sa IMG_LoadTIF_IO
- * \sa IMG_LoadXCF_IO
- * \sa IMG_LoadXPM_IO
- * \sa IMG_LoadXV_IO
- * \sa IMG_LoadWEBP_IO
- */
-extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadCUR_IO(SDL_IOStream *src);
 
 /**
  * Load a BMP image directly.
@@ -1327,25 +1259,59 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadCUR_IO(SDL_IOStream *src);
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadICO_IO
  * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadICO_IO
  * \sa IMG_LoadJPG_IO
  * \sa IMG_LoadJXL_IO
  * \sa IMG_LoadLBM_IO
  * \sa IMG_LoadPCX_IO
  * \sa IMG_LoadPNG_IO
  * \sa IMG_LoadPNM_IO
- * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadTGA_IO
  * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadWEBP_IO
  * \sa IMG_LoadXCF_IO
  * \sa IMG_LoadXPM_IO
  * \sa IMG_LoadXV_IO
- * \sa IMG_LoadWEBP_IO
  */
 extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadBMP_IO(SDL_IOStream *src);
+
+/**
+ * Load a CUR image directly.
+ *
+ * If you know you definitely have a CUR image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_IOStream
+ * interface available here.
+ *
+ * \param src an SDL_IOStream to load image data from.
+ * \returns SDL surface, or NULL on error.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_LoadAVIF_IO
+ * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadICO_IO
+ * \sa IMG_LoadJPG_IO
+ * \sa IMG_LoadJXL_IO
+ * \sa IMG_LoadLBM_IO
+ * \sa IMG_LoadPCX_IO
+ * \sa IMG_LoadPNG_IO
+ * \sa IMG_LoadPNM_IO
+ * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSVG_IO
+ * \sa IMG_LoadTGA_IO
+ * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadWEBP_IO
+ * \sa IMG_LoadXCF_IO
+ * \sa IMG_LoadXPM_IO
+ * \sa IMG_LoadXV_IO
+ */
+extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadCUR_IO(SDL_IOStream *src);
 
 /**
  * Load a GIF image directly.
@@ -1361,25 +1327,59 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadBMP_IO(SDL_IOStream *src);
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadICO_IO
- * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadCUR_IO
+ * \sa IMG_LoadICO_IO
  * \sa IMG_LoadJPG_IO
  * \sa IMG_LoadJXL_IO
  * \sa IMG_LoadLBM_IO
  * \sa IMG_LoadPCX_IO
  * \sa IMG_LoadPNG_IO
  * \sa IMG_LoadPNM_IO
- * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadTGA_IO
  * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadWEBP_IO
  * \sa IMG_LoadXCF_IO
  * \sa IMG_LoadXPM_IO
  * \sa IMG_LoadXV_IO
- * \sa IMG_LoadWEBP_IO
  */
 extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadGIF_IO(SDL_IOStream *src);
+
+/**
+ * Load a ICO image directly.
+ *
+ * If you know you definitely have a ICO image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_IOStream
+ * interface available here.
+ *
+ * \param src an SDL_IOStream to load image data from.
+ * \returns SDL surface, or NULL on error.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_LoadAVIF_IO
+ * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadCUR_IO
+ * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadJPG_IO
+ * \sa IMG_LoadJXL_IO
+ * \sa IMG_LoadLBM_IO
+ * \sa IMG_LoadPCX_IO
+ * \sa IMG_LoadPNG_IO
+ * \sa IMG_LoadPNM_IO
+ * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSVG_IO
+ * \sa IMG_LoadTGA_IO
+ * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadWEBP_IO
+ * \sa IMG_LoadXCF_IO
+ * \sa IMG_LoadXPM_IO
+ * \sa IMG_LoadXV_IO
+ */
+extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadICO_IO(SDL_IOStream *src);
 
 /**
  * Load a JPG image directly.
@@ -1395,23 +1395,23 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadGIF_IO(SDL_IOStream *src);
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadICO_IO
- * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadICO_IO
  * \sa IMG_LoadJXL_IO
  * \sa IMG_LoadLBM_IO
  * \sa IMG_LoadPCX_IO
  * \sa IMG_LoadPNG_IO
  * \sa IMG_LoadPNM_IO
- * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadTGA_IO
  * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadWEBP_IO
  * \sa IMG_LoadXCF_IO
  * \sa IMG_LoadXPM_IO
  * \sa IMG_LoadXV_IO
- * \sa IMG_LoadWEBP_IO
  */
 extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadJPG_IO(SDL_IOStream *src);
 
@@ -1429,23 +1429,23 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadJPG_IO(SDL_IOStream *src);
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadICO_IO
- * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadICO_IO
  * \sa IMG_LoadJPG_IO
  * \sa IMG_LoadLBM_IO
  * \sa IMG_LoadPCX_IO
  * \sa IMG_LoadPNG_IO
  * \sa IMG_LoadPNM_IO
- * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadTGA_IO
  * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadWEBP_IO
  * \sa IMG_LoadXCF_IO
  * \sa IMG_LoadXPM_IO
  * \sa IMG_LoadXV_IO
- * \sa IMG_LoadWEBP_IO
  */
 extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadJXL_IO(SDL_IOStream *src);
 
@@ -1463,23 +1463,23 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadJXL_IO(SDL_IOStream *src);
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadICO_IO
- * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadICO_IO
  * \sa IMG_LoadJPG_IO
  * \sa IMG_LoadJXL_IO
  * \sa IMG_LoadPCX_IO
  * \sa IMG_LoadPNG_IO
  * \sa IMG_LoadPNM_IO
- * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadTGA_IO
  * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadWEBP_IO
  * \sa IMG_LoadXCF_IO
  * \sa IMG_LoadXPM_IO
  * \sa IMG_LoadXV_IO
- * \sa IMG_LoadWEBP_IO
  */
 extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadLBM_IO(SDL_IOStream *src);
 
@@ -1497,23 +1497,23 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadLBM_IO(SDL_IOStream *src);
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadICO_IO
- * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadICO_IO
  * \sa IMG_LoadJPG_IO
  * \sa IMG_LoadJXL_IO
  * \sa IMG_LoadLBM_IO
  * \sa IMG_LoadPNG_IO
  * \sa IMG_LoadPNM_IO
- * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadTGA_IO
  * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadWEBP_IO
  * \sa IMG_LoadXCF_IO
  * \sa IMG_LoadXPM_IO
  * \sa IMG_LoadXV_IO
- * \sa IMG_LoadWEBP_IO
  */
 extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadPCX_IO(SDL_IOStream *src);
 
@@ -1531,23 +1531,23 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadPCX_IO(SDL_IOStream *src);
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadICO_IO
- * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadICO_IO
  * \sa IMG_LoadJPG_IO
  * \sa IMG_LoadJXL_IO
  * \sa IMG_LoadLBM_IO
  * \sa IMG_LoadPCX_IO
  * \sa IMG_LoadPNM_IO
- * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadTGA_IO
  * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadWEBP_IO
  * \sa IMG_LoadXCF_IO
  * \sa IMG_LoadXPM_IO
  * \sa IMG_LoadXV_IO
- * \sa IMG_LoadWEBP_IO
  */
 extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadPNG_IO(SDL_IOStream *src);
 
@@ -1565,23 +1565,23 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadPNG_IO(SDL_IOStream *src);
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadICO_IO
- * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadICO_IO
  * \sa IMG_LoadJPG_IO
  * \sa IMG_LoadJXL_IO
  * \sa IMG_LoadLBM_IO
  * \sa IMG_LoadPCX_IO
  * \sa IMG_LoadPNG_IO
- * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSVG_IO
  * \sa IMG_LoadTGA_IO
  * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadWEBP_IO
  * \sa IMG_LoadXCF_IO
  * \sa IMG_LoadXPM_IO
  * \sa IMG_LoadXV_IO
- * \sa IMG_LoadWEBP_IO
  */
 extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadPNM_IO(SDL_IOStream *src);
 
@@ -1599,10 +1599,10 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadPNM_IO(SDL_IOStream *src);
  * \since This function is available since SDL_image 3.0.0.
  *
  * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadICO_IO
- * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadCUR_IO
  * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadICO_IO
  * \sa IMG_LoadJPG_IO
  * \sa IMG_LoadJXL_IO
  * \sa IMG_LoadLBM_IO
@@ -1610,252 +1610,15 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadPNM_IO(SDL_IOStream *src);
  * \sa IMG_LoadPNG_IO
  * \sa IMG_LoadPNM_IO
  * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSizedSVG_IO
  * \sa IMG_LoadTGA_IO
  * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadWEBP_IO
  * \sa IMG_LoadXCF_IO
  * \sa IMG_LoadXPM_IO
  * \sa IMG_LoadXV_IO
- * \sa IMG_LoadWEBP_IO
  */
 extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadSVG_IO(SDL_IOStream *src);
-
-/**
- * Load a QOI image directly.
- *
- * If you know you definitely have a QOI image, you can call this function,
- * which will skip SDL_image's file format detection routines. Generally it's
- * better to use the abstract interfaces; also, there is only an SDL_IOStream
- * interface available here.
- *
- * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error.
- *
- * \since This function is available since SDL_image 3.0.0.
- *
- * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadICO_IO
- * \sa IMG_LoadCUR_IO
- * \sa IMG_LoadBMP_IO
- * \sa IMG_LoadGIF_IO
- * \sa IMG_LoadJPG_IO
- * \sa IMG_LoadJXL_IO
- * \sa IMG_LoadLBM_IO
- * \sa IMG_LoadPCX_IO
- * \sa IMG_LoadPNG_IO
- * \sa IMG_LoadPNM_IO
- * \sa IMG_LoadSVG_IO
- * \sa IMG_LoadTGA_IO
- * \sa IMG_LoadTIF_IO
- * \sa IMG_LoadXCF_IO
- * \sa IMG_LoadXPM_IO
- * \sa IMG_LoadXV_IO
- * \sa IMG_LoadWEBP_IO
- */
-extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadQOI_IO(SDL_IOStream *src);
-
-/**
- * Load a TGA image directly.
- *
- * If you know you definitely have a TGA image, you can call this function,
- * which will skip SDL_image's file format detection routines. Generally it's
- * better to use the abstract interfaces; also, there is only an SDL_IOStream
- * interface available here.
- *
- * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error.
- *
- * \since This function is available since SDL_image 3.0.0.
- *
- * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadICO_IO
- * \sa IMG_LoadCUR_IO
- * \sa IMG_LoadBMP_IO
- * \sa IMG_LoadGIF_IO
- * \sa IMG_LoadJPG_IO
- * \sa IMG_LoadJXL_IO
- * \sa IMG_LoadLBM_IO
- * \sa IMG_LoadPCX_IO
- * \sa IMG_LoadPNG_IO
- * \sa IMG_LoadPNM_IO
- * \sa IMG_LoadSVG_IO
- * \sa IMG_LoadQOI_IO
- * \sa IMG_LoadTIF_IO
- * \sa IMG_LoadXCF_IO
- * \sa IMG_LoadXPM_IO
- * \sa IMG_LoadXV_IO
- * \sa IMG_LoadWEBP_IO
- */
-extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadTGA_IO(SDL_IOStream *src);
-
-/**
- * Load a TIFF image directly.
- *
- * If you know you definitely have a TIFF image, you can call this function,
- * which will skip SDL_image's file format detection routines. Generally it's
- * better to use the abstract interfaces; also, there is only an SDL_IOStream
- * interface available here.
- *
- * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error.
- *
- * \since This function is available since SDL_image 3.0.0.
- *
- * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadICO_IO
- * \sa IMG_LoadCUR_IO
- * \sa IMG_LoadBMP_IO
- * \sa IMG_LoadGIF_IO
- * \sa IMG_LoadJPG_IO
- * \sa IMG_LoadJXL_IO
- * \sa IMG_LoadLBM_IO
- * \sa IMG_LoadPCX_IO
- * \sa IMG_LoadPNG_IO
- * \sa IMG_LoadPNM_IO
- * \sa IMG_LoadSVG_IO
- * \sa IMG_LoadQOI_IO
- * \sa IMG_LoadTGA_IO
- * \sa IMG_LoadXCF_IO
- * \sa IMG_LoadXPM_IO
- * \sa IMG_LoadXV_IO
- * \sa IMG_LoadWEBP_IO
- */
-extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadTIF_IO(SDL_IOStream *src);
-
-/**
- * Load a XCF image directly.
- *
- * If you know you definitely have a XCF image, you can call this function,
- * which will skip SDL_image's file format detection routines. Generally it's
- * better to use the abstract interfaces; also, there is only an SDL_IOStream
- * interface available here.
- *
- * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error.
- *
- * \since This function is available since SDL_image 3.0.0.
- *
- * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadICO_IO
- * \sa IMG_LoadCUR_IO
- * \sa IMG_LoadBMP_IO
- * \sa IMG_LoadGIF_IO
- * \sa IMG_LoadJPG_IO
- * \sa IMG_LoadJXL_IO
- * \sa IMG_LoadLBM_IO
- * \sa IMG_LoadPCX_IO
- * \sa IMG_LoadPNG_IO
- * \sa IMG_LoadPNM_IO
- * \sa IMG_LoadSVG_IO
- * \sa IMG_LoadQOI_IO
- * \sa IMG_LoadTGA_IO
- * \sa IMG_LoadTIF_IO
- * \sa IMG_LoadXPM_IO
- * \sa IMG_LoadXV_IO
- * \sa IMG_LoadWEBP_IO
- */
-extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadXCF_IO(SDL_IOStream *src);
-
-/**
- * Load a XPM image directly.
- *
- * If you know you definitely have a XPM image, you can call this function,
- * which will skip SDL_image's file format detection routines. Generally it's
- * better to use the abstract interfaces; also, there is only an SDL_IOStream
- * interface available here.
- *
- * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error.
- *
- * \since This function is available since SDL_image 3.0.0.
- *
- * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadICO_IO
- * \sa IMG_LoadCUR_IO
- * \sa IMG_LoadBMP_IO
- * \sa IMG_LoadGIF_IO
- * \sa IMG_LoadJPG_IO
- * \sa IMG_LoadJXL_IO
- * \sa IMG_LoadLBM_IO
- * \sa IMG_LoadPCX_IO
- * \sa IMG_LoadPNG_IO
- * \sa IMG_LoadPNM_IO
- * \sa IMG_LoadSVG_IO
- * \sa IMG_LoadQOI_IO
- * \sa IMG_LoadTGA_IO
- * \sa IMG_LoadTIF_IO
- * \sa IMG_LoadXCF_IO
- * \sa IMG_LoadXV_IO
- * \sa IMG_LoadWEBP_IO
- */
-extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadXPM_IO(SDL_IOStream *src);
-
-/**
- * Load a XV image directly.
- *
- * If you know you definitely have a XV image, you can call this function,
- * which will skip SDL_image's file format detection routines. Generally it's
- * better to use the abstract interfaces; also, there is only an SDL_IOStream
- * interface available here.
- *
- * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error.
- *
- * \since This function is available since SDL_image 3.0.0.
- *
- * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadICO_IO
- * \sa IMG_LoadCUR_IO
- * \sa IMG_LoadBMP_IO
- * \sa IMG_LoadGIF_IO
- * \sa IMG_LoadJPG_IO
- * \sa IMG_LoadJXL_IO
- * \sa IMG_LoadLBM_IO
- * \sa IMG_LoadPCX_IO
- * \sa IMG_LoadPNG_IO
- * \sa IMG_LoadPNM_IO
- * \sa IMG_LoadSVG_IO
- * \sa IMG_LoadQOI_IO
- * \sa IMG_LoadTGA_IO
- * \sa IMG_LoadTIF_IO
- * \sa IMG_LoadXCF_IO
- * \sa IMG_LoadXPM_IO
- * \sa IMG_LoadWEBP_IO
- */
-extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadXV_IO(SDL_IOStream *src);
-
-/**
- * Load a WEBP image directly.
- *
- * If you know you definitely have a WEBP image, you can call this function,
- * which will skip SDL_image's file format detection routines. Generally it's
- * better to use the abstract interfaces; also, there is only an SDL_IOStream
- * interface available here.
- *
- * \param src an SDL_IOStream to load image data from.
- * \returns SDL surface, or NULL on error.
- *
- * \since This function is available since SDL_image 3.0.0.
- *
- * \sa IMG_LoadAVIF_IO
- * \sa IMG_LoadICO_IO
- * \sa IMG_LoadCUR_IO
- * \sa IMG_LoadBMP_IO
- * \sa IMG_LoadGIF_IO
- * \sa IMG_LoadJPG_IO
- * \sa IMG_LoadJXL_IO
- * \sa IMG_LoadLBM_IO
- * \sa IMG_LoadPCX_IO
- * \sa IMG_LoadPNG_IO
- * \sa IMG_LoadPNM_IO
- * \sa IMG_LoadSVG_IO
- * \sa IMG_LoadQOI_IO
- * \sa IMG_LoadTGA_IO
- * \sa IMG_LoadTIF_IO
- * \sa IMG_LoadXCF_IO
- * \sa IMG_LoadXPM_IO
- * \sa IMG_LoadXV_IO
- */
-extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadWEBP_IO(SDL_IOStream *src);
 
 /**
  * Load an SVG image, scaled to a specific size.
@@ -1875,8 +1638,248 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadWEBP_IO(SDL_IOStream *src);
  * \returns a new SDL surface, or NULL on error.
  *
  * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_LoadSVG_IO
  */
 extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadSizedSVG_IO(SDL_IOStream *src, int width, int height);
+
+/**
+ * Load a QOI image directly.
+ *
+ * If you know you definitely have a QOI image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_IOStream
+ * interface available here.
+ *
+ * \param src an SDL_IOStream to load image data from.
+ * \returns SDL surface, or NULL on error.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_LoadAVIF_IO
+ * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadCUR_IO
+ * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadICO_IO
+ * \sa IMG_LoadJPG_IO
+ * \sa IMG_LoadJXL_IO
+ * \sa IMG_LoadLBM_IO
+ * \sa IMG_LoadPCX_IO
+ * \sa IMG_LoadPNG_IO
+ * \sa IMG_LoadPNM_IO
+ * \sa IMG_LoadSVG_IO
+ * \sa IMG_LoadTGA_IO
+ * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadWEBP_IO
+ * \sa IMG_LoadXCF_IO
+ * \sa IMG_LoadXPM_IO
+ * \sa IMG_LoadXV_IO
+ */
+extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadQOI_IO(SDL_IOStream *src);
+
+/**
+ * Load a TGA image directly.
+ *
+ * If you know you definitely have a TGA image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_IOStream
+ * interface available here.
+ *
+ * \param src an SDL_IOStream to load image data from.
+ * \returns SDL surface, or NULL on error.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_LoadAVIF_IO
+ * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadCUR_IO
+ * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadICO_IO
+ * \sa IMG_LoadJPG_IO
+ * \sa IMG_LoadJXL_IO
+ * \sa IMG_LoadLBM_IO
+ * \sa IMG_LoadPCX_IO
+ * \sa IMG_LoadPNG_IO
+ * \sa IMG_LoadPNM_IO
+ * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSVG_IO
+ * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadWEBP_IO
+ * \sa IMG_LoadXCF_IO
+ * \sa IMG_LoadXPM_IO
+ * \sa IMG_LoadXV_IO
+ */
+extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadTGA_IO(SDL_IOStream *src);
+
+/**
+ * Load a TIFF image directly.
+ *
+ * If you know you definitely have a TIFF image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_IOStream
+ * interface available here.
+ *
+ * \param src an SDL_IOStream to load image data from.
+ * \returns SDL surface, or NULL on error.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_LoadAVIF_IO
+ * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadCUR_IO
+ * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadICO_IO
+ * \sa IMG_LoadJPG_IO
+ * \sa IMG_LoadJXL_IO
+ * \sa IMG_LoadLBM_IO
+ * \sa IMG_LoadPCX_IO
+ * \sa IMG_LoadPNG_IO
+ * \sa IMG_LoadPNM_IO
+ * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSVG_IO
+ * \sa IMG_LoadTGA_IO
+ * \sa IMG_LoadWEBP_IO
+ * \sa IMG_LoadXCF_IO
+ * \sa IMG_LoadXPM_IO
+ * \sa IMG_LoadXV_IO
+ */
+extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadTIF_IO(SDL_IOStream *src);
+
+/**
+ * Load a WEBP image directly.
+ *
+ * If you know you definitely have a WEBP image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_IOStream
+ * interface available here.
+ *
+ * \param src an SDL_IOStream to load image data from.
+ * \returns SDL surface, or NULL on error.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_LoadAVIF_IO
+ * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadCUR_IO
+ * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadICO_IO
+ * \sa IMG_LoadJPG_IO
+ * \sa IMG_LoadJXL_IO
+ * \sa IMG_LoadLBM_IO
+ * \sa IMG_LoadPCX_IO
+ * \sa IMG_LoadPNG_IO
+ * \sa IMG_LoadPNM_IO
+ * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSVG_IO
+ * \sa IMG_LoadTGA_IO
+ * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadXCF_IO
+ * \sa IMG_LoadXPM_IO
+ * \sa IMG_LoadXV_IO
+ */
+extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadWEBP_IO(SDL_IOStream *src);
+
+/**
+ * Load a XCF image directly.
+ *
+ * If you know you definitely have a XCF image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_IOStream
+ * interface available here.
+ *
+ * \param src an SDL_IOStream to load image data from.
+ * \returns SDL surface, or NULL on error.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_LoadAVIF_IO
+ * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadCUR_IO
+ * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadICO_IO
+ * \sa IMG_LoadJPG_IO
+ * \sa IMG_LoadJXL_IO
+ * \sa IMG_LoadLBM_IO
+ * \sa IMG_LoadPCX_IO
+ * \sa IMG_LoadPNG_IO
+ * \sa IMG_LoadPNM_IO
+ * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSVG_IO
+ * \sa IMG_LoadTGA_IO
+ * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadWEBP_IO
+ * \sa IMG_LoadXPM_IO
+ * \sa IMG_LoadXV_IO
+ */
+extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadXCF_IO(SDL_IOStream *src);
+
+/**
+ * Load a XPM image directly.
+ *
+ * If you know you definitely have a XPM image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_IOStream
+ * interface available here.
+ *
+ * \param src an SDL_IOStream to load image data from.
+ * \returns SDL surface, or NULL on error.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_LoadAVIF_IO
+ * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadCUR_IO
+ * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadICO_IO
+ * \sa IMG_LoadJPG_IO
+ * \sa IMG_LoadJXL_IO
+ * \sa IMG_LoadLBM_IO
+ * \sa IMG_LoadPCX_IO
+ * \sa IMG_LoadPNG_IO
+ * \sa IMG_LoadPNM_IO
+ * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSVG_IO
+ * \sa IMG_LoadTGA_IO
+ * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadWEBP_IO
+ * \sa IMG_LoadXCF_IO
+ * \sa IMG_LoadXV_IO
+ */
+extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadXPM_IO(SDL_IOStream *src);
+
+/**
+ * Load a XV image directly.
+ *
+ * If you know you definitely have a XV image, you can call this function,
+ * which will skip SDL_image's file format detection routines. Generally it's
+ * better to use the abstract interfaces; also, there is only an SDL_IOStream
+ * interface available here.
+ *
+ * \param src an SDL_IOStream to load image data from.
+ * \returns SDL surface, or NULL on error.
+ *
+ * \since This function is available since SDL_image 3.0.0.
+ *
+ * \sa IMG_LoadAVIF_IO
+ * \sa IMG_LoadBMP_IO
+ * \sa IMG_LoadCUR_IO
+ * \sa IMG_LoadGIF_IO
+ * \sa IMG_LoadICO_IO
+ * \sa IMG_LoadJPG_IO
+ * \sa IMG_LoadJXL_IO
+ * \sa IMG_LoadLBM_IO
+ * \sa IMG_LoadPCX_IO
+ * \sa IMG_LoadPNG_IO
+ * \sa IMG_LoadPNM_IO
+ * \sa IMG_LoadQOI_IO
+ * \sa IMG_LoadSVG_IO
+ * \sa IMG_LoadTGA_IO
+ * \sa IMG_LoadTIF_IO
+ * \sa IMG_LoadWEBP_IO
+ * \sa IMG_LoadXCF_IO
+ * \sa IMG_LoadXPM_IO
+ */
+extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadXV_IO(SDL_IOStream *src);
 
 /**
  * Load an XPM image from a memory array.

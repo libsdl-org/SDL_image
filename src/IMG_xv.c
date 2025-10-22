@@ -160,6 +160,7 @@ bool IMG_isXV(SDL_IOStream *src)
 SDL_Surface *IMG_LoadXV_IO(SDL_IOStream *src)
 {
     (void)src;
+    SDL_SetError("SDL_image built without XV support");
     return NULL;
 }
 

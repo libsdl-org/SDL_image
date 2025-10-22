@@ -515,6 +515,7 @@ bool IMG_isLBM(SDL_IOStream *src)
 SDL_Surface *IMG_LoadLBM_IO(SDL_IOStream *src)
 {
     (void)src;
+    SDL_SetError("SDL_image built without LBM support");
     return NULL;
 }
 

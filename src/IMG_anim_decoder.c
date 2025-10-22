@@ -366,3 +366,28 @@ error:
     IMG_CloseAnimationDecoder(decoder);
     return NULL;
 }
+
+IMG_Animation *IMG_LoadANIAnimation_IO(SDL_IOStream *src)
+{
+    return IMG_DecodeAsAnimation(src, "ani", 0);
+}
+
+IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
+{
+    return IMG_DecodeAsAnimation(src, "png", 0);
+}
+
+IMG_Animation *IMG_LoadAVIFAnimation_IO(SDL_IOStream *src)
+{
+    return IMG_DecodeAsAnimation(src, "avifs", 0);
+}
+
+IMG_Animation *IMG_LoadGIFAnimation_IO(SDL_IOStream *src)
+{
+    return IMG_DecodeAsAnimation(src, "gif", 0);
+}
+
+IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
+{
+    return IMG_DecodeAsAnimation(src, "webp", 0);
+}

@@ -675,6 +675,7 @@ bool IMG_isJPG(SDL_IOStream *src)
 SDL_Surface *IMG_LoadJPG_IO(SDL_IOStream *src)
 {
     (void)src;
+    SDL_SetError("SDL_image built without JPG support");
     return NULL;
 }
 
