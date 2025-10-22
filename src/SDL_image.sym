@@ -90,5 +90,12 @@ SDL3_image_0.0.0 {
     IMG_SaveCUR_IO;
     IMG_SaveICO;
     IMG_SaveICO_IO;
+    IMG_SaveAnimation;
+    IMG_SaveAnimationTyped_IO;
+    IMG_SaveANIAnimation_IO;
+    IMG_SaveAPNGAnimation_IO;
+    IMG_SaveAVIFAnimation_IO;
+    IMG_SaveGIFAnimation_IO;
+    IMG_SaveWEBPAnimation_IO;
   local: *;
 };
