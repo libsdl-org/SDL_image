@@ -230,6 +230,7 @@ bool IMG_isTIF(SDL_IOStream *src)
 SDL_Surface *IMG_LoadTIF_IO(SDL_IOStream *src)
 {
     (void)src;
+    SDL_SetError("SDL_image built without TIFF support");
     return NULL;
 }
 

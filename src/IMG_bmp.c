@@ -736,6 +736,7 @@ bool IMG_isCUR(SDL_IOStream *src)
 SDL_Surface *IMG_LoadBMP_IO(SDL_IOStream *src)
 {
     (void)src;
+    SDL_SetError("SDL_image built without BMP support");
     return NULL;
 }
 
@@ -743,6 +744,7 @@ SDL_Surface *IMG_LoadBMP_IO(SDL_IOStream *src)
 SDL_Surface *IMG_LoadCUR_IO(SDL_IOStream *src)
 {
     (void)src;
+    SDL_SetError("SDL_image built without BMP support");
     return NULL;
 }
 
@@ -750,6 +752,7 @@ SDL_Surface *IMG_LoadCUR_IO(SDL_IOStream *src)
 SDL_Surface *IMG_LoadICO_IO(SDL_IOStream *src)
 {
     (void)src;
+    SDL_SetError("SDL_image built without BMP support");
     return NULL;
 }
 

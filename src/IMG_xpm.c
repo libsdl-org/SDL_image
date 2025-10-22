@@ -1220,18 +1220,21 @@ bool IMG_isXPM(SDL_IOStream *src)
 SDL_Surface *IMG_LoadXPM_IO(SDL_IOStream *src)
 {
     (void)src;
+    SDL_SetError("SDL_image built without XPM support");
     return NULL;
 }
 
 SDL_Surface *IMG_ReadXPMFromArray(char **xpm)
 {
     (void)xpm;
+    SDL_SetError("SDL_image built without XPM support");
     return NULL;
 }
 
 SDL_Surface *IMG_ReadXPMFromArrayToRGB888(char **xpm)
 {
     (void)xpm;
+    SDL_SetError("SDL_image built without XPM support");
     return NULL;
 }
 

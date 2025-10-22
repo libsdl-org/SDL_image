@@ -728,6 +728,7 @@ bool IMG_isAVIF(SDL_IOStream *src)
 SDL_Surface *IMG_LoadAVIF_IO(SDL_IOStream *src)
 {
     (void)src;
+    SDL_SetError("SDL_image built without AVIF support");
     return NULL;
 }
 
@@ -833,11 +834,6 @@ static void SetHDRProperties(SDL_Surface *surface, const avifImage *image)
         SDL_SetFloatProperty(props, SDL_PROP_SURFACE_SDR_WHITE_POINT_FLOAT, DEFAULT_PQ_SDR_WHITE_POINT);
         SDL_SetFloatProperty(props, SDL_PROP_SURFACE_HDR_HEADROOM_FLOAT, (float)maxCLL / DEFAULT_PQ_SDR_WHITE_POINT);
     }
-}
-
-IMG_Animation *IMG_LoadAVIFAnimation_IO(SDL_IOStream *src)
-{
-  return IMG_DecodeAsAnimation(src, "avifs", 0);
 }
 
 struct IMG_AnimationDecoderContext
@@ -1188,18 +1184,11 @@ bool IMG_CreateAVIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
 
 #else
 
-IMG_Animation* IMG_LoadAVIFAnimation_IO(SDL_IOStream* src)
-{
-    (void)src;
-    SDL_SetError("SDL_image built without AVIF animation loading support");
-    return NULL;
-}
-
 bool IMG_CreateAVIFAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_PropertiesID props)
 {
     (void)decoder;
     (void)props;
-    return SDL_SetError("SDL_image built without AVIF animation loading support");
+    return SDL_SetError("SDL_image built without AVIF animation support");
 }
 
 #endif /* LOAD_AVIF */
@@ -1658,7 +1647,7 @@ bool IMG_CreateAVIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Propertie
 {
     (void)encoder;
     (void)props;
-    return SDL_SetError("SDL_image built without AVIF animation encoding support");
+    return SDL_SetError("SDL_image built without AVIF animation save support");
 }
 
 #endif /* SAVE_AVIF */

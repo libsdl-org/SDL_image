@@ -265,6 +265,7 @@ bool IMG_isPNM(SDL_IOStream *src)
 SDL_Surface *IMG_LoadPNM_IO(SDL_IOStream *src)
 {
     (void)src;
+    SDL_SetError("SDL_image built without PNM support");
     return NULL;
 }
 

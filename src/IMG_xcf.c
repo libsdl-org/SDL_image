@@ -1042,6 +1042,7 @@ bool IMG_isXCF(SDL_IOStream *src)
 SDL_Surface *IMG_LoadXCF_IO(SDL_IOStream *src)
 {
     (void)src;
+    SDL_SetError("SDL_image built without XCF support");
     return NULL;
 }
 

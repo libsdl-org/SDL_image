@@ -405,11 +405,6 @@ error:
     return NULL;
 }
 
-IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
-{
-    return IMG_DecodeAsAnimation(src, "webp", 0);
-}
-
 struct IMG_AnimationDecoderContext
 {
     WebPDemuxer *demuxer;
@@ -1073,14 +1068,7 @@ bool IMG_isWEBP(SDL_IOStream *src)
 SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
 {
     (void)src;
-    SDL_SetError("SDL_image built without WEBP load support");
-    return NULL;
-}
-
-IMG_Animation *IMG_LoadWEBPAnimation_IO(SDL_IOStream *src)
-{
-    (void)src;
-    SDL_SetError("SDL_image built without WEBP load support");
+    SDL_SetError("SDL_image built without WEBP support");
     return NULL;
 }
 
@@ -1088,7 +1076,7 @@ bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
 {
     (void)decoder;
     (void)props;
-    return SDL_SetError("SDL_image built without WEBP load support");
+    return SDL_SetError("SDL_image built without WEBP support");
 }
 
 #endif // !LOAD_WEBP

@@ -347,6 +347,7 @@ error:
 SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
 {
     (void)src;
+    SDL_SetError("SDL_image built without TGA support");
     return NULL;
 }
 

@@ -174,6 +174,7 @@ SDL_Surface *IMG_LoadSizedSVG_IO(SDL_IOStream *src, int width, int height)
     (void)src;
     (void)width;
     (void)height;
+    SDL_SetError("SDL_image built without SVG support");
     return NULL;
 }
 

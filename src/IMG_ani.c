@@ -88,11 +88,6 @@ bool IMG_isANI(SDL_IOStream* src)
     return is_ANI;
 }
 
-IMG_Animation *IMG_LoadANIAnimation_IO(SDL_IOStream *src)
-{
-    return IMG_DecodeAsAnimation(src, "ani", 0);
-}
-
 struct IMG_AnimationDecoderContext
 {
     Uint32 frame_index;
@@ -479,15 +474,9 @@ bool IMG_isANI(SDL_IOStream *src)
     return false;
 }
 
-IMG_Animation *IMG_LoadANIAnimation_IO(SDL_IOStream *src)
-{
-    SDL_SetError("SDL_image built without ANI image support");
-    return NULL;
-}
-
 bool IMG_CreateANIAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props)
 {
-    return SDL_SetError("SDL_image built without ANI image support");
+    return SDL_SetError("SDL_image built without ANI support");
 }
 
 #endif // LOAD_ANI

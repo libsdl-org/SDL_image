@@ -1107,11 +1107,6 @@ static bool read_png_chunk(SDL_IOStream *stream, char *type, png_bytep *data, pn
     return true;
 }
 
-IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
-{
-    return IMG_DecodeAsAnimation(src, "png", 0);
-}
-
 struct IMG_AnimationDecoderContext
 {
     apng_acTL_chunk actl;
@@ -1699,6 +1694,7 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
 }
 
 #if SAVE_PNG
+
 struct IMG_AnimationEncoderContext
 {
     png_structp png_write_ptr;
@@ -2361,14 +2357,8 @@ error:
     return false;
 }
 
-#endif /* SAVE_PNG */
-
 bool IMG_CreateAPNGAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
-#if !SAVE_PNG
-    return SDL_SetError("SDL_image built without PNG save support");
-#else
-
     if (!IMG_InitPNG()) {
         return false;
     }
@@ -2450,17 +2440,18 @@ error:
     }
     SDL_free(ctx);
     return false;
-#endif /* !SAVE_PNG */
 }
 
-#else
+#else /* SAVE_PNG */
 
-IMG_Animation *IMG_LoadAPNGAnimation_IO(SDL_IOStream *src)
+bool IMG_CreateAPNGAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
-    (void)src;
-    SDL_SetError("SDL_image not built against libpng.");
-    return NULL;
+    return SDL_SetError("SDL_image built without PNG save support");
 }
+
+#endif /* !SAVE_PNG */
+
+#else /* SDL_IMAGE_LIBPNG */
 
 bool IMG_CreateAPNGAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
