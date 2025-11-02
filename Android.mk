@@ -37,6 +37,7 @@ SUPPORT_WEBP ?= false
 SUPPORT_SAVE_WEBP ?= true
 WEBP_LIBRARY_PATH := external/libwebp
 
+APP_SUPPORT_FLEXIBLE_PAGE_SIZES := true
 
 # Build the library
 ifeq ($(SUPPORT_AVIF),true)
