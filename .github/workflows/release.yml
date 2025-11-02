@@ -631,7 +631,7 @@ jobs:
         uses: nttld/setup-ndk@v1
         with:
           local-cache: false
-          ndk-version: r28c
+          ndk-version: r29
       - name: 'Setup Java JDK'
         uses: actions/setup-java@v4
         with:
