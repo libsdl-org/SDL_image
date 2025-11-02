@@ -703,6 +703,8 @@ jobs:
           unzip -o "${{ github.workspace }}/${{ needs.android.outputs.android-aar }}"
           python "${{ needs.src.outputs.project }}-${{ needs.src.outputs.version }}.aar" -o /tmp/SDL3_image-android
           echo "prefix=/tmp/SDL3_image-android" >>$GITHUB_OUTPUT
+      - name: Check Android ELF Alignment
+        uses: Dermochelys/check-android-elf-alignment@v2
       - name: 'Download dependencies'
         id: deps
         env:
