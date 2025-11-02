@@ -1396,7 +1396,7 @@ def main(argv=None) -> int:
     parser.add_argument('--vs-year', dest="vs_year", help="Visual Studio year")
     parser.add_argument('--android-api', dest="android_api", help="Android API version")
     parser.add_argument('--android-home', dest="android_home", default=os.environ.get("ANDROID_HOME"), help="Android Home folder")
-    parser.add_argument('--android-ndk-home', dest="android_ndk_home", default=os.environ.get("ANDROID_NDK_LATEST_HOME"), help="Android NDK Home folder")
+    parser.add_argument('--android-ndk-home', dest="android_ndk_home", default=os.environ.get("ANDROID_NDK_HOME"), help="Android NDK Home folder")
     parser.add_argument('--cmake-generator', dest="cmake_generator", default="Ninja", help="CMake Generator")
     parser.add_argument('--debug', action='store_const', const=logging.DEBUG, dest="loglevel", help="Print script debug information")
     parser.add_argument('--dry-run', action='store_true', dest="dry", help="Don't execute anything")
@@ -1517,7 +1517,7 @@ def main(argv=None) -> int:
         if args.android_home is None or not Path(args.android_home).is_dir():
             parser.error("Invalid $ANDROID_HOME or --android-home: must be a directory containing the Android SDK")
         if args.android_ndk_home is None or not Path(args.android_ndk_home).is_dir():
-            parser.error("Invalid $ANDROID_NDK_LATEST_HOME or --android_ndk_home: must be a directory containing the Android NDK")
+            parser.error("Invalid $ANDROID_NDK_HOME or --android_ndk_home: must be a directory containing the Android NDK")
         if args.android_api is None:
             with section_printer.group("Detect Android APIS"):
                 args.android_api = releaser._detect_android_api(android_home=args.android_home)
