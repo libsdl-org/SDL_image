@@ -663,6 +663,8 @@ jobs:
             --root "${{ steps.tar.outputs.path }}" \
             --github \
             --debug
+      - name: Check Android ELF Alignment
+        uses: Dermochelys/check-android-elf-alignment@v2
       - name: 'Store Android archive(s)'
         uses: actions/upload-artifact@v4
         with:
