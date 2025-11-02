@@ -35,8 +35,6 @@ PNG_LIBRARY_PATH := external/libpng
 SUPPORT_WEBP ?= false
 WEBP_LIBRARY_PATH := external/libwebp
 
-APP_SUPPORT_FLEXIBLE_PAGE_SIZES := true
-
 # Build the library
 ifeq ($(SUPPORT_AVIF),true)
     include $(SDL_IMAGE_LOCAL_PATH)/$(AVIF_LIBRARY_PATH)/Android.mk
