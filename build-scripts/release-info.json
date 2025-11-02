@@ -284,7 +284,7 @@
     ],
     "api-minimum": 21,
     "api-target": 35,
-    "ndk-minimum": 21,
+    "ndk-minimum": 28,
     "aar-files": {
       "": [
         "build-scripts/pkg-support/android/aar/__main__.py.in:__main__.py",
