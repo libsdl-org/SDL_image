@@ -661,8 +661,6 @@ jobs:
             --actions download android \
             --commit ${{ inputs.commit }} \
             --root "${{ steps.tar.outputs.path }}" \
-            --android-api 34 \
-            --android-ndk-home "${{ steps.setup-ndk.outputs.ndk-path }}" \
             --github \
             --debug
       - name: 'Store Android archive(s)'
