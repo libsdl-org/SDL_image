@@ -542,10 +542,7 @@ class AndroidApiVersion:
     def __repr__(self) -> str:
         return f"<{self.name} ({'.'.join(str(v) for v in self.ints)})>"
 
-ANDROID_ABI_EXTRA_LINK_OPTIONS = {
-    "arm64-v8a": "-Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384",
-    "x86_64": "-Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384",
-}
+ANDROID_ABI_EXTRA_LINK_OPTIONS = {}
 
 class Releaser:
     def __init__(self, release_info: dict, commit: str, revision: str, root: Path, dist_path: Path, section_printer: SectionPrinter, executer: Executer, cmake_generator: str, deps_path: Path, overwrite: bool, github: bool, fast: bool):
@@ -1031,6 +1028,7 @@ class Releaser:
                     # NDK 21e does not support -ffile-prefix-map
                     # f'''-DCMAKE_C_FLAGS="-ffile-prefix-map={self.root}=/src/{self.project}"''',
                     # f'''-DCMAKE_CXX_FLAGS="-ffile-prefix-map={self.root}=/src/{self.project}"''',
+                    f"-DANDROID_USE_LEGACY_TOOLCHAIN=0",
                     f"-DCMAKE_EXE_LINKER_FLAGS={extra_link_options}",
                     f"-DCMAKE_SHARED_LINKER_FLAGS={extra_link_options}",
                     f"-DCMAKE_TOOLCHAIN_FILE={cmake_toolchain_file}",
@@ -1520,7 +1518,7 @@ def main(argv=None) -> int:
         if args.android_home is None or not Path(args.android_home).is_dir():
             parser.error("Invalid $ANDROID_HOME or --android-home: must be a directory containing the Android SDK")
         if args.android_ndk_home is None or not Path(args.android_ndk_home).is_dir():
-            parser.error("Invalid $ANDROID_NDK_HOME or --android_ndk_home: must be a directory containing the Android NDK")
+            parser.error("Invalid $ANDROID_NDK_HOME or --android-ndk-home: must be a directory containing the Android NDK")
         if args.android_api is None:
             with section_printer.group("Detect Android APIS"):
                 args.android_api = releaser._detect_android_api(android_home=args.android_home)
