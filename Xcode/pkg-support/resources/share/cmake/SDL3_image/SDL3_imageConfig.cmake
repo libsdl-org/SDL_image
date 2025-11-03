@@ -138,6 +138,7 @@ if(NOT TARGET SDL3_image::SDL3_image-shared)
             INTERFACE_SDL3_SHARED "ON"
             COMPATIBLE_INTERFACE_STRING "SDL_VERSION"
             INTERFACE_SDL_VERSION "SDL3"
+            INTERFACE_INCLUDE_DIRECTORIES "${_sdl3_image_framework_path}/Headers"
     )
 endif()
 set(SDL3_image_SDL3_image-shared_FOUND TRUE)
