@@ -45,6 +45,7 @@ unset(_sdl_minor_re)
 unset(_sdl_minor)
 unset(_sdl_micro_re)
 unset(_sdl_micro)
+unset(_sdl_version_h)
 
 if(PACKAGE_FIND_VERSION_RANGE)
     # Package version must be in the requested version range
