@@ -269,7 +269,7 @@ jobs:
           cmake -S "${{ steps.src.outputs.path }}/cmake/test"               \
               -DTEST_SHARED=TRUE                                            \
               -DTEST_STATIC=FALSE                                           \
-              -DCMAKE_PREFIX_PATH="${{ steps.mount.outputs.mount-point }};${{ steps.deps-mount.outputs.path }}" \
+              -DCMAKE_PREFIX_PATH="${{ steps.mount.outputs.mount-point }}/SDL3_image.xcframework;${{ steps.mount.outputs.mount-point }};${{ steps.deps-mount.outputs.path }}/SDL3.xcframework;${{ steps.deps-mount.outputs.path }}" \
               -DCMAKE_SYSTEM_NAME=Darwin                                    \
               -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"                      \
               -B build_darwin
@@ -329,7 +329,7 @@ jobs:
           cmake -S "${{ steps.src.outputs.path }}/cmake/test"               \
               -DTEST_SHARED=TRUE                                            \
               -DTEST_STATIC=FALSE                                           \
-              -DCMAKE_PREFIX_PATH="${{ steps.mount.outputs.mount-point }};${{ steps.deps-mount.outputs.path }}" \
+              -DCMAKE_PREFIX_PATH="${{ steps.mount.outputs.mount-point }}/SDL3_image.xcframework;${{ steps.mount.outputs.mount-point }};${{ steps.deps-mount.outputs.path }}/SDL3.xcframework;${{ steps.deps-mount.outputs.path }}" \
               -DCMAKE_SYSTEM_NAME=iOS                                       \
               -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"                      \
               -DCMAKE_OSX_SYSROOT="${sysroot}"                              \
@@ -352,7 +352,7 @@ jobs:
           cmake -S "${{ steps.src.outputs.path }}/cmake/test"               \
               -DTEST_SHARED=TRUE                                            \
               -DTEST_STATIC=FALSE                                           \
-              -DCMAKE_PREFIX_PATH="${{ steps.mount.outputs.mount-point }};${{ steps.deps-mount.outputs.path }}" \
+              -DCMAKE_PREFIX_PATH="${{ steps.mount.outputs.mount-point }}/SDL3_image.xcframework;${{ steps.mount.outputs.mount-point }};${{ steps.deps-mount.outputs.path }}/SDL3.xcframework;${{ steps.deps-mount.outputs.path }}" \
               -DCMAKE_SYSTEM_NAME=tvOS                                      \
               -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"                      \
               -DCMAKE_OSX_SYSROOT="${sysroot}"                              \
