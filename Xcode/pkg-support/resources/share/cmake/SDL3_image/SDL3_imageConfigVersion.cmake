@@ -3,7 +3,7 @@
 # SDL CMake version configuration file:
 # This file is meant to be placed in share/cmake/SDL3_image, next to SDL3_image.xcframework
 
-cmake_minimum_required(VERSION 3.12...4.0)
+cmake_minimum_required(VERSION 3.12...3.28)
 
 get_filename_component(_sdl3_image_xcframework_parent_path "${CMAKE_CURRENT_LIST_DIR}" REALPATH)                    # /share/cmake/SDL3_image/
 get_filename_component(_sdl3_image_xcframework_parent_path "${_sdl3_image_xcframework_parent_path}" REALPATH)       # /share/cmake/SDL3_image/
@@ -45,7 +45,6 @@ unset(_sdl_minor_re)
 unset(_sdl_minor)
 unset(_sdl_micro_re)
 unset(_sdl_micro)
-unset(_sdl_version_h)
 
 if(PACKAGE_FIND_VERSION_RANGE)
     # Package version must be in the requested version range
