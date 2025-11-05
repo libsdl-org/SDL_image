@@ -5,9 +5,9 @@ RC	= $(CROSS)windres
 DLLNAME = libtiff-5.dll
 LIBNAME = libtiff.dll.a
 INCLUDES= -I.
-CPPFLAGS= -DDLL_EXPORT -DNDEBUG
+CPPFLAGS= -DDLL_EXPORT -DNDEBUG -D__USE_MINGW_ANSI_STDIO=0
 CFLAGS	= -O2 -Wall
-LDFLAGS = -Wl,--enable-auto-image-base -Wl,--no-undefined
+LDFLAGS = -Wl,--enable-auto-image-base -Wl,--no-undefined -static-libgcc
 LDLIBS	= 
 
 OBJ =	tif_aux.o \

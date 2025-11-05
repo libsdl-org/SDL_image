@@ -1260,9 +1260,25 @@ void t2p_read_tiff_init(T2P* t2p, TIFF* input){
 			TIFFGetField(input, 
 				TIFFTAG_TILEWIDTH, 
 				&( t2p->tiff_tiles[i].tiles_tilewidth) );
+			if (t2p->tiff_tiles[i].tiles_tilewidth < 1)
+			{
+				TIFFError(TIFF2PDF_MODULE, "Invalid tile width (%d), %s",
+					t2p->tiff_tiles[i].tiles_tilewidth,
+					TIFFFileName(input));
+				t2p->t2p_error = T2P_ERR_ERROR;
+				return;
+			}
 			TIFFGetField(input, 
 				TIFFTAG_TILELENGTH, 
 				&( t2p->tiff_tiles[i].tiles_tilelength) );
+			if (t2p->tiff_tiles[i].tiles_tilelength < 1)
+			{
+				TIFFError(TIFF2PDF_MODULE, "Invalid tile length (%d), %s",
+					t2p->tiff_tiles[i].tiles_tilelength,
+					TIFFFileName(input));
+				t2p->t2p_error = T2P_ERR_ERROR;
+				return;
+			}
 			t2p->tiff_tiles[i].tiles_tiles = 
 			(T2P_TILE*) _TIFFmalloc(TIFFSafeMultiply(tmsize_t,t2p->tiff_tiles[i].tiles_tilecount,
                                                                  sizeof(T2P_TILE)) );
