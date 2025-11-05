@@ -884,8 +884,12 @@ if(SDLIMAGE_TIF)
         if(SDLIMAGE_TIF_VENDORED)
             set(SDLIMAGE_TIF_ENABLED TRUE)
             message(STATUS "${PROJECT_NAME}: Using vendored libtiff")
+            # tiff-cxx variable is used by vendored libtiff
+            set(tiff-cxx OFF CACHE BOOL "libtiff: C++ API" FORCE)
             # tiff-tests variable is used by vendored libtiff
             set(tiff-tests OFF CACHE BOOL "libtiff: tests" FORCE)
+            # tiff-opengl variable is used by vendored libtiff
+            set(tiff-opengl OFF CACHE BOOL "libtiff: OpenGL option" FORCE)
             # jpeg variable is used by vendored libtiff
             set(jpeg OFF CACHE BOOL "libtiff: jpeg option" FORCE)
             # libdeflate variable is used by vendored libtiff
@@ -896,6 +900,8 @@ if(SDLIMAGE_TIF)
             set(zlib OFF CACHE BOOL "libtiff: find zlib using find_package" FORCE)
             # ZLIB_FOUND is used by vendored libtiff
             set(ZLIB_FOUND "")
+            # lerc variable is used by vendored libtiff
+            set(lerc OFF CACHE BOOL "libtiff: lerc option" FORCE)
             # lzma variable is used by vendored libtiff
             set(lzma OFF CACHE BOOL "libtiff: lzma option" FORCE)
             # webp variable is used by vendored libtiff
