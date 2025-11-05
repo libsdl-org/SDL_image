@@ -476,6 +476,8 @@ bool IMG_isANI(SDL_IOStream *src)
 
 bool IMG_CreateANIAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props)
 {
+    (void)decoder;
+    (void)props;
     return SDL_SetError("SDL_image built without ANI support");
 }
 
@@ -692,6 +694,8 @@ bool IMG_CreateANIAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Properties
 
 bool IMG_CreateANIAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
+    (void)encoder;
+    (void)props;
     return SDL_SetError("SDL_image built without ANI save support");
 }
 
