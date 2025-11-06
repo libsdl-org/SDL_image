@@ -113,7 +113,7 @@ int IMG_InitPNG()
 			return -1;
 		}
 		lib.png_create_read_struct =
-			(png_structrp (*) (png_const_charp, png_voidp, png_error_ptr, png_error_ptr))
+			(png_structp (*) (png_const_charp, png_voidp, png_error_ptr, png_error_ptr))
 			SDL_LoadFunction(lib.handle, "png_create_read_struct");
 		if ( lib.png_create_read_struct == NULL ) {
 			SDL_UnloadObject(lib.handle);
