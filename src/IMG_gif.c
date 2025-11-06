@@ -2213,7 +2213,7 @@ static int quantizeSurfaceToIndexedPixels(SDL_Surface *psurf, uint8_t palette[][
 
         uint32_t destIndex = 0;
         for (uint32_t i = 0; i < octree.paletteSize; ++i) {
-            if (hasTransparency && destIndex == transparentIndex) {
+            if (hasTransparency && destIndex == (uint32_t)transparentIndex) {
                 destIndex++;
             }
 
