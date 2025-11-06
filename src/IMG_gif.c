@@ -405,16 +405,16 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
           int gray, int interlace, int ignore, State_t * state)
 {
     Image *image;
+    SDL_Palette *palette;
     unsigned char c;
-    int v;
+    int i, v;
     int xpos = 0, ypos = 0, pass = 0;
-    int transparent_index;
-    Uint8 *dst;
-    int pixel_count = 0;
-    int total_pixels = len * height;
 
     (void) gray; /* unused */
 
+    /*
+    **  Initialize the compression routines
+     */
     if (!ReadOK(src, &c, 1)) {
         RWSetMsg("EOF / read error on image data");
         return NULL;
@@ -423,45 +423,37 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
         RWSetMsg("error reading image");
         return NULL;
     }
-
+    /*
+    **  If this is an "uninteresting picture" ignore it.
+     */
     if (ignore) {
         while (LWZReadByte(src, FALSE, c, state) >= 0)
             ;
         return NULL;
     }
-
-    /* Create RGBA32 surface with frame dimensions */
-    image = SDL_CreateSurface(len, height, SDL_PIXELFORMAT_RGBA32);
+    image = ImageNewCmap(len, height, cmapSize);
     if (!image) {
         return NULL;
     }
 
-    /* Initialize entire surface to transparent */
-    SDL_memset(image->pixels, 0, image->pitch * height);
+    palette = SDL_CreateSurfacePalette(image);
+    if (!palette) {
+        return NULL;
+    }
+    if (cmapSize > palette->ncolors) {
+        cmapSize = palette->ncolors;
+    }
+    palette->ncolors = cmapSize;
+    for (i = 0; i < cmapSize; i++) {
+        ImageSetCmap(image, i, cmap[CM_RED][i], cmap[CM_GREEN][i], cmap[CM_BLUE][i]);
+    }
 
-    transparent_index = state->Gif89.transparent;
+    if (state->Gif89.transparent >= 0 && state->Gif89.transparent < cmapSize) {
+        SDL_SetSurfaceColorKey(image, true, state->Gif89.transparent);
+    }
 
-    /* Decode and convert to RGBA */
-    while ((v = LWZReadByte(src, FALSE, c, state)) >= 0 && pixel_count < total_pixels) {
-        dst = (Uint8 *)image->pixels + (ypos * image->pitch) + (xpos * 4);
-
-        /* Only write non-transparent pixels */
-        if (transparent_index < 0 || v != transparent_index) {
-            if (v < cmapSize) {
-                dst[0] = cmap[CM_RED][v];
-                dst[1] = cmap[CM_GREEN][v];
-                dst[2] = cmap[CM_BLUE][v];
-                dst[3] = 255;  /* Opaque */
-            } else {
-                /* Invalid color index */
-                dst[0] = 255;
-                dst[1] = 0;
-                dst[2] = 255;
-                dst[3] = 255;
-            }
-        }
-
-        pixel_count++;
+    while ((v = LWZReadByte(src, FALSE, c, state)) >= 0) {
+        ((Uint8 *)image->pixels)[xpos + ypos * image->pitch] = (Uint8)v;
         ++xpos;
         if (xpos == len) {
             xpos = 0;
@@ -478,6 +470,7 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
                     ypos += 2;
                     break;
                 }
+
                 if (ypos >= height) {
                     ++pass;
                     switch (pass) {
@@ -502,7 +495,8 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
             break;
     }
 
-fini:
+  fini:
+
     return image;
 }
 
@@ -1880,7 +1874,7 @@ static int mapSurfaceToExistingPalette(SDL_Surface *psurf, uint8_t lut[32][32][3
     return 0;
 }
 
-static int quantizeSurfaceToIndexedPixels(SDL_Surface *psurf, uint8_t palette[][3], uint16_t numPaletteColors, uint8_t *indexedPixels)
+static int quantizeSurfaceToIndexedPixels(SDL_Surface *psurf, uint8_t palette[][3], uint16_t numPaletteColors, uint8_t *indexedPixels, int transparentIndex)
 {
     if (!psurf || !palette || !indexedPixels || numPaletteColors == 0 || (numPaletteColors & (numPaletteColors - 1)) != 0) {
         SDL_SetError("Invalid arguments for quantizeSurfaceToIndexedPixels: numPaletteColors must be a power of 2.");
@@ -1890,7 +1884,6 @@ static int quantizeSurfaceToIndexedPixels(SDL_Surface *psurf, uint8_t palette[][
     bool surface_converted = false;
     bool surface_locked = false;
     bool hasTransparency = false;
-    uint8_t transparentIndex = numPaletteColors - 1;
     SDL_Surface *surf = psurf;
 
 #if !SAVE_GIF_OCTREE
@@ -1906,7 +1899,7 @@ static int quantizeSurfaceToIndexedPixels(SDL_Surface *psurf, uint8_t palette[][
     }
 
     Uint32 colorKey = 0;
-    if (SDL_SurfaceHasColorKey(surf)) {
+    if (transparentIndex >= 0 && SDL_SurfaceHasColorKey(surf)) {
         SDL_GetSurfaceColorKey(surf, &colorKey);
         hasTransparency = true;
     }
@@ -1989,16 +1982,18 @@ static int quantizeSurfaceToIndexedPixels(SDL_Surface *psurf, uint8_t palette[][
     return 0;
 #else
 
-    Uint32 colorKey = 0;
-    if (SDL_SurfaceHasColorKey(surf)) {
-        SDL_GetSurfaceColorKey(surf, &colorKey);
-        hasTransparency = true;
-    }
-
     const SDL_PixelFormatDetails *pixelFormatDetails = SDL_GetPixelFormatDetails(surf->format);
     if (!pixelFormatDetails) {
         SDL_SetError("Failed to get pixel format details for original surface.");
         return -1;
+    }
+
+    Uint32 colorKey = 0;
+    if (transparentIndex >= 0) {
+        if (SDL_SurfaceHasColorKey(psurf)) {
+            SDL_GetSurfaceColorKey(psurf, &colorKey);
+        }
+        hasTransparency = true;
     }
 
     if (surf->format == SDL_PIXELFORMAT_INDEX8) {
@@ -2134,6 +2129,7 @@ static int quantizeSurfaceToIndexedPixels(SDL_Surface *psurf, uint8_t palette[][
             SDL_SetError("Failed to create Octree root node.");
             return -1;
         }
+
         root->pixelCount = 0;
         root->rSum = 0;
         root->gSum = 0;
@@ -2148,12 +2144,28 @@ static int quantizeSurfaceToIndexedPixels(SDL_Surface *psurf, uint8_t palette[][
         const int g_bpp = count_set_bits(pixelFormatDetails->Gmask);
         const int b_bpp = count_set_bits(pixelFormatDetails->Bmask);
 
+        const Uint32 current_Amask = pixelFormatDetails->Amask;
+        const Uint8 current_Ashift = pixelFormatDetails->Ashift;
+        const int current_a_bpp = (current_Amask == 0) ? 0 : count_set_bits(current_Amask);
+
         for (int y = 0; y < surf->h; ++y) {
             uint32_t *src_row = (uint32_t *)((uint8_t *)surf->pixels + y * surf->pitch);
             for (int x = 0; x < surf->w; ++x) {
                 uint32_t pixel = src_row[x];
 
-                if (hasTransparency && (pixel == colorKey)) {
+                bool isTransparent = false;
+                if (hasTransparency) {
+                    if (current_Amask != 0 && current_a_bpp > 0) {
+                        uint8_t a = (uint8_t)(((pixel & current_Amask) >> current_Ashift) << (8 - current_a_bpp));
+                        if (a < 128) { // Alpha threshold
+                            isTransparent = true;
+                        }
+                    } else if (SDL_SurfaceHasColorKey(psurf) && (pixel == colorKey)) {
+                        isTransparent = true;
+                    }
+                }
+
+                if (isTransparent) {
                     continue;
                 } else {
                     uint8_t r = (uint8_t)(((pixel & pixelFormatDetails->Rmask) >> pixelFormatDetails->Rshift) << (8 - r_bpp));
@@ -2199,21 +2211,22 @@ static int quantizeSurfaceToIndexedPixels(SDL_Surface *psurf, uint8_t palette[][
             return -1;
         }
 
-        for (int y = 0; y < surf->h; ++y) {
-            uint32_t *src_row = (uint32_t *)((uint8_t *)surf->pixels + y * surf->pitch);
-            uint8_t *dst_row = indexedPixels + y * surf->w;
-            for (int x = 0; x < surf->w; ++x) {
-                uint32_t pixel = src_row[x];
-                if (hasTransparency && pixel == colorKey) {
-                    dst_row[x] = transparentIndex;
-                } else {
-                    uint8_t r = (uint8_t)(((pixel & pixelFormatDetails->Rmask) >> pixelFormatDetails->Rshift) << (8 - r_bpp));
-                    uint8_t g = (uint8_t)(((pixel & pixelFormatDetails->Gmask) >> pixelFormatDetails->Gshift) << (8 - g_bpp));
-                    uint8_t b = (uint8_t)(((pixel & pixelFormatDetails->Bmask) >> pixelFormatDetails->Bshift) << (8 - b_bpp));
-                    int index = Octree_GetPaletteIndex(octree.root, r, g, b, 0);
-                    dst_row[x] = index;
-                }
+        uint32_t destIndex = 0;
+        for (uint32_t i = 0; i < octree.paletteSize; ++i) {
+            if (hasTransparency && destIndex == (uint32_t)transparentIndex) {
+                destIndex++;
             }
+
+            palette[destIndex][0] = octree.palette[i * 3 + 0];
+            palette[destIndex][1] = octree.palette[i * 3 + 1];
+            palette[destIndex][2] = octree.palette[i * 3 + 2];
+            destIndex++;
+        }
+
+        for (uint32_t i = destIndex; i < numPaletteColors; ++i) {
+            palette[i][0] = 0;
+            palette[i][1] = 0;
+            palette[i][2] = 0;
         }
 
         if (hasTransparency) {
@@ -2222,11 +2235,41 @@ static int quantizeSurfaceToIndexedPixels(SDL_Surface *psurf, uint8_t palette[][
             palette[transparentIndex][2] = 0;
         }
 
-        for (uint32_t i = 0; i < octree.paletteSize; ++i) {
-            palette[i][0] = octree.palette[i * 3 + 0];
-            palette[i][1] = octree.palette[i * 3 + 1];
-            palette[i][2] = octree.palette[i * 3 + 2];
+        for (int y = 0; y < surf->h; ++y) {
+            uint32_t *src_row = (uint32_t *)((uint8_t *)surf->pixels + y * surf->pitch);
+            uint8_t *dst_row = indexedPixels + y * surf->w;
+            for (int x = 0; x < surf->w; ++x) {
+                uint32_t pixel = src_row[x];
+
+                bool isTransparent = false;
+                if (hasTransparency) {
+                    if (current_Amask != 0 && current_a_bpp > 0) {
+                        uint8_t a = (uint8_t)(((pixel & current_Amask) >> current_Ashift) << (8 - current_a_bpp));
+                        if (a < 128) { // Alpha threshold
+                            isTransparent = true;
+                        }
+                    } else if (SDL_SurfaceHasColorKey(psurf) && (pixel == colorKey)) {
+                        isTransparent = true;
+                    }
+                }
+
+                if (isTransparent) {
+                    dst_row[x] = transparentIndex;
+                } else {
+                    uint8_t r = (uint8_t)(((pixel & pixelFormatDetails->Rmask) >> pixelFormatDetails->Rshift) << (8 - r_bpp));
+                    uint8_t g = (uint8_t)(((pixel & pixelFormatDetails->Gmask) >> pixelFormatDetails->Gshift) << (8 - g_bpp));
+                    uint8_t b = (uint8_t)(((pixel & pixelFormatDetails->Bmask) >> pixelFormatDetails->Bshift) << (8 - b_bpp));
+                    int index = Octree_GetPaletteIndex(octree.root, r, g, b, 0);
+
+                    if (hasTransparency && index >= transparentIndex) {
+                        index++;
+                    }
+
+                    dst_row[x] = index;
+                }
+            }
         }
+
         // Clean up the octree
         Octree_Free(&octree);
         if (surface_converted) {
@@ -2578,7 +2621,7 @@ static bool AnimationEncoder_AddFrame(IMG_AnimationEncoder *encoder, SDL_Surface
         ctx->width = (uint16_t)surface->w;
         ctx->height = (uint16_t)surface->h;
 
-        if (quantizeSurfaceToIndexedPixels(surface, ctx->globalColorTable, numColors, indexedPixels) != 0) {
+        if (quantizeSurfaceToIndexedPixels(surface, ctx->globalColorTable, numColors, indexedPixels, ctx->transparentColorIndex) != 0) {
             goto error;
         }
 
@@ -2629,7 +2672,7 @@ static bool AnimationEncoder_AddFrame(IMG_AnimationEncoder *encoder, SDL_Surface
             }
         } else {
             // For subsequent frames, create a new optimal palette
-            if (quantizeSurfaceToIndexedPixels(surface, localColorTable, numColors, indexedPixels) != 0) {
+            if (quantizeSurfaceToIndexedPixels(surface, localColorTable, numColors, indexedPixels, ctx->transparentColorIndex) != 0) {
                 goto error;
             }
         }
@@ -2732,6 +2775,10 @@ bool IMG_CreateGIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Properties
 
     if (transparent_index >= (int)num_global_colors) {
         return SDL_SetError("Transparent color index %d exceeds palette size %d", transparent_index, num_global_colors);
+    }
+
+    if (transparent_index < 0) {
+        transparent_index = num_global_colors - 1;
     }
 
     ctx = (IMG_AnimationEncoderContext *)SDL_calloc(1, sizeof(IMG_AnimationEncoderContext));
