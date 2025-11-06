@@ -449,7 +449,7 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
     }
 
     if (state->Gif89.transparent >= 0 && state->Gif89.transparent < cmapSize) {
-        SDL_SetSurfaceColorKey(image, 1, state->Gif89.transparent);
+        SDL_SetSurfaceColorKey(image, true, state->Gif89.transparent);
     }
 
     while ((v = LWZReadByte(src, FALSE, c, state)) >= 0) {
