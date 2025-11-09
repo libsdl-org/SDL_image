@@ -41,10 +41,10 @@
 
 #ifdef LOAD_GIF
 
-/* Code from here to end of file has been adapted from XPaint:           */
+/*        Some parts of the code have been adapted from XPaint:          */
 /* +-------------------------------------------------------------------+ */
-/* | Copyright 1990, 1991, 1993 David Koblas.                  | */
-/* | Copyright 1996 Torsten Martinsen.                     | */
+/* | Copyright 1990, 1991, 1993 David Koblas.                          | */
+/* | Copyright 1996 Torsten Martinsen.                                 | */
 /* |   Permission to use, copy, modify, and distribute this software   | */
 /* |   and its documentation for any purpose and without fee is hereby | */
 /* |   granted, provided that the above copyright notice appear in all | */
@@ -60,6 +60,9 @@
    Use SDL_Surface rather than xpaint Image structure
    Define SDL versions of RWSetMsg(), ImageNewCmap() and ImageSetCmap()
 */
+
+/* Has been overwhelmingly modified by Xen (@lordofxen) and Sam Lantinga (@slouken) as of 11/9/2025. */
+
 #include <SDL3/SDL.h>
 
 #define Image           SDL_Surface
@@ -538,39 +541,6 @@ struct IMG_AnimationDecoderContext
     bool ignore_props;
 };
 
-static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
-{
-    IMG_AnimationDecoderContext* ctx = decoder->ctx;
-    if (SDL_SeekIO(decoder->src, decoder->start, SDL_IO_SEEK_SET) < 0) {
-        return SDL_SetError("Failed to seek to beginning of GIF file");
-    }
-
-    SDL_memset(&ctx->state, 0, sizeof(ctx->state));
-    ctx->state.Gif89.transparent = -1;
-    ctx->state.Gif89.delayTime = -1;
-    ctx->state.Gif89.inputFlag = -1;
-    ctx->state.Gif89.disposal = GIF_DISPOSE_NA;
-
-    ctx->current_frame = 0;
-    ctx->current_disposal = GIF_DISPOSE_NA;
-    ctx->current_delay = 100;
-    ctx->transparent_index = -1;
-    ctx->got_header = false;
-    ctx->got_eof = false;
-    ctx->last_disposal = GIF_DISPOSE_NONE;
-    ctx->restore_frame = 0;
-
-    if (ctx->canvas) {
-        SDL_FillSurfaceRect(ctx->canvas, NULL, 0);
-    }
-
-    if (ctx->prev_canvas) {
-        SDL_FillSurfaceRect(ctx->prev_canvas, NULL, 0);
-    }
-
-    return true;
-}
-
 static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder, char**comment, int *loopCount)
 {
     if (comment) {
@@ -772,6 +742,42 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder, char
         ctx->got_header = true;
     }
     return true;
+}
+
+static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
+{
+    IMG_AnimationDecoderContext* ctx = decoder->ctx;
+    if (SDL_SeekIO(decoder->src, decoder->start, SDL_IO_SEEK_SET) != decoder->start) {
+        return SDL_SetError("Failed to seek to beginning of GIF file");
+    }
+
+    SDL_memset(&ctx->state, 0, sizeof(ctx->state));
+    ctx->state.Gif89.transparent = -1;
+    ctx->state.Gif89.delayTime = -1;
+    ctx->state.Gif89.inputFlag = -1;
+    ctx->state.Gif89.disposal = GIF_DISPOSE_NA;
+
+    ctx->current_frame = 0;
+    ctx->current_disposal = GIF_DISPOSE_NA;
+    ctx->current_delay = 100;
+    ctx->transparent_index = -1;
+    ctx->got_header = false;
+    ctx->got_eof = false;
+    ctx->last_disposal = GIF_DISPOSE_NONE;
+    ctx->restore_frame = 0;
+
+    // We don't care about metadata when resetting to re-read.
+    ctx->ignore_props = true;
+
+    if (ctx->canvas) {
+        SDL_FillSurfaceRect(ctx->canvas, NULL, 0);
+    }
+
+    if (ctx->prev_canvas) {
+        SDL_FillSurfaceRect(ctx->prev_canvas, NULL, 0);
+    }
+
+    return IMG_AnimationDecoderGetGIFHeader(decoder, NULL, NULL);
 }
 
 static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *duration)
