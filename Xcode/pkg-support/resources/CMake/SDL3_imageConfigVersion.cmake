@@ -6,7 +6,7 @@
 
 cmake_minimum_required(VERSION 3.12...4.0)
 
-# Find SDL_image.h.h
+# Find SDL_image.h.
 set(_sdl_image_h_path "")
 if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/../../Headers/SDL_image.h")
     set(_sdl_image_h_path "${CMAKE_CURRENT_LIST_DIR}/../../Headers/SDL_image.h")

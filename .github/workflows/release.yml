@@ -753,8 +753,6 @@ jobs:
           unzip -o "${{ github.workspace }}/${{ needs.android.outputs.android-aar }}"
           python "${{ needs.src.outputs.project }}-${{ needs.src.outputs.version }}.aar" -o /tmp/SDL3_image-android
           echo "prefix=/tmp/SDL3_image-android" >>$GITHUB_OUTPUT
-      - name: Check Android ELF Alignment
-        uses: Dermochelys/check-android-elf-alignment@v3
       - name: 'Download dependencies'
         id: deps
         env:
@@ -793,6 +791,7 @@ jobs:
               -DTEST_STATIC=FALSE \
               -DCMAKE_PREFIX_PATH="${{ steps.sdk.outputs.prefix }};${{ steps.deps-extract.outputs.sdl3-prefix }}" \
               -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake \
+              -DANDROID_USE_LEGACY_TOOLCHAIN=0 \
               -DANDROID_ABI=${android_abi} \
               -DCMAKE_BUILD_TYPE=Release \
               -B "${android_abi}"

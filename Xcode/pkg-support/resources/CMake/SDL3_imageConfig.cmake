@@ -83,7 +83,6 @@ set(SDL3_image_SDL3_image-shared_FOUND TRUE)
 set(SDL3_image_SDL3_image-static FALSE)
 
 unset(_sdl3_image_framework_path)
-unset(_sdl3_image_framework_parent_path)
 
 if(SDL3_image_SDL3_image-shared_FOUND)
     set(SDL3_image_SDL3_image_FOUND TRUE)
