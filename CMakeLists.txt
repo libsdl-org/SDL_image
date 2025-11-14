@@ -336,12 +336,15 @@ if(NOT ANDROID)
         VERSION "${SO_VERSION}"
     )
     if(APPLE)
-        cmake_minimum_required(VERSION 3.17...3.28)
         set_target_properties(${sdl3_image_target_name} PROPERTIES
             MACHO_COMPATIBILITY_VERSION "${DYLIB_COMPAT_VERSION}"
             MACHO_CURRENT_VERSION "${DYLIB_CURRENT_VERSION}"
         )
         sdl_no_deprecated_errors(${sdl3_image_target_name})
+        set_property(TARGET ${sdl3_image_target_name} APPEND PROPERTY LINK_DEPENDS
+            "${PROJECT_SOURCE_DIR}/src/SDL_image.exports")
+        target_link_options(${sdl3_image_target_name} PRIVATE
+            "SHELL:-Wl,-exported_symbols_list,${PROJECT_SOURCE_DIR}/src/SDL_image.exports")
     endif()
 endif()
 if(SDLIMAGE_BUILD_SHARED_LIBS)
