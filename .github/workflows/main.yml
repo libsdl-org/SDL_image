@@ -19,7 +19,7 @@ jobs:
             cmake: '-DSDLIMAGE_BACKEND_STB=OFF -DPerl_ROOT=C:/Strawberry/perl/bin/ -GNinja -DCMAKE_POLICY_DEFAULT_CMP0141=NEW -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=ProgramDatabase -DCMAKE_EXE_LINKER_FLAGS=-DEBUG -DCMAKE_SHARED_LINKER_FLAGS=-DEBUG' }
         - { name: Windows (mingw64), os: windows-latest, shell: 'msys2 {0}', vendored: false, msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0, artifact: 'SDL3_image-mingw64',
             cmake: '-DSDLIMAGE_BACKEND_STB=OFF -DSDLIMAGE_BACKEND_WIC=OFF  -DSDLIMAGE_AVIF=ON -G "Ninja Multi-Config"' }
-        - { name: Linux,             os: ubuntu-latest,  shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0, noavif: true, nojxl: true, artifact: 'SDL3_image-linux-x64' }
+        - { name: Linux,             os: ubuntu-latest,  shell: sh,  vendored: false, cmake: '-GNinja', shared: 1, static: 0, noavif: true, nojxl: true, test-exports: true, artifact: 'SDL3_image-linux-x64' }
         - { name: 'Linux (static)',  os: ubuntu-latest,  shell: sh,  vendored: true, cmake: '-DBUILD_SHARED_LIBS=OFF -GNinja', shared: 0, static: 1, artifact: 'SDL3_image-static-linux-x64' }
         - { name: Macos,             os: macos-latest,   shell: sh,  vendored: false, cmake: '-DSDLIMAGE_DEPS_SHARED=OFF -GNinja', shared: 1, static: 0, artifact: 'SDL3_image-macos' }
 
@@ -177,6 +177,12 @@ jobs:
           build/CMakeCache.txt
           build/CMakeFiles/*yaml
 
+    - name: Verify exports files
+      if: ${{ matrix.platform.test-exports }}
+      run: |
+        set -e
+        python src/genexports.py
+        git diff --exit-code -- src/SDL_image.sym src/SDL_image.exports
     - name: Verify CMake configuration files
       run: |
         cmake -S cmake/test -B cmake_config_build \
