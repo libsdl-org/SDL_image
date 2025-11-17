@@ -455,7 +455,7 @@ def find_existing_proc_names(project_properties: SdlProjectSymbolProperties) -> 
             macos_symbols.add(existing_func)
     logger.debug("symbols from macos exports file: %r", macos_symbols)
 
-    non_matching_symbols = versioned_symbols.difference(macos_symbols)
+    non_matching_symbols = (versioned_symbols - macos_symbols).union(macos_symbols - versioned_symbols)
     if non_matching_symbols:
         logger.error("Following symbols do not match: %r", non_matching_symbols)
         raise RuntimeError("Non-matching symbols", non_matching_symbols)
