@@ -660,6 +660,7 @@
 		007288120F0DA5BA00C302A9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				EXPORTED_SYMBOLS_FILE = "$(SRCROOT)/../src/SDL_image.exports";
 				OTHER_LDFLAGS = "$(CONFIG_FRAMEWORK_LDFLAGS)";
 			};
 			name = Debug;
@@ -724,6 +725,7 @@
 		007288160F0DA5C400C302A9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				EXPORTED_SYMBOLS_FILE = "$(SRCROOT)/../src/SDL_image.exports";
 				OTHER_LDFLAGS = "$(CONFIG_FRAMEWORK_LDFLAGS)";
 			};
 			name = Release;
