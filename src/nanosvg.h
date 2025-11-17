@@ -229,7 +229,7 @@ NSVG_EXPORT void nsvgDelete(NSVGimage* image);
 
 static int nsvg__isspace(char c)
 {
-	return strchr(" \t\n\v\f\r", c) != 0;
+	return strchr(" \t\n\v\f\r", c) != NULL;
 }
 
 static int nsvg__isdigit(char c)
@@ -325,8 +325,8 @@ static void nsvg__parseElement(char* s,
 	}
 
 	// List terminator
-	attr[nattr++] = 0;
-	attr[nattr++] = 0;
+	attr[nattr++] = NULL;
+	attr[nattr++] = NULL;
 
 	// Call callbacks.
 	if (start && startelCb)
@@ -2313,8 +2313,8 @@ static void nsvg__parsePath(NSVGparser* p, const char** attr)
 		} else {
 			tmp[0] = attr[i];
 			tmp[1] = attr[i + 1];
-			tmp[2] = 0;
-			tmp[3] = 0;
+			tmp[2] = NULL;
+			tmp[3] = NULL;
 			nsvg__parseAttribs(p, tmp);
 		}
 	}
@@ -2649,27 +2649,27 @@ static void nsvg__parseSVG(NSVGparser* p, const char** attr)
 				s = nsvg__parseNumber(s, buf, 64);
 				p->viewHeight = nsvg__atof(buf);
 			} else if (strcmp(attr[i], "preserveAspectRatio") == 0) {
-				if (strstr(attr[i + 1], "none") != 0) {
+				if (strstr(attr[i + 1], "none") != NULL) {
 					// No uniform scaling
 					p->alignType = NSVG_ALIGN_NONE;
 				} else {
 					// Parse X align
-					if (strstr(attr[i + 1], "xMin") != 0)
+					if (strstr(attr[i + 1], "xMin") != NULL)
 						p->alignX = NSVG_ALIGN_MIN;
-					else if (strstr(attr[i + 1], "xMid") != 0)
+					else if (strstr(attr[i + 1], "xMid") != NULL)
 						p->alignX = NSVG_ALIGN_MID;
-					else if (strstr(attr[i + 1], "xMax") != 0)
+					else if (strstr(attr[i + 1], "xMax") != NULL)
 						p->alignX = NSVG_ALIGN_MAX;
 					// Parse X align
-					if (strstr(attr[i + 1], "yMin") != 0)
+					if (strstr(attr[i + 1], "yMin") != NULL)
 						p->alignY = NSVG_ALIGN_MIN;
-					else if (strstr(attr[i + 1], "yMid") != 0)
+					else if (strstr(attr[i + 1], "yMid") != NULL)
 						p->alignY = NSVG_ALIGN_MID;
-					else if (strstr(attr[i + 1], "yMax") != 0)
+					else if (strstr(attr[i + 1], "yMax") != NULL)
 						p->alignY = NSVG_ALIGN_MAX;
 					// Parse meet/slice
 					p->alignType = NSVG_ALIGN_MEET;
-					if (strstr(attr[i + 1], "slice") != 0)
+					if (strstr(attr[i + 1], "slice") != NULL)
 						p->alignType = NSVG_ALIGN_SLICE;
 				}
 			}
@@ -3094,7 +3094,7 @@ static void nsvg__createGradients(NSVGparser* p)
 NSVG_EXPORT NSVGimage* nsvgParse(char* input, const char* units, float dpi)
 {
 	NSVGparser* p;
-	NSVGimage* ret = 0;
+	NSVGimage* ret = NULL;
 
 	p = nsvg__createParser();
 	if (p == NULL) {
