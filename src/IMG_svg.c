@@ -64,6 +64,8 @@
 #define sqrtf   SDL_sqrtf
 #define tanf    SDL_tanf
 #define roundf  SDL_roundf
+#undef  isnan
+#define isnan   SDL_isnanf
 #ifndef FLT_MAX
 #define FLT_MAX     3.402823466e+38F
 #endif
