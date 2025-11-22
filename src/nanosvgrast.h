@@ -840,8 +840,10 @@ static void nsvg__flattenShapeStroke(NSVGrasterizer* r, NSVGshape* shape, float 
 				}
 			}
 			// Stroke any leftover path
-			if (r->npoints > 1 && dashState)
+			if (r->npoints > 1 && dashState) {
+				nsvg__prepareStroke(r, miterLimit, lineJoin);
 				nsvg__expandStroke(r, r->points, r->npoints, 0, lineJoin, lineCap, lineWidth);
+			}
 		} else {
 			nsvg__prepareStroke(r, miterLimit, lineJoin);
 			nsvg__expandStroke(r, r->points, r->npoints, closed, lineJoin, lineCap, lineWidth);
@@ -962,7 +964,11 @@ static void nsvg__fillActiveEdges(unsigned char* scanline, int len, NSVGactiveEd
 	}
 }
 
-static float nsvg__clampf(float a, float mn, float mx) { return a < mn ? mn : (a > mx ? mx : a); }
+static float nsvg__clampf(float a, float mn, float mx) {
+	if (isnan(a))
+		return mn;
+	return a < mn ? mn : (a > mx ? mx : a);
+}
 
 static unsigned int nsvg__RGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {
