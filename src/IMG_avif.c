@@ -248,8 +248,6 @@ static avifResult ReadAVIFIO(struct avifIO * io, uint32_t readFlags, uint64_t of
 {
     avifIOContext *context = (avifIOContext *)io->data;
 
-    (void) readFlags;   /* not used */
-
     /* The AVIF reader bounces all over, so always seek to the correct offset */
     if (SDL_SeekIO(context->src, context->start + offset, SDL_IO_SEEK_SET) < 0) {
         return AVIF_RESULT_IO_ERROR;
@@ -720,14 +718,12 @@ done:
 /* See if an image is contained in a data source */
 bool IMG_isAVIF(SDL_IOStream *src)
 {
-    (void)src;
     return false;
 }
 
 /* Load a AVIF type image from an SDL datasource */
 SDL_Surface *IMG_LoadAVIF_IO(SDL_IOStream *src)
 {
-    (void)src;
     SDL_SetError("SDL_image built without AVIF support");
     return NULL;
 }
@@ -772,18 +768,11 @@ bool IMG_SaveAVIF(SDL_Surface *surface, const char *file, int quality)
 
 bool IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality)
 {
-    (void)surface;
-    (void)dst;
-    (void)closeio;
-    (void)quality;
     return SDL_SetError("SDL_image built without AVIF save support");
 }
 
 bool IMG_SaveAVIF(SDL_Surface *surface, const char *file, int quality)
 {
-    (void)surface;
-    (void)file;
-    (void)quality;
     return SDL_SetError("SDL_image built without AVIF save support");
 }
 
@@ -1186,8 +1175,6 @@ bool IMG_CreateAVIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
 
 bool IMG_CreateAVIFAnimationDecoder(IMG_AnimationDecoder* decoder, SDL_PropertiesID props)
 {
-    (void)decoder;
-    (void)props;
     return SDL_SetError("SDL_image built without AVIF animation support");
 }
 
@@ -1645,8 +1632,6 @@ bool IMG_CreateAVIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Propertie
 
 bool IMG_CreateAVIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
-    (void)encoder;
-    (void)props;
     return SDL_SetError("SDL_image built without AVIF animation save support");
 }
 

@@ -716,26 +716,22 @@ SDL_Surface *IMG_LoadCUR_IO(SDL_IOStream *src)
 /* See if an image is contained in a data source */
 bool IMG_isBMP(SDL_IOStream *src)
 {
-    (void)src;
     return false;
 }
 
 bool IMG_isICO(SDL_IOStream *src)
 {
-    (void)src;
     return false;
 }
 
 bool IMG_isCUR(SDL_IOStream *src)
 {
-    (void)src;
     return false;
 }
 
 /* Load a BMP type image from an SDL datasource */
 SDL_Surface *IMG_LoadBMP_IO(SDL_IOStream *src)
 {
-    (void)src;
     SDL_SetError("SDL_image built without BMP support");
     return NULL;
 }
@@ -743,7 +739,6 @@ SDL_Surface *IMG_LoadBMP_IO(SDL_IOStream *src)
 /* Load a BMP type image from an SDL datasource */
 SDL_Surface *IMG_LoadCUR_IO(SDL_IOStream *src)
 {
-    (void)src;
     SDL_SetError("SDL_image built without BMP support");
     return NULL;
 }
@@ -751,7 +746,6 @@ SDL_Surface *IMG_LoadCUR_IO(SDL_IOStream *src)
 /* Load a BMP type image from an SDL datasource */
 SDL_Surface *IMG_LoadICO_IO(SDL_IOStream *src)
 {
-    (void)src;
     SDL_SetError("SDL_image built without BMP support");
     return NULL;
 }
@@ -925,46 +919,31 @@ bool IMG_SaveICO(SDL_Surface *surface, const char *file)
 
 bool IMG_SaveBMP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
-    (void)surface;
-    (void)dst;
-    (void)closeio;
     return SDL_SetError("SDL_image built without BMP save support");
 }
 
 bool IMG_SaveBMP(SDL_Surface *surface, const char *file)
 {
-    (void)surface;
-    (void)file;
     return SDL_SetError("SDL_image built without BMP save support");
 }
 
 bool IMG_SaveCUR_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
-    (void)surface;
-    (void)dst;
-    (void)closeio;
     return SDL_SetError("SDL_image built without BMP save support");
 }
 
 bool IMG_SaveCUR(SDL_Surface *surface, const char *file)
 {
-    (void)surface;
-    (void)file;
     return SDL_SetError("SDL_image built without BMP save support");
 }
 
 bool IMG_SaveICO_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
-    (void)surface;
-    (void)dst;
-    (void)closeio;
     return SDL_SetError("SDL_image built without BMP save support");
 }
 
 bool IMG_SaveICO(SDL_Surface *surface, const char *file)
 {
-    (void)surface;
-    (void)file;
     return SDL_SetError("SDL_image built without BMP save support");
 }
 

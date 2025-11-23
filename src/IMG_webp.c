@@ -1060,22 +1060,18 @@ bool IMG_CreateWEBPAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Propertie
 /* See if an image is contained in a data source */
 bool IMG_isWEBP(SDL_IOStream *src)
 {
-    (void)src;
     return false;
 }
 
 /* Load a WEBP type image from an SDL datasource */
 SDL_Surface *IMG_LoadWEBP_IO(SDL_IOStream *src)
 {
-    (void)src;
     SDL_SetError("SDL_image built without WEBP support");
     return NULL;
 }
 
 bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props)
 {
-    (void)decoder;
-    (void)props;
     return SDL_SetError("SDL_image built without WEBP support");
 }
 
@@ -1085,25 +1081,16 @@ bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
 
 bool IMG_SaveWEBP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, float quality)
 {
-    (void)surface;
-    (void)dst;
-    (void)closeio;
-    (void)quality;
     return SDL_SetError("SDL_image built without WEBP save support");
 }
 
 bool IMG_SaveWEBP(SDL_Surface *surface, const char *file, float quality)
 {
-    (void)surface;
-    (void)file;
-    (void)quality;
     return SDL_SetError("SDL_image built without WEBP save support");
 }
 
 bool IMG_CreateWEBPAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
-    (void)encoder;
-    (void)props;
     return SDL_SetError("SDL_image built without WEBP save support");
 }
 

@@ -152,14 +152,12 @@ done:
 /* See if an image is contained in a data source */
 bool IMG_isXV(SDL_IOStream *src)
 {
-    (void)src;
     return false;
 }
 
 /* Load a XXX type image from an SDL datasource */
 SDL_Surface *IMG_LoadXV_IO(SDL_IOStream *src)
 {
-    (void)src;
     SDL_SetError("SDL_image built without XV support");
     return NULL;
 }

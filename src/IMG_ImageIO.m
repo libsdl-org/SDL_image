@@ -44,7 +44,6 @@ static size_t MyProviderGetBytesCallback(void* userdata, void* quartz_buffer, si
 // so you can clean up any resources.
 static void MyProviderReleaseInfoCallback(void* userdata)
 {
-    (void)userdata;
     // What should I put here?
     // I think the user and SDL_IOStream controls closing, so I don't do anything.
 }

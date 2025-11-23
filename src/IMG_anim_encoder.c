@@ -202,7 +202,6 @@ Uint64 IMG_GetEncoderDuration(IMG_AnimationEncoder *encoder, Uint64 duration, Ui
 
 static void SDLCALL HasMetadataCallback(void *userdata, SDL_PropertiesID props, const char *name)
 {
-    (void)props;
     bool *has_metadata = (bool *)userdata;
 
     if (SDL_strncmp(name, "SDL_image.metadata.", 19) == 0) {
