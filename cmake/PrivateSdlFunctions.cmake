@@ -323,9 +323,9 @@ endfunction()
 
 function(sdl_no_deprecated_errors TARGET)
     check_c_compiler_flag(-Wno-error=deprecated-declarations HAVE_WNO_ERROR_DEPRECATED_DECLARATIONS)
-        if(HAVE_WNO_ERROR_DEPRECATED_DECLARATIONS)
-    target_compile_options(${TARGET} PRIVATE "-Wno-error=deprecated-declarations")
-endif()
+    if(HAVE_WNO_ERROR_DEPRECATED_DECLARATIONS)
+        target_compile_options(${TARGET} PRIVATE "-Wno-error=deprecated-declarations")
+    endif()
 endfunction()
 
 function(sdl_get_git_revision_hash VARNAME)
