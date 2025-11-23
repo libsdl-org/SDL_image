@@ -224,7 +224,6 @@ typedef struct {
 static void init_source (j_decompress_ptr cinfo)
 {
     /* We don't actually need to do anything */
-    (void)cinfo;
     return;
 }
 
@@ -289,7 +288,6 @@ static void skip_input_data (j_decompress_ptr cinfo, long num_bytes)
 static void term_source (j_decompress_ptr cinfo)
 {
     /* We don't actually need to do anything */
-    (void)cinfo;
     return;
 }
 
@@ -341,7 +339,6 @@ static void my_error_exit(j_common_ptr cinfo)
 static void output_no_message(j_common_ptr cinfo)
 {
     /* do nothing */
-    (void)cinfo;
 }
 
 struct loadjpeg_vars {
@@ -457,7 +454,6 @@ typedef struct {
 static void init_destination(j_compress_ptr cinfo)
 {
     /* We don't actually need to do anything */
-    (void)cinfo;
     return;
 }
 
@@ -667,14 +663,12 @@ SDL_Surface *IMG_LoadJPG_IO(SDL_IOStream *src)
 /* See if an image is contained in a data source */
 bool IMG_isJPG(SDL_IOStream *src)
 {
-    (void)src;
     return false;
 }
 
 /* Load a JPEG type image from an SDL datasource */
 SDL_Surface *IMG_LoadJPG_IO(SDL_IOStream *src)
 {
-    (void)src;
     SDL_SetError("SDL_image built without JPG support");
     return NULL;
 }
@@ -763,8 +757,6 @@ static bool IMG_SaveJPG_IO_tinyjpeg(SDL_Surface *surface, SDL_IOStream *dst, int
 bool IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality)
 {
     bool result = false;
-    (void)surface;
-    (void)quality;
 
     if (!surface) {
         SDL_InvalidParamError("surface");
@@ -808,18 +800,11 @@ bool IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality)
 
 bool IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality)
 {
-    (void)surface;
-    (void)dst;
-    (void)closeio;
-    (void)quality;
     return SDL_SetError("SDL_image built without JPG save support");
 }
 
 bool IMG_SaveJPG(SDL_Surface *surface, const char *file, int quality)
 {
-    (void)surface;
-    (void)file;
-    (void)quality;
     return SDL_SetError("SDL_image built without JPG save support");
 }
 

@@ -346,7 +346,6 @@ error:
 /* dummy TGA load routine */
 SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
 {
-    (void)src;
     SDL_SetError("SDL_image built without TGA support");
     return NULL;
 }
@@ -539,16 +538,11 @@ bool IMG_SaveTGA(SDL_Surface *surface, const char *file)
 
 bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
-    (void)surface;
-    (void)dst;
-    (void)closeio;
     return SDL_SetError("SDL_image built without TGA save support");
 }
 
 bool IMG_SaveTGA(SDL_Surface *surface, const char *file)
 {
-    (void)surface;
-    (void)file;
     return SDL_SetError("SDL_image built without TGA save support");
 }
 

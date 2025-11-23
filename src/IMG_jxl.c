@@ -255,14 +255,12 @@ done:
 /* See if an image is contained in a data source */
 bool IMG_isJXL(SDL_IOStream *src)
 {
-    (void)src;
     return false;
 }
 
 /* Load a JXL type image from an SDL datasource */
 SDL_Surface *IMG_LoadJXL_IO(SDL_IOStream *src)
 {
-    (void)src;
     SDL_SetError("SDL_image built without JXL support");
     return NULL;
 }

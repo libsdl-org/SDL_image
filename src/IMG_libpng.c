@@ -726,16 +726,11 @@ bool IMG_SavePNG(SDL_Surface *surface, const char *file)
 
 bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
-    (void)surface;
-    (void)dst;
-    (void)closeio;
     return SDL_SetError("SDL_image built without PNG save support");
 }
 
 bool IMG_SavePNG(SDL_Surface *surface, const char *file)
 {
-    (void)surface;
-    (void)file;
     return SDL_SetError("SDL_image built without PNG save support");
 }
 
@@ -2455,15 +2450,11 @@ bool IMG_CreateAPNGAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Propertie
 
 bool IMG_CreateAPNGAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
-    (void)encoder;
-    (void)props;
     return SDL_SetError("SDL_image not built against libpng.");
 }
 
 bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props)
 {
-    (void)decoder;
-    (void)props;
     return SDL_SetError("SDL_image not built against libpng.");
 }
 

@@ -104,7 +104,6 @@ static tsize_t tiff_write(thandle_t fd, tdata_t buf, tsize_t size)
 
 static int tiff_close(thandle_t fd)
 {
-    (void)fd;
     /*
      * We don't want libtiff closing our SDL_IOStream*, but if it's not given
          * a routine to try, and if the image isn't a TIFF, it'll segfault.
@@ -114,17 +113,11 @@ static int tiff_close(thandle_t fd)
 
 static int tiff_map(thandle_t fd, tdata_t* pbase, toff_t* psize)
 {
-    (void)fd;
-    (void)pbase;
-    (void)psize;
     return (0);
 }
 
 static void tiff_unmap(thandle_t fd, tdata_t base, toff_t size)
 {
-    (void)fd;
-    (void)base;
-    (void)size;
     return;
 }
 
@@ -222,14 +215,12 @@ error:
 /* See if an image is contained in a data source */
 bool IMG_isTIF(SDL_IOStream *src)
 {
-    (void)src;
     return false;
 }
 
 /* Load a TIFF type image from an SDL datasource */
 SDL_Surface *IMG_LoadTIF_IO(SDL_IOStream *src)
 {
-    (void)src;
     SDL_SetError("SDL_image built without TIFF support");
     return NULL;
 }

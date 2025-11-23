@@ -69,14 +69,12 @@ SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 /* See if an image is contained in a data source */
 bool IMG_isPNG(SDL_IOStream *src)
 {
-    (void)src;
     return false;
 }
 
 /* Load a PNG type image from an SDL datasource */
 SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 {
-    (void)src;
     SDL_SetError("SDL_image built without PNG support");
     return NULL;
 }
@@ -104,16 +102,11 @@ bool IMG_SavePNG(SDL_Surface *surface, const char *file)
 
 bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
-    (void)surface;
-    (void)dst;
-    (void)closeio;
     return SDL_SetError("SDL_image built without PNG save support");
 }
 
 bool IMG_SavePNG(SDL_Surface *surface, const char *file)
 {
-    (void)surface;
-    (void)file;
     return SDL_SetError("SDL_image built without PNG save support");
 }
 

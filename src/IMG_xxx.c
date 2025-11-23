@@ -71,13 +71,11 @@ SDL_Surface *IMG_LoadXXX_IO(SDL_IOStream *src)
 
 bool IMG_isXXX(SDL_IOStream *src)
 {
-    (void)src;
     return false;
 }
 
 SDL_Surface *IMG_LoadXXX_IO(SDL_IOStream *src)
 {
-    (void)src;
     SDL_SetError("SDL_image built without XXX support");
     return NULL;
 }

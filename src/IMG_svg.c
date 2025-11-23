@@ -166,16 +166,12 @@ SDL_Surface *IMG_LoadSizedSVG_IO(SDL_IOStream *src, int width, int height)
 /* See if an image is contained in a data source */
 bool IMG_isSVG(SDL_IOStream *src)
 {
-    (void)src;
     return false;
 }
 
 /* Load a SVG type image from an SDL datasource */
 SDL_Surface *IMG_LoadSizedSVG_IO(SDL_IOStream *src, int width, int height)
 {
-    (void)src;
-    (void)width;
-    (void)height;
     SDL_SetError("SDL_image built without SVG support");
     return NULL;
 }

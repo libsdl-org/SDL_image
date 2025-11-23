@@ -413,8 +413,6 @@ ReadImage(SDL_IOStream * src, int len, int height, int cmapSize,
     int i, v;
     int xpos = 0, ypos = 0, pass = 0;
 
-    (void) gray; /* unused */
-
     /*
     **  Initialize the compression routines
      */
@@ -1020,8 +1018,6 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Properties
 
 bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props)
 {
-    (void)decoder;
-    (void)props;
     SDL_SetError("SDL_image built without GIF support");
     return false;
 }
@@ -1077,14 +1073,12 @@ SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
 /* See if an image is contained in a data source */
 bool IMG_isGIF(SDL_IOStream *src)
 {
-    (void)src;
     return false;
 }
 
 /* Load a GIF type image from an SDL datasource */
 SDL_Surface *IMG_LoadGIF_IO(SDL_IOStream *src)
 {
-    (void)src;
     SDL_SetError("SDL_image built without GIF support");
     return NULL;
 }
@@ -2858,23 +2852,16 @@ bool IMG_SaveGIF(SDL_Surface *surface, const char *file)
 
 bool IMG_CreateGIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props)
 {
-    (void)encoder;
-    (void)props;
     return SDL_SetError("SDL_image built without GIF save support");
 }
 
 bool IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
-    (void)surface;
-    (void)dst;
-    (void)closeio;
     return SDL_SetError("SDL_image built without GIF save support");
 }
 
 bool IMG_SaveGIF(SDL_Surface *surface, const char *file)
 {
-    (void)surface;
-    (void)file;
     return SDL_SetError("SDL_image built without GIF save support");
 }
 
