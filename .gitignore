@@ -1,4 +1,5 @@
 build/
+!build-scripts/
 buildbot/
 deps/
 dist/
