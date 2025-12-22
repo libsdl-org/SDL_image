@@ -29,6 +29,15 @@
 
 #include <tiffio.h>
 
+#if defined(LOAD_TIF_DYNAMIC) && defined(SDL_ELF_NOTE_DLOPEN)
+SDL_ELF_NOTE_DLOPEN(
+    "tiff",
+    "Support for TIFF images using libtiff",
+    SDL_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED,
+    LOAD_TIF_DYNAMIC
+);
+#endif
+
 static struct {
     int loaded;
     void *handle;

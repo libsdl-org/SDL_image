@@ -37,6 +37,15 @@
 
 #include <avif/avif.h>
 
+#if defined(LOAD_AVIF_DYNAMIC) && defined(SDL_ELF_NOTE_DLOPEN)
+SDL_ELF_NOTE_DLOPEN(
+    "avif",
+    "Support for AVIF images using libavif",
+    SDL_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED,
+    LOAD_AVIF_DYNAMIC
+);
+#endif
+
 
 /*
  * - `SDL_PROP_SURFACE_MAXCLL_NUMBER`: MaxCLL (Maximum Content Light Level)

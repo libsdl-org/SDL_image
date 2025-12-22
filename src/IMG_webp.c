@@ -39,6 +39,37 @@
 
 #ifdef LOAD_WEBP
 
+
+#if (defined(LOAD_WEBP_DYNAMIC) || defined(LOAD_WEBPDEMUX_DYNAMIC) || defined(LOAD_WEBPMUX_DYNAMIC)) && defined(SDL_ELF_NOTE_DLOPEN)
+
+#ifdef LOAD_WEBP_DYNAMIC
+SDL_ELF_NOTE_DLOPEN(
+    "webp",
+    "Support for WebP images using libwebp",
+    SDL_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED,
+    LOAD_WEBP_DYNAMIC
+);
+#endif
+
+#ifdef LOAD_WEBPDEMUX_DYNAMIC
+SDL_ELF_NOTE_DLOPEN(
+    "webp",
+    "Support for WebP images using libwebp",
+    SDL_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED,
+    LOAD_WEBPDEMUX_DYNAMIC
+);
+#endif
+
+#ifdef LOAD_WEBPMUX_DYNAMIC
+SDL_ELF_NOTE_DLOPEN(
+    "webp",
+    "Support for WebP images using libwebp",
+    SDL_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED,
+    LOAD_WEBPMUX_DYNAMIC
+);
+#endif
+
+#endif
 /*=============================================================================
         File: SDL_webp.c
      Purpose: A WEBP loader for the SDL library

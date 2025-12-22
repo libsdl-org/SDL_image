@@ -25,6 +25,15 @@
 
 #ifdef LOAD_JXL
 
+#if defined(LOAD_JXL_DYNAMIC) && defined(SDL_ELF_NOTE_DLOPEN)
+SDL_ELF_NOTE_DLOPEN(
+    "libjxl",
+    "Support for JPEG XL images using libjxl",
+    SDL_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED,
+    LOAD_JXL_DYNAMIC
+);
+#endif
+
 #include <jxl/decode.h>
 
 
