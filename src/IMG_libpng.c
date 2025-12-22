@@ -36,6 +36,15 @@
 #ifdef SDL_IMAGE_LIBPNG
 #include <png.h>
 
+#if defined(LOAD_LIBPNG_DYNAMIC) && defined(SDL_ELF_NOTE_DLOPEN)
+SDL_ELF_NOTE_DLOPEN(
+    "png",
+    "Support for PNG images using libpng",
+    SDL_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED,
+    LOAD_LIBPNG_DYNAMIC
+);
+#endif
+
 #ifndef PNG_DISPOSE_OP_NONE
 #define PNG_DISPOSE_OP_NONE 0
 #endif

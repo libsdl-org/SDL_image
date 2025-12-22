@@ -50,6 +50,15 @@
 
 #define USE_JPEGLIB
 
+#if defined(LOAD_JPG_DYNAMIC) && defined(SDL_ELF_NOTE_DLOPEN)
+SDL_ELF_NOTE_DLOPEN(
+    "jpeg",
+    "Support for JPEG images using libjpg",
+    SDL_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED,
+    LOAD_JPG_DYNAMIC
+);
+#endif
+
 #include <jpeglib.h>
 
 #ifdef JPEG_TRUE  /* MinGW version of jpeg-8.x renamed TRUE to JPEG_TRUE etc. */
