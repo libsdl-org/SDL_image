@@ -42,7 +42,7 @@ SDL_ELF_NOTE_DLOPEN(
     "Support for PNG images using libpng",
     SDL_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED,
     LOAD_LIBPNG_DYNAMIC
-);
+)
 #endif
 
 #ifndef PNG_DISPOSE_OP_NONE

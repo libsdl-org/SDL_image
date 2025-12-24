@@ -35,7 +35,7 @@ SDL_ELF_NOTE_DLOPEN(
     "Support for TIFF images using libtiff",
     SDL_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED,
     LOAD_TIF_DYNAMIC
-);
+)
 #endif
 
 static struct {

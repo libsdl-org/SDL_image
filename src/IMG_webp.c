@@ -48,7 +48,7 @@ SDL_ELF_NOTE_DLOPEN(
     "Support for WebP images using libwebp",
     SDL_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED,
     LOAD_WEBP_DYNAMIC
-);
+)
 #endif
 
 #ifdef LOAD_WEBPDEMUX_DYNAMIC
@@ -57,7 +57,7 @@ SDL_ELF_NOTE_DLOPEN(
     "Support for WebP images using libwebp",
     SDL_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED,
     LOAD_WEBPDEMUX_DYNAMIC
-);
+)
 #endif
 
 #ifdef LOAD_WEBPMUX_DYNAMIC
@@ -66,7 +66,7 @@ SDL_ELF_NOTE_DLOPEN(
     "Support for WebP images using libwebp",
     SDL_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED,
     LOAD_WEBPMUX_DYNAMIC
-);
+)
 #endif
 
 #endif

@@ -207,7 +207,7 @@
         "\",\"description\":\"" description                      \
         "\",\"priority\":\"" priority                            \
         "\",\"soname\":" SDL_SONAME_ARRAY(__VA_ARGS__) "}]",     \
-        SDL_ELF_NOTE_UNIQUE_NAME)
+        SDL_ELF_NOTE_UNIQUE_NAME);
 
 #elif defined(__GNUC__) && __GNUC__ < 3
 

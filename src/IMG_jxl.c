@@ -31,7 +31,7 @@ SDL_ELF_NOTE_DLOPEN(
     "Support for JPEG XL images using libjxl",
     SDL_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED,
     LOAD_JXL_DYNAMIC
-);
+)
 #endif
 
 #include <jxl/decode.h>

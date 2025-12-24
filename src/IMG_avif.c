@@ -43,7 +43,7 @@ SDL_ELF_NOTE_DLOPEN(
     "Support for AVIF images using libavif",
     SDL_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED,
     LOAD_AVIF_DYNAMIC
-);
+)
 #endif
 
 
