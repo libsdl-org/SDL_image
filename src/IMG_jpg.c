@@ -56,7 +56,7 @@ SDL_ELF_NOTE_DLOPEN(
     "Support for JPEG images using libjpg",
     SDL_ELF_NOTE_DLOPEN_PRIORITY_SUGGESTED,
     LOAD_JPG_DYNAMIC
-);
+)
 #endif
 
 #include <jpeglib.h>
