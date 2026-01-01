@@ -3,7 +3,7 @@
   "remote": "libsdl-org/SDL_image",
   "dependencies": {
     "SDL": {
-      "startswith": "3.",
+      "startswith": "3.4.",
       "repo": "libsdl-org/SDL"
     }
   },
