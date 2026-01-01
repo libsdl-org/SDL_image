@@ -45,7 +45,7 @@ extern "C" {
  */
 #define SDL_IMAGE_MAJOR_VERSION 3
 #define SDL_IMAGE_MINOR_VERSION 2
-#define SDL_IMAGE_MICRO_VERSION 6
+#define SDL_IMAGE_MICRO_VERSION 7
 
 /**
  * This is the version number macro for the current SDL_image version.
