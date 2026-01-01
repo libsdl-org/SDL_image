@@ -104,6 +104,7 @@
         ],
         "optional": [
           "VisualC/external/optional/@<@ARCH@>@/libavif-16.dll",
+          "VisualC/external/optional/@<@ARCH@>@/libpng16-16.dll",
           "VisualC/external/optional/@<@ARCH@>@/libtiff-6.dll",
           "VisualC/external/optional/@<@ARCH@>@/libwebp-7.dll",
           "VisualC/external/optional/@<@ARCH@>@/libwebpdemux-2.dll",
@@ -111,6 +112,7 @@
           "VisualC/external/optional/@<@ARCH@>@/LICENSE.aom.txt",
           "VisualC/external/optional/@<@ARCH@>@/LICENSE.avif.txt",
           "VisualC/external/optional/@<@ARCH@>@/LICENSE.dav1d.txt",
+          "VisualC/external/optional/@<@ARCH@>@/LICENSE.libpng.txt",
           "VisualC/external/optional/@<@ARCH@>@/LICENSE.tiff.txt",
           "VisualC/external/optional/@<@ARCH@>@/LICENSE.webp.txt"
         ]
@@ -123,6 +125,7 @@
         ],
         "lib/@<@ARCH@>@/optional": [
           "VisualC/external/optional/@<@ARCH@>@/libavif-16.dll",
+          "VisualC/external/optional/@<@ARCH@>@/libpng16-16.dll",
           "VisualC/external/optional/@<@ARCH@>@/libtiff-6.dll",
           "VisualC/external/optional/@<@ARCH@>@/libwebp-7.dll",
           "VisualC/external/optional/@<@ARCH@>@/libwebpdemux-2.dll",
@@ -130,6 +133,7 @@
           "VisualC/external/optional/@<@ARCH@>@/LICENSE.aom.txt",
           "VisualC/external/optional/@<@ARCH@>@/LICENSE.avif.txt",
           "VisualC/external/optional/@<@ARCH@>@/LICENSE.dav1d.txt",
+          "VisualC/external/optional/@<@ARCH@>@/LICENSE.libpng.txt",
           "VisualC/external/optional/@<@ARCH@>@/LICENSE.tiff.txt",
           "VisualC/external/optional/@<@ARCH@>@/LICENSE.webp.txt"
         ]
@@ -169,6 +173,7 @@
         ],
         "optional": [
           "bin/libavif-16.dll",
+          "bin/libpng16-16.dll",
           "bin/dav1d.dll",
           "bin/aom.dll",
           "bin/tiff.dll",
@@ -178,6 +183,7 @@
           "share/licenses/SDL3_image/optional/LICENSE.aom.txt",
           "share/licenses/SDL3_image/optional/LICENSE.avif.txt",
           "share/licenses/SDL3_image/optional/LICENSE.dav1d.txt",
+          "share/licenses/SDL3_image/optional/LICENSE.libpng.txt",
           "share/licenses/SDL3_image/optional/LICENSE.tiff.txt",
           "share/licenses/SDL3_image/optional/LICENSE.webp.txt"
         ]
@@ -190,6 +196,7 @@
         ],
         "lib/@<@ARCH@>@/optional": [
           "bin/libavif-16.dll",
+          "bin/libpng16-16.dll",
           "bin/dav1d.dll",
           "bin/aom.dll",
           "bin/tiff.dll",
@@ -199,6 +206,7 @@
           "share/licenses/SDL3_image/optional/LICENSE.aom.txt",
           "share/licenses/SDL3_image/optional/LICENSE.avif.txt",
           "share/licenses/SDL3_image/optional/LICENSE.dav1d.txt",
+          "share/licenses/SDL3_image/optional/LICENSE.libpng.txt",
           "share/licenses/SDL3_image/optional/LICENSE.tiff.txt",
           "share/licenses/SDL3_image/optional/LICENSE.webp.txt"
         ]
