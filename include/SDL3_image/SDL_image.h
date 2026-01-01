@@ -3088,6 +3088,7 @@ extern SDL_DECLSPEC SDL_PropertiesID SDLCALL IMG_GetAnimationDecoderProperties(I
 #define IMG_PROP_METADATA_TITLE_STRING                         "SDL_image.metadata.title"
 #define IMG_PROP_METADATA_AUTHOR_STRING                        "SDL_image.metadata.author"
 #define IMG_PROP_METADATA_CREATION_TIME_STRING                 "SDL_image.metadata.creation_time"
+#define IMG_PROP_METADATA_FRAME_COUNT_NUMBER                   "SDL_image.metadata.frame_count"
 #define IMG_PROP_METADATA_LOOP_COUNT_NUMBER                    "SDL_image.metadata.loop_count"
 
 /**

@@ -1666,7 +1666,7 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
     bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
     if (!ignoreProps) {
         // Allow implicit properties to be set which are not globalized but specific to the decoder.
-        SDL_SetNumberProperty(decoder->props, "IMG_PROP_METADATA_FRAME_COUNT_NUMBER", ctx->actl.num_frames);
+        SDL_SetNumberProperty(decoder->props, IMG_PROP_METADATA_FRAME_COUNT_NUMBER, ctx->actl.num_frames);
 
         // Set well-defined properties.
         SDL_SetNumberProperty(decoder->props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, ctx->actl.num_plays);

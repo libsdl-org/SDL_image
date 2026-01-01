@@ -445,7 +445,7 @@ bool IMG_CreateANIAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Properties
     bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
     if (!ignoreProps) {
         // Allow implicit properties to be set which are not globalized but specific to the decoder.
-        SDL_SetNumberProperty(decoder->props, "IMG_PROP_METADATA_FRAME_COUNT_NUMBER", ctx->frame_count);
+        SDL_SetNumberProperty(decoder->props, IMG_PROP_METADATA_FRAME_COUNT_NUMBER, ctx->frame_count);
 
         if (parse.title && *parse.title) {
             SDL_SetStringProperty(decoder->props, IMG_PROP_METADATA_TITLE_STRING, parse.title);
