@@ -818,6 +818,9 @@ typedef struct SDL_PinchFingerEvent
  * is there." The pen touching and lifting off from the tablet while not
  * leaving the area are handled by SDL_EVENT_PEN_DOWN and SDL_EVENT_PEN_UP.
  *
+ * Not all platforms have a window associated with the pen during proximity
+ * events. Some wait until motion/button/etc events to offer this info.
+ *
  * \since This struct is available since SDL 3.2.0.
  */
 typedef struct SDL_PenProximityEvent
@@ -1069,7 +1072,7 @@ typedef union SDL_Event
 } SDL_Event;
 
 /* Make sure we haven't broken binary compatibility */
-SDL_COMPILE_TIME_ASSERT(SDL_Event, sizeof(SDL_Event) == sizeof(((SDL_Event *)NULL)->padding));
+SDL_COMPILE_TIME_ASSERT(SDL_Event, sizeof(SDL_Event) == sizeof((SDL_static_cast(SDL_Event *, NULL))->padding));
 
 
 /* Function prototypes */
@@ -1604,7 +1607,7 @@ extern SDL_DECLSPEC Uint32 SDLCALL SDL_RegisterEvents(int numevents);
 extern SDL_DECLSPEC SDL_Window * SDLCALL SDL_GetWindowFromEvent(const SDL_Event *event);
 
 /**
- * Generate a human-readable description of an event.
+ * Generate an English description of an event.
  *
  * This will fill `buf` with a null-terminated string that might look
  * something like this:

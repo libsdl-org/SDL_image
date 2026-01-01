@@ -29,13 +29,16 @@
  * provides a reasonable toolbox for transforming the data, including copying
  * between surfaces, filling rectangles in the image data, etc.
  *
- * There is also a simple .bmp loader, SDL_LoadBMP(). SDL itself does not
- * provide loaders for various other file formats, but there are several
- * excellent external libraries that do, including its own satellite library,
+ * There is also a simple .bmp loader, SDL_LoadBMP(), and a simple .png
+ * loader, SDL_LoadPNG(). SDL itself does not provide loaders for other file
+ * formats, but there are several excellent external libraries that do,
+ * including its own satellite library,
  * [SDL_image](https://wiki.libsdl.org/SDL3_image)
- * :
+ * .
  *
- * https://github.com/libsdl-org/SDL_image
+ * In general these functions are thread-safe in that they can be called on
+ * different threads with different surfaces. You should not try to modify any
+ * surface from two threads simultaneously.
  */
 
 #ifndef SDL_surface_h_
@@ -238,6 +241,12 @@ extern SDL_DECLSPEC void SDLCALL SDL_DestroySurface(SDL_Surface *surface);
  *   left edge of the image, if this surface is being used as a cursor.
  * - `SDL_PROP_SURFACE_HOTSPOT_Y_NUMBER`: the hotspot pixel offset from the
  *   top edge of the image, if this surface is being used as a cursor.
+ * - `SDL_PROP_SURFACE_ROTATION_FLOAT`: the number of degrees a surface's data
+ *   is meant to be rotated clockwise to make the image right-side up. Default
+ *   0. This is used by the camera API, if a mobile device is oriented
+ *   differently than what its camera provides (i.e. - the camera always
+ *   provides portrait images but the phone is being held in landscape
+ *   orientation). Since SDL 3.4.0.
  *
  * \param surface the SDL_Surface structure to query.
  * \returns a valid property ID on success or 0 on failure; call
@@ -254,6 +263,7 @@ extern SDL_DECLSPEC SDL_PropertiesID SDLCALL SDL_GetSurfaceProperties(SDL_Surfac
 #define SDL_PROP_SURFACE_TONEMAP_OPERATOR_STRING            "SDL.surface.tonemap"
 #define SDL_PROP_SURFACE_HOTSPOT_X_NUMBER                   "SDL.surface.hotspot.x"
 #define SDL_PROP_SURFACE_HOTSPOT_Y_NUMBER                   "SDL.surface.hotspot.y"
+#define SDL_PROP_SURFACE_ROTATION_FLOAT                     "SDL.surface.rotation"
 
 /**
  * Set the colorspace used by a surface.
@@ -267,7 +277,8 @@ extern SDL_DECLSPEC SDL_PropertiesID SDLCALL SDL_GetSurfaceProperties(SDL_Surfac
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -286,7 +297,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_SetSurfaceColorspace(SDL_Surface *surface, 
  * \returns the colorspace used by the surface, or SDL_COLORSPACE_UNKNOWN if
  *          the surface is NULL.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -316,7 +328,8 @@ extern SDL_DECLSPEC SDL_Colorspace SDLCALL SDL_GetSurfaceColorspace(SDL_Surface 
  *          the surface didn't have an index format); call SDL_GetError() for
  *          more information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -337,7 +350,8 @@ extern SDL_DECLSPEC SDL_Palette * SDLCALL SDL_CreateSurfacePalette(SDL_Surface *
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -378,7 +392,8 @@ extern SDL_DECLSPEC SDL_Palette * SDLCALL SDL_GetSurfacePalette(SDL_Surface *sur
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -421,7 +436,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_SurfaceHasAlternateImages(SDL_Surface *surf
  *          failure; call SDL_GetError() for more information. This should be
  *          freed with SDL_free() when it is no longer needed.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -439,7 +455,8 @@ extern SDL_DECLSPEC SDL_Surface ** SDLCALL SDL_GetSurfaceImages(SDL_Surface *sur
  *
  * \param surface the SDL_Surface structure to update.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -465,9 +482,10 @@ extern SDL_DECLSPEC void SDLCALL SDL_RemoveSurfaceAlternateImages(SDL_Surface *s
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe. The locking referred to by
- *               this function is making the pixels available for direct
- *               access, not thread-safe locking.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces. The locking referred to by this function
+ *               is making the pixels available for direct access, not
+ *               thread-safe locking.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -490,6 +508,46 @@ extern SDL_DECLSPEC bool SDLCALL SDL_LockSurface(SDL_Surface *surface);
  * \sa SDL_LockSurface
  */
 extern SDL_DECLSPEC void SDLCALL SDL_UnlockSurface(SDL_Surface *surface);
+
+/**
+ * Load a BMP or PNG image from a seekable SDL data stream.
+ *
+ * The new surface should be freed with SDL_DestroySurface(). Not doing so
+ * will result in a memory leak.
+ *
+ * \param src the data stream for the surface.
+ * \param closeio if true, calls SDL_CloseIO() on `src` before returning, even
+ *                in the case of an error.
+ * \returns a pointer to a new SDL_Surface structure or NULL on failure; call
+ *          SDL_GetError() for more information.
+ *
+ * \threadsafety It is safe to call this function from any thread.
+ *
+ * \since This function is available since SDL 3.4.0.
+ *
+ * \sa SDL_DestroySurface
+ * \sa SDL_LoadSurface
+ */
+extern SDL_DECLSPEC SDL_Surface * SDLCALL SDL_LoadSurface_IO(SDL_IOStream *src, bool closeio);
+
+/**
+ * Load a BMP or PNG image from a file.
+ *
+ * The new surface should be freed with SDL_DestroySurface(). Not doing so
+ * will result in a memory leak.
+ *
+ * \param file the file to load.
+ * \returns a pointer to a new SDL_Surface structure or NULL on failure; call
+ *          SDL_GetError() for more information.
+ *
+ * \threadsafety It is safe to call this function from any thread.
+ *
+ * \since This function is available since SDL 3.4.0.
+ *
+ * \sa SDL_DestroySurface
+ * \sa SDL_LoadSurface_IO
+ */
+extern SDL_DECLSPEC SDL_Surface * SDLCALL SDL_LoadSurface(const char *file);
 
 /**
  * Load a BMP image from a seekable SDL data stream.
@@ -549,7 +607,8 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL SDL_LoadBMP(const char *file);
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -572,7 +631,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_SaveBMP_IO(SDL_Surface *surface, SDL_IOStre
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -583,6 +643,10 @@ extern SDL_DECLSPEC bool SDLCALL SDL_SaveBMP(SDL_Surface *surface, const char *f
 
 /**
  * Load a PNG image from a seekable SDL data stream.
+ *
+ * This is intended as a convenience function for loading images from trusted
+ * sources. If you want to load arbitrary images you should use libpng or
+ * another image loading library designed with security in mind.
  *
  * The new surface should be freed with SDL_DestroySurface(). Not doing so
  * will result in a memory leak.
@@ -605,6 +669,10 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL SDL_LoadPNG_IO(SDL_IOStream *src, bool
 
 /**
  * Load a PNG image from a file.
+ *
+ * This is intended as a convenience function for loading images from trusted
+ * sources. If you want to load arbitrary images you should use libpng or
+ * another image loading library designed with security in mind.
  *
  * The new surface should be freed with SDL_DestroySurface(). Not doing so
  * will result in a memory leak.
@@ -633,7 +701,8 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL SDL_LoadPNG(const char *file);
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.4.0.
  *
@@ -650,7 +719,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_SavePNG_IO(SDL_Surface *surface, SDL_IOStre
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.4.0.
  *
@@ -670,7 +740,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_SavePNG(SDL_Surface *surface, const char *f
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -712,7 +783,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_SurfaceHasRLE(SDL_Surface *surface);
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -777,7 +849,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_GetSurfaceColorKey(SDL_Surface *surface, Ui
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -797,7 +870,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_SetSurfaceColorMod(SDL_Surface *surface, Ui
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -819,7 +893,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_GetSurfaceColorMod(SDL_Surface *surface, Ui
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -857,7 +932,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_GetSurfaceAlphaMod(SDL_Surface *surface, Ui
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -896,7 +972,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_GetSurfaceBlendMode(SDL_Surface *surface, S
  * \returns true if the rectangle intersects the surface, otherwise false and
  *          blits will be completely clipped.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -917,7 +994,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_SetSurfaceClipRect(SDL_Surface *surface, co
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -933,11 +1011,41 @@ extern SDL_DECLSPEC bool SDLCALL SDL_GetSurfaceClipRect(SDL_Surface *surface, SD
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  */
 extern SDL_DECLSPEC bool SDLCALL SDL_FlipSurface(SDL_Surface *surface, SDL_FlipMode flip);
+
+/**
+ * Return a copy of a surface rotated clockwise a number of degrees.
+ *
+ * The angle of rotation can be negative for counter-clockwise rotation.
+ *
+ * When the rotation isn't a multiple of 90 degrees, the resulting surface is
+ * larger than the original, with the background filled in with the colorkey,
+ * if available, or RGBA 255/255/255/0 if not.
+ *
+ * If `surface` has the SDL_PROP_SURFACE_ROTATION_FLOAT property set on it,
+ * the new copy will have the adjusted value set: if the rotation property is
+ * 90 and `angle` was 30, the new surface will have a property value of 60
+ * (that is: to be upright vs gravity, this surface needs to rotate 60 more
+ * degrees). However, note that further rotations on the new surface in this
+ * example will produce unexpected results, since the image will have resized
+ * and padded to accommodate the not-90 degree angle.
+ *
+ * \param surface the surface to rotate.
+ * \param angle the rotation angle, in degrees.
+ * \returns a rotated copy of the surface or NULL on failure; call
+ *          SDL_GetError() for more information.
+ *
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
+ *
+ * \since This function is available since SDL 3.4.0.
+ */
+extern SDL_DECLSPEC SDL_Surface * SDLCALL SDL_RotateSurface(SDL_Surface *surface, float angle);
 
 /**
  * Creates a new surface identical to the existing surface.
@@ -951,7 +1059,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_FlipSurface(SDL_Surface *surface, SDL_FlipM
  * \returns a copy of the surface or NULL on failure; call SDL_GetError() for
  *          more information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -972,7 +1081,8 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL SDL_DuplicateSurface(SDL_Surface *surf
  * \returns a copy of the surface or NULL on failure; call SDL_GetError() for
  *          more information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -999,7 +1109,8 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL SDL_ScaleSurface(SDL_Surface *surface,
  * \returns the new SDL_Surface structure that is created or NULL on failure;
  *          call SDL_GetError() for more information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -1027,7 +1138,8 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL SDL_ConvertSurface(SDL_Surface *surfac
  * \returns the new SDL_Surface structure that is created or NULL on failure;
  *          call SDL_GetError() for more information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -1130,7 +1242,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_PremultiplyAlpha(int width, int height, SDL
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  */
@@ -1142,7 +1255,7 @@ extern SDL_DECLSPEC bool SDLCALL SDL_PremultiplySurfaceAlpha(SDL_Surface *surfac
  * This function handles all surface formats, and ignores any clip rectangle.
  *
  * If the surface is YUV, the color is assumed to be in the sRGB colorspace,
- * otherwise the color is assumed to be in the colorspace of the suface.
+ * otherwise the color is assumed to be in the colorspace of the surface.
  *
  * \param surface the SDL_Surface to clear.
  * \param r the red component of the pixel, normally in the range 0-1.
@@ -1152,7 +1265,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_PremultiplySurfaceAlpha(SDL_Surface *surfac
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  */
@@ -1177,7 +1291,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_ClearSurface(SDL_Surface *surface, float r,
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -1204,7 +1319,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_FillSurfaceRect(SDL_Surface *dst, const SDL
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -1495,7 +1611,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_BlitSurface9Grid(SDL_Surface *src, const SD
  * \param b the blue component of the pixel in the range 0-255.
  * \returns a pixel value.
  *
- * \threadsafety It is safe to call this function from any thread.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -1528,7 +1645,8 @@ extern SDL_DECLSPEC Uint32 SDLCALL SDL_MapSurfaceRGB(SDL_Surface *surface, Uint8
  * \param a the alpha component of the pixel in the range 0-255.
  * \returns a pixel value.
  *
- * \threadsafety It is safe to call this function from any thread.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  *
@@ -1559,7 +1677,8 @@ extern SDL_DECLSPEC Uint32 SDLCALL SDL_MapSurfaceRGBA(SDL_Surface *surface, Uint
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  */
@@ -1585,7 +1704,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_ReadSurfacePixel(SDL_Surface *surface, int 
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  */
@@ -1610,7 +1730,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_ReadSurfacePixelFloat(SDL_Surface *surface,
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  */
@@ -1632,7 +1753,8 @@ extern SDL_DECLSPEC bool SDLCALL SDL_WriteSurfacePixel(SDL_Surface *surface, int
  * \returns true on success or false on failure; call SDL_GetError() for more
  *          information.
  *
- * \threadsafety This function is not thread safe.
+ * \threadsafety This function can be called on different threads with
+ *               different surfaces.
  *
  * \since This function is available since SDL 3.2.0.
  */

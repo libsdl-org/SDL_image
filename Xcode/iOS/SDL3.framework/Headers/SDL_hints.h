@@ -788,28 +788,6 @@ extern "C" {
 #define SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT "SDL_EMSCRIPTEN_KEYBOARD_ELEMENT"
 
 /**
- * Dictate that newly-created windows will fill the whole browser window.
- *
- * The canvas element fills the entire document. Resize events will be
- * generated as the browser window is resized, as that will adjust the canvas
- * size as well. The canvas will cover anything else on the page, including
- * any controls provided by Emscripten in its generated HTML file. Often times
- * this is desirable for a browser-based game, but it means several things
- * that we expect of an SDL window on other platforms might not work as
- * expected, such as minimum window sizes and aspect ratios.
- *
- * This hint overrides SDL_PROP_WINDOW_CREATE_EMSCRIPTEN_FILL_DOCUMENT_BOOLEAN
- * properties when creating an SDL window.
- *
- * This hint only applies to the emscripten platform.
- *
- * This hint should be set before creating a window.
- *
- * \since This hint is available since SDL 3.4.0.
- */
-#define SDL_HINT_EMSCRIPTEN_FILL_DOCUMENT "SDL_EMSCRIPTEN_FILL_DOCUMENT"
-
-/**
  * A variable that controls whether the on-screen keyboard should be shown
  * when text input is active.
  *
@@ -1105,6 +1083,21 @@ extern "C" {
  * \since This hint is available since SDL 3.2.0.
  */
 #define SDL_HINT_HIDAPI_LIBUSB "SDL_HIDAPI_LIBUSB"
+
+
+/**
+ * A variable to control whether HIDAPI uses libusb for GameCube adapters.
+ *
+ * The variable can be set to the following values:
+ *
+ * - "0": HIDAPI will not use libusb for GameCube adapters.
+ * - "1": HIDAPI will use libusb for GameCube adapters if available. (default)
+ *
+ * This hint should be set before SDL is initialized.
+ *
+ * \since This hint is available since SDL 3.2.0.
+ */
+#define SDL_HINT_HIDAPI_LIBUSB_GAMECUBE "SDL_HIDAPI_LIBUSB_GAMECUBE"
 
 /**
  * A variable to control whether HIDAPI uses libusb only for whitelisted
@@ -2621,6 +2614,21 @@ extern "C" {
 #define SDL_HINT_MAC_SCROLL_MOMENTUM "SDL_MAC_SCROLL_MOMENTUM"
 
 /**
+ * A variable controlling whether holding down a key will repeat the pressed
+ * key or open the accents menu on macOS.
+ *
+ * The variable can be set to the following values:
+ *
+ * - "0": Holding a key will open the accents menu for that key.
+ * - "1": Holding a key will repeat the pressed key. (default)
+ *
+ * This hint needs to be set before SDL_Init().
+ *
+ * \since This hint is available since SDL 3.4.0.
+ */
+#define SDL_HINT_MAC_PRESS_AND_HOLD "SDL_MAC_PRESS_AND_HOLD"
+
+/**
  * Request SDL_AppIterate() be called at a specific rate.
  *
  * If this is set to a number, it represents Hz, so "60" means try to iterate
@@ -2698,6 +2706,24 @@ extern "C" {
  * \since This hint is available since SDL 3.2.0.
  */
 #define SDL_HINT_MOUSE_DEFAULT_SYSTEM_CURSOR "SDL_MOUSE_DEFAULT_SYSTEM_CURSOR"
+
+/**
+ * A variable setting whether we should scale cursors by the current display
+ * scale.
+ *
+ * The variable can be set to the following values:
+ *
+ * - "0": Cursors will not change size based on the display content scale.
+ *   (default)
+ * - "1": Cursors will automatically match the display content scale (e.g. a
+ *   2x sized cursor will be used when the window is on a monitor with 200%
+ *   scale). This is currently implemented on Windows and Wayland.
+ *
+ * This hint needs to be set before creating cursors.
+ *
+ * \since This hint is available since SDL 3.4.0.
+ */
+#define SDL_HINT_MOUSE_DPI_SCALE_CURSORS "SDL_MOUSE_DPI_SCALE_CURSORS"
 
 /**
  * A variable controlling whether warping a hidden mouse cursor will activate
@@ -3530,10 +3556,12 @@ extern "C" {
  * prioritized in the list of displays, as exposed by calling
  * SDL_GetDisplays(), with the first listed becoming the primary display. The
  * naming convention can vary depending on the environment, but it is usually
- * a connector name (e.g. 'DP-1', 'DP-2', 'HDMI-A-1',etc...).
+ * a connector name (e.g. 'DP-1', 'DP-2', 'HDMI-A-1', etc...).
  *
- * On Wayland and X11 desktops, the connector names associated with displays
- * can typically be found by using the `xrandr` utility.
+ * On Wayland desktops, the connector names associated with displays can be
+ * found in the `name` property of the info output from `wayland-info -i
+ * wl_output`. On X11 desktops, the `xrandr` utility can be used to retrieve
+ * the connector names associated with displays.
  *
  * This hint is currently supported on the following drivers:
  *
@@ -3714,8 +3742,10 @@ extern "C" {
  * The variable can be set to the following values:
  *
  * - "0": Fullscreen windows will not be minimized when they lose focus.
- *   (default)
  * - "1": Fullscreen windows are minimized when they lose focus.
+ * - "auto": Fullscreen windows are minimized when they lose focus if they use
+ *   exclusive fullscreen modes, so the desktop video mode is restored.
+ *   (default)
  *
  * This hint can be set anytime.
  *
@@ -4383,6 +4413,28 @@ extern "C" {
  * \since This hint is available since SDL 3.2.0.
  */
 #define SDL_HINT_WINDOWS_RAW_KEYBOARD "SDL_WINDOWS_RAW_KEYBOARD"
+
+/**
+ * A variable controlling whether or not the RIDEV_NOHOTKEYS flag is set when
+ * enabling Windows raw keyboard events.
+ *
+ * This blocks any hotkeys that have been registered by applications from
+ * having any effect beyond generating raw WM_INPUT events.
+ *
+ * This flag does not affect system-hotkeys like ALT-TAB or CTRL-ALT-DEL, but
+ * does affect the Windows Logo key since it is a userland hotkey registered
+ * by explorer.exe.
+ *
+ * The variable can be set to the following values:
+ *
+ * - "0": Hotkeys are not excluded. (default)
+ * - "1": Hotkeys are excluded.
+ *
+ * This hint can be set anytime.
+ *
+ * \since This hint is available since SDL 3.4.0.
+ */
+#define SDL_HINT_WINDOWS_RAW_KEYBOARD_EXCLUDE_HOTKEYS "SDL_WINDOWS_RAW_KEYBOARD_EXCLUDE_HOTKEYS"
 
 /**
  * A variable controlling whether SDL uses Kernel Semaphores on Windows.
