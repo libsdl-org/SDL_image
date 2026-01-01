@@ -2765,8 +2765,8 @@ bool IMG_CreateGIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Properties
     int transparent_index = -1;
     uint16_t num_global_colors = 256;
 
-    transparent_index = (int)SDL_GetNumberProperty(props, "transparent_color_index", -1);
-    Sint64 globalcolors = SDL_GetNumberProperty(props, "num_colors", 256);
+    transparent_index = (int)SDL_GetNumberProperty(props, IMG_PROP_ANIMATION_DECODER_CREATE_GIF_TRANSPARENT_COLOR_INDEX_NUMBER, -1);
+    Sint64 globalcolors = SDL_GetNumberProperty(props, IMG_PROP_ANIMATION_DECODER_CREATE_GIF_NUM_COLORS_NUMBER, 256);
     if (globalcolors <= 1 || (globalcolors & (globalcolors - 1)) != 0 || globalcolors > 256) {
         return SDL_SetError("GIF stream property 'num_colors' must be a power of 2 (starting from 2, up to 256).");
     }
@@ -2810,7 +2810,7 @@ bool IMG_CreateGIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Properties
     ctx->numGlobalColors = num_global_colors;
     ctx->transparentColorIndex = transparent_index;
     ctx->firstFrame = true;
-    ctx->use_lut = SDL_GetBooleanProperty(props, "use_lut", false);
+    ctx->use_lut = SDL_GetBooleanProperty(props, IMG_PROP_ANIMATION_ENCODER_CREATE_GIF_USE_LUT_BOOLEAN, false);
 
     encoder->ctx = ctx;
     encoder->AddFrame = AnimationEncoder_AddFrame;
