@@ -1,5 +1,5 @@
 /*
-  Copyright 1997-2025 Sam Lantinga
+  Copyright 1997-2026 Sam Lantinga
   Copyright 2022 Collabora Ltd.
 
   This software is provided 'as-is', without any express or implied
