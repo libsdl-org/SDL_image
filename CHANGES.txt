@@ -1,11 +1,57 @@
+3.4.0:
+* Added IMG_GetClipboardImage() to get the image currently in the clipboard
+* Added IMG_isANI() to detect animated cursors
+* Added IMG_CreateAnimatedCursor() to create an animated cursor from an animation
+* Added functions to save images:
+  - IMG_Save()
+  - IMG_SaveTyped_IO()
+  - IMG_SaveBMP()
+  - IMG_SaveBMP_IO()
+  - IMG_SaveCUR()
+  - IMG_SaveCUR_IO()
+  - IMG_SaveGIF()
+  - IMG_SaveGIF_IO()
+  - IMG_SaveICO()
+  - IMG_SaveICO_IO()
+  - IMG_SaveTGA()
+  - IMG_SaveTGA_IO()
+  - IMG_SaveWEBP()
+  - IMG_SaveWEBP_IO()
+* Added functions to load animations:
+  - IMG_LoadANIAnimation_IO()
+  - IMG_LoadAPNGAnimation_IO()
+  - IMG_LoadAVIFAnimation_IO()
+* Added functions to load animations a frame at a time:
+  - IMG_CreateAnimationDecoder()
+  - IMG_CreateAnimationDecoder_IO()
+  - IMG_CreateAnimationDecoderWithProperties()
+  - IMG_GetAnimationDecoderFrame()
+  - IMG_ResetAnimationDecoder()
+  - IMG_CloseAnimationDecoder()
+  - IMG_GetAnimationDecoderProperties()
+  - IMG_GetAnimationDecoderStatus()
+* Added functions to save animations:
+  - IMG_SaveAnimation()
+  - IMG_SaveAnimationTyped_IO()
+  - IMG_SaveANIAnimation_IO()
+  - IMG_SaveAPNGAnimation_IO()
+  - IMG_SaveAVIFAnimation_IO()
+  - IMG_SaveGIFAnimation_IO()
+  - IMG_SaveWEBPAnimation_IO()
+* Added functions to save animations a frame at a time:
+  - IMG_CreateAnimationEncoder()
+  - IMG_CreateAnimationEncoder_IO()
+  - IMG_CreateAnimationEncoderWithProperties()
+  - IMG_AddAnimationEncoderFrame()
+  - IMG_CloseAnimationEncoder()
+
 3.2.4:
- * Fixed alpha in less than 32-bit ICO and CUR images
+* Fixed alpha in less than 32-bit ICO and CUR images
 
 3.2.2:
- * Fixed partial alpha in ICO and CUR images
- * Set the cursor hotspot properties when loading CUR images
+* Fixed partial alpha in ICO and CUR images
+* Set the cursor hotspot properties when loading CUR images
 
 3.0.0:
- * Added support for loading HDR AVIF images
- * Added AVIF save support:
-    IMG_SaveAVIF() and IMG_SaveAVIF_IO()
+* Added support for loading HDR AVIF images
+* Added IMG_SaveAVIF() and IMG_SaveAVIF_IO()
