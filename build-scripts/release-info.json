@@ -162,6 +162,8 @@
         "-DSDLIMAGE_XCF=ON",
         "-DSDLIMAGE_XPM=ON",
         "-DSDLIMAGE_XV=ON",
+        "-DSDLIMAGE_STB=OFF",
+        "-DSDLIMAGE_ZLIB_SHARED=OFF",
         "-DSDLIMAGE_RELOCATABLE=ON",
         "-DSDLIMAGE_SAMPLES=OFF",
         "-DSDLIMAGE_TESTS=OFF",
@@ -185,7 +187,9 @@
           "share/licenses/SDL3_image/optional/LICENSE.dav1d.txt",
           "share/licenses/SDL3_image/optional/LICENSE.libpng.txt",
           "share/licenses/SDL3_image/optional/LICENSE.tiff.txt",
-          "share/licenses/SDL3_image/optional/LICENSE.webp.txt"
+          "share/licenses/SDL3_image/optional/LICENSE.webp.txt",
+          "share/licenses/SDL3_image/optional/LICENSE.libpng.txt",
+          "share/licenses/SDL3_image/optional/LICENSE.zlib.txt"
         ]
       },
       "files-devel": {
@@ -208,7 +212,9 @@
           "share/licenses/SDL3_image/optional/LICENSE.dav1d.txt",
           "share/licenses/SDL3_image/optional/LICENSE.libpng.txt",
           "share/licenses/SDL3_image/optional/LICENSE.tiff.txt",
-          "share/licenses/SDL3_image/optional/LICENSE.webp.txt"
+          "share/licenses/SDL3_image/optional/LICENSE.webp.txt",
+          "share/licenses/SDL3_image/optional/LICENSE.libpng.txt",
+          "share/licenses/SDL3_image/optional/LICENSE.zlib.txt"
         ]
       }
     },
@@ -262,6 +268,7 @@
         "-DSDLIMAGE_LBM=ON",
         "-DSDLIMAGE_PCX=ON",
         "-DSDLIMAGE_PNG=ON",
+        "-DSDLIMAGE_PNG_LIBPNG=OFF",
         "-DSDLIMAGE_PNM=ON",
         "-DSDLIMAGE_QOI=ON",
         "-DSDLIMAGE_SVG=ON",
