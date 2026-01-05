@@ -64,7 +64,7 @@ SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
     return SDL_LoadPNG_IO(src, false);
 }
 
-#else
+#elif !defined(PNG_USES_IMAGEIO)
 
 /* See if an image is contained in a data source */
 bool IMG_isPNG(SDL_IOStream *src)
