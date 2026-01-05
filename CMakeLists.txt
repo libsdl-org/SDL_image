@@ -239,6 +239,11 @@ if(NOT TARGET SDL3::Headers OR NOT TARGET ${sdl3_target_name})
     find_package(SDL3 ${SDL_REQUIRED_VERSION} REQUIRED COMPONENTS ${sdl_required_components})
 endif()
 
+get_property(sdl3_version TARGET ${sdl3_target_name} PROPERTY SDL_FULL_VERSION)
+if(sdl3_version AND sdl3_version VERSION_LESS SDL_REQUIRED_VERSION)
+  message(FATAL_ERROR "SDL3 ${SDL_REQUIRED_VERSION} is required (${sdl3_version} was found)")
+endif()
+
 SDL_DetectTargetCPUArchitectures(SDL_CPU_NAMES)
 SDL_DetectCMakePlatform()
 
