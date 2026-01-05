@@ -52,6 +52,19 @@ static void draw_background(SDL_Renderer *renderer)
     }
 }
 
+static const char *get_file_path(const char *file)
+{
+    static char path[4096];
+
+    if (*file != '/' && !SDL_GetPathInfo(file, NULL)) {
+        SDL_snprintf(path, sizeof(path), "%s%s", SDL_GetBasePath(), file);
+        if (SDL_GetPathInfo(path, NULL)) {
+            return path;
+        }
+    }
+    return file;
+}
+
 int main(int argc, char *argv[])
 {
     SDL_Window *window;
@@ -108,15 +121,7 @@ int main(int argc, char *argv[])
         }
 
         /* Open the image file */
-        anim = IMG_LoadAnimation(argv[i]);
-        if (!anim) {
-            char *path = NULL;
-            SDL_asprintf(&path, "%s%s", SDL_GetBasePath(), argv[i]);
-            if (path) {
-                anim = IMG_LoadAnimation(path);
-                SDL_free(path);
-            }
-        }
+        anim = IMG_LoadAnimation(get_file_path(argv[i]));
         if (!anim) {
             SDL_Log("Couldn't load %s: %s\n", argv[i], SDL_GetError());
             continue;
