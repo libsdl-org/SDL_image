@@ -15,6 +15,11 @@ AVIF_FRAMEWORK_LDFLAGS = -weak_framework avif
 JXL_PREPROCESSOR_DEFINITIONS = LOAD_JXL
 JXL_FRAMEWORK_LDFLAGS = -weak_framework jxl
 
+// Uncomment these lines to enable libpng support
+// If you do this, you should run external/download.sh to download the decode libraries and add png.framework to your application bundle.
+PNG_PREPROCESSOR_DEFINITIONS = SDL_IMAGE_LIBPNG INCLUDE_PNG_FRAMEWORK
+PNG_FRAMEWORK_LDFLAGS = -weak_framework png
+
 // Uncomment these lines to enable WebP support
 // If you do this, you should run external/download.sh to download the decode libraries and add webp.framework to your application bundle.
 WEBP_PREPROCESSOR_DEFINITIONS = LOAD_WEBP
