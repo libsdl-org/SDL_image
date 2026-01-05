@@ -18,11 +18,15 @@
 //JXL_PREPROCESSOR_DEFINITIONS = LOAD_JXL
 //JXL_FRAMEWORK_LDFLAGS = -weak_framework jxl
 
+// Uncomment these lines to enable libpng support
+// If you do this, you should run external/download.sh to download the decode libraries and add png.framework to your application bundle.
+//PNG_PREPROCESSOR_DEFINITIONS = SDL_IMAGE_LIBPNG INCLUDE_PNG_FRAMEWORK
+//PNG_FRAMEWORK_LDFLAGS = -weak_framework png
+
 // Uncomment these lines to enable WebP support
 // If you do this, you should run external/download.sh to download the decode libraries and add webp.framework to your application bundle.
 //WEBP_PREPROCESSOR_DEFINITIONS = LOAD_WEBP
 //WEBP_FRAMEWORK_LDFLAGS = -weak_framework webp
 
-CONFIG_PREPROCESSOR_DEFINITIONS = $(inherited) $(AVIF_PREPROCESSOR_DEFINITIONS) $(JXL_PREPROCESSOR_DEFINITIONS) $(WEBP_PREPROCESSOR_DEFINITIONS)
-CONFIG_FRAMEWORK_LDFLAGS = $(inherited) $(AVIF_FRAMEWORK_LDFLAGS) $(JXL_FRAMEWORK_LDFLAGS) $(WEBP_FRAMEWORK_LDFLAGS)
-
+CONFIG_PREPROCESSOR_DEFINITIONS = $(inherited) $(AVIF_PREPROCESSOR_DEFINITIONS) $(JXL_PREPROCESSOR_DEFINITIONS) $(PNG_PREPROCESSOR_DEFINITIONS) $(WEBP_PREPROCESSOR_DEFINITIONS)
+CONFIG_FRAMEWORK_LDFLAGS = $(inherited) $(AVIF_FRAMEWORK_LDFLAGS) $(JXL_FRAMEWORK_LDFLAGS) $(PNG_FRAMEWORK_LDFLAGS) $(WEBP_FRAMEWORK_LDFLAGS)

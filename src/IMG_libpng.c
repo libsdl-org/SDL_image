@@ -34,7 +34,11 @@
 #include "IMG_anim_decoder.h"
 
 #ifdef SDL_IMAGE_LIBPNG
+#ifdef INCLUDE_PNG_FRAMEWORK
+#include <png/png.h>
+#else
 #include <png.h>
+#endif
 
 #if defined(LOAD_LIBPNG_DYNAMIC) && defined(SDL_ELF_NOTE_DLOPEN)
 SDL_ELF_NOTE_DLOPEN(
@@ -198,6 +202,10 @@ static struct
         }
 #endif
 
+#ifdef __APPLE__
+/* Need to turn off optimizations so weak framework load check works */
+__attribute__((optnone))
+#endif
 static bool IMG_InitPNG(void)
 {
     if (lib.loaded == 0) {
