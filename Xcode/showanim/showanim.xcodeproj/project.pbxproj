@@ -1,0 +1,758 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F341283C2D4B496D00D6C2B7 /* SDL3.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F34123152D4077A600D6C2B7 /* SDL3.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F341283D2D4B498100D6C2B7 /* SDL3.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F34123152D4077A600D6C2B7 /* SDL3.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F341283E2D4B498700D6C2B7 /* SDL3.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F34123152D4077A600D6C2B7 /* SDL3.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F341283F2D4B4A4F00D6C2B7 /* SDL3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F34123152D4077A600D6C2B7 /* SDL3.framework */; };
+		F34128402D4B4A5600D6C2B7 /* SDL3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F34123152D4077A600D6C2B7 /* SDL3.framework */; };
+		F34128412D4B4A5C00D6C2B7 /* SDL3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F34123152D4077A600D6C2B7 /* SDL3.framework */; };
+		F35474502828CAF5007E9EDA /* jxl.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F354744B2828CADB007E9EDA /* jxl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F35474552828CDDB007E9EDA /* jxl.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F354744B2828CADB007E9EDA /* jxl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F35474562828CDE0007E9EDA /* jxl.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F354744B2828CADB007E9EDA /* jxl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F35475F92829BAC7007E9EDA /* avif.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F35475ED2829BAB1007E9EDA /* avif.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F35475FA2829BACC007E9EDA /* avif.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F35475ED2829BAB1007E9EDA /* avif.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F35475FB2829BAD0007E9EDA /* avif.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F35475ED2829BAB1007E9EDA /* avif.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F39CD44B281DC6C8006CF638 /* SDL3_image.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL3_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F39CD452281DC9CE006CF638 /* SDL3_image.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL3_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F3E949DB281EAC3500B8F4EA /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3E949DA281EAC1B00B8F4EA /* webp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F3E949DC281EAC9600B8F4EA /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3E949DA281EAC1B00B8F4EA /* webp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F3E949DD281EAC9C00B8F4EA /* webp.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3E949DA281EAC1B00B8F4EA /* webp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F3ED80CB281D9ECB00C33C5B /* showanim.c in Sources */ = {isa = PBXBuildFile; fileRef = F3ED80CA281D9ECB00C33C5B /* showanim.c */; };
+		F3ED80CC281D9ECB00C33C5B /* showanim.c in Sources */ = {isa = PBXBuildFile; fileRef = F3ED80CA281D9ECB00C33C5B /* showanim.c */; };
+		F3ED80DB281D9F2100C33C5B /* showanim.c in Sources */ = {isa = PBXBuildFile; fileRef = F3ED80CA281D9ECB00C33C5B /* showanim.c */; };
+		F3ED80E3281DA16500C33C5B /* SDL3_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL3_image.framework */; };
+		F3ED80F5281DA3F600C33C5B /* SDL3_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL3_image.framework */; };
+		F3ED80FF281DA63000C33C5B /* SDL3_image.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL3_image.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F3ED8113281DC13D00C33C5B /* SDL3_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3ED80D4281D9ED600C33C5B /* SDL3_image.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F34123142D4077A600D6C2B7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F344001D2D401E16003F26D7 /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BECDF66C0761BA81005FE872;
+			remoteInfo = SDL3;
+		};
+		F344000D2D401DF2003F26D7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F35475E52829BAB1007E9EDA /* avif.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F314F1AE2B62C8AA0006624D;
+			remoteInfo = aom;
+		};
+		F354744A2828CADB007E9EDA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F35474462828CADB007E9EDA /* jxl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F307EEDC28288CCF003915D7;
+			remoteInfo = jxl;
+		};
+		F35475EC2829BAB1007E9EDA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F35475E52829BAB1007E9EDA /* avif.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F35474682829A8B3007E9EDA;
+			remoteInfo = avif;
+		};
+		F35475EE2829BAB1007E9EDA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F35475E52829BAB1007E9EDA /* avif.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F354757D2829B82B007E9EDA;
+			remoteInfo = dav1d;
+		};
+		F35475F02829BAB1007E9EDA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F35475E52829BAB1007E9EDA /* avif.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F354758A2829B839007E9EDA;
+			remoteInfo = "dav1d-8bit";
+		};
+		F35475F22829BAB1007E9EDA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F35475E52829BAB1007E9EDA /* avif.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F35475972829B847007E9EDA;
+			remoteInfo = "dav1d-16bit";
+		};
+		F3E949D9281EAC1B00B8F4EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F3E949D5281EAC1B00B8F4EA /* webp.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F3D87D21281EA9C3005DA540;
+			remoteInfo = webp;
+		};
+		F3ED80D3281D9ED600C33C5B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BE1FA72E07AF4C45004B6283;
+			remoteInfo = Framework;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		F39CD449281DC695006CF638 /* Copy Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F341283D2D4B498100D6C2B7 /* SDL3.framework in Copy Frameworks */,
+				F39CD44B281DC6C8006CF638 /* SDL3_image.framework in Copy Frameworks */,
+				F35475F92829BAC7007E9EDA /* avif.framework in Copy Frameworks */,
+				F35474562828CDE0007E9EDA /* jxl.framework in Copy Frameworks */,
+				F3E949DB281EAC3500B8F4EA /* webp.framework in Copy Frameworks */,
+			);
+			name = "Copy Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3ED80EC281DA29B00C33C5B /* Copy Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F341283C2D4B496D00D6C2B7 /* SDL3.framework in Copy Frameworks */,
+				F39CD452281DC9CE006CF638 /* SDL3_image.framework in Copy Frameworks */,
+				F35475FA2829BACC007E9EDA /* avif.framework in Copy Frameworks */,
+				F35474552828CDDB007E9EDA /* jxl.framework in Copy Frameworks */,
+				F3E949DC281EAC9600B8F4EA /* webp.framework in Copy Frameworks */,
+			);
+			name = "Copy Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3ED80FA281DA44400C33C5B /* Copy Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				F341283E2D4B498700D6C2B7 /* SDL3.framework in Copy Frameworks */,
+				F3ED80FF281DA63000C33C5B /* SDL3_image.framework in Copy Frameworks */,
+				F35475FB2829BAD0007E9EDA /* avif.framework in Copy Frameworks */,
+				F35474502828CAF5007E9EDA /* jxl.framework in Copy Frameworks */,
+				F3E949DD281EAC9C00B8F4EA /* webp.framework in Copy Frameworks */,
+			);
+			name = "Copy Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		F344001D2D401E16003F26D7 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = ../../../SDL/Xcode/SDL/SDL.xcodeproj; sourceTree = SOURCE_ROOT; };
+		F35474462828CADB007E9EDA /* jxl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jxl.xcodeproj; path = ../jxl/jxl.xcodeproj; sourceTree = "<group>"; };
+		F35475E52829BAB1007E9EDA /* avif.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = avif.xcodeproj; path = ../avif/avif.xcodeproj; sourceTree = "<group>"; };
+		F3E1F7742A78A12600AC76D3 /* config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = config.xcconfig; sourceTree = "<group>"; };
+		F3E949D5281EAC1B00B8F4EA /* webp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = webp.xcodeproj; path = ../webp/webp.xcodeproj; sourceTree = "<group>"; };
+		F3ED80B3281D9E8900C33C5B /* showanim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showanim.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3ED80B9281D9E8900C33C5B /* showanim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showanim.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3ED80BB281D9E8900C33C5B /* macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOS.entitlements; sourceTree = "<group>"; };
+		F3ED80CA281D9ECB00C33C5B /* showanim.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = showanim.c; path = ../../examples/showanim.c; sourceTree = SOURCE_ROOT; };
+		F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL_image.xcodeproj; path = ../SDL_image.xcodeproj; sourceTree = "<group>"; };
+		F3ED80E1281D9F2100C33C5B /* showanim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = showanim.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3ED80E4281DA17800C33C5B /* SDL3.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL3.framework; path = ../macOS/SDL3.framework; sourceTree = "<group>"; };
+		F3ED80F6281DA40300C33C5B /* SDL3.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL3.framework; path = ../iOS/SDL3.framework; sourceTree = "<group>"; };
+		F3ED810E281DC09600C33C5B /* SDL3.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL3.framework; path = ../tvOS/SDL3.framework; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F3ED80B0281D9E8900C33C5B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F34128402D4B4A5600D6C2B7 /* SDL3.framework in Frameworks */,
+				F3ED80F5281DA3F600C33C5B /* SDL3_image.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3ED80B6281D9E8900C33C5B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F341283F2D4B4A4F00D6C2B7 /* SDL3.framework in Frameworks */,
+				F3ED80E3281DA16500C33C5B /* SDL3_image.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3ED80DC281D9F2100C33C5B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F34128412D4B4A5C00D6C2B7 /* SDL3.framework in Frameworks */,
+				F3ED8113281DC13D00C33C5B /* SDL3_image.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F341230F2D4077A600D6C2B7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F34123152D4077A600D6C2B7 /* SDL3.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F35474472828CADB007E9EDA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F354744B2828CADB007E9EDA /* jxl.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F35475E62829BAB1007E9EDA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F35475ED2829BAB1007E9EDA /* avif.framework */,
+				F344000E2D401DF2003F26D7 /* libaom.a */,
+				F35475EF2829BAB1007E9EDA /* libdav1d.a */,
+				F35475F12829BAB1007E9EDA /* libdav1d-8bit.a */,
+				F35475F32829BAB1007E9EDA /* libdav1d-16bit.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F3E949D6281EAC1B00B8F4EA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F3E949DA281EAC1B00B8F4EA /* webp.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F3ED80A6281D9E8800C33C5B = {
+			isa = PBXGroup;
+			children = (
+				F3E1F7742A78A12600AC76D3 /* config.xcconfig */,
+				F344001D2D401E16003F26D7 /* SDL.xcodeproj */,
+				F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */,
+				F35475E52829BAB1007E9EDA /* avif.xcodeproj */,
+				F35474462828CADB007E9EDA /* jxl.xcodeproj */,
+				F3E949D5281EAC1B00B8F4EA /* webp.xcodeproj */,
+				F3ED80AB281D9E8800C33C5B /* Shared */,
+				F3ED80BA281D9E8900C33C5B /* macOS */,
+				F3ED80B4281D9E8900C33C5B /* Products */,
+				F3ED80E2281DA16500C33C5B /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		F3ED80AB281D9E8800C33C5B /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				F3ED80CA281D9ECB00C33C5B /* showanim.c */,
+			);
+			name = Shared;
+			sourceTree = SOURCE_ROOT;
+		};
+		F3ED80B4281D9E8900C33C5B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F3ED80B3281D9E8900C33C5B /* showanim.app */,
+				F3ED80B9281D9E8900C33C5B /* showanim.app */,
+				F3ED80E1281D9F2100C33C5B /* showanim.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F3ED80BA281D9E8900C33C5B /* macOS */ = {
+			isa = PBXGroup;
+			children = (
+				F3ED80BB281D9E8900C33C5B /* macOS.entitlements */,
+			);
+			path = macOS;
+			sourceTree = "<group>";
+		};
+		F3ED80CE281D9ED600C33C5B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F3ED80D4281D9ED600C33C5B /* SDL3_image.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F3ED80E2281DA16500C33C5B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F3ED8104281DADB900C33C5B /* macOS */,
+				F3ED8105281DADC900C33C5B /* iOS */,
+				F3ED810D281DC07200C33C5B /* tvOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F3ED8104281DADB900C33C5B /* macOS */ = {
+			isa = PBXGroup;
+			children = (
+				F3ED80E4281DA17800C33C5B /* SDL3.framework */,
+			);
+			name = macOS;
+			sourceTree = "<group>";
+		};
+		F3ED8105281DADC900C33C5B /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				F3ED80F6281DA40300C33C5B /* SDL3.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		F3ED810D281DC07200C33C5B /* tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				F3ED810E281DC09600C33C5B /* SDL3.framework */,
+			);
+			name = tvOS;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F3ED80B2281D9E8900C33C5B /* showanim (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F3ED80C4281D9E8900C33C5B /* Build configuration list for PBXNativeTarget "showanim (iOS)" */;
+			buildPhases = (
+				F3ED80AF281D9E8900C33C5B /* Sources */,
+				F3ED80B0281D9E8900C33C5B /* Frameworks */,
+				F3ED80B1281D9E8900C33C5B /* Resources */,
+				F3ED80FA281DA44400C33C5B /* Copy Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "showanim (iOS)";
+			productName = "showanim (iOS)";
+			productReference = F3ED80B3281D9E8900C33C5B /* showanim.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F3ED80B8281D9E8900C33C5B /* showanim (macOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F3ED80C7281D9E8900C33C5B /* Build configuration list for PBXNativeTarget "showanim (macOS)" */;
+			buildPhases = (
+				F3ED80B5281D9E8900C33C5B /* Sources */,
+				F3ED80B6281D9E8900C33C5B /* Frameworks */,
+				F3ED80B7281D9E8900C33C5B /* Resources */,
+				F3ED80EC281DA29B00C33C5B /* Copy Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "showanim (macOS)";
+			productName = "showanim (macOS)";
+			productReference = F3ED80B9281D9E8900C33C5B /* showanim.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F3ED80D9281D9F2100C33C5B /* showanim (tvOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F3ED80DE281D9F2100C33C5B /* Build configuration list for PBXNativeTarget "showanim (tvOS)" */;
+			buildPhases = (
+				F3ED80DA281D9F2100C33C5B /* Sources */,
+				F3ED80DC281D9F2100C33C5B /* Frameworks */,
+				F3ED80DD281D9F2100C33C5B /* Resources */,
+				F39CD449281DC695006CF638 /* Copy Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "showanim (tvOS)";
+			productName = "showanim (iOS)";
+			productReference = F3ED80E1281D9F2100C33C5B /* showanim.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F3ED80A7281D9E8800C33C5B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1330;
+				LastUpgradeCheck = 1330;
+				TargetAttributes = {
+					F3ED80B2281D9E8900C33C5B = {
+						CreatedOnToolsVersion = 13.3.1;
+					};
+					F3ED80B8281D9E8900C33C5B = {
+						CreatedOnToolsVersion = 13.3.1;
+					};
+				};
+			};
+			buildConfigurationList = F3ED80AA281D9E8800C33C5B /* Build configuration list for PBXProject "showanim" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F3ED80A6281D9E8800C33C5B;
+			productRefGroup = F3ED80B4281D9E8900C33C5B /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F35475E62829BAB1007E9EDA /* Products */;
+					ProjectRef = F35475E52829BAB1007E9EDA /* avif.xcodeproj */;
+				},
+				{
+					ProductGroup = F35474472828CADB007E9EDA /* Products */;
+					ProjectRef = F35474462828CADB007E9EDA /* jxl.xcodeproj */;
+				},
+				{
+					ProductGroup = F341230F2D4077A600D6C2B7 /* Products */;
+					ProjectRef = F344001D2D401E16003F26D7 /* SDL.xcodeproj */;
+				},
+				{
+					ProductGroup = F3ED80CE281D9ED600C33C5B /* Products */;
+					ProjectRef = F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */;
+				},
+				{
+					ProductGroup = F3E949D6281EAC1B00B8F4EA /* Products */;
+					ProjectRef = F3E949D5281EAC1B00B8F4EA /* webp.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				F3ED80B2281D9E8900C33C5B /* showanim (iOS) */,
+				F3ED80B8281D9E8900C33C5B /* showanim (macOS) */,
+				F3ED80D9281D9F2100C33C5B /* showanim (tvOS) */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		F34123152D4077A600D6C2B7 /* SDL3.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SDL3.framework;
+			remoteRef = F34123142D4077A600D6C2B7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F344000E2D401DF2003F26D7 /* libaom.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libaom.a;
+			remoteRef = F344000D2D401DF2003F26D7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F354744B2828CADB007E9EDA /* jxl.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = jxl.framework;
+			remoteRef = F354744A2828CADB007E9EDA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F35475ED2829BAB1007E9EDA /* avif.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = avif.framework;
+			remoteRef = F35475EC2829BAB1007E9EDA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F35475EF2829BAB1007E9EDA /* libdav1d.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libdav1d.a;
+			remoteRef = F35475EE2829BAB1007E9EDA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F35475F12829BAB1007E9EDA /* libdav1d-8bit.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libdav1d-8bit.a";
+			remoteRef = F35475F02829BAB1007E9EDA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F35475F32829BAB1007E9EDA /* libdav1d-16bit.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libdav1d-16bit.a";
+			remoteRef = F35475F22829BAB1007E9EDA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F3E949DA281EAC1B00B8F4EA /* webp.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = webp.framework;
+			remoteRef = F3E949D9281EAC1B00B8F4EA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		F3ED80D4281D9ED600C33C5B /* SDL3_image.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SDL3_image.framework;
+			remoteRef = F3ED80D3281D9ED600C33C5B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F3ED80B1281D9E8900C33C5B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3ED80B7281D9E8900C33C5B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3ED80DD281D9F2100C33C5B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F3ED80AF281D9E8900C33C5B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F3ED80CB281D9ECB00C33C5B /* showanim.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3ED80B5281D9E8900C33C5B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F3ED80CC281D9ECB00C33C5B /* showanim.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F3ED80DA281D9F2100C33C5B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F3ED80DB281D9F2100C33C5B /* showanim.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		F3ED80C2281D9E8900C33C5B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F3E1F7742A78A12600AC76D3 /* config.xcconfig */;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../include\"";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				ONLY_ACTIVE_ARCH = YES;
+				TVOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Debug;
+		};
+		F3ED80C3281D9E8900C33C5B /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F3E1F7742A78A12600AC76D3 /* config.xcconfig */;
+			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../include\"";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				TVOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Release;
+		};
+		F3ED80C5281D9E8900C33C5B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.libsdl.showanim;
+				PRODUCT_NAME = showanim;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F3ED80C6281D9E8900C33C5B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.libsdl.showanim;
+				PRODUCT_NAME = showanim;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F3ED80C8281D9E8900C33C5B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = macOS/macOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.libsdl.showanim;
+				PRODUCT_NAME = showanim;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		F3ED80C9281D9E8900C33C5B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = macOS/macOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.libsdl.showanim;
+				PRODUCT_NAME = showanim;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		F3ED80DF281D9F2100C33C5B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.libsdl.showanim;
+				PRODUCT_NAME = showanim;
+				SDKROOT = appletvos;
+			};
+			name = Debug;
+		};
+		F3ED80E0281D9F2100C33C5B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = org.libsdl.showanim;
+				PRODUCT_NAME = showanim;
+				SDKROOT = appletvos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F3ED80AA281D9E8800C33C5B /* Build configuration list for PBXProject "showanim" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F3ED80C2281D9E8900C33C5B /* Debug */,
+				F3ED80C3281D9E8900C33C5B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F3ED80C4281D9E8900C33C5B /* Build configuration list for PBXNativeTarget "showanim (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F3ED80C5281D9E8900C33C5B /* Debug */,
+				F3ED80C6281D9E8900C33C5B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F3ED80C7281D9E8900C33C5B /* Build configuration list for PBXNativeTarget "showanim (macOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F3ED80C8281D9E8900C33C5B /* Debug */,
+				F3ED80C9281D9E8900C33C5B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F3ED80DE281D9F2100C33C5B /* Build configuration list for PBXNativeTarget "showanim (tvOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F3ED80DF281D9F2100C33C5B /* Debug */,
+				F3ED80E0281D9F2100C33C5B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F3ED80A7281D9E8800C33C5B /* Project object */;
+}
