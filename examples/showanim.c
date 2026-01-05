@@ -25,7 +25,7 @@
 
 
 /* Draw a Gimpish background pattern to show transparency in the image */
-static void draw_background(SDL_Renderer *renderer, int w, int h)
+static void draw_background(SDL_Renderer *renderer)
 {
     const SDL_Color col[2] = {
         { 0x66, 0x66, 0x66, 0xff },
@@ -33,7 +33,9 @@ static void draw_background(SDL_Renderer *renderer, int w, int h)
     };
     const int dx = 8, dy = 8;
     SDL_FRect rect;
-    int i, x, y;
+    int i, x, y, w, h;
+
+    SDL_GetCurrentRenderOutputSize(renderer, &w, &h);
 
     rect.w = (float)dx;
     rect.h = (float)dy;
@@ -185,7 +187,7 @@ int main(int argc, char *argv[])
                 }
             }
             /* Draw a background pattern in case the image has transparency */
-            draw_background(renderer, w, h);
+            draw_background(renderer);
 
             /* Display the image */
             SDL_RenderTexture(renderer, textures[current_frame], NULL, NULL);
