@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F31BA87D2F0C57B400646176 /* clock.png in Resources */ = {isa = PBXBuildFile; fileRef = F31BA87C2F0C57B400646176 /* clock.png */; };
-		F31BA87E2F0C57B400646176 /* clock.png in Resources */ = {isa = PBXBuildFile; fileRef = F31BA87C2F0C57B400646176 /* clock.png */; };
-		F31BA87F2F0C57B400646176 /* clock.png in Resources */ = {isa = PBXBuildFile; fileRef = F31BA87C2F0C57B400646176 /* clock.png */; };
 		F341283C2D4B496D00D6C2B7 /* SDL3.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F34123152D4077A600D6C2B7 /* SDL3.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F341283D2D4B498100D6C2B7 /* SDL3.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F34123152D4077A600D6C2B7 /* SDL3.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F341283E2D4B498700D6C2B7 /* SDL3.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F34123152D4077A600D6C2B7 /* SDL3.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -151,7 +148,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		F31BA87C2F0C57B400646176 /* clock.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clock.png; sourceTree = "<group>"; };
 		F344001D2D401E16003F26D7 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = ../../../SDL/Xcode/SDL/SDL.xcodeproj; sourceTree = SOURCE_ROOT; };
 		F35474462828CADB007E9EDA /* jxl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = jxl.xcodeproj; path = ../jxl/jxl.xcodeproj; sourceTree = "<group>"; };
 		F35475E52829BAB1007E9EDA /* avif.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = avif.xcodeproj; path = ../avif/avif.xcodeproj; sourceTree = "<group>"; };
@@ -238,7 +234,6 @@
 		F3ED80A6281D9E8800C33C5B = {
 			isa = PBXGroup;
 			children = (
-				F31BA87C2F0C57B400646176 /* clock.png */,
 				F3E1F7742A78A12600AC76D3 /* config.xcconfig */,
 				F344001D2D401E16003F26D7 /* SDL.xcodeproj */,
 				F3ED80CD281D9ED600C33C5B /* SDL_image.xcodeproj */,
@@ -508,7 +503,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F31BA87E2F0C57B400646176 /* clock.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -516,7 +510,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F31BA87F2F0C57B400646176 /* clock.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -524,7 +517,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F31BA87D2F0C57B400646176 /* clock.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
