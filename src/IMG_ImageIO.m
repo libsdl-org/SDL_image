@@ -149,16 +149,14 @@ static CGImageRef CreateCGImageFromCGImageSource(CGImageSourceRef image_source)
 {
     CGImageRef image_ref = NULL;
 
-    if(NULL == image_source)
-    {
+    if (!image_source) {
         return NULL;
     }
 
     // Get the first item in the image source (some image formats may
     // contain multiple items).
     image_ref = CGImageSourceCreateImageAtIndex(image_source, 0, NULL);
-    if(NULL == image_ref)
-    {
+    if (!image_ref) {
         SDL_SetError("CGImageSourceCreateImageAtIndex() failed");
     }
     return image_ref;
@@ -344,14 +342,41 @@ static SDL_Surface* Create_SDL_Surface_From_CGImage_Index(CGImageRef image_ref)
 
     return surface;
 }
-static SDL_Surface* Create_SDL_Surface_From_CGImage(CGImageRef image_ref)
+
+static SDL_Surface *Create_SDL_Surface_From_CGImage(CGImageRef image_ref, CFDictionaryRef properties)
 {
+    SDL_Surface *surface;
     CGColorSpaceRef color_space = CGImageGetColorSpace(image_ref);
     if (CGColorSpaceGetModel(color_space) == kCGColorSpaceModelIndexed) {
-        return Create_SDL_Surface_From_CGImage_Index(image_ref);
+        surface = Create_SDL_Surface_From_CGImage_Index(image_ref);
     } else {
-        return Create_SDL_Surface_From_CGImage_RGB(image_ref);
+        surface = Create_SDL_Surface_From_CGImage_RGB(image_ref);
     }
+    if (surface && properties) {
+        CFNumberRef numval;
+        if (CFDictionaryGetValueIfPresent(properties, kCGImagePropertyOrientation, (const void **)&numval)) {
+            float rotation = 0.0f;
+            CGImagePropertyOrientation orientation;
+            CFNumberGetValue(numval, kCFNumberSInt32Type, &orientation);
+            switch (orientation) {
+            case kCGImagePropertyOrientationRight:
+                rotation = 90.0f;
+                break;
+            case kCGImagePropertyOrientationDown:
+                rotation = 180.0f;
+                break;
+            case kCGImagePropertyOrientationLeft:
+                rotation = 270.0f;
+                break;
+            default:
+                break;
+            }
+            if (rotation != 0.0f) {
+                SDL_SetFloatProperty(SDL_GetSurfaceProperties(surface), SDL_PROP_SURFACE_ROTATION_FLOAT, rotation);
+            }
+        }
+    }
+    return surface;
 }
 
 
@@ -445,49 +470,49 @@ bool IMG_isTIF(SDL_IOStream *src)
     return Internal_isType(src, kUTTypeTIFF);
 }
 
-static SDL_Surface *LoadImageFromIOStream (SDL_IOStream *rw_ops, CFStringRef uti_string_hint)
+static SDL_Surface *LoadImageFromIOStream(SDL_IOStream *rw_ops, CFStringRef uti_string_hint)
 {
+    SDL_Surface *surface = NULL;
     CFDictionaryRef hint_dictionary = CreateHintDictionary(uti_string_hint);
     CGImageSourceRef image_source = CreateCGImageSourceFromIOStream(rw_ops, hint_dictionary);
 
-    if (hint_dictionary != NULL)
+    if (hint_dictionary) {
         CFRelease(hint_dictionary);
-
-    if (NULL == image_source) {
-        return NULL;
     }
 
-    CGImageRef image_ref = CreateCGImageFromCGImageSource(image_source);
-    CFRelease(image_source);
-
-    if (NULL == image_ref) {
-        return NULL;
+    if (image_source) {
+        CFDictionaryRef properties = CGImageSourceCopyPropertiesAtIndex(image_source, 0, NULL);
+        CGImageRef image_ref = CreateCGImageFromCGImageSource(image_source);
+        if (image_ref) {
+            surface = Create_SDL_Surface_From_CGImage(image_ref, properties);
+            CFRelease(image_ref);
+        }
+        if (properties) {
+            CFRelease(properties);
+        }
+        CFRelease(image_source);
     }
-    SDL_Surface *sdl_surface = Create_SDL_Surface_From_CGImage(image_ref);
-    CFRelease(image_ref);
-
-    return sdl_surface;
+    return surface;
 }
 
-static SDL_Surface* LoadImageFromFile (const char *file)
+static SDL_Surface *LoadImageFromFile(const char *file)
 {
-    CGImageSourceRef image_source = NULL;
+    SDL_Surface *surface = NULL;
+    CGImageSourceRef image_source = CreateCGImageSourceFromFile(file);
 
-    image_source = CreateCGImageSourceFromFile(file);
-
-    if (NULL == image_source) {
-        return NULL;
+    if (image_source) {
+        CFDictionaryRef properties = CGImageSourceCopyPropertiesAtIndex(image_source, 0, NULL);
+        CGImageRef image_ref = CreateCGImageFromCGImageSource(image_source);
+        if (image_ref) {
+            surface = Create_SDL_Surface_From_CGImage(image_ref, properties);
+            CFRelease(image_ref);
+        }
+        if (properties) {
+            CFRelease(properties);
+        }
+        CFRelease(image_source);
     }
-
-    CGImageRef image_ref = CreateCGImageFromCGImageSource(image_source);
-    CFRelease(image_source);
-
-    if (NULL == image_ref) {
-        return NULL;
-    }
-    SDL_Surface *sdl_surface = Create_SDL_Surface_From_CGImage(image_ref);
-    CFRelease(image_ref);
-    return sdl_surface;
+    return surface;
 }
 
 #ifdef BMP_USES_IMAGEIO
