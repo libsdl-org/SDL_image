@@ -108,6 +108,14 @@ int main(int argc, char *argv[])
         /* Open the image file */
         anim = IMG_LoadAnimation(argv[i]);
         if (!anim) {
+            char *path = NULL;
+            SDL_asprintf(&path, "%s%s", SDL_GetBasePath(), argv[i]);
+            if (path) {
+                anim = IMG_LoadAnimation(path);
+                SDL_free(path);
+            }
+        }
+        if (!anim) {
             SDL_Log("Couldn't load %s: %s\n", argv[i], SDL_GetError());
             continue;
         }

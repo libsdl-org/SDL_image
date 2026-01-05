@@ -53,6 +53,14 @@ static void draw_background(SDL_Renderer *renderer, int w, int h)
 static void set_cursor(const char *cursor_file)
 {
     IMG_Animation *anim = IMG_LoadAnimation(cursor_file);
+    if (!anim) {
+        char *path = NULL;
+        SDL_asprintf(&path, "%s%s", SDL_GetBasePath(), cursor_file);
+        if (path) {
+            anim = IMG_LoadAnimation(path);
+            SDL_free(path);
+        }
+    }
     if (anim) {
         SDL_Cursor *cursor = IMG_CreateAnimatedCursor(anim, 0, 0);
         if (cursor) {
@@ -164,6 +172,14 @@ int main(int argc, char *argv[])
 
             surface = IMG_Load(argv[i]);
             if (!surface) {
+                char *path = NULL;
+                SDL_asprintf(&path, "%s%s", SDL_GetBasePath(), argv[i]);
+                if (path) {
+                    surface = IMG_Load(path);
+                    SDL_free(path);
+                }
+            }
+            if (!surface) {
                 SDL_Log("Couldn't load %s: %s\n", argv[i], SDL_GetError());
                 continue;
             }
@@ -186,6 +202,14 @@ int main(int argc, char *argv[])
         } else {
             texture = IMG_LoadTexture(renderer, argv[i]);
             if (!texture) {
+                char *path = NULL;
+                SDL_asprintf(&path, "%s%s", SDL_GetBasePath(), argv[i]);
+                if (path) {
+                    texture = IMG_LoadTexture(renderer, path);
+                    SDL_free(path);
+                }
+            }
+            if (!texture) {
                 SDL_Log("Couldn't load %s: %s\n", argv[i], SDL_GetError());
                 continue;
             }
@@ -195,6 +219,14 @@ int main(int argc, char *argv[])
         /* Save the image file, if desired */
         if (saveFile) {
             SDL_Surface *surface = IMG_Load(argv[i]);
+            if (!surface) {
+                char *path = NULL;
+                SDL_asprintf(&path, "%s%s", SDL_GetBasePath(), argv[i]);
+                if (path) {
+                    surface = IMG_Load(path);
+                    SDL_free(path);
+                }
+            }
             if (surface) {
                 if (!IMG_Save(surface, saveFile)) {
                     SDL_Log("Couldn't save %s: %s\n", saveFile, SDL_GetError());
