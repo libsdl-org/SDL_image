@@ -28,7 +28,7 @@
 
 static IWICImagingFactory* wicFactory = NULL;
 
-static bool WIC_Init(void)
+bool WIC_Init(void)
 {
     if (wicFactory == NULL) {
         HRESULT hr = CoCreateInstance(
@@ -54,30 +54,6 @@ static void WIC_Quit(void)
     }
 }
 #endif // 0
-
-bool IMG_isPNG(SDL_IOStream *src)
-{
-    Sint64 start;
-    bool is_PNG;
-    Uint8 magic[4];
-
-    if (!src) {
-        return false;
-    }
-
-    start = SDL_TellIO(src);
-    is_PNG = false;
-    if (SDL_ReadIO(src, magic, sizeof(magic)) == sizeof(magic) ) {
-        if ( magic[0] == 0x89 &&
-             magic[1] == 'P' &&
-             magic[2] == 'N' &&
-             magic[3] == 'G' ) {
-            is_PNG = true;
-        }
-    }
-    SDL_SeekIO(src, start, SDL_IO_SEEK_SET);
-    return is_PNG;
-}
 
 bool IMG_isJPG(SDL_IOStream *src)
 {
@@ -175,7 +151,7 @@ bool IMG_isTIF(SDL_IOStream * src)
     return is_TIF;
 }
 
-static SDL_Surface* WIC_LoadImage(SDL_IOStream *src)
+SDL_Surface *WIC_LoadImage(SDL_IOStream *src)
 {
     SDL_Surface* surface = NULL;
 
@@ -243,14 +219,9 @@ done:
         IWICStream_Release(stream);
     }
 
- SDL_free(memoryBuffer);
+    SDL_free(memoryBuffer);
 
- return surface;
-}
-
-SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
-{
-    return WIC_LoadImage(src);
+    return surface;
 }
 
 SDL_Surface *IMG_LoadJPG_IO(SDL_IOStream *src)
