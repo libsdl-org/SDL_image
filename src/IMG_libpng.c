@@ -206,7 +206,7 @@ static struct
 /* Need to turn off optimizations so weak framework load check works */
 __attribute__((optnone))
 #endif
-static bool IMG_InitPNG(void)
+bool IMG_InitPNG(void)
 {
     if (lib.loaded == 0) {
         /* Uncomment this if you want to use zlib with libpng to decompress / compress manually if you'd prefer that.
@@ -321,42 +321,6 @@ static void png_write_data(png_structp png_ptr, png_bytep src, png_size_t size)
 static void png_flush_data(png_structp png_ptr)
 {
     lib.png_write_flush(png_ptr);
-}
-
-bool IMG_isPNG(SDL_IOStream *stream)
-{
-    if (!stream) {
-        return false;
-    }
-
-    if (!IMG_InitPNG()) {
-        return false;
-    }
-
-    png_byte header[sizeof(png_sig)];
-    Sint64 initial_offset;
-    bool is_png = false;
-
-    // Get the current read position of the stream
-    initial_offset = SDL_TellIO(stream);
-    if (initial_offset < 0) {
-        return false;
-    }
-
-    // Read the first 8 bytes (PNG signature)
-    if (SDL_ReadIO(stream, header, sizeof(png_sig)) != sizeof(png_sig)) {
-        goto cleanup;
-    }
-
-    if (lib.png_sig_cmp(header, 0, sizeof(png_sig)) == 0) {
-        is_png = true;
-    }
-
-cleanup:
-    // Reset the stream's read position to its initial offset
-    SDL_SeekIO(stream, initial_offset, SDL_IO_SEEK_SET);
-
-    return is_png;
 }
 
 struct png_load_vars
@@ -530,17 +494,13 @@ static bool LIBPNG_LoadPNG_IO_Internal(SDL_IOStream *src, struct png_load_vars *
     return true;
 }
 
-SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
+SDL_Surface *IMG_LoadPNG_LIBPNG(SDL_IOStream *src)
 {
     Sint64 start_pos;
     bool success = false;
 
     if (!src) {
         SDL_SetError("SDL_IOStream is NULL");
-        return NULL;
-    }
-
-    if (!IMG_InitPNG()) {
         return NULL;
     }
 
@@ -686,14 +646,10 @@ static bool LIBPNG_SavePNG_IO_Internal(struct png_save_vars *vars, SDL_Surface *
     return true;
 }
 
-bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
+bool IMG_SavePNG_LIBPNG(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
     if (!surface || !dst) {
         SDL_SetError("Surface or SDL_IOStream is NULL");
-        return false;
-    }
-
-    if (!IMG_InitPNG()) {
         return false;
     }
 
@@ -727,28 +683,6 @@ bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
     }
 
     return result;
-}
-
-bool IMG_SavePNG(SDL_Surface *surface, const char *file)
-{
-    SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
-    if (dst) {
-        return IMG_SavePNG_IO(surface, dst, true);
-    } else {
-        return false;
-    }
-}
-
-#else // !SAVE_PNG
-
-bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
-{
-    return SDL_SetError("SDL_image built without PNG save support");
-}
-
-bool IMG_SavePNG(SDL_Surface *surface, const char *file)
-{
-    return SDL_SetError("SDL_image built without PNG save support");
 }
 
 #endif // SAVE_PNG

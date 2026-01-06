@@ -450,15 +450,6 @@ bool IMG_isJPG(SDL_IOStream *src)
 
 #endif /* JPG_USES_IMAGEIO */
 
-#ifdef PNG_USES_IMAGEIO
-
-bool IMG_isPNG(SDL_IOStream *src)
-{
-    return Internal_isType(src, kUTTypePNG);
-}
-
-#endif /* PNG_USES_IMAGEIO */
-
 // This isn't a public API function. Apple seems to be able to identify tga's.
 bool IMG_isTGA(SDL_IOStream *src)
 {
@@ -551,7 +542,7 @@ SDL_Surface* IMG_LoadJPG_IO (SDL_IOStream *src)
 
 #ifdef PNG_USES_IMAGEIO
 
-SDL_Surface* IMG_LoadPNG_IO (SDL_IOStream *src)
+SDL_Surface* IMG_LoadPNG_ImageIO (SDL_IOStream *src)
 {
     return LoadImageFromIOStream (src, kUTTypePNG);
 }

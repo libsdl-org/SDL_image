@@ -19,9 +19,6 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-extern bool IMG_InitPNG(void);
-extern SDL_Surface *IMG_LoadPNG_LIBPNG(SDL_IOStream *src);
-extern bool IMG_SavePNG_LIBPNG(SDL_Surface *surface, SDL_IOStream *dst, bool closeio);
+extern bool WIC_Init(void);
+extern SDL_Surface *WIC_LoadImage(SDL_IOStream *src);
 
-extern bool IMG_CreateAPNGAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_PropertiesID props);
-extern bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props);
