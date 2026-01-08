@@ -404,13 +404,21 @@ if(APPLE)
     if(SDLIMAGE_BACKEND_IMAGEIO)
         enable_language(OBJC)
         set(SDLIMAGE_IMAGEIO_ENABLED TRUE)
+        if(CMAKE_VERSION VERSION_LESS "3.24")
+            set(genex_FRAMEWORK "1:")
+        else()
+            set(genex_FRAMEWORK "LINK_LIBRARY:FRAMEWORK,")
+        endif()
         if(CMAKE_SYSTEM_NAME MATCHES ".*(Darwin|MacOS).*")
-            target_link_libraries(${sdl3_image_target_name} PRIVATE -Wl,-framework,ApplicationServices)
-        elseif(IOS)
+            target_link_libraries(${sdl3_image_target_name} PRIVATE $<${genex_FRAMEWORK}ApplicationServices>)
+            target_link_libraries(${sdl3_image_target_name} PRIVATE $<${genex_FRAMEWORK}Foundation>)
+        else()
             target_link_libraries(${sdl3_image_target_name} PRIVATE
-                -Wl,-framework,CoreGraphics
-                -Wl,-framework,ImageIO
-                -Wl,-framework,MobileCoreServices
+                $<${genex_FRAMEWORK}CoreGraphics>
+                $<${genex_FRAMEWORK}Foundation>
+                $<${genex_FRAMEWORK}ImageIO>
+                $<${genex_FRAMEWORK}MobileCoreServices>
+                $<${genex_FRAMEWORK}UIKit>
             )
         endif()
         target_link_libraries(${sdl3_image_target_name} PRIVATE objc)
