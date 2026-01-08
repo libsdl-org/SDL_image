@@ -2,7 +2,7 @@
 SDL_image 3.0
 
 This is a simple library to load images of various formats as SDL surfaces.
-It can load BMP, GIF, JPEG, LBM, PCX, PNG, PNM (PPM/PGM/PBM), QOI, TGA, XCF, XPM, and simple SVG format images. It can also load AVIF, JPEG-XL, TIFF, and WebP images, depending on build options.
+It can load BMP, GIF, JPEG, LBM, PCX, PNG, PNM (PPM/PGM/PBM), QOI, TGA, XCF, XPM, and simple SVG format images. It can also load AVIF, JPEG-XL, TIFF, and WebP images, depending on optional libraries.
 
 The latest version of this library is available from GitHub:
 https://github.com/libsdl-org/SDL_image/releases
