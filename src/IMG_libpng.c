@@ -732,7 +732,7 @@ typedef struct
 } DecompressionContext;
 
 static SDL_Surface *decompress_png_frame_data(DecompressionContext *context, png_bytep compressed_data, png_size_t compressed_size,
-                                              int width, int height, int png_color_type, int bit_depth, SDL_Color *palette_colors, int palette_count)
+                                              int width, int height, int png_color_type, int bit_depth, png_bytep chunk_PLTE, Uint32 size_PLTE, png_bytep chunk_tRNS, Uint32 size_tRNS)
 {
     /*
      * Usually you'd directly decompress zlib but then we have to do defiltering and deinterlacing ourselves.
@@ -745,13 +745,11 @@ static SDL_Surface *decompress_png_frame_data(DecompressionContext *context, png
     // Create a memory stream to hold our synthetic PNG
     context->mem_stream = SDL_IOFromDynamicMem();
     if (!context->mem_stream) {
-        SDL_SetError("Failed to create memory stream");
         goto error;
     }
 
     // Write PNG signature
     if (SDL_WriteIO(context->mem_stream, png_sig, 8) != 8) {
-        SDL_SetError("Failed to write PNG signature");
         goto error;
     }
 
@@ -762,7 +760,6 @@ static SDL_Surface *decompress_png_frame_data(DecompressionContext *context, png
 
         // Write IHDR length and type
         if (SDL_WriteIO(context->mem_stream, ihdr_header, 8) != 8) {
-            SDL_SetError("Failed to write IHDR header");
             goto error;
         }
 
@@ -776,7 +773,6 @@ static SDL_Surface *decompress_png_frame_data(DecompressionContext *context, png
         ihdr_data[12] = PNG_FILTER_TYPE_DEFAULT;
 
         if (SDL_WriteIO(context->mem_stream, ihdr_data, 13) != 13) {
-            SDL_SetError("Failed to write IHDR data");
             goto error;
         }
 
@@ -786,105 +782,21 @@ static SDL_Surface *decompress_png_frame_data(DecompressionContext *context, png
         png_byte crc_bytes[4];
         custom_png_save_uint_32(crc_bytes, crc);
         if (SDL_WriteIO(context->mem_stream, crc_bytes, 4) != 4) {
-            SDL_SetError("Failed to write IHDR CRC");
             goto error;
         }
     }
 
-    // Write PLTE chunk if this is a palette-based image
-    if (png_color_type == PNG_COLOR_TYPE_PALETTE && palette_colors && palette_count > 0) {
-        // Calculate PLTE chunk size (3 bytes per color)
-        png_uint_32 plte_size = palette_count * 3;
-
-        // PLTE header
-        png_byte plte_header[8] = { 0, 0, 0, 0, 'P', 'L', 'T', 'E' };
-        custom_png_save_uint_32(plte_header, plte_size);
-
-        if (SDL_WriteIO(context->mem_stream, plte_header, 8) != 8) {
-            SDL_SetError("Failed to write PLTE header");
+    // Write PLTE chunk
+    if (chunk_PLTE) {
+        if (SDL_WriteIO(context->mem_stream, chunk_PLTE, size_PLTE) != size_PLTE) {
             goto error;
         }
+    }
 
-        // Write palette data
-        png_byte *plte_data = (png_byte *)SDL_malloc(plte_size);
-        if (!plte_data) {
-            SDL_SetError("Out of memory for PLTE data");
+    // Write tRNS chunk
+    if (chunk_tRNS) {
+        if (SDL_WriteIO(context->mem_stream, chunk_tRNS, size_tRNS) != size_tRNS) {
             goto error;
-        }
-
-        for (int i = 0; i < palette_count; i++) {
-            plte_data[i * 3 + 0] = palette_colors[i].r;
-            plte_data[i * 3 + 1] = palette_colors[i].g;
-            plte_data[i * 3 + 2] = palette_colors[i].b;
-        }
-
-        if (SDL_WriteIO(context->mem_stream, plte_data, plte_size) != plte_size) {
-            SDL_free(plte_data);
-            SDL_SetError("Failed to write PLTE data");
-            goto error;
-        }
-
-        // Calculate and write PLTE CRC
-        png_uint_32 crc = SDL_crc32(0, (Uint8 *)"PLTE", 4);
-        crc = SDL_crc32(crc, plte_data, plte_size);
-        png_byte crc_bytes[4];
-        custom_png_save_uint_32(crc_bytes, crc);
-        SDL_free(plte_data);
-
-        if (SDL_WriteIO(context->mem_stream, crc_bytes, 4) != 4) {
-            SDL_SetError("Failed to write PLTE CRC");
-            goto error;
-        }
-
-        // Write tRNS chunk
-        if (palette_colors[0].a != 255) {
-            // Calculate tRNS chunk size
-            png_uint_32 trns_size = 0;
-
-            for (int i = 0; i < palette_count; ++i) {
-                if (palette_colors[i].a == 255) {
-                    break;
-                }
-                ++trns_size;
-            }
-
-            // tRNS header
-            png_byte trns_header[8] = { 0, 0, 0, 0, 't', 'R', 'N', 'S' };
-            custom_png_save_uint_32(trns_header, trns_size);
-
-            if (SDL_WriteIO(context->mem_stream, trns_header, 8) != 8) {
-                SDL_SetError("Failed to write tRNS header");
-                goto error;
-            }
-
-            // Write transparency data
-            png_byte *trns_data = (png_byte *)SDL_malloc(trns_size);
-            if (!trns_data) {
-                SDL_SetError("Out of memory for tRNS data");
-                goto error;
-            }
-
-            for (png_uint_32 i = 0; i < trns_size; i++) {
-                trns_data[i] = palette_colors[i].a;
-            }
-
-            if (SDL_WriteIO(context->mem_stream, trns_data, trns_size) != trns_size) {
-                SDL_free(trns_data);
-                SDL_SetError("Failed to write tRNS data");
-                goto error;
-            }
-
-            // Calculate and write tRNS CRC
-            png_uint_32 crc = SDL_crc32(0, (Uint8 *)"tRNS", 4);
-            crc = SDL_crc32(crc, trns_data, trns_size);
-            png_byte crc_bytes[4];
-            custom_png_save_uint_32(crc_bytes, crc);
-            SDL_free(trns_data);
-
-            if (SDL_WriteIO(context->mem_stream, crc_bytes, 4) != 4) {
-                SDL_SetError("Failed to write tRNS CRC");
-                goto error;
-            }
         }
     }
 
@@ -895,13 +807,11 @@ static SDL_Surface *decompress_png_frame_data(DecompressionContext *context, png
 
         // Write IDAT length and type
         if (SDL_WriteIO(context->mem_stream, idat_header, 8) != 8) {
-            SDL_SetError("Failed to write IDAT header");
             goto error;
         }
 
         // Write compressed data
         if (SDL_WriteIO(context->mem_stream, compressed_data, compressed_size) != compressed_size) {
-            SDL_SetError("Failed to write IDAT data");
             goto error;
         }
 
@@ -911,7 +821,6 @@ static SDL_Surface *decompress_png_frame_data(DecompressionContext *context, png
         png_byte crc_bytes[4];
         custom_png_save_uint_32(crc_bytes, crc);
         if (SDL_WriteIO(context->mem_stream, crc_bytes, 4) != 4) {
-            SDL_SetError("Failed to write IDAT CRC");
             goto error;
         }
     }
@@ -925,7 +834,6 @@ static SDL_Surface *decompress_png_frame_data(DecompressionContext *context, png
         };
 
         if (SDL_WriteIO(context->mem_stream, iend_chunk, 12) != 12) {
-            SDL_SetError("Failed to write IEND chunk");
             goto error;
         }
     }
@@ -941,25 +849,21 @@ static SDL_Surface *decompress_png_frame_data(DecompressionContext *context, png
     void *buffer = NULL;
 
     if (SDL_SeekIO(context->mem_stream, 0, SDL_IO_SEEK_SET) < 0) {
-        SDL_SetError("Failed to rewind memory stream");
         goto error;
     }
 
     buffer = SDL_malloc(data_size);
     if (!buffer) {
-        SDL_SetError("Out of memory for PNG data buffer");
         goto error;
     }
 
     if (SDL_ReadIO(context->mem_stream, buffer, data_size) != (size_t)data_size) {
-        SDL_SetError("Failed to read from memory stream");
         SDL_free(buffer);
         goto error;
     }
 
     context->read_stream = SDL_IOFromConstMem(buffer, data_size);
     if (!context->read_stream) {
-        SDL_SetError("Failed to create read stream");
         SDL_free(buffer);
         goto error;
     }
@@ -967,14 +871,12 @@ static SDL_Surface *decompress_png_frame_data(DecompressionContext *context, png
     // Now we have a proper PNG file in memory, use libpng to read it
     context->png_ptr = lib.png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!context->png_ptr) {
-        SDL_SetError("Failed to create PNG read struct");
         SDL_free(buffer);
         goto error;
     }
 
     context->info_ptr = lib.png_create_info_struct(context->png_ptr);
     if (!context->info_ptr) {
-        SDL_SetError("Failed to create PNG info struct");
         SDL_free(buffer);
         goto error;
     }
@@ -1053,53 +955,44 @@ error:
     return NULL;
 }
 
-static bool read_png_chunk(SDL_IOStream *stream, char *type, png_bytep *data, png_size_t *length)
+static bool read_png_chunk(SDL_IOStream *stream, png_bytep *chunk, Uint32 *chunk_size, char *chunk_type, png_bytep *data, Uint32 *data_length)
 {
-    Uint32 chunk_length;
-    char chunk_type[5] = { 0 };
-    Uint32 crc;
+    Uint8 header[8];
 
-    // Read chunk length (4 bytes, big-endian)
-    if (SDL_ReadIO(stream, &chunk_length, 4) != 4) {
-        SDL_SetError("Couldn't read chunk length");
-        return false;
-    }
-    chunk_length = SDL_Swap32BE(chunk_length);
-
-    // Read chunk type (4 bytes)
-    if (SDL_ReadIO(stream, chunk_type, 4) != 4) {
-        SDL_SetError("Couldn't read chunk type");
+    // Read chunk header (8 bytes)
+    if (SDL_ReadIO(stream, &header, sizeof(header)) != sizeof(header)) {
         return false;
     }
 
-    // Allocate memory for chunk data
-    *data = (png_bytep)SDL_malloc(chunk_length);
-    if (!*data && chunk_length > 0) {
-        SDL_SetError("Out of memory for chunk data");
+    // Get data length (4 bytes, big-endian)
+    SDL_memcpy(data_length, header, 4);
+    *data_length = SDL_Swap32BE(*data_length);
+
+    // Get chunk type (4 bytes)
+    SDL_memcpy(chunk_type, header+4, 4);
+
+    // Allocate memory for chunk
+    *chunk_size = sizeof(header) + *data_length + 4;
+    *chunk = (png_bytep)SDL_malloc(*chunk_size);
+    if (!*chunk) {
         return false;
     }
+    SDL_memcpy(*chunk, header, sizeof(header));
+    *data = *chunk + sizeof(header);
 
     // Read chunk data
-    if (chunk_length > 0) {
-        if (SDL_ReadIO(stream, *data, chunk_length) != chunk_length) {
-            SDL_free(*data);
-            *data = NULL;
-            SDL_SetError("Couldn't read chunk data");
+    if (*data_length > 0) {
+        if (SDL_ReadIO(stream, *data, *data_length) != *data_length) {
+            SDL_free(*chunk);
             return false;
         }
     }
 
     // Read CRC (4 bytes, big-endian)
-    if (SDL_ReadIO(stream, &crc, 4) != 4) {
-        SDL_free(*data);
-        *data = NULL;
-        SDL_SetError("Couldn't read chunk CRC");
+    if (SDL_ReadIO(stream, *data + *data_length, 4) != 4) {
+        SDL_free(*chunk);
         return false;
     }
-
-    // Store the chunk type and length
-    SDL_memcpy(type, chunk_type, 4);
-    *length = chunk_length;
 
     return true;
 }
@@ -1120,10 +1013,11 @@ struct IMG_AnimationDecoderContext
     int bit_depth;
     int png_color_type;
 
-    SDL_Color *palette_colors;
-    int palette_count;
-    png_bytep trans_alpha;
-    int trans_count;
+    SDL_Palette *palette;
+    png_bytep chunk_PLTE;
+    Uint32 size_PLTE;
+    png_bytep chunk_tRNS;
+    Uint32 size_tRNS;
 };
 
 static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
@@ -1227,28 +1121,17 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
         fctl->height,
         ctx->png_color_type,
         ctx->bit_depth,
-        ctx->palette_colors,
-        ctx->palette_count);
+        ctx->chunk_PLTE,
+        ctx->size_PLTE,
+        ctx->chunk_tRNS,
+        ctx->size_tRNS);
 
     if (!temp_frame) {
         return SDL_SetError("Failed to decompress PNG frame data: %s", SDL_GetError());
     }
 
     if (temp_frame->format == SDL_PIXELFORMAT_INDEX8) {
-        if (ctx->palette_colors && ctx->palette_count > 0) {
-            SDL_Palette *frame_palette = SDL_CreatePalette(ctx->palette_count);
-            if (frame_palette) {
-                if (!SDL_SetPaletteColors(frame_palette, ctx->palette_colors, 0, ctx->palette_count)) {
-                    SDL_DestroySurface(temp_frame);
-                    return SDL_SetError("Failed to set palette colors for frame: %s", SDL_GetError());
-                }
-                if (!SDL_SetSurfacePalette(temp_frame, frame_palette)) {
-                    SDL_DestroySurface(temp_frame);
-                    return SDL_SetError("Failed to set palette for frame: %s", SDL_GetError());
-                }
-                SDL_DestroyPalette(frame_palette);
-            }
-        }
+        SDL_SetSurfacePalette(temp_frame, ctx->palette);
     }
 
     switch (fctl->blend_op) {
@@ -1303,21 +1186,11 @@ static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder *decoder)
         SDL_free(ctx->fctl_frames);
     }
 
-    if (ctx->palette_colors) {
-        SDL_free(ctx->palette_colors);
-    }
-
-    if (ctx->trans_alpha) {
-        SDL_free(ctx->trans_alpha);
-    }
-
-    if (ctx->canvas) {
-        SDL_DestroySurface(ctx->canvas);
-    }
-
-    if (ctx->prev_canvas_copy) {
-        SDL_DestroySurface(ctx->prev_canvas_copy);
-    }
+    SDL_DestroyPalette(ctx->palette);
+    SDL_free(ctx->chunk_PLTE);
+    SDL_free(ctx->chunk_tRNS);
+    SDL_DestroySurface(ctx->canvas);
+    SDL_DestroySurface(ctx->prev_canvas_copy);
 
     SDL_free(ctx);
     decoder->ctx = NULL;
@@ -1340,15 +1213,13 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
     unsigned char header[8];
     if (SDL_ReadIO(decoder->src, header, sizeof(header)) != sizeof(header)) {
         SDL_SetError("Failed to read PNG header");
-        SDL_free(ctx);
-        decoder->ctx = NULL;
+        IMG_AnimationDecoderClose_Internal(decoder);
         return false;
     }
 
     if (lib.png_sig_cmp(header, 0, 8)) {
         SDL_SetError("Not a valid PNG file signature");
-        SDL_free(ctx);
-        decoder->ctx = NULL;
+        IMG_AnimationDecoderClose_Internal(decoder);
         return false;
     }
 
@@ -1362,29 +1233,29 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
     bool found_iend = false;
     while (!found_iend) {
         char chunk_type[5] = { 0 };
+        png_bytep chunk = NULL;
+        Uint32 chunk_size;
         png_bytep chunk_data = NULL;
-        png_size_t chunk_length = 0;
+        Uint32 chunk_length = 0;
+        bool chunk_saved = false;
 
-        if (!read_png_chunk(decoder->src, chunk_type, &chunk_data, &chunk_length)) {
-            SDL_free(ctx);
-            decoder->ctx = NULL;
+        if (!read_png_chunk(decoder->src, &chunk, &chunk_size, chunk_type, &chunk_data, &chunk_length)) {
+            IMG_AnimationDecoderClose_Internal(decoder);
             return false;
         }
 
         if (chunk_length > SDL_MAX_SINT32) {
             SDL_SetError("APNG chunk too large to process");
-            SDL_free(chunk_data);
-            SDL_free(ctx);
-            decoder->ctx = NULL;
+            SDL_free(chunk);
+            IMG_AnimationDecoderClose_Internal(decoder);
             return false;
         }
 
         if (SDL_memcmp(chunk_type, "IHDR", 4) == 0) {
             if (chunk_length != 13) {
                 SDL_SetError("Invalid IHDR chunk size");
-                SDL_free(chunk_data);
-                SDL_free(ctx);
-                decoder->ctx = NULL;
+                SDL_free(chunk);
+                IMG_AnimationDecoderClose_Internal(decoder);
                 return false;
             }
 
@@ -1397,9 +1268,8 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
         } else if (SDL_memcmp(chunk_type, "acTL", 4) == 0) {
             if (chunk_length != 8) {
                 SDL_SetError("Invalid acTL chunk size");
-                SDL_free(chunk_data);
-                SDL_free(ctx);
-                decoder->ctx = NULL;
+                SDL_free(chunk);
+                IMG_AnimationDecoderClose_Internal(decoder);
                 return false;
             }
 
@@ -1410,57 +1280,46 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
         } else if (SDL_memcmp(chunk_type, "PLTE", 4) == 0) {
             int num_entries = (int)chunk_length / 3;
             if (num_entries > 0 && num_entries <= 256) {
-                if (ctx->palette_colors) {
-                    SDL_free(ctx->palette_colors);
-                }
+                SDL_DestroyPalette(ctx->palette);
 
-                ctx->palette_colors = (SDL_Color *)SDL_malloc(num_entries * sizeof(SDL_Color));
-                if (!ctx->palette_colors) {
-                    SDL_SetError("Out of memory for palette data");
-                    SDL_free(chunk_data);
-                    SDL_free(ctx);
-                    decoder->ctx = NULL;
+                ctx->palette = SDL_CreatePalette(num_entries);
+                if (!ctx->palette) {
+                    SDL_free(chunk);
+                    IMG_AnimationDecoderClose_Internal(decoder);
                     return false;
                 }
 
                 for (int i = 0; i < num_entries; i++) {
-                    ctx->palette_colors[i].r = chunk_data[i * 3];
-                    ctx->palette_colors[i].g = chunk_data[i * 3 + 1];
-                    ctx->palette_colors[i].b = chunk_data[i * 3 + 2];
-                    ctx->palette_colors[i].a = 0xFF; // Default opaque
+                    ctx->palette->colors[i].r = chunk_data[i * 3];
+                    ctx->palette->colors[i].g = chunk_data[i * 3 + 1];
+                    ctx->palette->colors[i].b = chunk_data[i * 3 + 2];
+                    ctx->palette->colors[i].a = SDL_ALPHA_OPAQUE;
                 }
-
-                ctx->palette_count = num_entries;
             }
+
+            SDL_free(ctx->chunk_PLTE);
+            ctx->chunk_PLTE = chunk;
+            ctx->size_PLTE = chunk_size;
+            chunk_saved = true;
+
         } else if (SDL_memcmp(chunk_type, "tRNS", 4) == 0) {
-            if (ctx->trans_alpha) {
-                SDL_free(ctx->trans_alpha);
-            }
-
-            ctx->trans_alpha = (png_bytep)SDL_malloc(chunk_length);
-            if (!ctx->trans_alpha) {
-                SDL_SetError("Out of memory for transparency data");
-                SDL_free(chunk_data);
-                SDL_free(ctx);
-                decoder->ctx = NULL;
-                return false;
-            }
-
-            SDL_memcpy(ctx->trans_alpha, chunk_data, chunk_length);
-            ctx->trans_count = (int)chunk_length;
-
-            if (ctx->palette_colors && ctx->palette_count > 0) {
-                int num_trans = SDL_min(ctx->trans_count, ctx->palette_count);
+            if (ctx->palette) {
+                int num_trans = SDL_min((int)chunk_size, ctx->palette->ncolors);
                 for (int i = 0; i < num_trans; i++) {
-                    ctx->palette_colors[i].a = ctx->trans_alpha[i];
+                    ctx->palette->colors[i].a = chunk_data[i];
                 }
             }
+
+            SDL_free(ctx->chunk_tRNS);
+            ctx->chunk_tRNS = chunk;
+            ctx->size_tRNS = chunk_size;
+            chunk_saved = true;
+
         } else if (SDL_memcmp(chunk_type, "fcTL", 4) == 0) {
             if (chunk_length != 26) {
                 SDL_SetError("Invalid fcTL chunk size");
-                SDL_free(chunk_data);
-                SDL_free(ctx);
-                decoder->ctx = NULL;
+                SDL_free(chunk);
+                IMG_AnimationDecoderClose_Internal(decoder);
                 return false;
             }
 
@@ -1470,9 +1329,8 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
                                                                   sizeof(apng_fcTL_chunk) * ctx->fctl_capacity);
                 if (!ctx->fctl_frames) {
                     SDL_SetError("Out of memory for fcTL chunks");
-                    SDL_free(chunk_data);
-                    SDL_free(ctx);
-                    decoder->ctx = NULL;
+                    SDL_free(chunk);
+                    IMG_AnimationDecoderClose_Internal(decoder);
                     return false;
                 }
             }
@@ -1508,18 +1366,15 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
                 png_size_t new_size = fctl->raw_idat_size + chunk_length;
                 if (new_size < fctl->raw_idat_size) {
                     SDL_SetError("IDAT size would overflow");
-                    SDL_free(chunk_data);
-                    SDL_free(ctx);
-                    decoder->ctx = NULL;
+                    SDL_free(chunk);
+                    IMG_AnimationDecoderClose_Internal(decoder);
                     return false;
                 }
 
                 png_bytep new_buffer = (png_bytep)SDL_realloc(fctl->raw_idat_data, new_size);
                 if (!new_buffer) {
-                    SDL_SetError("Out of memory for IDAT data");
-                    SDL_free(chunk_data);
-                    SDL_free(ctx);
-                    decoder->ctx = NULL;
+                    SDL_free(chunk);
+                    IMG_AnimationDecoderClose_Internal(decoder);
                     return false;
                 }
 
@@ -1530,9 +1385,8 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
         } else if (SDL_memcmp(chunk_type, "fdAT", 4) == 0) {
             if (chunk_length < 4) {
                 SDL_SetError("Invalid fdAT chunk size");
-                SDL_free(chunk_data);
-                SDL_free(ctx);
-                decoder->ctx = NULL;
+                SDL_free(chunk);
+                IMG_AnimationDecoderClose_Internal(decoder);
                 return false;
             }
 
@@ -1553,18 +1407,15 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
 
                 if (new_size < fctl->raw_idat_size) {
                     SDL_SetError("fdAT size would overflow");
-                    SDL_free(chunk_data);
-                    SDL_free(ctx);
-                    decoder->ctx = NULL;
+                    SDL_free(chunk);
+                    IMG_AnimationDecoderClose_Internal(decoder);
                     return false;
                 }
 
                 png_bytep new_buffer = (png_bytep)SDL_realloc(fctl->raw_idat_data, new_size);
                 if (!new_buffer) {
-                    SDL_SetError("Out of memory for fdAT data");
-                    SDL_free(chunk_data);
-                    SDL_free(ctx);
-                    decoder->ctx = NULL;
+                    SDL_free(chunk);
+                    IMG_AnimationDecoderClose_Internal(decoder);
                     return false;
                 }
 
@@ -1606,49 +1457,21 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
             }
         }
 
-        SDL_free(chunk_data);
+        if (!chunk_saved) {
+            SDL_free(chunk);
+        }
     }
 
     if (!ctx->is_apng || ctx->fctl_count == 0) {
         SDL_SetError("Not an APNG file or no frame control chunks found");
-        if (ctx->fctl_frames) {
-            for (int i = 0; i < ctx->fctl_count; i++) {
-                if (ctx->fctl_frames[i].raw_idat_data) {
-                    SDL_free(ctx->fctl_frames[i].raw_idat_data);
-                }
-            }
-            SDL_free(ctx->fctl_frames);
-        }
-        if (ctx->palette_colors) {
-            SDL_free(ctx->palette_colors);
-        }
-        if (ctx->trans_alpha) {
-            SDL_free(ctx->trans_alpha);
-        }
-        SDL_free(ctx);
-        decoder->ctx = NULL;
+        IMG_AnimationDecoderClose_Internal(decoder);
         return false;
     }
 
     // Validate what might be missing or wrong
     if (ctx->bit_depth < 1 || ctx->png_color_type < 0 || ctx->width < 1 || ctx->height < 1) {
         SDL_SetError("Received invalid APNG with either corrupt or unspecified bit depth, color type, width or height");
-        if (ctx->fctl_frames) {
-            for (int i = 0; i < ctx->fctl_count; i++) {
-                if (ctx->fctl_frames[i].raw_idat_data) {
-                    SDL_free(ctx->fctl_frames[i].raw_idat_data);
-                }
-            }
-            SDL_free(ctx->fctl_frames);
-        }
-        if (ctx->palette_colors) {
-            SDL_free(ctx->palette_colors);
-        }
-        if (ctx->trans_alpha) {
-            SDL_free(ctx->trans_alpha);
-        }
-        SDL_free(ctx);
-        decoder->ctx = NULL;
+        IMG_AnimationDecoderClose_Internal(decoder);
         return false;
     }
 
