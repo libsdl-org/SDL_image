@@ -485,10 +485,6 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     WebPIterator *iter = &decoder->ctx->iter;
     SDL_Surface *retval = NULL;
 
-    if (totalFrames == availableFrames || dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
-        SDL_FillSurfaceRect(canvas, NULL, iter->has_alpha ? 0 : bgcolor);
-    }
-
     SDL_Surface *curr = SDL_CreateSurface(iter->width, iter->height, SDL_PIXELFORMAT_RGBA32);
     if (!curr) {
         return SDL_SetError("Failed to create surface for the frame");
@@ -511,6 +507,9 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
             SDL_DestroySurface(curr);
             return SDL_SetError("Failed to set blend mode for WEBP frame");
         }
+    }
+    if (totalFrames == availableFrames || dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
+        SDL_FillSurfaceRect(canvas, &dst, iter->has_alpha ? 0 : bgcolor);
     }
     if (!SDL_BlitSurface(curr, NULL, canvas, &dst)) {
         SDL_DestroySurface(curr);
