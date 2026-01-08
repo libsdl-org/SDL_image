@@ -32,6 +32,7 @@
 #include "IMG_libpng.h"
 #include "IMG_anim_encoder.h"
 #include "IMG_anim_decoder.h"
+#include "IMG_utils.h"
 
 #ifdef SDL_IMAGE_LIBPNG
 #ifdef INCLUDE_PNG_FRAMEWORK
@@ -173,6 +174,7 @@ static struct
     png_byte (*png_get_color_type)(png_const_structrp png_ptr, png_const_inforp info_ptr);
     png_uint_32 (*png_get_image_width)(png_const_structrp png_ptr, png_const_inforp info_ptr);
     png_uint_32 (*png_get_image_height)(png_const_structrp png_ptr, png_const_inforp info_ptr);
+    int (*png_get_text)(png_const_structp png_ptr, png_infop info_ptr, png_textp *text_ptr, int *num_text);
 
     void (*png_write_flush)(png_structrp png_ptr);
 } lib;
@@ -277,6 +279,7 @@ bool IMG_InitPNG(void)
         FUNCTION_LOADER_LIBPNG(png_get_color_type, png_byte(*)(png_const_structrp png_ptr, png_const_inforp info_ptr))
         FUNCTION_LOADER_LIBPNG(png_get_image_width, png_uint_32(*)(png_const_structrp png_ptr, png_const_inforp info_ptr))
         FUNCTION_LOADER_LIBPNG(png_get_image_height, png_uint_32(*)(png_const_structrp png_ptr, png_const_inforp info_ptr))
+        FUNCTION_LOADER_LIBPNG(png_get_text, int (*)(png_const_structrp png_ptr, png_inforp info_ptr, png_textp *text_ptr, int *num_text))
 
         FUNCTION_LOADER_LIBPNG(png_write_flush, void (*)(png_structrp png_ptr))
     }
@@ -490,6 +493,26 @@ static bool LIBPNG_LoadPNG_IO_Internal(SDL_IOStream *src, struct png_load_vars *
         }
     }
 #endif
+
+    png_textp text_ptr = NULL;
+    int num_text = 0;
+    if (lib.png_get_text(vars->png_ptr, vars->info_ptr, &text_ptr, &num_text) > 0) {
+        for (int i = 0; i < num_text; ++i, ++text_ptr) {
+            if (SDL_strcmp(text_ptr->key, "XML:com.adobe.xmp") == 0) {
+                // Look for tiff:Orientation in the XMP data
+                int orientation;
+                const char *value = SDL_strstr(text_ptr->text, "tiff:Orientation=\"");
+                if (value) {
+                    value += 18;
+                    orientation = (*value - '0');
+                    vars->surface = IMG_ApplyOrientation(vars->surface, orientation);
+                    if (!vars->surface) {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
 
     return true;
 }

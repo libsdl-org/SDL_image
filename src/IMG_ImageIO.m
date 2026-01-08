@@ -11,6 +11,8 @@
 
 #include <SDL3_image/SDL_image.h>
 
+#include "IMG_utils.h"
+
 // Used because CGDataProviderCreate became deprecated in 10.5
 #include <AvailabilityMacros.h>
 #include <TargetConditionals.h>
@@ -355,25 +357,9 @@ static SDL_Surface *Create_SDL_Surface_From_CGImage(CGImageRef image_ref, CFDict
     if (surface && properties) {
         CFNumberRef numval;
         if (CFDictionaryGetValueIfPresent(properties, kCGImagePropertyOrientation, (const void **)&numval)) {
-            float rotation = 0.0f;
             CGImagePropertyOrientation orientation;
             CFNumberGetValue(numval, kCFNumberSInt32Type, &orientation);
-            switch (orientation) {
-            case kCGImagePropertyOrientationRight:
-                rotation = 90.0f;
-                break;
-            case kCGImagePropertyOrientationDown:
-                rotation = 180.0f;
-                break;
-            case kCGImagePropertyOrientationLeft:
-                rotation = 270.0f;
-                break;
-            default:
-                break;
-            }
-            if (rotation != 0.0f) {
-                SDL_SetFloatProperty(SDL_GetSurfaceProperties(surface), SDL_PROP_SURFACE_ROTATION_FLOAT, rotation);
-            }
+            surface = IMG_ApplyOrientation(surface, orientation);
         }
     }
     return surface;
