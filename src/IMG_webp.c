@@ -280,7 +280,6 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
     WebPData wd;
     uint32_t bgcolor;
     SDL_Surface *canvas = NULL;
-    WebPMuxAnimDispose dispose_method = WEBP_MUX_DISPOSE_BACKGROUND;
 
     if (!src) {
         /* The error message has been set in SDL_RWFromFile */
