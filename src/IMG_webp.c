@@ -487,7 +487,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
 
     SDL_Surface *curr = SDL_CreateSurface(iter->width, iter->height, SDL_PIXELFORMAT_RGBA32);
     if (!curr) {
-        return SDL_SetError("Failed to create surface for the frame");
+        return false;
     }
 
     if (!lib.WebPDecodeRGBAInto(iter->fragment.bytes, iter->fragment.size,
@@ -500,12 +500,12 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     if (iter->blend_method == WEBP_MUX_BLEND) {
         if (!SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_BLEND)) {
             SDL_DestroySurface(curr);
-            return SDL_SetError("Failed to set blend mode for WEBP frame");
+            return false;
         }
     } else {
         if (!SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_NONE)) {
             SDL_DestroySurface(curr);
-            return SDL_SetError("Failed to set blend mode for WEBP frame");
+            return false;
         }
     }
     if (totalFrames == availableFrames || dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
@@ -513,19 +513,18 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     }
     if (!SDL_BlitSurface(curr, NULL, canvas, &dst)) {
         SDL_DestroySurface(curr);
-        return SDL_SetError("Failed to blit WEBP frame to canvas");
+        return false;
     }
     SDL_DestroySurface(curr);
 
     retval = SDL_DuplicateSurface(canvas);
     if (!retval) {
-        return SDL_SetError("Failed to duplicate the surface for the next frame");
+        return false;
     }
 
     *duration = IMG_GetDecoderDuration(decoder, iter->duration, 1000);
 
-    dispose_method = iter->dispose_method;
-    decoder->ctx->dispose_method = dispose_method;
+    decoder->ctx->dispose_method = iter->dispose_method;
 
     *frame = retval;
     return true;
@@ -555,51 +554,40 @@ static bool IMG_AnimationDecoderClose_Internal(IMG_AnimationDecoder *decoder)
 bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_PropertiesID props)
 {
     if (!IMG_InitWEBP()) {
-        SDL_SetError("Failed to initialize WEBP library");
-        return false;
+        return SDL_SetError("Failed to initialize WEBP library");
     }
 
     if (!webp_getinfo(decoder->src, NULL)) {
-        SDL_SetError("Not a valid WebP file: %s", SDL_GetError());
-        return false;
+        return SDL_SetError("Not a valid WebP file: %s", SDL_GetError());
     }
 
     Sint64 stream_size = SDL_GetIOSize(decoder->src);
     if (stream_size <= 0) {
-        SDL_SetError("Stream has no data (size: %" SDL_PRIs64 ")", stream_size);
-        return false;
+        return SDL_SetError("Stream has no data (size: %" SDL_PRIs64 ")", stream_size);
     }
 
     decoder->ctx = (IMG_AnimationDecoderContext *)SDL_calloc(1, sizeof(IMG_AnimationDecoderContext));
     if (!decoder->ctx) {
-        SDL_SetError("Out of memory");
         return false;
     }
 
     decoder->ctx->raw_data_size = (size_t)stream_size;
     decoder->ctx->raw_data = (uint8_t *)SDL_malloc(decoder->ctx->raw_data_size);
     if (!decoder->ctx->raw_data) {
-        SDL_free(decoder->ctx);
-        decoder->ctx = NULL;
-        SDL_SetError("Out of memory for WebP file buffer");
+        IMG_AnimationDecoderClose_Internal(decoder);
         return false;
     }
     if (SDL_SeekIO(decoder->src, decoder->start, SDL_IO_SEEK_SET) < 0 ||
         SDL_ReadIO(decoder->src, decoder->ctx->raw_data, decoder->ctx->raw_data_size) != decoder->ctx->raw_data_size) {
-        SDL_free(decoder->ctx->raw_data);
-        SDL_free(decoder->ctx);
-        decoder->ctx = NULL;
-        SDL_SetError("Failed to read WebP file into memory");
+        IMG_AnimationDecoderClose_Internal(decoder);
         return false;
     }
 
     WebPData wd = { decoder->ctx->raw_data, decoder->ctx->raw_data_size };
     decoder->ctx->demuxer = lib.WebPDemuxInternal(&wd, 0, NULL, WEBP_DEMUX_ABI_VERSION);
     if (!decoder->ctx->demuxer) {
-        SDL_free(decoder->ctx->raw_data);
-        SDL_free(decoder->ctx);
-        decoder->ctx = NULL;
         SDL_SetError("WebPDemux failed to initialize demuxer (not a valid WebP file or corrupted data)");
+        IMG_AnimationDecoderClose_Internal(decoder);
         return false;
     }
 
@@ -654,9 +642,7 @@ bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
     decoder->ctx->canvas = SDL_CreateSurface(width, height, has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
     if (!decoder->ctx->canvas) {
         lib.WebPDemuxDelete(decoder->ctx->demuxer);
-        SDL_free(decoder->ctx->raw_data);
-        SDL_free(decoder->ctx);
-        decoder->ctx = NULL;
+        IMG_AnimationDecoderClose_Internal(decoder);
         return false;
     }
 
