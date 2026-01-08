@@ -176,6 +176,7 @@ SDL_Surface* IMG_LoadTIF_IO(SDL_IOStream * src)
     TIFF* tiff = NULL;
     SDL_Surface* surface = NULL;
     Uint32 img_width, img_height;
+    Uint16 img_orientation = 1;
 
     if ( !src ) {
         /* The error message has been set in SDL_IOFromFile */
@@ -196,16 +197,53 @@ SDL_Surface* IMG_LoadTIF_IO(SDL_IOStream * src)
     /* Retrieve the dimensions of the image from the TIFF tags */
     lib.TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &img_width);
     lib.TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &img_height);
+    lib.TIFFGetField(tiff, TIFFTAG_ORIENTATION, &img_orientation);
 
     surface = SDL_CreateSurface(img_width, img_height, SDL_PIXELFORMAT_ABGR8888);
     if(!surface)
         goto error;
 
-    if(!lib.TIFFReadRGBAImageOriented(tiff, img_width, img_height, (Uint32 *)surface->pixels, ORIENTATION_TOPLEFT, 0))
+    int load_orientation;
+    switch (img_orientation) {
+    case 5:
+    case 6:
+    case 7:
+    case 8:
+        load_orientation = ORIENTATION_TOPRIGHT;
+        break;
+    default:
+        load_orientation = ORIENTATION_TOPLEFT;
+        break;
+    }
+    if(!lib.TIFFReadRGBAImageOriented(tiff, img_width, img_height, (Uint32 *)surface->pixels, load_orientation, 0)) {
         goto error;
+    }
 
     lib.TIFFClose(tiff);
 
+    SDL_Surface *rotated;
+    switch (img_orientation) {
+    case 5:
+    case 7:
+        rotated = SDL_RotateSurface(surface, 270.0f);
+        if (!rotated) {
+            goto error;
+        }
+        SDL_DestroySurface(surface);
+        surface = rotated;
+        break;
+    case 6:
+    case 8:
+        rotated = SDL_RotateSurface(surface, 90.0f);
+        if (!rotated) {
+            goto error;
+        }
+        SDL_DestroySurface(surface);
+        surface = rotated;
+        break;
+    default:
+        break;
+    }
     return surface;
 
 error:

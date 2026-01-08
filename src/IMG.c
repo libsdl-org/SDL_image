@@ -546,3 +546,69 @@ Uint64 IMG_TimebaseDuration(Uint64 pts, Uint64 duration, Uint64 src_numerator, U
     Uint64 b = ( ( ( pts * 2 ) + 1 ) * src_numerator * dst_denominator ) / ( 2 * src_denominator * dst_numerator );
     return (a - b);
 }
+
+SDL_Surface *IMG_ApplyOrientation(SDL_Surface *surface, int orientation)
+{
+    SDL_Surface *tmp;
+    switch (orientation)
+    {
+    case 1:
+        // Normal (no rotation required)
+        break;
+    case 2:
+        // Flipped horizontally
+        if (!SDL_FlipSurface(surface, SDL_FLIP_HORIZONTAL)) {
+            SDL_DestroySurface(surface);
+            return NULL;
+        }
+        break;
+    case 3:
+        // Upside-down (180 degrees rotation)
+        tmp = SDL_RotateSurface(surface, 180.0f);
+        SDL_DestroySurface(surface);
+        surface = tmp;
+        break;
+    case 4:
+        // Flipped vertically
+        if (!SDL_FlipSurface(surface, SDL_FLIP_VERTICAL)) {
+            SDL_DestroySurface(surface);
+            return NULL;
+        }
+        break;
+    case 5:
+        // Flip horizontally and rotate 90 degrees counterclockwise
+        if (!SDL_FlipSurface(surface, SDL_FLIP_HORIZONTAL)) {
+            SDL_DestroySurface(surface);
+            return NULL;
+        }
+        tmp = SDL_RotateSurface(surface, -90.0f);
+        SDL_DestroySurface(surface);
+        surface = tmp;
+        break;
+    case 6:
+        // Rotate 90 degrees clockwise
+        tmp = SDL_RotateSurface(surface, 90.0f);
+        SDL_DestroySurface(surface);
+        surface = tmp;
+        break;
+    case 7:
+        // Flip horizontally and rotate 90 degrees clockwise
+        if (!SDL_FlipSurface(surface, SDL_FLIP_HORIZONTAL)) {
+            SDL_DestroySurface(surface);
+            return NULL;
+        }
+        tmp = SDL_RotateSurface(surface, 90.0f);
+        SDL_DestroySurface(surface);
+        surface = tmp;
+        break;
+    case 8:
+        // Rotate 90 degrees counterclockwise
+        tmp = SDL_RotateSurface(surface, -90.0f);
+        SDL_DestroySurface(surface);
+        surface = tmp;
+        break;
+    default:
+        break;
+    }
+    return surface;
+}
