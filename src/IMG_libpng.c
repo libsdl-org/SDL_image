@@ -835,6 +835,57 @@ static SDL_Surface *decompress_png_frame_data(DecompressionContext *context, png
             SDL_SetError("Failed to write PLTE CRC");
             goto error;
         }
+
+        // Write tRNS chunk
+        if (palette_colors[0].a != 255) {
+            // Calculate tRNS chunk size
+            png_uint_32 trns_size = 0;
+
+            for (int i = 0; i < palette_count; ++i) {
+                if (palette_colors[i].a == 255) {
+                    break;
+                }
+                ++trns_size;
+            }
+
+            // tRNS header
+            png_byte trns_header[8] = { 0, 0, 0, 0, 't', 'R', 'N', 'S' };
+            custom_png_save_uint_32(trns_header, trns_size);
+
+            if (SDL_WriteIO(context->mem_stream, trns_header, 8) != 8) {
+                SDL_SetError("Failed to write tRNS header");
+                goto error;
+            }
+
+            // Write transparency data
+            png_byte *trns_data = (png_byte *)SDL_malloc(trns_size);
+            if (!trns_data) {
+                SDL_SetError("Out of memory for tRNS data");
+                goto error;
+            }
+
+            for (png_uint_32 i = 0; i < trns_size; i++) {
+                trns_data[i] = palette_colors[i].a;
+            }
+
+            if (SDL_WriteIO(context->mem_stream, trns_data, trns_size) != trns_size) {
+                SDL_free(trns_data);
+                SDL_SetError("Failed to write tRNS data");
+                goto error;
+            }
+
+            // Calculate and write tRNS CRC
+            png_uint_32 crc = SDL_crc32(0, (Uint8 *)"tRNS", 4);
+            crc = SDL_crc32(crc, trns_data, trns_size);
+            png_byte crc_bytes[4];
+            custom_png_save_uint_32(crc_bytes, crc);
+            SDL_free(trns_data);
+
+            if (SDL_WriteIO(context->mem_stream, crc_bytes, 4) != 4) {
+                SDL_SetError("Failed to write tRNS CRC");
+                goto error;
+            }
+        }
     }
 
     // Write IDAT chunk
