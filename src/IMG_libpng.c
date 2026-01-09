@@ -179,6 +179,12 @@ static struct
     void (*png_write_flush)(png_structrp png_ptr);
 } lib;
 
+#define libpng_get_uint_32(buf)           \
+   (((png_uint_32)( *(buf)     ) << 24) + \
+    ((png_uint_32)(*((buf) + 1)) << 16) + \
+    ((png_uint_32)(*((buf) + 2)) <<  8) + \
+    ((png_uint_32)(*((buf) + 3))))
+
 #ifdef LOAD_LIBPNG_DYNAMIC
     #define FUNCTION_LOADER_LIBPNG(FUNC, SIG)                       \
         lib.FUNC = (SIG)SDL_LoadFunction(lib.handle_libpng, #FUNC); \
@@ -1730,7 +1736,7 @@ static png_bytep compress_surface_to_png_data(CompressionContext *context, SDL_S
             break;
         }
         SDL_memcpy(context->chunk_header, context->mem_buffer_ptr + context->current_pos, 8);
-        context->chunk_len = png_get_uint_32(context->chunk_header);
+        context->chunk_len = libpng_get_uint_32(context->chunk_header);
         SDL_memcpy(context->chunk_type, context->chunk_header + 4, 4);
 
         context->current_pos += 8;
