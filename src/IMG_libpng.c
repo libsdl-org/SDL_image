@@ -174,7 +174,11 @@ static struct
     png_byte (*png_get_color_type)(png_const_structrp png_ptr, png_const_inforp info_ptr);
     png_uint_32 (*png_get_image_width)(png_const_structrp png_ptr, png_const_inforp info_ptr);
     png_uint_32 (*png_get_image_height)(png_const_structrp png_ptr, png_const_inforp info_ptr);
-    png_uint_32 (*png_get_text)(png_const_structp png_ptr, png_infop info_ptr, png_textp *text_ptr, int *num_text);
+#if (PNG_LIBPNG_VER_MAJOR == 1) && (PNG_LIBPNG_VER_MINOR < 6)
+    png_uint_32 (*png_get_text)(png_const_structp png_ptr, png_const_infop info_ptr, png_textp *text_ptr, int *num_text);
+#else
+    int (*png_get_text)(png_const_structrp png_ptr, png_inforp info_ptr, png_textp *text_ptr, int *num_text);
+#endif
 
     void (*png_write_flush)(png_structrp png_ptr);
 } lib;
@@ -285,7 +289,11 @@ bool IMG_InitPNG(void)
         FUNCTION_LOADER_LIBPNG(png_get_color_type, png_byte(*)(png_const_structrp png_ptr, png_const_inforp info_ptr))
         FUNCTION_LOADER_LIBPNG(png_get_image_width, png_uint_32(*)(png_const_structrp png_ptr, png_const_inforp info_ptr))
         FUNCTION_LOADER_LIBPNG(png_get_image_height, png_uint_32(*)(png_const_structrp png_ptr, png_const_inforp info_ptr))
-        FUNCTION_LOADER_LIBPNG(png_get_text, png_uint_32 (*)(png_const_structrp png_ptr, png_inforp info_ptr, png_textp *text_ptr, int *num_text))
+#if (PNG_LIBPNG_VER_MAJOR == 1) && (PNG_LIBPNG_VER_MINOR < 6)
+        FUNCTION_LOADER_LIBPNG(png_get_text, png_uint_32 (*)(png_const_structp png_ptr, png_const_infop info_ptr, png_textp *text_ptr, int *num_text))
+#else
+        FUNCTION_LOADER_LIBPNG(png_get_text, int (*)(png_const_structrp png_ptr, png_inforp info_ptr, png_textp *text_ptr, int *num_text))
+#endif
 
         FUNCTION_LOADER_LIBPNG(png_write_flush, void (*)(png_structrp png_ptr))
     }
