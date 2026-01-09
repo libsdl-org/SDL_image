@@ -23,6 +23,9 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_image/SDL_image.h>
 
+#ifndef SDL_PROP_SURFACE_FLIP_NUMBER
+#define SDL_PROP_SURFACE_FLIP_NUMBER    "SDL.surface.flip"
+#endif
 
 /* Draw a Gimpish background pattern to show transparency in the image */
 static void draw_background(SDL_Renderer *renderer)
@@ -79,7 +82,7 @@ static void set_cursor(const char *cursor_file)
     }
 }
 
-static SDL_Texture *load_image(SDL_Renderer *renderer, const char *file, const char *tonemap, float *rotation)
+static SDL_Texture *load_image(SDL_Renderer *renderer, const char *file, const char *tonemap, SDL_FlipMode *flip, float *rotation)
 {
     SDL_Texture *texture = NULL;
     SDL_Surface *surface = IMG_Load(get_file_path(file));
@@ -102,6 +105,7 @@ static SDL_Texture *load_image(SDL_Renderer *renderer, const char *file, const c
         surface = temp;
     }
 
+    *flip = SDL_GetNumberProperty(SDL_GetSurfaceProperties(surface), SDL_PROP_SURFACE_FLIP_NUMBER, SDL_FLIP_NONE);
     *rotation = SDL_GetFloatProperty(SDL_GetSurfaceProperties(surface), SDL_PROP_SURFACE_ROTATION_FLOAT, 0.0f);
 
     texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -114,6 +118,7 @@ int main(int argc, char *argv[])
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
     SDL_Texture *texture = NULL;
+    SDL_FlipMode flip = SDL_FLIP_NONE;
     float rotation = 0.0f;
     Uint32 flags;
     int i;
@@ -204,7 +209,7 @@ int main(int argc, char *argv[])
 
         /* Open the image file */
         ++attempted;
-        texture = load_image(renderer, argv[i], tonemap, &rotation);
+        texture = load_image(renderer, argv[i], tonemap, &flip, &rotation);
         if (!texture) {
             continue;
         }
@@ -225,7 +230,11 @@ int main(int argc, char *argv[])
 
         /* Show the window */
         SDL_SetWindowTitle(window, argv[i]);
-        SDL_SetWindowSize(window, texture->w, texture->h);
+        if (rotation == 90.0f || rotation == 270.0f) {
+            SDL_SetWindowSize(window, texture->h, texture->w);
+        } else {
+            SDL_SetWindowSize(window, texture->w, texture->h);
+        }
         SDL_ShowWindow(window);
 
         done = quit;
@@ -272,7 +281,20 @@ int main(int argc, char *argv[])
             draw_background(renderer);
 
             /* Display the image */
-            SDL_RenderTextureRotated(renderer, texture, NULL, NULL, rotation, NULL, SDL_FLIP_NONE);
+            SDL_FRect dst;
+            if (rotation == 90.0f || rotation == 270.0f) {
+                // Use a pre-rotated destination rectangle
+                dst.x = -(texture->w - texture->h) / 2.0f;
+                dst.y = (texture->w - texture->h) / 2.0f;
+                dst.w = (float)texture->w;
+                dst.h = (float)texture->h;
+            } else {
+                dst.x = 0.0f;
+                dst.y = 0.0f;
+                dst.w = (float)texture->w;
+                dst.h = (float)texture->h;
+            }
+            SDL_RenderTextureRotated(renderer, texture, NULL, &dst, rotation, NULL, flip);
             SDL_RenderPresent(renderer);
 
             SDL_Delay(100);
@@ -297,12 +319,16 @@ int main(int argc, char *argv[])
                             SDL_DestroyTexture(texture);
 
                             SDL_Log("Loading %s\n", file);
-                            texture = load_image(renderer, file, tonemap, &rotation);
+                            texture = load_image(renderer, file, tonemap, &flip, &rotation);
                             if (!texture) {
                                 break;
                             }
                             SDL_SetWindowTitle(window, file);
-                            SDL_SetWindowSize(window, texture->w, texture->h);
+                            if (rotation == 90.0f || rotation == 270.0f) {
+                                SDL_SetWindowSize(window, texture->h, texture->w);
+                            } else {
+                                SDL_SetWindowSize(window, texture->w, texture->h);
+                            }
                         }
                         break;
                     case SDL_EVENT_KEY_UP:
@@ -328,7 +354,20 @@ int main(int argc, char *argv[])
             draw_background(renderer);
 
             /* Display the image */
-            SDL_RenderTextureRotated(renderer, texture, NULL, NULL, rotation, NULL, SDL_FLIP_NONE);
+            SDL_FRect dst;
+            if (rotation == 90.0f || rotation == 270.0f) {
+                // Use a pre-rotated destination rectangle
+                dst.x = -(texture->w - texture->h) / 2.0f;
+                dst.y = (texture->w - texture->h) / 2.0f;
+                dst.w = (float)texture->w;
+                dst.h = (float)texture->h;
+            } else {
+                dst.x = 0.0f;
+                dst.y = 0.0f;
+                dst.w = (float)texture->w;
+                dst.h = (float)texture->h;
+            }
+            SDL_RenderTextureRotated(renderer, texture, NULL, &dst, rotation, NULL, flip);
             SDL_RenderPresent(renderer);
 
             SDL_Delay(100);
