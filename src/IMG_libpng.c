@@ -128,7 +128,7 @@ static struct
     png_voidp (*png_get_io_ptr)(png_noconst15_structrp png_ptr);
     png_byte (*png_get_channels)(png_const_structrp png_ptr, png_const_inforp info_ptr);
 
-    void (*png_error)(png_const_structrp png_ptr, png_const_charp error_message);
+    void (*png_error)(png_noconst15_structrp png_ptr, png_const_charp error_message);
 
     png_uint_32 (*png_get_PLTE)(png_const_structrp png_ptr, png_noconst16_inforp info_ptr, png_colorp *palette, int *num_palette);
     png_uint_32 (*png_get_tRNS)(png_const_structrp png_ptr, png_inforp info_ptr, png_bytep *trans, int *num_trans, png_color_16p *trans_values);
@@ -243,7 +243,7 @@ bool IMG_InitPNG(void)
         FUNCTION_LOADER_LIBPNG(png_get_io_ptr, png_voidp(*)(png_noconst15_structrp png_ptr))
         FUNCTION_LOADER_LIBPNG(png_get_channels, png_byte(*)(png_const_structrp png_ptr, png_const_inforp info_ptr))
 
-        FUNCTION_LOADER_LIBPNG(png_error, void (*)(png_const_structrp png_ptr, png_const_charp error_message))
+        FUNCTION_LOADER_LIBPNG(png_error,void (*)(png_noconst15_structrp png_ptr, png_const_charp error_message))
 
         FUNCTION_LOADER_LIBPNG(png_get_PLTE, png_uint_32(*)(png_const_structrp png_ptr, png_noconst16_inforp info_ptr, png_colorp * palette, int *num_palette))
         FUNCTION_LOADER_LIBPNG(png_get_tRNS, png_uint_32(*)(png_const_structrp png_ptr, png_inforp info_ptr, png_bytep * trans, int *num_trans, png_color_16p *trans_values))
