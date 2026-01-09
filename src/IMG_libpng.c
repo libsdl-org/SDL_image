@@ -175,7 +175,6 @@ static struct
     png_uint_32 (*png_get_image_width)(png_const_structrp png_ptr, png_const_inforp info_ptr);
     png_uint_32 (*png_get_image_height)(png_const_structrp png_ptr, png_const_inforp info_ptr);
     png_uint_32 (*png_get_text)(png_const_structp png_ptr, png_infop info_ptr, png_textp *text_ptr, int *num_text);
-    png_uint_32 (*png_get_uint_32)(png_const_bytep buf);
 
     void (*png_write_flush)(png_structrp png_ptr);
 } lib;
@@ -281,7 +280,6 @@ bool IMG_InitPNG(void)
         FUNCTION_LOADER_LIBPNG(png_get_image_width, png_uint_32(*)(png_const_structrp png_ptr, png_const_inforp info_ptr))
         FUNCTION_LOADER_LIBPNG(png_get_image_height, png_uint_32(*)(png_const_structrp png_ptr, png_const_inforp info_ptr))
         FUNCTION_LOADER_LIBPNG(png_get_text, png_uint_32 (*)(png_const_structrp png_ptr, png_inforp info_ptr, png_textp *text_ptr, int *num_text))
-        FUNCTION_LOADER_LIBPNG(png_get_uint_32, png_uint_32 (*)(png_const_bytep buf))
 
         FUNCTION_LOADER_LIBPNG(png_write_flush, void (*)(png_structrp png_ptr))
     }
@@ -1732,7 +1730,7 @@ static png_bytep compress_surface_to_png_data(CompressionContext *context, SDL_S
             break;
         }
         SDL_memcpy(context->chunk_header, context->mem_buffer_ptr + context->current_pos, 8);
-        context->chunk_len = lib.png_get_uint_32(context->chunk_header);
+        context->chunk_len = png_get_uint_32(context->chunk_header);
         SDL_memcpy(context->chunk_type, context->chunk_header + 4, 4);
 
         context->current_pos += 8;
