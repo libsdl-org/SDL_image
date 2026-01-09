@@ -27,6 +27,10 @@
 #include <emscripten/emscripten.h>
 #endif
 
+#ifndef SDL_PROP_SURFACE_FLIP_NUMBER
+#define SDL_PROP_SURFACE_FLIP_NUMBER    "SDL.surface.flip"
+#endif
+
 #if defined(SDL_BUILD_MAJOR_VERSION)
 SDL_COMPILE_TIME_ASSERT(SDL_BUILD_MAJOR_VERSION,
                         SDL_IMAGE_MAJOR_VERSION == SDL_BUILD_MAJOR_VERSION);
@@ -549,66 +553,70 @@ Uint64 IMG_TimebaseDuration(Uint64 pts, Uint64 duration, Uint64 src_numerator, U
 
 SDL_Surface *IMG_ApplyOrientation(SDL_Surface *surface, int orientation)
 {
-    SDL_Surface *tmp;
-    switch (orientation)
-    {
+    float rotation = 0.0f;
+    SDL_FlipMode flip = SDL_FLIP_NONE;
+    switch (orientation) {
     case 1:
         // Normal (no rotation required)
         break;
     case 2:
-        // Flipped horizontally
-        if (!SDL_FlipSurface(surface, SDL_FLIP_HORIZONTAL)) {
-            SDL_DestroySurface(surface);
-            return NULL;
-        }
+        // Mirror horizontal
+        flip = SDL_FLIP_HORIZONTAL;
         break;
     case 3:
-        // Upside-down (180 degrees rotation)
-        tmp = SDL_RotateSurface(surface, 180.0f);
-        SDL_DestroySurface(surface);
-        surface = tmp;
+        // Rotate 180
+        rotation = 180.0f;
         break;
     case 4:
-        // Flipped vertically
-        if (!SDL_FlipSurface(surface, SDL_FLIP_VERTICAL)) {
-            SDL_DestroySurface(surface);
-            return NULL;
-        }
+        // Mirror vertical
+        flip = SDL_FLIP_VERTICAL;
         break;
     case 5:
-        // Flip horizontally and rotate 90 degrees counterclockwise
-        if (!SDL_FlipSurface(surface, SDL_FLIP_HORIZONTAL)) {
-            SDL_DestroySurface(surface);
-            return NULL;
-        }
-        tmp = SDL_RotateSurface(surface, -90.0f);
-        SDL_DestroySurface(surface);
-        surface = tmp;
+        // Mirror horizontal and rotate 270 CW
+        flip = SDL_FLIP_HORIZONTAL;
+        rotation = 270.0f;
         break;
     case 6:
-        // Rotate 90 degrees clockwise
-        tmp = SDL_RotateSurface(surface, 90.0f);
-        SDL_DestroySurface(surface);
-        surface = tmp;
+        // Rotate 90 CW
+        rotation = 90.0f;
         break;
     case 7:
-        // Flip horizontally and rotate 90 degrees clockwise
-        if (!SDL_FlipSurface(surface, SDL_FLIP_HORIZONTAL)) {
-            SDL_DestroySurface(surface);
-            return NULL;
-        }
-        tmp = SDL_RotateSurface(surface, 90.0f);
-        SDL_DestroySurface(surface);
-        surface = tmp;
+        // Mirror horizontal and rotate 90 CW
+        flip = SDL_FLIP_HORIZONTAL;
+        rotation = 90.0f;
         break;
     case 8:
-        // Rotate 90 degrees counterclockwise
-        tmp = SDL_RotateSurface(surface, -90.0f);
-        SDL_DestroySurface(surface);
-        surface = tmp;
+        // Rotate 270 CW
+        rotation = 270.0f;
         break;
     default:
         break;
     }
+
+#ifdef ORIENTATION_USES_PROPERTIES
+    if (flip != SDL_FLIP_NONE) {
+        SDL_PropertiesID props = SDL_GetSurfaceProperties(surface);
+        SDL_SetNumberProperty(props, SDL_PROP_SURFACE_FLIP_NUMBER, flip);
+    }
+    if (rotation != 0.0f) {
+        SDL_PropertiesID props = SDL_GetSurfaceProperties(surface);
+        SDL_SetFloatProperty(props, SDL_PROP_SURFACE_ROTATION_FLOAT, rotation);
+    }
+#else
+    if (flip != SDL_FLIP_NONE) {
+        if (!SDL_FlipSurface(surface, flip)) {
+            SDL_DestroySurface(surface);
+            return NULL;
+        }
+    }
+    if (rotation != 0.0f) {
+        SDL_Surface *tmp = SDL_RotateSurface(surface, rotation);
+        SDL_DestroySurface(surface);
+        if (!tmp) {
+            return NULL;
+        }
+        surface = tmp;
+    }
+#endif
     return surface;
 }
