@@ -105,7 +105,7 @@ static SDL_Texture *load_image(SDL_Renderer *renderer, const char *file, const c
         surface = temp;
     }
 
-    *flip = SDL_GetNumberProperty(SDL_GetSurfaceProperties(surface), SDL_PROP_SURFACE_FLIP_NUMBER, SDL_FLIP_NONE);
+    *flip = (SDL_FlipMode)SDL_GetNumberProperty(SDL_GetSurfaceProperties(surface), SDL_PROP_SURFACE_FLIP_NUMBER, SDL_FLIP_NONE);
     *rotation = SDL_GetFloatProperty(SDL_GetSurfaceProperties(surface), SDL_PROP_SURFACE_ROTATION_FLOAT, 0.0f);
 
     texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -284,7 +284,7 @@ int main(int argc, char *argv[])
             SDL_FRect dst;
             if (rotation == 90.0f || rotation == 270.0f) {
                 // Use a pre-rotated destination rectangle
-                dst.x = -(texture->w - texture->h) / 2.0f;
+                dst.x = (texture->h - texture->w) / 2.0f;
                 dst.y = (texture->w - texture->h) / 2.0f;
                 dst.w = (float)texture->w;
                 dst.h = (float)texture->h;
@@ -357,7 +357,7 @@ int main(int argc, char *argv[])
             SDL_FRect dst;
             if (rotation == 90.0f || rotation == 270.0f) {
                 // Use a pre-rotated destination rectangle
-                dst.x = -(texture->w - texture->h) / 2.0f;
+                dst.x = (texture->h - texture->w) / 2.0f;
                 dst.y = (texture->w - texture->h) / 2.0f;
                 dst.w = (float)texture->w;
                 dst.h = (float)texture->h;
