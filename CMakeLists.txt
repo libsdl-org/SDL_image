@@ -270,6 +270,7 @@ add_library(${sdl3_image_target_name}
     src/IMG_avif.c
     src/IMG_bmp.c
     src/IMG_gif.c
+    src/IMG_gpu.c
     src/IMG_jpg.c
     src/IMG_jxl.c
     src/IMG_lbm.c
@@ -1330,6 +1331,7 @@ if(SDLIMAGE_SAMPLES)
     add_sdl_image_example_executable(showanim examples/showanim.c)
     add_sdl_image_example_executable(showimage examples/showimage.c)
     add_sdl_image_example_executable(showclipboard examples/showclipboard.c)
+    add_sdl_image_example_executable(showgpuimage examples/showgpuimage.c)
 endif()
 
 if(SDLIMAGE_TESTS)

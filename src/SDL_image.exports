@@ -98,4 +98,7 @@ _IMG_SaveAPNGAnimation_IO
 _IMG_SaveAVIFAnimation_IO
 _IMG_SaveGIFAnimation_IO
 _IMG_SaveWEBPAnimation_IO
+_IMG_LoadGPUTexture
+_IMG_LoadGPUTexture_IO
+_IMG_LoadGPUTextureTyped_IO
 # extra symbols go here (don't modify this line)
