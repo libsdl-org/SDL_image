@@ -99,6 +99,9 @@ SDL3_image_0.0.0 {
     IMG_SaveAVIFAnimation_IO;
     IMG_SaveGIFAnimation_IO;
     IMG_SaveWEBPAnimation_IO;
+    IMG_LoadGPUTexture;
+    IMG_LoadGPUTexture_IO;
+    IMG_LoadGPUTextureTyped_IO;
     # extra symbols go here (don't modify this line)
   local: *;
 };
