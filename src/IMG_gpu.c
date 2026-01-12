@@ -21,7 +21,7 @@
 
 #include <SDL3_image/SDL_image.h>
 
-static SDL_GPUTexture * LoadGPUTexture(SDL_GPUDevice *device, SDL_GPUCopyPass *copy_pass, SDL_Surface *surface, Uint32 *width, Uint32 *height)
+static SDL_GPUTexture * LoadGPUTexture(SDL_GPUDevice *device, SDL_GPUCopyPass *copy_pass, SDL_Surface *surface, int *width, int *height)
 {
     if (width) {
         *width = 0;
@@ -77,8 +77,7 @@ static SDL_GPUTexture * LoadGPUTexture(SDL_GPUDevice *device, SDL_GPUCopyPass *c
     const int row_bytes = surface->w * 4;
     if (row_bytes == surface->pitch) {
         SDL_memcpy(dst, src, row_bytes * surface->h);
-    }
-    else {
+    } else {
         for (int y = 0; y < surface->h; y++) {
             SDL_memcpy(dst + y * row_bytes, src + y * surface->pitch, row_bytes);
         }
