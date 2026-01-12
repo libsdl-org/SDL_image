@@ -26,8 +26,8 @@
 static SDL_Window *window;
 static SDL_GPUDevice *device;
 static SDL_GPUTexture *texture;
-static Uint32 texture_width;
-static Uint32 texture_height;
+static int texture_width;
+static int texture_height;
 
 static const char *get_file_path(const char *file)
 {
