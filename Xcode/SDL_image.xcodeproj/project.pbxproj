@@ -25,9 +25,10 @@
 				F3E1F74E2A789C1000AC76D3 /* ShellScript */,
 			);
 			dependencies = (
-				F3E1F7502A789C2B00AC76D3 /* PBXTargetDependency */,
-				F3E1F7522A789C3000AC76D3 /* PBXTargetDependency */,
-				F3E1F7562A789C4200AC76D3 /* PBXTargetDependency */,
+				F31BA8E02F1986E000646176 /* PBXTargetDependency */,
+				F31BA8DE2F1986DC00646176 /* PBXTargetDependency */,
+				F31BA8DC2F1986D700646176 /* PBXTargetDependency */,
+				F31BA8DA2F1986D200646176 /* PBXTargetDependency */,
 				F3E1F7542A789C3A00AC76D3 /* PBXTargetDependency */,
 			);
 			name = SDL3_image.dmg;
@@ -103,6 +104,34 @@
 			remoteGlobalIDString = F3D87D21281EA9C3005DA540;
 			remoteInfo = png;
 		};
+		F31BA8D92F1986D200646176 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F31BA7F62F0C417B00646176 /* png.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F3B38D2F296F7549005DA6D3;
+			remoteInfo = png.xcframework;
+		};
+		F31BA8DB2F1986D700646176 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F307EFA82828C8FA003915D7 /* jxl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F3B38D2A296F7515005DA6D3;
+			remoteInfo = jxl.xcframework;
+		};
+		F31BA8DD2F1986DC00646176 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F35475D42829BA80007E9EDA /* avif.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F3B38D25296F74CC005DA6D3;
+			remoteInfo = avif.xcframework;
+		};
+		F31BA8DF2F1986E000646176 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F3B38D1E296F730C005DA6D3;
+			remoteInfo = SDL3_image.xcframework;
+		};
 		F35475DB2829BA80007E9EDA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F35475D42829BA80007E9EDA /* avif.xcodeproj */;
@@ -138,33 +167,12 @@
 			remoteGlobalIDString = F3D87D21281EA9C3005DA540;
 			remoteInfo = webp;
 		};
-		F3E1F74F2A789C2B00AC76D3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = F3B38D1E296F730C005DA6D3;
-			remoteInfo = SDL_image.xcframework;
-		};
-		F3E1F7512A789C3000AC76D3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F35475D42829BA80007E9EDA /* avif.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = F3B38D25296F74CC005DA6D3;
-			remoteInfo = avif.xcframework;
-		};
 		F3E1F7532A789C3A00AC76D3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F3D87D15281EA88F005DA540 /* webp.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F3B38D2F296F7549005DA6D3;
 			remoteInfo = webp.xcframework;
-		};
-		F3E1F7552A789C4200AC76D3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F307EFA82828C8FA003915D7 /* jxl.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = F3B38D2A296F7515005DA6D3;
-			remoteInfo = jxl.xcframework;
 		};
 		F3F76C512BF6A84800214E05 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -673,25 +681,30 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		F3E1F7502A789C2B00AC76D3 /* PBXTargetDependency */ = {
+		F31BA8DA2F1986D200646176 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = F3B38D1E296F730C005DA6D3 /* SDL3_image.xcframework */;
-			targetProxy = F3E1F74F2A789C2B00AC76D3 /* PBXContainerItemProxy */;
+			name = png.xcframework;
+			targetProxy = F31BA8D92F1986D200646176 /* PBXContainerItemProxy */;
 		};
-		F3E1F7522A789C3000AC76D3 /* PBXTargetDependency */ = {
+		F31BA8DC2F1986D700646176 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = jxl.xcframework;
+			targetProxy = F31BA8DB2F1986D700646176 /* PBXContainerItemProxy */;
+		};
+		F31BA8DE2F1986DC00646176 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = avif.xcframework;
-			targetProxy = F3E1F7512A789C3000AC76D3 /* PBXContainerItemProxy */;
+			targetProxy = F31BA8DD2F1986DC00646176 /* PBXContainerItemProxy */;
+		};
+		F31BA8E02F1986E000646176 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F3B38D1E296F730C005DA6D3 /* SDL3_image.xcframework */;
+			targetProxy = F31BA8DF2F1986E000646176 /* PBXContainerItemProxy */;
 		};
 		F3E1F7542A789C3A00AC76D3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = webp.xcframework;
 			targetProxy = F3E1F7532A789C3A00AC76D3 /* PBXContainerItemProxy */;
-		};
-		F3E1F7562A789C4200AC76D3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = jxl.xcframework;
-			targetProxy = F3E1F7552A789C4200AC76D3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
