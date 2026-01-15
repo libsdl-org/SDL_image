@@ -64,7 +64,7 @@
 		F31BA7DC2F0C404F00646176 /* pngwrite.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = pngwrite.c; path = ../../external/libpng/pngwrite.c; sourceTree = "<group>"; };
 		F31BA7DD2F0C404F00646176 /* pngwtran.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = pngwtran.c; path = ../../external/libpng/pngwtran.c; sourceTree = "<group>"; };
 		F31BA7DE2F0C404F00646176 /* pngwutil.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = pngwutil.c; path = ../../external/libpng/pngwutil.c; sourceTree = "<group>"; };
-		F31BA7EE2F0C408500646176 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; name = LICENSE; path = /Users/valve/projects/SDL_image/external/libpng/LICENSE; sourceTree = "<absolute>"; };
+		F31BA7EE2F0C408500646176 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; name = LICENSE; path = ../../external/libpng/LICENSE; sourceTree = "<group>"; };
 		F31BA7F02F0C40B500646176 /* arm_init.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = arm_init.c; path = ../../external/libpng/arm/arm_init.c; sourceTree = "<group>"; };
 		F31BA7F12F0C40B500646176 /* filter_neon_intrinsics.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = filter_neon_intrinsics.c; path = ../../external/libpng/arm/filter_neon_intrinsics.c; sourceTree = "<group>"; };
 		F31BA7F22F0C40B500646176 /* palette_neon_intrinsics.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = palette_neon_intrinsics.c; path = ../../external/libpng/arm/palette_neon_intrinsics.c; sourceTree = "<group>"; };
