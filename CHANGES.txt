@@ -17,6 +17,10 @@
   - IMG_SaveTGA_IO()
   - IMG_SaveWEBP()
   - IMG_SaveWEBP_IO()
+* Added functions to load images into GPU textures:
+  - IMG_LoadGPUTexture()
+  - IMG_LoadGPUTexture_IO()
+  - IMG_LoadGPUTextureTyped_IO()
 * Added functions to load animations:
   - IMG_LoadANIAnimation_IO()
   - IMG_LoadAPNGAnimation_IO()
