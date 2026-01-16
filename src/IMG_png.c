@@ -23,7 +23,10 @@
 
 #include <SDL3_image/SDL_image.h>
 
+#ifdef PNG_USES_IMAGEIO
 #include "IMG_ImageIO.h"
+#endif
+
 #include "IMG_libpng.h"
 #include "IMG_WIC.h"
 
