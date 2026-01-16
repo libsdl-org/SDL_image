@@ -79,6 +79,7 @@ LOCAL_SRC_FILES :=  		\
     src/IMG_avif.c      	\
     src/IMG_bmp.c       	\
     src/IMG_gif.c       	\
+    src/IMG_gpu.c       	\
     src/IMG_jpg.c       	\
     src/IMG_jxl.c       	\
     src/IMG_lbm.c       	\

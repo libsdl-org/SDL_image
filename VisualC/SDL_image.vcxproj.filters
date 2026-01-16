@@ -10,6 +10,9 @@
     <ClCompile Include="..\src\IMG_gif.c">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\IMG_gpu.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\IMG_jpg.c">
       <Filter>Sources</Filter>
     </ClCompile>

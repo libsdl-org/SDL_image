@@ -203,6 +203,7 @@
     <ClCompile Include="..\src\IMG_avif.c" />
     <ClCompile Include="..\src\IMG_bmp.c" />
     <ClCompile Include="..\src\IMG_gif.c" />
+    <ClCompile Include="..\src\IMG_gpu.c" />
     <ClCompile Include="..\src\IMG_jpg.c" />
     <ClCompile Include="..\src\IMG_jxl.c" />
     <ClCompile Include="..\src\IMG_lbm.c" />
