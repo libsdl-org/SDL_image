@@ -367,11 +367,11 @@ extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_IO(SDL_Renderer *
  * Load an image from a filesystem path into a GPU texture.
  *
  * An SDL_GPUTexture represents an image in GPU memory, usable by SDL's GPU
- * API. Regardless of the source format of the image, this function will create a
- * GPU texture with the format SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM with no mip
- * levels. It can be bound as a sampled texture from a graphics or compute pipeline
- * and as a a readonly storage texture in a compute pipeline.
- * 
+ * API. Regardless of the source format of the image, this function will
+ * create a GPU texture with the format SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM
+ * with no mip levels. It can be bound as a sampled texture from a graphics or
+ * compute pipeline and as a a readonly storage texture in a compute pipeline.
+ *
  * There is a separate function to read files from an SDL_IOStream, if you
  * need an i/o abstraction to provide data from anywhere instead of a simple
  * filesystem read; that function is IMG_LoadGPUTexture_IO().
@@ -383,8 +383,10 @@ extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_IO(SDL_Renderer *
  * \param copy_pass the SDL_GPUCopyPass to use to upload the loaded image to
  *                  the GPU texture.
  * \param file a path on the filesystem to load an image from.
- * \param width a pointer filled in with the width of the GPU texture. may be NULL.
- * \param height a pointer filled in with the width of the GPU texture. may be NULL.
+ * \param width a pointer filled in with the width of the GPU texture. may be
+ *              NULL.
+ * \param height a pointer filled in with the width of the GPU texture. may be
+ *               NULL.
  * \returns a new GPU texture, or NULL on error.
  *
  * \since This function is available since SDL_image 3.4.0.
@@ -398,19 +400,19 @@ extern SDL_DECLSPEC SDL_GPUTexture * SDLCALL IMG_LoadGPUTexture(SDL_GPUDevice *d
  * Load an image from an SDL data source into a GPU texture.
  *
  * An SDL_GPUTexture represents an image in GPU memory, usable by SDL's GPU
- * API. Regardless of the source format of the image, this function will create a
- * GPU texture with the format SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM with no mip
- * levels. It can be bound as a sampled texture from a graphics or compute pipeline
- * and as a a readonly storage texture in a compute pipeline.
+ * API. Regardless of the source format of the image, this function will
+ * create a GPU texture with the format SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM
+ * with no mip levels. It can be bound as a sampled texture from a graphics or
+ * compute pipeline and as a a readonly storage texture in a compute pipeline.
  *
  * If `closeio` is true, `src` will be closed before returning, whether this
  * function succeeds or not. SDL_image reads everything it needs from `src`
  * during this call in any case.
  *
  * There is a separate function to read files from disk without having to deal
- * with SDL_IOStream: `IMG_LoadGPUTexture(device, copy_pass, "filename.jpg", width, height)
- * will call this function and manage those details for you, determining the file type
- * from the filename's extension.
+ * with SDL_IOStream: `IMG_LoadGPUTexture(device, copy_pass, "filename.jpg",
+ * width, height) will call this function and manage those details for you,
+ * determining the file type from the filename's extension.
  *
  * There is also IMG_LoadGPUTextureTyped_IO(), which is equivalent to this
  * function except a file extension (like "BMP", "JPG", etc) can be specified,
@@ -425,8 +427,10 @@ extern SDL_DECLSPEC SDL_GPUTexture * SDLCALL IMG_LoadGPUTexture(SDL_GPUDevice *d
  * \param src an SDL_IOStream that data will be read from.
  * \param closeio true to close/free the SDL_IOStream before returning, false
  *                to leave it open.
- * \param width a pointer filled in with the width of the GPU texture. may be NULL.
- * \param height a pointer filled in with the width of the GPU texture. may be NULL.
+ * \param width a pointer filled in with the width of the GPU texture. may be
+ *              NULL.
+ * \param height a pointer filled in with the width of the GPU texture. may be
+ *               NULL.
  * \returns a new GPU texture, or NULL on error.
  *
  * \since This function is available since SDL_image 3.4.0.
@@ -440,10 +444,10 @@ extern SDL_DECLSPEC SDL_GPUTexture * SDLCALL IMG_LoadGPUTexture_IO(SDL_GPUDevice
  * Load an image from an SDL data source into a GPU texture.
  *
  * An SDL_GPUTexture represents an image in GPU memory, usable by SDL's GPU
- * API. Regardless of the source format of the image, this function will create a
- * GPU texture with the format SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM with no mip
- * levels. It can be bound as a sampled texture from a graphics or compute pipeline
- * and as a a readonly storage texture in a compute pipeline.
+ * API. Regardless of the source format of the image, this function will
+ * create a GPU texture with the format SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM
+ * with no mip levels. It can be bound as a sampled texture from a graphics or
+ * compute pipeline and as a a readonly storage texture in a compute pipeline.
  *
  * If `closeio` is true, `src` will be closed before returning, whether this
  * function succeeds or not. SDL_image reads everything it needs from `src`
@@ -456,9 +460,9 @@ extern SDL_DECLSPEC SDL_GPUTexture * SDLCALL IMG_LoadGPUTexture_IO(SDL_GPUDevice
  * its ability to guess the format.
  *
  * There is a separate function to read files from disk without having to deal
- * with SDL_IOStream: `IMG_LoadGPUTexture(device, copy_pass, "filename.jpg", width, height)
- * will call this function and manage those details for you, determining the file type
- * from the filename's extension.
+ * with SDL_IOStream: `IMG_LoadGPUTexture(device, copy_pass, "filename.jpg",
+ * width, height) will call this function and manage those details for you,
+ * determining the file type from the filename's extension.
  *
  * There is also IMG_LoadGPUTexture_IO(), which is equivalent to this function
  * except that it will rely on SDL_image to determine what type of data it is
@@ -475,8 +479,10 @@ extern SDL_DECLSPEC SDL_GPUTexture * SDLCALL IMG_LoadGPUTexture_IO(SDL_GPUDevice
  *                to leave it open.
  * \param type a filename extension that represent this data ("BMP", "GIF",
  *             "PNG", etc).
- * \param width a pointer filled in with the width of the GPU texture. may be NULL.
- * \param height a pointer filled in with the width of the GPU texture. may be NULL.
+ * \param width a pointer filled in with the width of the GPU texture. may be
+ *              NULL.
+ * \param height a pointer filled in with the width of the GPU texture. may be
+ *               NULL.
  * \returns a new GPU texture, or NULL on error.
  *
  * \since This function is available since SDL_image 3.4.0.
