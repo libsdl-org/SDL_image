@@ -7,6 +7,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE OFF)
 set(RESOURCE_FILES
     palette.bmp
     palette.gif
+    rgbrgb.ani
     rgbrgb.avifs
     rgbrgb.gif
     rgbrgb.png
