@@ -803,8 +803,15 @@ static int SDLCALL testDecodeThirdPartyMetadata(void *args)
         return TEST_SKIPPED;
     }
 
-    IMG_AnimationDecoder *thirdPartyDecoder = IMG_CreateAnimationDecoder("rgbrgb_thirdpartymetadata.webp");
+    const char *inputImage = "rgbrgb_thirdpartymetadata.webp";
+    char *inputImagePath = GetTestFilename(inputImage);
+    if (!inputImagePath) {
+        SDLTest_LogError("Failed to convert '%s' to absolute path", inputImage);
+        return TEST_ABORTED;
+    }
+    IMG_AnimationDecoder *thirdPartyDecoder = IMG_CreateAnimationDecoder(inputImagePath);
     SDLTest_AssertCheck(thirdPartyDecoder != NULL, "IMG_CreateAnimationDecoder");
+    SDL_free(inputImagePath);
     if (thirdPartyDecoder) {
         SDL_PropertiesID thirdPartyMetadata = IMG_GetAnimationDecoderProperties(thirdPartyDecoder);
         SDLTest_AssertCheck(thirdPartyMetadata != 0, "IMG_GetAnimationDecoderProperties");
