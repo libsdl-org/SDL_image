@@ -20,6 +20,7 @@
 
 // Uncomment these lines to enable libpng support
 // If you do this, you should run external/download.sh to download the decode libraries and add png.framework to your application bundle.
+// WARNING: Enabling this will prevent your application from passing App Store review, as linking directly with libpng is not allowed.
 //PNG_PREPROCESSOR_DEFINITIONS = SDL_IMAGE_LIBPNG INCLUDE_PNG_FRAMEWORK
 //PNG_FRAMEWORK_LDFLAGS = -weak_framework png
 
