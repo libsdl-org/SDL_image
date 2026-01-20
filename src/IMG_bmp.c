@@ -549,7 +549,7 @@ static SDL_Surface *GetIconSurface(SDL_IOStream *src, Sint64 offset, int type, i
         SDL_SetError("Unsupported ICO bitmap format");
     }
 
-    if (type == ICON_TYPE_CUR) {
+    if (type == ICON_TYPE_CUR && surface) {
         SDL_PropertiesID props = SDL_GetSurfaceProperties(surface);
         SDL_SetNumberProperty(props, SDL_PROP_SURFACE_HOTSPOT_X_NUMBER, hot_x);
         SDL_SetNumberProperty(props, SDL_PROP_SURFACE_HOTSPOT_Y_NUMBER, hot_y);
