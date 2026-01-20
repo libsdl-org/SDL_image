@@ -785,10 +785,10 @@ static bool FillIconEntry(CURSORICONFILEDIRENTRY *entry, SDL_Surface *surface, i
     SDL_zerop(entry);
     entry->bWidth = surface->w < 256 ? surface->w : 0;  // 0 means a width of 256
     entry->bHeight = surface->h < 256 ? surface->h : 0; // 0 means a height of 256
-    entry->xHotspot = hot_x;
-    entry->yHotspot = hot_y;
-    entry->dwImageSize = dwImageSize;
-    entry->dwImageOffset = dwImageOffset;
+    entry->xHotspot = SDL_Swap16LE(hot_x);
+    entry->yHotspot = SDL_Swap16LE(hot_y);
+    entry->dwImageSize = SDL_Swap32LE(dwImageSize);
+    entry->dwImageOffset = SDL_Swap32LE(dwImageOffset);
     return true;
 }
 
@@ -839,9 +839,9 @@ static bool SaveICOCUR(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, in
     // Raymond Chen has more insight into this format at:
     // https://devblogs.microsoft.com/oldnewthing/20101018-00/?p=12513
     CURSORICONFILEDIR dir;
-    dir.idReserved = 0;
-    dir.idType = type;
-    dir.idCount = count;
+    dir.idReserved = SDL_Swap16LE(0);
+    dir.idType = SDL_Swap16LE(type);
+    dir.idCount = SDL_Swap16LE(count);
     result = (SDL_WriteIO(dst, &dir, sizeof(dir)) == sizeof(dir));
 
     Uint32 entries_size = count * sizeof(CURSORICONFILEDIRENTRY);
