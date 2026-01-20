@@ -909,9 +909,6 @@ if(SDLIMAGE_PNG)
         else()
             target_link_libraries(${sdl3_image_target_name} PRIVATE PNG::PNG)
         endif()
-    else()
-        # Variable is used by test suite
-        set(SDLIMAGE_PNG_SAVE OFF)
     endif()
 
     target_compile_definitions(${sdl3_image_target_name} PRIVATE
