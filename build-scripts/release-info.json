@@ -60,6 +60,7 @@
         "-DSDLIMAGE_DEPS_SHARED=ON",
         "-DCMAKE_C_FLAGS=-I@<@PROJECT_ROOT@>@/VisualC/external/include",
         "-DSDLIMAGE_DYNAMIC_AVIF=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libavif-16.dll",
+        "-DSDLIMAGE_DYNAMIC_PNG=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libpng16-16.dll",
         "-DSDLIMAGE_DYNAMIC_TIF=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libtiff-6.dll",
         "-DSDLIMAGE_DYNAMIC_WEBP=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libwebp-7.dll",
         "-DSDLIMAGE_DYNAMIC_WEBPDEMUX=@<@PROJECT_ROOT@>@/VisualC/external/optional/@<@ARCH@>@/libwebpdemux-2.dll",
