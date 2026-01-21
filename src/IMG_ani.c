@@ -601,11 +601,11 @@ static bool WriteAnimation(IMG_AnimationEncoder *encoder)
 
     ANIHEADER anih;
     SDL_zero(anih);
-    anih.cbSizeof = sizeof(anih);
-    anih.frames = ctx->num_frames;
-    anih.steps = ctx->num_frames;
-    anih.jifRate = 1;
-    anih.fl = ANI_FLAG_ICON;
+    anih.cbSizeof = SDL_Swap32LE(sizeof(anih));
+    anih.frames = SDL_Swap32LE(ctx->num_frames);
+    anih.steps = SDL_Swap32LE(ctx->num_frames);
+    anih.jifRate = SDL_Swap32LE(1);
+    anih.fl = SDL_Swap32LE(ANI_FLAG_ICON);
     result &= (SDL_WriteIO(dst, &anih, sizeof(anih)) == sizeof(anih));
 
     // Info list
