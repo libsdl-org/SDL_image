@@ -251,7 +251,7 @@ jobs:
           echo "mount-point=${mount_point}">>$GITHUB_OUTPUT
       - name: 'Verify presence of optional frameworks'
         run: |
-          OPTIONAL_FRAMEWORKS="avif jxl webp"
+          OPTIONAL_FRAMEWORKS="avif jxl png webp"
           rc=0
           for opt in $OPTIONAL_FRAMEWORKS; do
             fw_path="${{ steps.mount.outputs.mount-point }}/optional/${opt}.xcframework"
