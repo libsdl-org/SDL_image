@@ -894,13 +894,18 @@ if(SDLIMAGE_PNG)
         )
         if(SDLIMAGE_PNG_SHARED)
             if(NOT DEFINED SDLIMAGE_DYNAMIC_PNG)
+                if(TARGET PNG::png_shared)
+                    set(png_target PNG::png_shared)
+                else()
+                    set(png_target PNG::PNG)
+                endif()
                 target_include_directories(${sdl3_image_target_name} PRIVATE
-                    $<TARGET_PROPERTY:PNG::PNG,INCLUDE_DIRECTORIES>
-                    $<TARGET_PROPERTY:PNG::PNG,INTERFACE_INCLUDE_DIRECTORIES>
-                    $<TARGET_PROPERTY:PNG::PNG,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:${png_target},INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:${png_target},INTERFACE_INCLUDE_DIRECTORIES>
+                    $<TARGET_PROPERTY:${png_target},INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
                 )
                 if(SDLIMAGE_PNG_VENDORED)
-                    add_dependencies(${sdl3_image_target_name} PNG::PNG)
+                    add_dependencies(${sdl3_image_target_name} ${png_target})
                 endif()
             endif()
             target_get_dynamic_library(SDLIMAGE_DYNAMIC_PNG PNG::PNG)
