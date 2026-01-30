@@ -24,7 +24,7 @@ jobs:
         - { name: Macos,             os: macos-latest,   shell: sh,  vendored: false, cmake: '-DSDLIMAGE_DEPS_SHARED=OFF -GNinja', shared: 1, static: 0, artifact: 'SDL3_image-macos' }
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         submodules: ${{ matrix.platform.vendored && 'recursive' }}
     - name: Set up ninja
@@ -166,7 +166,7 @@ jobs:
         cmake --build build/ --target package
     - name: Upload artifacts
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         if-no-files-found: ignore
         name: "${{ matrix.platform.artifact }}-failure-artifacts"
@@ -190,7 +190,7 @@ jobs:
           -DTEST_SHARED=${{ matrix.platform.shared }} \
           -DTEST_STATIC=${{ matrix.platform.static }}
         cmake --build cmake_config_build --verbose
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v6
       if: ${{ always() && steps.build.outcome == 'success' }}
       with:
         if-no-files-found: error
