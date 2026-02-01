@@ -98,6 +98,9 @@
     <ClInclude Include="..\include\SDL3_image\SDL_image.h">
       <Filter>Public Headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\IMG.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\IMG_libpng.h">
       <Filter>Sources</Filter>
     </ClInclude>
