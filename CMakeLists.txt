@@ -671,9 +671,7 @@ if(SDL2IMAGE_PNG)
         if(SDL2IMAGE_PNG_ENABLED)
             if(SDL2IMAGE_PNG_SHARED)
                 target_include_directories(SDL2_image PRIVATE
-                    $<TARGET_PROPERTY:PNG::PNG,INCLUDE_DIRECTORIES>
                     $<TARGET_PROPERTY:PNG::PNG,INTERFACE_INCLUDE_DIRECTORIES>
-                    $<TARGET_PROPERTY:PNG::PNG,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
                 )
                 target_get_dynamic_library(dynamic_png PNG::PNG)
                 message(STATUS "Dynamic libpng: ${dynamic_png}")
