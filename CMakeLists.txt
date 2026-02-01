@@ -900,9 +900,7 @@ if(SDLIMAGE_PNG)
                     set(png_target PNG::PNG)
                 endif()
                 target_include_directories(${sdl3_image_target_name} PRIVATE
-                    $<TARGET_PROPERTY:${png_target},INCLUDE_DIRECTORIES>
                     $<TARGET_PROPERTY:${png_target},INTERFACE_INCLUDE_DIRECTORIES>
-                    $<TARGET_PROPERTY:${png_target},INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>
                 )
                 if(SDLIMAGE_PNG_VENDORED)
                     add_dependencies(${sdl3_image_target_name} ${png_target})
