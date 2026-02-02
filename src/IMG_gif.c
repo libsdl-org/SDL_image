@@ -23,6 +23,7 @@
 
 #include <SDL3_image/SDL_image.h>
 
+#include "IMG.h"
 #include "IMG_gif.h"
 #include "IMG_anim_encoder.h"
 #include "IMG_anim_decoder.h"
@@ -2821,6 +2822,9 @@ bool IMG_CreateGIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Properties
 
 bool IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
+    if (!IMG_VerifyCanSaveSurface(surface)) {
+        return false;
+    }
     IMG_AnimationEncoder *encoder = IMG_CreateAnimationEncoder_IO(dst, closeio, "gif");
     if (!encoder) {
         return false;
@@ -2840,6 +2844,9 @@ bool IMG_SaveGIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 
 bool IMG_SaveGIF(SDL_Surface *surface, const char *file)
 {
+    if (!IMG_VerifyCanSaveSurface(surface)) {
+        return false;
+    }
     SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
     if (dst) {
         return IMG_SaveGIF_IO(surface, dst, true);

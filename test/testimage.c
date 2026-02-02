@@ -797,6 +797,7 @@ FormatSaveTest(const Format *format,
     char filename[64] = { 0 };
     SDL_Surface *reference = NULL;
     SDL_Surface *surface = NULL;
+    SDL_Surface *indexed_surface = NULL;
     SDL_IOStream *dest = NULL;
     int diff;
     bool result;
@@ -863,9 +864,42 @@ FormatSaveTest(const Format *format,
         }
     }
 
+    SDLTest_Log("Saving an indexed surface without palette MUST fail");
+    indexed_surface = SDL_CreateSurface(32, 32, SDL_PIXELFORMAT_INDEX8);
+    SDLTest_AssertCheck(indexed_surface != NULL,
+        "SDL_CreateSurface(SDL_PIXELFORMAT_INDEX8) must succeed");
+    if (indexed_surface) {
+        if (rw) {
+            Sint64 position;
+
+            SDL_IOStream *dyn_io = SDL_IOFromDynamicMem();
+            SDLTest_AssertPass("About to call IMG_SaveTyped_IO(\"%s\")", format->name);
+            result = IMG_SaveTyped_IO(indexed_surface, dyn_io, false, format->name);
+            SDLTest_Assert(!result, "Calling IMG_SaveTyped_IO of an indexed surface without palette should return false (actual=%d)", result);
+            position = SDL_TellIO(dyn_io) ;
+            SDLTest_AssertCheck(position == 0, "Nothing has been written to IO stream (position=%" SDL_PRIs64 ")", position);
+            SDL_CloseIO(dyn_io);
+        } else {
+            char indexed_filename[64] = { 0 };
+            SDL_snprintf(indexed_filename, sizeof(indexed_filename),
+                         "save%s_index.%s",
+                         rw ? "Rwops" : "",
+                         format->name);
+            SDL_RemovePath(indexed_filename);
+            SDLTest_AssertCheck(!SDL_GetPathInfo(indexed_filename, NULL), "\"%s\" should not exist BEFORE test", indexed_filename);
+            SDLTest_AssertPass("About to call IMG_Save(\"%s\")", indexed_filename);
+            result = IMG_Save(indexed_surface, indexed_filename);
+            SDLTest_Assert(!result, "Calling IMG_Save of an indexed surface without palette should return false (actual=%d)", result);
+            SDLTest_AssertCheck(!SDL_GetPathInfo(indexed_filename, NULL), "\"%s\" should not exist AFTER test", indexed_filename);
+        }
+    }
+
 out:
     if (surface != NULL) {
         SDL_DestroySurface(surface);
+    }
+    if (indexed_surface != NULL) {
+        SDL_DestroySurface(indexed_surface);
     }
     if (reference != NULL) {
         SDL_DestroySurface(reference);
