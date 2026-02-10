@@ -99,12 +99,12 @@ typedef png_structp png_noconst15_structrp;
 typedef png_inforp png_noconst15_inforp;
 typedef png_const_inforp png_noconst16_inforp;
 #else
-typedef png_const_structp png_noconst15_structrp;
+typedef png_const_structrp png_noconst15_structrp;
 typedef png_const_inforp png_noconst15_inforp;
 typedef png_inforp png_noconst16_inforp;
 #endif
 #else
-typedef png_const_structp png_noconst15_structrp;
+typedef png_const_structrp png_noconst15_structrp;
 typedef png_const_inforp png_noconst15_inforp;
 typedef png_inforp png_noconst16_inforp;
 #endif
