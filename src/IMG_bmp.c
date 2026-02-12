@@ -42,6 +42,8 @@
 
 #include <SDL3_image/SDL_image.h>
 
+#include "IMG.h"
+
 #ifdef LOAD_BMP
 
 #define RIFF_FOURCC(c0, c1, c2, c3)                 \
@@ -759,11 +761,17 @@ SDL_Surface *IMG_LoadICO_IO(SDL_IOStream *src)
 
 bool IMG_SaveBMP_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
+    if (!IMG_VerifyCanSaveSurface(surface)) {
+        return false;
+    }
     return SDL_SaveBMP_IO(surface, dst, closeio);
 }
 
 bool IMG_SaveBMP(SDL_Surface *surface, const char *file)
 {
+    if (!IMG_VerifyCanSaveSurface(surface)) {
+        return false;
+    }
     SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
     if (dst) {
         return IMG_SaveBMP_IO(surface, dst, true);
@@ -887,11 +895,17 @@ done:
 
 bool IMG_SaveCUR_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
+    if (!IMG_VerifyCanSaveSurface(surface)) {
+        return false;
+    }
     return SaveICOCUR(surface, dst, closeio, ICON_TYPE_CUR);
 }
 
 bool IMG_SaveCUR(SDL_Surface *surface, const char *file)
 {
+    if (!IMG_VerifyCanSaveSurface(surface)) {
+        return false;
+    }
     SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
     if (dst) {
         return SaveICOCUR(surface, dst, true, ICON_TYPE_CUR);
@@ -902,11 +916,17 @@ bool IMG_SaveCUR(SDL_Surface *surface, const char *file)
 
 bool IMG_SaveICO_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
+    if (!IMG_VerifyCanSaveSurface(surface)) {
+        return false;
+    }
     return SaveICOCUR(surface, dst, closeio, ICON_TYPE_ICO);
 }
 
 bool IMG_SaveICO(SDL_Surface *surface, const char *file)
 {
+    if (!IMG_VerifyCanSaveSurface(surface)) {
+        return false;
+    }
     SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
     if (dst) {
         return SaveICOCUR(surface, dst, true, ICON_TYPE_ICO);

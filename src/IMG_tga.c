@@ -25,6 +25,8 @@
 
 #include <SDL3_image/SDL_image.h>
 
+#include "IMG.h"
+
 // We will have TGA saving feature by default.
 #ifndef SAVE_TGA
 #define SAVE_TGA 1
@@ -364,9 +366,8 @@ bool IMG_SaveTGA_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
     SDL_Surface *temp_surface = NULL;
     bool result = false;
 
-    if (!surface) {
-        SDL_InvalidParamError("surface");
-        goto done;
+    if (!IMG_VerifyCanSaveSurface(surface)) {
+        return false;
     }
     if (!dst) {
         SDL_InvalidParamError("dst");
@@ -526,6 +527,9 @@ done:
 
 bool IMG_SaveTGA(SDL_Surface *surface, const char *file)
 {
+    if (!IMG_VerifyCanSaveSurface(surface)) {
+        return false;
+    }
     SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
     if (dst) {
         return IMG_SaveTGA_IO(surface, dst, true);
