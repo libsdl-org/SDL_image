@@ -28,6 +28,75 @@
 #include "IMG_libpng.h"
 #include "IMG_webp.h"
 
+struct IMG_AnimationDecoderContext
+{
+    char *type;
+    bool frame_read;
+};
+
+static bool IMG_SingleFrameDecoderReset(IMG_AnimationDecoder *decoder)
+{
+    IMG_AnimationDecoderContext *ctx = decoder->ctx;
+
+    if (SDL_SeekIO(decoder->src, decoder->start, SDL_IO_SEEK_SET) != decoder->start) {
+        return false;
+    }
+
+    ctx->frame_read = false;
+    return true;
+}
+
+static bool IMG_SingleFrameDecoderGetNextFrame(IMG_AnimationDecoder *decoder, SDL_Surface **frame, Uint64 *duration)
+{
+    IMG_AnimationDecoderContext *ctx = decoder->ctx;
+
+    if (ctx->frame_read) {
+        decoder->status = IMG_DECODER_STATUS_COMPLETE;
+        return false;
+    }
+
+    *duration = 0;
+    *frame = IMG_LoadTyped_IO(decoder->src, false, ctx->type);
+    if (*frame) {
+        ctx->frame_read = true;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+static bool IMG_SingleFrameDecoderClose(IMG_AnimationDecoder *decoder)
+{
+    IMG_AnimationDecoderContext *ctx = decoder->ctx;
+
+    SDL_free(ctx->type);
+    SDL_free(ctx);
+    decoder->ctx = NULL;
+
+    return true;
+}
+
+static bool IMG_CreateSingleFrameAnimationDecoder(IMG_AnimationDecoder *decoder, const char *type)
+{
+    IMG_AnimationDecoderContext *ctx = (IMG_AnimationDecoderContext*)SDL_calloc(1, sizeof(IMG_AnimationDecoderContext));
+    if (!ctx) {
+        return false;
+    }
+
+    ctx->type = SDL_strdup(type);
+    if (!ctx->type) {
+        SDL_free(ctx);
+        return false;
+    }
+
+    decoder->ctx = ctx;
+    decoder->Reset = IMG_SingleFrameDecoderReset;
+    decoder->GetNextFrame = IMG_SingleFrameDecoderGetNextFrame;
+    decoder->Close = IMG_SingleFrameDecoderClose;
+
+    return true;
+}
+
 IMG_AnimationDecoder *IMG_CreateAnimationDecoder(const char *file)
 {
     if (!file || !*file) {
@@ -111,7 +180,7 @@ IMG_AnimationDecoder *IMG_CreateAnimationDecoderWithProperties(SDL_PropertiesID 
 
     if (!src) {
         if (!file) {
-            SDL_SetError("No output properties set");
+            SDL_SetError("No input properties set");
             return NULL;
         }
 
@@ -149,8 +218,14 @@ IMG_AnimationDecoder *IMG_CreateAnimationDecoderWithProperties(SDL_PropertiesID 
         result = IMG_CreateGIFAnimationDecoder(decoder, props);
     } else if (SDL_strcasecmp(type, "webp") == 0) {
         result = IMG_CreateWEBPAnimationDecoder(decoder, props);
-    } else {
-        SDL_SetError("Unrecognized output type");
+    }
+
+    if (!result) {
+        if (SDL_SeekIO(decoder->src, decoder->start, SDL_IO_SEEK_SET) != decoder->start) {
+            goto error;
+        }
+
+        result = IMG_CreateSingleFrameAnimationDecoder(decoder, type);
     }
 
     if (result) {
