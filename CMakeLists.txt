@@ -469,6 +469,7 @@ if(SDLIMAGE_ZLIB)
         if(NOT TARGET ZLIB::zlibstatic)
             add_library(ZLIB::zlibstatic ALIAS ${ZLIB_LIBRARY})
         endif()
+        set(ZLIB_FOUND TRUE)
         # ZLIB_LIBRARIES variable is used by vendored libpng
         set(ZLIB_LIBRARIES "${ZLIB_LIBRARY}")
         # ZLIB_INCLUDE_DIRS variable is used by vendored libpng
