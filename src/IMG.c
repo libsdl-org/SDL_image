@@ -330,10 +330,22 @@ IMG_Animation *IMG_LoadAnimationTyped_IO(SDL_IOStream *src, bool closeio, const 
     return NULL;
 }
 
-bool IMG_Save(SDL_Surface *surface, const char *file)
+bool IMG_VerifyCanSaveSurface(SDL_Surface *surface)
 {
     if (!surface) {
         return SDL_InvalidParamError("surface");
+    }
+
+    if (SDL_ISPIXELFORMAT_INDEXED(surface->format) && !SDL_GetSurfacePalette(surface)) {
+        return SDL_SetError("Indexed surfaces must have a palette");
+    }
+    return true;
+}
+
+bool IMG_Save(SDL_Surface *surface, const char *file)
+{
+    if (!IMG_VerifyCanSaveSurface(surface)) {
+        return false;
     }
 
     if (!file || !*file) {
