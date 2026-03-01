@@ -2101,6 +2101,7 @@ static bool SaveAPNGAnimationPushFrame(IMG_AnimationEncoder *encoder, SDL_Surfac
         SDL_memcpy(fdat_data, fdat_prefix, 4);
         SDL_memcpy(fdat_data + 4, full_zlib_data, full_zlib_size);
         if (!write_png_chunk(encoder->dst, "fdAT", fdat_data, 4 + full_zlib_size)) {
+            SDL_free(fdat_data);
             goto error;
         }
         SDL_free(fdat_data);
