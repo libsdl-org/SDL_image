@@ -534,7 +534,7 @@ static SDL_Surface *GetIconSurface(SDL_IOStream *src, Sint64 offset, int type, i
     Uint32 biSize;
 
     if (SDL_SeekIO(src, offset, SDL_IO_SEEK_SET) < 0) {
-        return false;
+        return NULL;
     }
 
     if (!SDL_ReadU32LE(src, &biSize) ||
@@ -948,4 +948,3 @@ bool IMG_SaveICO(SDL_Surface *surface, const char *file)
 }
 
 #endif // SAVE_BMP
-
