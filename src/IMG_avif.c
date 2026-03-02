@@ -23,6 +23,7 @@
 
 #include <SDL3_image/SDL_image.h>
 
+#include "IMG.h"
 #include "IMG_avif.h"
 #include "IMG_anim_encoder.h"
 #include "IMG_anim_decoder.h"
@@ -745,9 +746,8 @@ bool IMG_SaveAVIF_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int 
 {
     bool result = false;
 
-    if (!surface) {
-        SDL_InvalidParamError("surface");
-        goto done;
+    if (!IMG_VerifyCanSaveSurface(surface)) {
+        return false;
     }
     if (!dst) {
         SDL_InvalidParamError("dst");
@@ -765,6 +765,10 @@ done:
 
 bool IMG_SaveAVIF(SDL_Surface *surface, const char *file, int quality)
 {
+    if (!IMG_VerifyCanSaveSurface(surface)) {
+        return false;
+    }
+
     SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
     if (dst) {
         return IMG_SaveAVIF_IO(surface, dst, true, quality);
