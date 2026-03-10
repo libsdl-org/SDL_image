@@ -1341,7 +1341,7 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
 
         } else if (SDL_memcmp(chunk_type, "tRNS", 4) == 0) {
             if (ctx->palette) {
-                int num_trans = SDL_min((int)chunk_size, ctx->palette->ncolors);
+                int num_trans = SDL_min((int)chunk_length, ctx->palette->ncolors);
                 for (int i = 0; i < num_trans; i++) {
                     ctx->palette->colors[i].a = chunk_data[i];
                 }
