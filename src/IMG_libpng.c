@@ -992,7 +992,7 @@ error:
     return NULL;
 }
 
-static bool read_png_chunk(SDL_IOStream *stream, png_bytep *chunk, Uint32 *chunk_size, char *chunk_type, png_bytep *data, Uint32 *data_length)
+static bool read_png_chunk(SDL_IOStream *stream, png_bytep *chunk, Uint32 *chunk_size_full, char *chunk_type, png_bytep *data, Uint32 *data_length)
 {
     Uint8 header[8];
 
@@ -1009,8 +1009,8 @@ static bool read_png_chunk(SDL_IOStream *stream, png_bytep *chunk, Uint32 *chunk
     SDL_memcpy(chunk_type, header+4, 4);
 
     // Allocate memory for chunk
-    *chunk_size = sizeof(header) + *data_length + 4;
-    *chunk = (png_bytep)SDL_malloc(*chunk_size);
+    *chunk_size_full = sizeof(header) + *data_length + 4;
+    *chunk = (png_bytep)SDL_malloc(*chunk_size_full);
     if (!*chunk) {
         return false;
     }
@@ -1271,12 +1271,12 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
     while (!found_iend) {
         char chunk_type[5] = { 0 };
         png_bytep chunk = NULL;
-        Uint32 chunk_size;
+        Uint32 chunk_size_full;
         png_bytep chunk_data = NULL;
         Uint32 chunk_length = 0;
         bool chunk_saved = false;
 
-        if (!read_png_chunk(decoder->src, &chunk, &chunk_size, chunk_type, &chunk_data, &chunk_length)) {
+        if (!read_png_chunk(decoder->src, &chunk, &chunk_size_full, chunk_type, &chunk_data, &chunk_length)) {
             IMG_AnimationDecoderClose_Internal(decoder);
             return false;
         }
@@ -1336,12 +1336,12 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
 
             SDL_free(ctx->chunk_PLTE);
             ctx->chunk_PLTE = chunk;
-            ctx->size_PLTE = chunk_size;
+            ctx->size_PLTE = chunk_size_full;
             chunk_saved = true;
 
         } else if (SDL_memcmp(chunk_type, "tRNS", 4) == 0) {
             if (ctx->palette) {
-                int num_trans = SDL_min((int)chunk_size, ctx->palette->ncolors);
+                int num_trans = SDL_min((int)chunk_length, ctx->palette->ncolors);
                 for (int i = 0; i < num_trans; i++) {
                     ctx->palette->colors[i].a = chunk_data[i];
                 }
@@ -1349,7 +1349,7 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
 
             SDL_free(ctx->chunk_tRNS);
             ctx->chunk_tRNS = chunk;
-            ctx->size_tRNS = chunk_size;
+            ctx->size_tRNS = chunk_size_full;
             chunk_saved = true;
 
         } else if (SDL_memcmp(chunk_type, "fcTL", 4) == 0) {
