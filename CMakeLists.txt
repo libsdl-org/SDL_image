@@ -452,6 +452,8 @@ if(SDLIMAGE_ZLIB)
         set(ZLIB_BUILD_EXAMPLES OFF CACHE BOOL "zlib examples" FORCE)
         sdl_check_project_in_subfolder(external/zlib zlib SDLIMAGE_VENDORED)
         add_subdirectory(external/zlib external/zlib-build EXCLUDE_FROM_ALL)
+        # Forces vendored dependencies that use `find_package(ZLIB)` to use the vendored zlib
+        list(PREPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/packages/zlib")
         register_license(zlib external/zlib/LICENSE)
         set(ZLIB_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/external/zlib;${CMAKE_CURRENT_BINARY_DIR}/external/zlib-build")
         # ZLIB_INCLUDE_DIR variable is used by vendored libpng
@@ -977,10 +979,6 @@ if(SDLIMAGE_TIF)
             set(libdeflate OFF CACHE BOOL "libtiff: libdeflate option" FORCE)
             # DEFLATE_FOUND variable is used by vendored libtiff
             set(DEFLATE_FOUND OFF CACHE BOOL "libtiff: libdeflate option" FORCE)
-            # zlib variable is used by vendored libtiff (controls use of `find_package`)
-            set(zlib OFF CACHE BOOL "libtiff: find zlib using find_package" FORCE)
-            # ZLIB_FOUND is used by vendored libtiff
-            set(ZLIB_FOUND "")
             # lerc variable is used by vendored libtiff
             set(lerc OFF CACHE BOOL "libtiff: lerc option" FORCE)
             # lzma variable is used by vendored libtiff
