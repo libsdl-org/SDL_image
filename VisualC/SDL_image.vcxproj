@@ -228,6 +228,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\SDL3_image\SDL_image.h" />
+    <ClInclude Include="..\src\IMG.h" />
     <ClInclude Include="..\src\IMG_ani.h" />
     <ClInclude Include="..\src\IMG_anim_decoder.h" />
     <ClInclude Include="..\src\IMG_anim_encoder.h" />

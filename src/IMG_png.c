@@ -27,6 +27,7 @@
 #include "IMG_ImageIO.h"
 #endif
 
+#include "IMG.h"
 #include "IMG_libpng.h"
 #include "IMG_WIC.h"
 
@@ -105,6 +106,9 @@ SDL_Surface *IMG_LoadPNG_IO(SDL_IOStream *src)
 
 bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 {
+    if (!IMG_VerifyCanSaveSurface(surface)) {
+        return false;
+    }
 #ifdef SDL_IMAGE_LIBPNG
     if (IMG_InitPNG()) {
         return IMG_SavePNG_LIBPNG(surface, dst, closeio);
@@ -116,6 +120,9 @@ bool IMG_SavePNG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio)
 
 bool IMG_SavePNG(SDL_Surface *surface, const char *file)
 {
+    if (!IMG_VerifyCanSaveSurface(surface)) {
+        return false;
+    }
     SDL_IOStream *dst = SDL_IOFromFile(file, "wb");
     if (dst) {
         return IMG_SavePNG_IO(surface, dst, true);
