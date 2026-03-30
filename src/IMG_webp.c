@@ -414,6 +414,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
             SDL_BlitSurface(curr, NULL, canvas, &dst);
             SDL_FreeSurface(curr);
 
+            /* Store complete frame state */
             anim->frames[frame_idx] = SDL_DuplicateSurface(canvas);
             anim->delays[frame_idx] = iter.duration;
 
