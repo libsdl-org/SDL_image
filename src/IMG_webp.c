@@ -287,6 +287,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
     uint32_t clear_color;
 
     if (!src) {
+        /* The error message has been set in SDL_RWFromFile */
         return NULL;
     }
 
