@@ -806,20 +806,26 @@ do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_
                     switch (head->image_type) {
                     case IMAGE_INDEXED:
                         for (x = tx; x < tx + ox; x++) {
-                            *row = ((Uint32)(head->cm_map[*p8 * 3]) << 16);
-                            *row |= ((Uint32)(head->cm_map[*p8 * 3 + 1]) << 8);
-                            *row |= ((Uint32)(head->cm_map[*p8++ * 3 + 2]) << 0);
-                            *row |= ((Uint32)*p8++ << 24);
-                            row++;
+                            Uint8 c = *p8++;
+                            Uint8 a = *p8++;
+                            if (c < head->cm_num) {
+                                *row++ = ((Uint32)(head->cm_map[c * 3]) << 16) |
+                                         ((Uint32)(head->cm_map[c * 3 + 1]) << 8) |
+                                         ((Uint32)(head->cm_map[c * 3 + 2]) << 0) |
+                                         ((Uint32)a << 24);
+                            } else {
+                                *row++ = 0;
+                            }
                         }
                         break;
                     case IMAGE_GREYSCALE:
                         for (x = tx; x < tx + ox; x++) {
-                            *row = ((Uint32)*p8 << 16);
-                            *row |= ((Uint32)*p8 << 8);
-                            *row |= ((Uint32)*p8++ << 0);
-                            *row |= ((Uint32)*p8++ << 24);
-                            row++;
+                            Uint8 c = *p8++;
+                            Uint8 a = *p8++;
+                            *row++ = ((Uint32)c << 16) |
+                                     ((Uint32)c << 8) |
+                                     ((Uint32)c << 0) |
+                                     ((Uint32)a << 24);
                         }
                         break;
                     default:
@@ -837,20 +843,24 @@ do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_
                     switch (head->image_type) {
                     case IMAGE_INDEXED:
                         for (x = tx; x < tx + ox; x++) {
-                            *row++ = 0xFF000000
-                                | ((Uint32)(head->cm_map[*p8 * 3]) << 16)
-                                | ((Uint32)(head->cm_map[*p8 * 3 + 1]) << 8)
-                                | ((Uint32)(head->cm_map[*p8 * 3 + 2]) << 0);
-                            p8++;
+                            Uint8 c = *p8++;
+                            if (c < head->cm_num) {
+                                *row++ = 0xFF000000 |
+                                         ((Uint32)(head->cm_map[c * 3]) << 16) |
+                                         ((Uint32)(head->cm_map[c * 3 + 1]) << 8) |
+                                         ((Uint32)(head->cm_map[c * 3 + 2]) << 0);
+                            } else {
+                                *row++ = 0;
+                            }
                         }
                         break;
                     case IMAGE_GREYSCALE:
                         for (x = tx; x < tx + ox; x++) {
-                            *row++ = 0xFF000000
-                                | (((Uint32)(*p8)) << 16)
-                                | (((Uint32)(*p8)) << 8)
-                                | (((Uint32)(*p8)) << 0);
-                            ++p8;
+                            Uint8 c = *p8++;
+                            *row++ = 0xFF000000 |
+                                     (((Uint32)c) << 16) |
+                                     (((Uint32)c) << 8) |
+                                     (((Uint32)c) << 0);
                         }
                         break;
                     default:
