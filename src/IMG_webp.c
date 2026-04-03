@@ -359,7 +359,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
                           (bgcolor >> 24) & 0xFF);
 #endif
 
-    // Initialize canvas - use bgcolor for non-alpha format, transparency for alpha
+    // Initialize canvas - use bgcolor for non-alpha format, transparency for alpha */
     if (features.has_alpha) {
         clear_color = SDL_MapRGBA(canvas->format, 0, 0, 0, 0);
     } else {
@@ -379,7 +379,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
                 continue;
             }
 
-            // Set up destination rect for current frame
+            /* Set up destination rect for current frame */
             dst.x = iter.x_offset;
             dst.y = iter.y_offset;
             dst.w = iter.width;
@@ -415,7 +415,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
             SDL_BlitSurface(curr, NULL, canvas, &dst);
             SDL_FreeSurface(curr);
 
-            // Store complete frame state
+            /* Store complete frame state */
             anim->frames[frame_idx] = SDL_DuplicateSurface(canvas);
             anim->delays[frame_idx] = iter.duration;
 
