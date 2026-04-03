@@ -385,7 +385,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
             dst.w = iter.width;
             dst.h = iter.height;
 
-            // Handle disposal of the PREVIOUS frame before drawing the current one
+            /* Handle disposal of the PREVIOUS frame before drawing the current one */
             if (prev_dispose == WEBP_MUX_DISPOSE_BACKGROUND) {
                 SDL_FillRect(canvas, &prev_rect, clear_color);
             }
