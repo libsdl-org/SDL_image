@@ -359,7 +359,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
                           (bgcolor >> 24) & 0xFF);
 #endif
 
-    // Initialize canvas - use bgcolor for non-alpha format, transparency for alpha */
+    /* Initialize canvas - use bgcolor for non-alpha format, transparency for alpha */
     if (features.has_alpha) {
         clear_color = SDL_MapRGBA(canvas->format, 0, 0, 0, 0);
     } else {
