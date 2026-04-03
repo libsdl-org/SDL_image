@@ -281,6 +281,11 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
     uint32_t bgcolor;
     SDL_Surface *canvas = NULL;
 
+    // State machine variables for correct disposal handling
+    int prev_dispose = WEBP_MUX_DISPOSE_NONE;
+    SDL_Rect prev_rect;
+    uint32_t clear_color;
+
     if (!src) {
         /* The error message has been set in SDL_RWFromFile */
         return NULL;
@@ -356,10 +361,13 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
 
     /* Initialize canvas - use bgcolor for non-alpha format, transparency for alpha */
     if (features.has_alpha) {
-        SDL_FillRect(canvas, NULL, SDL_MapRGBA(canvas->format, 0, 0, 0, 0));
+        clear_color = SDL_MapRGBA(canvas->format, 0, 0, 0, 0);
     } else {
-        SDL_FillRect(canvas, NULL, bgcolor);
+        clear_color = bgcolor;
     }
+
+    SDL_FillRect(canvas, NULL, clear_color);
+    SDL_zero(prev_rect);
 
     SDL_zero(iter);
     if (lib.WebPDemuxGetFrame(demuxer, 1, &iter)) {
@@ -377,10 +385,9 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
             dst.w = iter.width;
             dst.h = iter.height;
 
-            /* Handle disposal and prepare region for new frame */
-            if (iter.dispose_method == WEBP_MUX_DISPOSE_BACKGROUND ||
-                iter.blend_method == WEBP_MUX_NO_BLEND) {
-                SDL_FillRect(canvas, &dst, bgcolor);
+            /* Handle disposal of the PREVIOUS frame before drawing the current one */
+            if (prev_dispose == WEBP_MUX_DISPOSE_BACKGROUND) {
+                SDL_FillRect(canvas, &prev_rect, clear_color);
             }
 
             curr = SDL_CreateRGBSurfaceWithFormat(0, iter.width, iter.height, 0, SDL_PIXELFORMAT_RGBA32);
@@ -398,7 +405,7 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
                 goto error;
             }
 
-            /* Set blend mode based on the frame's blend method */
+            /* Set blend mode. WEBP_MUX_NO_BLEND overwrites pixels, avoiding the need to manual clear */
             if (iter.blend_method == WEBP_MUX_BLEND) {
                 SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_BLEND);
             } else {
@@ -411,6 +418,10 @@ IMG_Animation *IMG_LoadWEBPAnimation_RW(SDL_RWops *src)
             /* Store complete frame state */
             anim->frames[frame_idx] = SDL_DuplicateSurface(canvas);
             anim->delays[frame_idx] = iter.duration;
+
+            /* Update state for the next frame's disposal logic */
+            prev_dispose = iter.dispose_method;
+            prev_rect = dst;
 
         } while (lib.WebPDemuxNextFrame(&iter));
 
