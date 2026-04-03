@@ -446,6 +446,8 @@ struct IMG_AnimationDecoderContext
     uint8_t *raw_data;
     size_t raw_data_size;
     WebPDemuxState demux_state;
+    SDL_Rect last_rect;
+    bool has_alpha;
 };
 
 static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
@@ -453,6 +455,12 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
     lib.WebPDemuxReleaseIterator(&decoder->ctx->iter);
     SDL_zero(decoder->ctx->iter);
     decoder->ctx->dispose_method = WEBP_MUX_DISPOSE_BACKGROUND;
+
+    /* Reset disposal rect to full canvas */
+    decoder->ctx->last_rect.x = 0;
+    decoder->ctx->last_rect.y = 0;
+    decoder->ctx->last_rect.w = decoder->ctx->canvas->w;
+    decoder->ctx->last_rect.h = decoder->ctx->canvas->h;
 
     return true;
 }
@@ -484,6 +492,8 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     WebPMuxAnimDispose dispose_method = decoder->ctx->dispose_method;
     WebPIterator *iter = &decoder->ctx->iter;
     SDL_Surface *retval = NULL;
+    bool has_alpha = decoder->ctx->has_alpha;
+    SDL_Rect last_rect = decoder->ctx->last_rect;
 
     SDL_Surface *curr = SDL_CreateSurface(iter->width, iter->height, SDL_PIXELFORMAT_RGBA32);
     if (!curr) {
@@ -497,6 +507,21 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
     }
 
     SDL_Rect dst = { iter->x_offset, iter->y_offset, iter->width, iter->height };
+    /* Correctly handle both Disposal and Blend modes to prevent ghosting */
+    if (dispose_method == WEBP_MUX_DISPOSE_BACKGROUND || iter->blend_method == WEBP_MUX_NO_BLEND) {
+        /* For alpha WebPs, we clear to transparency regardless of bad bgcolor metadata */
+        uint32_t fill_color = has_alpha ? SDL_MapSurfaceRGBA(canvas, 0, 0, 0, 0) : bgcolor;
+
+        /* If it's a disposal, clear the previous area; if it's NO_BLEND, clear the current area */
+        if (dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
+            SDL_FillSurfaceRect(canvas, &last_rect, fill_color);
+        }
+
+        if (iter->blend_method == WEBP_MUX_NO_BLEND) {
+            SDL_FillSurfaceRect(canvas, &dst, fill_color);
+        }
+    }
+
     if (iter->blend_method == WEBP_MUX_BLEND) {
         if (!SDL_SetSurfaceBlendMode(curr, SDL_BLENDMODE_BLEND)) {
             SDL_DestroySurface(curr);
@@ -508,9 +533,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
             return false;
         }
     }
-    if (totalFrames == availableFrames || dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
-        SDL_FillSurfaceRect(canvas, &dst, iter->has_alpha ? 0 : bgcolor);
-    }
+
     if (!SDL_BlitSurface(curr, NULL, canvas, &dst)) {
         SDL_DestroySurface(curr);
         return false;
@@ -524,7 +547,9 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
 
     *duration = IMG_GetDecoderDuration(decoder, iter->duration, 1000);
 
+    /* Update state for next frame */
     decoder->ctx->dispose_method = iter->dispose_method;
+    decoder->ctx->last_rect = dst;
 
     *frame = retval;
     return true;
@@ -638,6 +663,7 @@ bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
     }
 
     bool has_alpha = (flags & 0x10) != 0;
+    decoder->ctx->has_alpha = has_alpha;
 
     decoder->ctx->canvas = SDL_CreateSurface(width, height, has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
     if (!decoder->ctx->canvas) {
@@ -661,7 +687,17 @@ bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
                                               (bgcolor >> 24) & 0xFF);
 #endif
 
+    if (has_alpha) {
+        SDL_FillSurfaceRect(decoder->ctx->canvas, NULL, SDL_MapSurfaceRGBA(decoder->ctx->canvas, 0, 0, 0, 0));
+    } else {
+        SDL_FillSurfaceRect(decoder->ctx->canvas, NULL, decoder->ctx->bgcolor);
+    }
+
     decoder->ctx->dispose_method = WEBP_MUX_DISPOSE_BACKGROUND;
+    decoder->ctx->last_rect.x = 0;
+    decoder->ctx->last_rect.y = 0;
+    decoder->ctx->last_rect.w = width;
+    decoder->ctx->last_rect.h = height;
 
     SDL_zero(decoder->ctx->iter);
 
