@@ -703,6 +703,7 @@ do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_
 
             /* Bounds check: reject layer if tile data exceeds buffer */
             if ((Uint64)ox * oy * hierarchy->bpp > (Uint64)(hierarchy->width * hierarchy->height * hierarchy->bpp)) {
+                SDL_SetError("Gimp image invalid tile");
                 free_xcf_tile(tile);
                 free_xcf_level(level);
                 free_xcf_hierarchy(hierarchy);
