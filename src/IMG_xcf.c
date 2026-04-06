@@ -789,6 +789,15 @@ do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_
 
             p8 = tile;
             p = (Uint32 *) p8;
+
+            /* Bounds check: reject layer if tile data exceeds buffer */
+            if ((Uint64)ox * oy * hierarchy->bpp > (Uint64)(hierarchy->width * hierarchy->height * hierarchy->bpp)) {
+                free_xcf_tile(tile);
+                free_xcf_level(level);
+                free_xcf_hierarchy(hierarchy);
+                return 1;
+            }
+
             for (y = ty; y < ty + oy; y++) {
                 if ((y >= (Uint32)surface->h) || ((tx+ox) > (Uint32)surface->w)) {
                     break;
