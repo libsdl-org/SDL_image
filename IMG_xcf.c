@@ -544,7 +544,7 @@ static unsigned char * load_xcf_tile_none (SDL_RWops * src, Uint32 len, int bpp,
 }
 
 static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, int x, int y) {
-  unsigned char * load, * t, * data, * d;
+  unsigned char * load, * t, * data, * data_end, * d;
   int i, size, count, j, length;
   unsigned char val;
 
@@ -559,6 +559,11 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
   SDL_RWread (src, t, 1, len); /* reallen */
 
   data = (unsigned char *) calloc (1, x*y*bpp);
+  if (!data) {
+    free(load);
+    return NULL;
+  }
+  data_end = data + x*y*bpp;
   for (i = 0; i < bpp; i++) {
     d    = data + i;
     size = x*y;
@@ -585,6 +590,9 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
 	size -= length;
 
 	while (length-- > 0) {
+	  if (d >= data_end) {
+	    break;
+	  }
 	  *d = *t++;
 	  d += bpp;
 	}
@@ -607,6 +615,9 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
 	val = *t++;
 
 	for (j = 0; j < length; j++) {
+	  if (d >= data_end) {
+	    break;
+	  }
 	  *d = val;
 	  d += bpp;
 	}
