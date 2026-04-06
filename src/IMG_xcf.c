@@ -237,6 +237,13 @@ static char *read_string(SDL_IOStream *src)
     char *data = NULL;
 
     if (SDL_ReadU32BE(src, &tmp)) {
+        if (tmp == 0) {
+            data = (char *) SDL_malloc(1);
+            if (data) {
+                data[0] = 0;
+            }
+            return data;
+        }
         remaining = SDL_GetIOSize(src) - SDL_TellIO(src);
         if (tmp <= remaining) {
             data = (char *)SDL_malloc(tmp);
