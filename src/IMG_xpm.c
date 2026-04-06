@@ -160,7 +160,7 @@ static int add_colorhash(struct color_hash *hash,
 }
 
 /* fast lookup that works if cpp == 1 */
-#define QUICK_COLORHASH(hash, key) ((hash)->table[*(Uint8 *)(key)]->color)
+#define QUICK_COLORHASH(hash, key)     ((hash)->table[*(Uint8 *)(key)] ?      (hash)->table[*(Uint8 *)(key)]->color : 0)
 
 static Uint32 get_colorhash(struct color_hash *hash, const char *key, int cpp)
 {
