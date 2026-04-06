@@ -232,6 +232,13 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
 
     nbplanes = bmhd.planes;
 
+    /* Sanity check: nbplanes must not exceed 8 for paletted images.
+       Higher values cause 1<<nbplanes to exceed the 256-entry palette. */
+    if ( !pbm && nbplanes > 8 && nbplanes != 24 && flagHAM == 0 ) {
+        SDL_SetError("LBM: invalid number of bitplanes (%u)", nbplanes);
+        goto done;
+    }
+
     if ( pbm )                         /* File format : 'Packed Bitmap' */
     {
         bytesperline *= 8;
