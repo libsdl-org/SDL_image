@@ -157,9 +157,6 @@ static int add_colorhash(struct color_hash *hash,
     return 1;
 }
 
-/* fast lookup that works if cpp == 1 */
-#define QUICK_COLORHASH(hash, key) ((hash)->table[*(Uint8 *)(key)]->color)
-
 static Uint32 get_colorhash(struct color_hash *hash, const char *key, int cpp)
 {
     struct hash_entry *entry = hash->table[hash_key(key, cpp, hash->size)];
@@ -1132,9 +1129,11 @@ static SDL_Surface *load_xpm(char **xpm, SDL_RWops *src, SDL_bool force_32bit)
         if (indexed) {
             /* optimization for some common cases */
             if (cpp == 1)
-                for (x = 0; x < w; x++)
-                    dst[x] = (Uint8)QUICK_COLORHASH(colors,
-                                 line + x);
+                for (x = 0; x < w; x++) {
+                    /* fast lookup that works if cpp == 1 */
+                    const struct hash_entry *entry = colors->table[*(Uint8 *)(line + x)];
+                    dst[x] = entry ? (Uint8) entry->color : 0;
+                }
             else
                 for (x = 0; x < w; x++)
                     dst[x] = (Uint8)get_colorhash(colors,
