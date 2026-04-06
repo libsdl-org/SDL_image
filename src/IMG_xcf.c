@@ -638,6 +638,11 @@ static unsigned char *load_xcf_tile_rle(SDL_IOStream *src, size_t len, int bpp, 
     }
 
     data = (unsigned char *)SDL_calloc(1, x*y*bpp);
+    if (!data) {
+        SDL_free(load);
+        return NULL;
+    }
+    unsigned char *data_end = data + x*y*bpp;
     for (i = 0; i < bpp; i++) {
         d = data + i;
         size = x*y;
@@ -662,6 +667,9 @@ static unsigned char *load_xcf_tile_rle(SDL_IOStream *src, size_t len, int bpp, 
                 size -= length;
 
                 while (length-- > 0) {
+                    if (d >= data_end) {
+                        break;
+                    }
                     *d = *t++;
                     d += bpp;
                 }
@@ -683,6 +691,9 @@ static unsigned char *load_xcf_tile_rle(SDL_IOStream *src, size_t len, int bpp, 
                 val = *t++;
 
                 for (j = 0; j < length; j++) {
+                    if (d >= data_end) {
+                        break;
+                    }
                     *d = val;
                     d += bpp;
                 }
