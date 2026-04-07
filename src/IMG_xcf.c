@@ -666,6 +666,10 @@ do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_
 
     SDL_RWseek(src, layer->hierarchy_file_offset, RW_SEEK_SET);
     hierarchy = read_xcf_hierarchy(src, head);
+    if (!hierarchy) {
+        SDL_SetError("Failed to read XCF image hierarchy");
+        return 1;
+    }
 
     if (hierarchy->bpp > 4) {  /* unsupported. */
         SDL_Log("Unknown Gimp image bpp (%u)\n", (unsigned int) hierarchy->bpp);
