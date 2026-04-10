@@ -547,7 +547,7 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder, char
     }
 
     if (loopCount) {
-        *loopCount = 0;
+        *loopCount = 1;
     }
 
     IMG_AnimationDecoderContext *ctx = decoder->ctx;
@@ -639,7 +639,8 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder, char
                                     return SDL_SetError("Error reading Netscape sub-block data");
                                 }
                                 if (sub_block_data[0] == 0x01 && loopCount) {
-                                    *loopCount = LM_to_uint(sub_block_data[1], sub_block_data[2]);
+                                    int repeat = LM_to_uint(sub_block_data[1], sub_block_data[2]);
+                                    *loopCount = (repeat == 0) ? 0 : repeat + 1;
                                 }
                                 // Terminator
                                 if (!ReadOK(src, &sub_block_size, 1) || sub_block_size != 0x00) {
@@ -994,7 +995,7 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Properties
     decoder->Close = IMG_AnimationDecoderClose_Internal;
 
     char *comment = NULL;
-    int loop_count = 0;
+    int loop_count = 1;
     if (!IMG_AnimationDecoderGetGIFHeader(decoder, &comment, &loop_count)) {
         return false;
     }
@@ -2649,8 +2650,11 @@ static bool AnimationEncoder_AddFrame(IMG_AnimationEncoder *encoder, SDL_Surface
             description = SDL_GetStringProperty(ctx->metadata, IMG_PROP_METADATA_DESCRIPTION_STRING, NULL);
         }
 
-        if (writeNetscapeLoopExtension(io, loopCount) != 0) {
-            goto error;
+        if (loopCount != 1) {
+            uint16_t repeat = (loopCount == 0) ? 0 : (uint16_t)(loopCount - 1);
+            if (writeNetscapeLoopExtension(io, repeat) != 0) {
+                goto error;
+            }
         }
 
         if (description) {
