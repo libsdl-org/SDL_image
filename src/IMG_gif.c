@@ -547,7 +547,7 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder, char
     }
 
     if (loopCount) {
-        *loopCount = 0;
+        *loopCount = -1;
     }
 
     IMG_AnimationDecoderContext *ctx = decoder->ctx;
@@ -994,7 +994,7 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Properties
     decoder->Close = IMG_AnimationDecoderClose_Internal;
 
     char *comment = NULL;
-    int loop_count = 0;
+    int loop_count = -1;
     if (!IMG_AnimationDecoderGetGIFHeader(decoder, &comment, &loop_count)) {
         return false;
     }
