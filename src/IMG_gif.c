@@ -535,7 +535,7 @@ struct IMG_AnimationDecoderContext
     /* Frame info */
     Uint64 last_duration;        /* The duration of the previous frame */
     int last_disposal;           /* Disposal method from previous frame */
-    int restore_frame;           /* Frame to restore when using DISPOSE_PREVIOUS */
+    SDL_Rect restore_area;       /* Area to restore when using DISPOSE_RESTORE_BACKGROUND */
 
     bool ignore_props;
 };
@@ -763,7 +763,8 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
     ctx->got_header = false;
     ctx->got_eof = false;
     ctx->last_disposal = GIF_DISPOSE_NONE;
-    ctx->restore_frame = 0;
+    SDL_Rect r = {0};
+    ctx->restore_area = r;
 
     // We don't care about metadata when resetting to re-read.
     ctx->ignore_props = true;
@@ -850,8 +851,7 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
 
         case GIF_DISPOSE_RESTORE_BACKGROUND:
         {
-            SDL_Rect rect = { 0, 0, ctx->width, ctx->height };
-            if (!SDL_FillSurfaceRect(ctx->canvas, &rect, 0)) {
+            if (!SDL_FillSurfaceRect(ctx->canvas, &ctx->restore_area, 0)) {
                 return SDL_SetError("Failed to fill canvas with background color");
             }
         } break;
@@ -875,7 +875,12 @@ static bool IMG_AnimationDecoderGetNextFrame_Internal(IMG_AnimationDecoder *deco
             if (!SDL_BlitSurface(ctx->canvas, NULL, ctx->prev_canvas, NULL)) {
                 return SDL_SetError("Failed to save current canvas for restoration");
             }
+        } else if (ctx->state.Gif89.disposal == GIF_DISPOSE_RESTORE_BACKGROUND) {
+            SDL_Rect r = { left, top, width, height };
+            ctx->restore_area = r;
         }
+
+
         Image *image;
         if (!useGlobalColormap) {
             image = ReadImage(src, width, height, bitPixel, localColorMap, grayScale,
@@ -986,7 +991,8 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Properties
     ctx->current_delay = 100;
     ctx->current_disposal = GIF_DISPOSE_NA;
     ctx->last_disposal = GIF_DISPOSE_NONE;
-    ctx->restore_frame = 0;
+    SDL_Rect r = {0};
+    ctx->restore_area = r;
 
     decoder->ctx = ctx;
     decoder->Reset = IMG_AnimationDecoderReset_Internal;
