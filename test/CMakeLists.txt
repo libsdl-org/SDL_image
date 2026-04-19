@@ -98,12 +98,25 @@ function(add_sdl_image_test NAME)
     endif()
 endfunction()
 
+function(copy_sdl_image_test_resources TARGET)
+    foreach(res_file_name IN LISTS RESOURCE_FILES)
+        set(resource_file "${CMAKE_CURRENT_SOURCE_DIR}/${res_file_name}")
+        set(resource_file_bindir "${CMAKE_CURRENT_BINARY_DIR}/${res_file_name}")
+
+        add_custom_command(TARGET ${TARGET} POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E copy "${resource_file}" "${resource_file_bindir}"
+        )
+    endforeach()
+endfunction()
+
 add_sdl_image_test_executable(testimage testimage.c)
 add_sdl_image_test_executable(testanimation testanimation.c)
 
 add_sdl_image_test(testimage COMMAND testimage)
 add_sdl_image_test(testanimation_dummy_metadata COMMAND testanimation)
 add_sdl_image_test(testanimation COMMAND testanimation --no-dummy-metadata)
+
+copy_sdl_image_test_resources(testimage)
 
 if(SDLIMAGE_TESTS_INSTALL)
     install(
