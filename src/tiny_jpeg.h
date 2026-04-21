@@ -628,7 +628,7 @@ TJEI_FORCE_INLINE void tjei_write_bits(TJEState* state,
 
     // Push the stack.
     uint32_t nloc = *location + num_bits;
-    *bitbuffer |= (uint32_t)(bits << (32 - nloc));
+    *bitbuffer |= (uint32_t)bits << (32 - nloc);
     *location = nloc;
     while ( *location >= 8 ) {
         // Grab the most significant byte.
