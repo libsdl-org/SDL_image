@@ -556,7 +556,15 @@ static bool SaveChunkSize(SDL_IOStream *dst, Sint64 offset)
     if (!SDL_WriteU32LE(dst, size)) {
         return false;
     }
-    return SDL_SeekIO(dst, here, SDL_IO_SEEK_SET);
+    if (!SDL_SeekIO(dst, here, SDL_IO_SEEK_SET)) {
+        return false;
+    }
+    if (size & 1) {
+        if (!SDL_WriteU8(dst, 0)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 static bool WriteIconFrame(SDL_Surface *surface, SDL_IOStream *dst)
@@ -587,6 +595,9 @@ static bool WriteAnimInfo(IMG_AnimationEncoderContext *ctx, SDL_IOStream *dst)
         result &= SDL_WriteU32LE(dst, RIFF_FOURCC('I', 'N', 'A', 'M'));
         result &= SDL_WriteU32LE(dst, size);
         result &= (SDL_WriteIO(dst, ctx->title, size) == size);
+        if (size & 1) {
+            result &= SDL_WriteU8(dst, 0);
+        }
     }
 
     if (ctx->author) {
@@ -594,6 +605,9 @@ static bool WriteAnimInfo(IMG_AnimationEncoderContext *ctx, SDL_IOStream *dst)
         result &= SDL_WriteU32LE(dst, RIFF_FOURCC('I', 'A', 'R', 'T'));
         result &= SDL_WriteU32LE(dst, size);
         result &= (SDL_WriteIO(dst, ctx->author, size) == size);
+        if (size & 1) {
+            result &= SDL_WriteU8(dst, 0);
+        }
     }
 
     result &= SaveChunkSize(dst, list_size_offset);
