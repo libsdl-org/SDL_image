@@ -198,6 +198,10 @@ SDL_Surface *IMG_LoadTGA_RW(SDL_RWops *src)
 
     w = LE16(hdr.width);
     h = LE16(hdr.height);
+    if(w == 0 || h == 0) {
+	error = "TGA image with zero width or height";
+	goto error;
+    }
     img = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h,
 			       bpp * 8,
 			       rmask, gmask, bmask, amask);
