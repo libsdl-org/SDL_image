@@ -186,6 +186,10 @@ SDL_Surface *IMG_LoadTGA_IO(SDL_IOStream *src)
 
     w = LE16(hdr.width);
     h = LE16(hdr.height);
+    if (w == 0 || h == 0) {
+        error = "TGA image with zero width or height";
+        goto error;
+    }
     img = SDL_CreateSurface(w, h, format);
     if (img == NULL) {
         error = "Out of memory";
