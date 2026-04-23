@@ -252,6 +252,12 @@ static bool ParseInfoList(IMG_AnimationParseContext *parse, Uint32 list_size)
                 return false;
             }
         }
+        if (size & 1) {
+            ++size;
+            if (SDL_SeekIO(src, 1, SDL_IO_SEEK_CUR) < 0) {
+                return false;
+            }
+        }
         offset += size;
     }
     return true;
@@ -291,6 +297,12 @@ static bool ParseFrameList(IMG_AnimationParseContext *parse, Uint32 list_size)
         }
         if (SDL_SeekIO(src, size, SDL_IO_SEEK_CUR) < 0) {
             return false;
+        }
+        if (size & 1) {
+            ++size;
+            if (SDL_SeekIO(src, 1, SDL_IO_SEEK_CUR) < 0) {
+                return false;
+            }
         }
         offset += size;
     }
@@ -432,6 +444,12 @@ bool IMG_CreateANIAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Properties
             }
         } else {
             if (SDL_SeekIO(decoder->src, size, SDL_IO_SEEK_CUR) < 0) {
+                goto done;
+            }
+        }
+        if (size & 1) {
+            ++size;
+            if (SDL_SeekIO(decoder->src, 1, SDL_IO_SEEK_CUR) < 0) {
                 goto done;
             }
         }
