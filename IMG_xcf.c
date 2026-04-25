@@ -256,11 +256,10 @@ static char * read_string (SDL_RWops * src) {
   return data;
 }
 
-static Uint64 read_offset (SDL_RWops * src, const xcf_header * h) {
-  Uint64 offset;  // starting with version 11, offsets are 64 bits
-  offset = (h->file_version >= 11) ? (Uint64)SDL_ReadBE32 (src) << 32 : 0;
-  offset |= SDL_ReadBE32 (src);
-  return offset;
+static Uint32 read_offset (SDL_RWops * src, const xcf_header * h) {
+//starting with version 11, offsets are 64 bits
+  if (h->file_version >= 11) SDL_ReadBE32 (src);
+  return SDL_ReadBE32 (src);
 }
 
 
@@ -299,8 +298,7 @@ static int xcf_read_property (SDL_RWops * src, xcf_prop * prop) {
   case PROP_COLOR:
     if (prop->length > sizeof(prop->data)) {
       len = sizeof(prop->data);
-    }
-    else {
+    } else {
       len = prop->length;
     }
     SDL_RWread(src, &prop->data, len, 1);
@@ -547,6 +545,8 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
   }
 
   t = load = (unsigned char *) malloc (len);
+  if (load == NULL)
+    return NULL;
 
   SDL_RWread (src, t, 1, len); /* reallen */
 
@@ -580,8 +580,7 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
 	  *d = *t++;
 	  d += bpp;
 	}
-      }
-      else {
+      } else {
 	length += 1;
 	if (length == 128) {
 	  length = (*t << 8) + t[1];
@@ -590,8 +589,7 @@ static unsigned char * load_xcf_tile_rle (SDL_RWops * src, Uint32 len, int bpp, 
 
 	if (((size_t) (t - load)) >= len) {
 	  break;  /* bogus data */
-	}
-	else if (length > size) {
+	} else if (length > size) {
 	  break;  /* bogus data */
 	}
 
@@ -686,24 +684,22 @@ do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_
       if (level->tile_file_offsets [j+1] > level->tile_file_offsets [j]) {
         length = level->tile_file_offsets [j+1] - level->tile_file_offsets [j];
       }
-      tile = load_tile
-             (src,
-              length,
-              hierarchy->bpp,
-              ox, oy);
+      tile = load_tile (src, length, hierarchy->bpp, ox, oy);
 
       if (!tile) {
-        if (hierarchy)
+        if (hierarchy) {
           free_xcf_hierarchy(hierarchy);
-        if (level)
+        }
+        if (level) {
           free_xcf_level(level);
+        }
         return 1;
       }
 
       p8  = tile;
       p   = (Uint32 *) p8;
       for (y=ty; y < ty+oy; y++) {
-	if ((y >= surface->h) || ((tx+ox) > surface->w)) {
+	if ((y >= (Uint32)surface->h) || ((tx+ox) > (Uint32)surface->w)) {
 	  break;
 	}
 	row = (Uint32 *)((Uint8 *)surface->pixels + y*surface->pitch + tx*4);
@@ -721,7 +717,8 @@ do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_
 	    row++;
 	  }
 	  break;
-	case 2: // Indexed/Greyscale + Alpha
+	case 2:
+	  /* Indexed/Greyscale + Alpha */
 	  switch (head->image_type) {
 	  case IMAGE_INDEXED:
 	    for (x=tx; x < tx+ox; x++) {
@@ -749,14 +746,16 @@ do_layer_surface(SDL_Surface * surface, SDL_RWops * src, xcf_header * head, xcf_
 	    break;
 	  default:
 	    fprintf (stderr, "Unknown Gimp image type (%d)\n", head->image_type);
-	    if (hierarchy)
+	    if (hierarchy) {
 	      free_xcf_hierarchy(hierarchy);
+	    }
 	    if (level)
 	      free_xcf_level (level);
 	    return 1;
 	  }
 	  break;
-	case 1: // Indexed/Greyscale
+	case 1:
+	  /* Indexed/Greyscale */
 	  switch (head->image_type) {
 	  case IMAGE_INDEXED:
 	    for (x = tx; x < tx+ox; x++) {
