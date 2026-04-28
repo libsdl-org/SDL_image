@@ -35,10 +35,6 @@ set(RESOURCE_FILES
     svg64.bmp
 )
 
-foreach(res_file_name IN LISTS RESOURCE_FILES)
-    list(APPEND RESOURCE_FILES_BIN_ABS "${CMAKE_CURRENT_BINARY_DIR}/${res_file_name}")
-endforeach()
-
 function(add_sdl_image_test_executable TARGET)
     add_executable(${TARGET} ${ARGN})
 
@@ -72,6 +68,8 @@ function(add_sdl_image_test_executable TARGET)
             )
         endif()
     endif()
+
+    add_dependencies(${TARGET} copy-sdl_image-test-resources)
 endfunction()
 
 function(add_sdl_image_test NAME)
@@ -114,7 +112,7 @@ function(add_sdl_image_test NAME)
     endif()
 endfunction()
 
-add_custom_target(copy_sdl_image_test_resources ALL DEPENDS "${RESOURCE_FILES_BIN_ABS}")
+set(RESOURCE_FILES_BIN_ABS )
 foreach(res_file_name IN LISTS RESOURCE_FILES)
     set(resource_file "${CMAKE_CURRENT_SOURCE_DIR}/${res_file_name}")
     set(resource_file_bindir "${CMAKE_CURRENT_BINARY_DIR}/${res_file_name}")
@@ -123,7 +121,9 @@ foreach(res_file_name IN LISTS RESOURCE_FILES)
         DEPENDS "${resource_file}"
         COMMAND "${CMAKE_COMMAND}" -E copy "${resource_file}" "${resource_file_bindir}"
     )
+    list(APPEND RESOURCE_FILES_BIN_ABS "${resource_file_bindir}")
 endforeach()
+add_custom_target(copy-sdl_image-test-resources DEPENDS "${RESOURCE_FILES_BIN_ABS}")
 
 function(link_embed_resources TARGET)
     foreach(res_file_name IN LISTS RESOURCE_FILES)
@@ -138,16 +138,9 @@ add_sdl_image_test(testimage COMMAND testimage)
 add_sdl_image_test(testanimation_dummy_metadata COMMAND testanimation)
 add_sdl_image_test(testanimation COMMAND testanimation --no-dummy-metadata)
 
-
 if(EMSCRIPTEN)
-    add_dependencies(testimage copy_sdl_image_test_resources)
-    add_dependencies(testanimation copy_sdl_image_test_resources)
-    
     link_embed_resources(testimage)
     link_embed_resources(testanimation)
-else()
-    add_dependencies(copy_sdl_image_test_resources testimage)
-    add_dependencies(copy_sdl_image_test_resources testanimation)
 endif()
 
 if(SDLIMAGE_TESTS_INSTALL)
