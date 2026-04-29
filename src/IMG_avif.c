@@ -1145,7 +1145,9 @@ bool IMG_CreateAVIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
         SDL_SetNumberProperty(decoder->props, IMG_PROP_METADATA_FRAME_COUNT_NUMBER, ctx->total_frames);
 
         // Set well-defined properties.
-        SDL_SetNumberProperty(decoder->props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, ctx->decoder->repetitionCount);
+        if (ctx->decoder->repetitionCount != AVIF_REPETITION_COUNT_UNKNOWN) {
+            SDL_SetNumberProperty(decoder->props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, ctx->decoder->repetitionCount + 1);
+        }
 
         // Get other well-defined properties and set them in our props.
         if (!ctx->decoder->ignoreXMP) {
@@ -1614,10 +1616,7 @@ bool IMG_CreateAVIFAnimationEncoder(IMG_AnimationEncoder *encoder, SDL_Propertie
 
     bool ignoreProps = SDL_GetBooleanProperty(props, IMG_PROP_METADATA_IGNORE_PROPS_BOOLEAN, false);
     if (!ignoreProps) {
-        ctx->encoder->repetitionCount = (int)SDL_GetNumberProperty(props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, -1);
-        if (ctx->encoder->repetitionCount < 1 && ctx->encoder->repetitionCount != -1) {
-            ctx->encoder->repetitionCount = -1;
-        }
+        ctx->encoder->repetitionCount = (int)SDL_max(SDL_GetNumberProperty(props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, 0), 0) - 1;
 
         ctx->metadata = SDL_CreateProperties();
         if (!ctx->metadata) {
