@@ -37,6 +37,11 @@ set(RESOURCE_FILES
 
 function(add_sdl_image_test_executable TARGET)
     add_executable(${TARGET} ${ARGN})
+
+    if (EMSCRIPTEN)
+        set_property(TARGET ${TARGET} PROPERTY SUFFIX ".html")
+    endif()
+
     target_compile_definitions(${TARGET}
         PRIVATE
             $<TARGET_PROPERTY:${sdl3_image_target_name},COMPILE_DEFINITIONS>
@@ -54,8 +59,17 @@ function(add_sdl_image_test_executable TARGET)
         )
         if(MSVC)
             SDL_install_pdb("${TARGET}" "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}")
+        elseif(EMSCRIPTEN)
+            install(
+                FILES
+                "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.js"
+                "${CMAKE_CURRENT_BINARY_DIR}/${TARGET}.wasm"
+                DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}"
+            )
         endif()
     endif()
+
+    add_dependencies(${TARGET} copy-sdl_image-test-resources)
 endfunction()
 
 function(add_sdl_image_test NAME)
@@ -98,14 +112,22 @@ function(add_sdl_image_test NAME)
     endif()
 endfunction()
 
-function(copy_sdl_image_test_resources TARGET)
-    foreach(res_file_name IN LISTS RESOURCE_FILES)
-        set(resource_file "${CMAKE_CURRENT_SOURCE_DIR}/${res_file_name}")
-        set(resource_file_bindir "${CMAKE_CURRENT_BINARY_DIR}/${res_file_name}")
+set(RESOURCE_FILES_BIN_ABS )
+foreach(res_file_name IN LISTS RESOURCE_FILES)
+    set(resource_file "${CMAKE_CURRENT_SOURCE_DIR}/${res_file_name}")
+    set(resource_file_bindir "${CMAKE_CURRENT_BINARY_DIR}/${res_file_name}")
+    add_custom_command(
+        OUTPUT "${resource_file_bindir}"
+        DEPENDS "${resource_file}"
+        COMMAND "${CMAKE_COMMAND}" -E copy "${resource_file}" "${resource_file_bindir}"
+    )
+    list(APPEND RESOURCE_FILES_BIN_ABS "${resource_file_bindir}")
+endforeach()
+add_custom_target(copy-sdl_image-test-resources DEPENDS "${RESOURCE_FILES_BIN_ABS}")
 
-        add_custom_command(TARGET ${TARGET} POST_BUILD
-            COMMAND "${CMAKE_COMMAND}" -E copy "${resource_file}" "${resource_file_bindir}"
-        )
+function(link_embed_resources TARGET)
+    foreach(res_file_name IN LISTS RESOURCE_FILES)
+        target_link_options(${TARGET} PRIVATE "SHELL:--embed-file \"${res_file_name}\"")
     endforeach()
 endfunction()
 
@@ -116,11 +138,16 @@ add_sdl_image_test(testimage COMMAND testimage)
 add_sdl_image_test(testanimation_dummy_metadata COMMAND testanimation)
 add_sdl_image_test(testanimation COMMAND testanimation --no-dummy-metadata)
 
-copy_sdl_image_test_resources(testimage)
+if(EMSCRIPTEN)
+    link_embed_resources(testimage)
+    link_embed_resources(testanimation)
+endif()
 
 if(SDLIMAGE_TESTS_INSTALL)
-    install(
-        FILES ${RESOURCE_FILES}
-        DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}"
-    )
+    if(NOT EMSCRIPTEN)
+        install(
+            FILES ${RESOURCE_FILES}
+            DESTINATION "${CMAKE_INSTALL_LIBEXECDIR}/installed-tests/${PROJECT_NAME}"
+        )
+    endif()
 endif()
