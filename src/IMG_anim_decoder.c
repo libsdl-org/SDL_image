@@ -394,6 +394,13 @@ IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int 
         ++actualCount;
     }
 
+    // Copy animation metadata to the first surface
+    if (actualCount > 0) {
+        SDL_PropertiesID src_props = IMG_GetAnimationDecoderProperties(decoder);
+        SDL_PropertiesID dst_props = SDL_GetSurfaceProperties(frames[0]);
+        SDL_CopyProperties(src_props, dst_props);
+    }
+
     IMG_CloseAnimationDecoder(decoder);
     decoder = NULL;
 
