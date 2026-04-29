@@ -3209,7 +3209,8 @@ extern SDL_DECLSPEC IMG_AnimationDecoder * SDLCALL IMG_CreateAnimationDecoderWit
  * information about the underlying image such as description, copyright text
  * and loop count.
  *
- * `IMG_PROP_METADATA_LOOP_COUNT_NUMBER`, if present, specifies the number of times to play the animation, with 0 meaning loop continuously.
+ * `IMG_PROP_METADATA_LOOP_COUNT_NUMBER`, if present, specifies the number of
+ * times to play the animation, with 0 meaning loop continuously.
  *
  * \param decoder the animation decoder.
  * \returns the properties ID of the animation decoder, or 0 if there are no
