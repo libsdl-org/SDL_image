@@ -549,7 +549,7 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder, char
     }
 
     if (loopCount) {
-        *loopCount = 0;
+        *loopCount = 1;
     }
 
     IMG_AnimationDecoderContext *ctx = decoder->ctx;
@@ -641,7 +641,8 @@ static bool IMG_AnimationDecoderGetGIFHeader(IMG_AnimationDecoder *decoder, char
                                     return SDL_SetError("Error reading Netscape sub-block data");
                                 }
                                 if (sub_block_data[0] == 0x01 && loopCount) {
-                                    *loopCount = LM_to_uint(sub_block_data[1], sub_block_data[2]);
+                                    Uint16 repeatCount = LM_to_uint(sub_block_data[1], sub_block_data[2]);
+                                    *loopCount = (repeatCount ? (repeatCount + 1) : 0);
                                 }
                                 // Terminator
                                 if (!ReadOK(src, &sub_block_size, 1) || sub_block_size != 0x00) {
@@ -1002,7 +1003,7 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Properties
     decoder->Close = IMG_AnimationDecoderClose_Internal;
 
     char *comment = NULL;
-    int loop_count = 0;
+    int loop_count = 1;
     if (!IMG_AnimationDecoderGetGIFHeader(decoder, &comment, &loop_count)) {
         return false;
     }
@@ -1011,7 +1012,7 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Properties
     ctx->ignore_props = ignoreProps;
     if (!ignoreProps) {
         // Set well-defined properties.
-        SDL_SetNumberProperty(decoder->props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, (Sint64)loop_count);
+        SDL_SetNumberProperty(decoder->props, IMG_PROP_METADATA_LOOP_COUNT_NUMBER, loop_count);
 
         // Get other well-defined properties and set them in our props.
         if (comment) {
@@ -2497,6 +2498,11 @@ static int writeNetscapeLoopExtension(SDL_IOStream *io, uint16_t loopCount)
     if (!io)
         return -1;
 
+    // Omit the extension if the loop count is 1, since 1 can't be represented
+    if (loopCount == 1) {
+        return 0;
+    }
+
     // Extension Introducer
     if (!writeByte(io, 0x21)) {
         return -1;
@@ -2524,7 +2530,8 @@ static int writeNetscapeLoopExtension(SDL_IOStream *io, uint16_t loopCount)
         return -1;
     }
     // Loop Count
-    if (!writeWord(io, loopCount)) {
+    uint16_t repeatCount = (loopCount > 0) ? (loopCount - 1) : 0;
+    if (!writeWord(io, repeatCount)) {
         return -1;
     }
     // Block Terminator

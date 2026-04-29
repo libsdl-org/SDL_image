@@ -74,6 +74,8 @@ int main(int argc, char *argv[])
     Uint32 flags;
     int i, j, w, h, done;
     int once = 0;
+    int played = 0;
+    int loop_count = 0;
     int current_frame, delay;
     SDL_Event event;
     const char *saveFile = NULL;
@@ -126,6 +128,7 @@ int main(int argc, char *argv[])
             SDL_Log("Couldn't load %s: %s\n", argv[i], SDL_GetError());
             continue;
         }
+        loop_count = (int)SDL_GetNumberProperty(SDL_GetSurfaceProperties(anim->frames[0]), IMG_PROP_METADATA_LOOP_COUNT_NUMBER, -1);
         w = anim->w;
         h = anim->h;
 
@@ -144,6 +147,7 @@ int main(int argc, char *argv[])
         for (j = 0; j < anim->count; ++j) {
             textures[j] = SDL_CreateTextureFromSurface(renderer, anim->frames[j]);
         }
+        played = 0;
         current_frame = 0;
 
         /* Show the window */
@@ -205,10 +209,17 @@ int main(int argc, char *argv[])
             }
             SDL_Delay(delay);
 
-            current_frame = (current_frame + 1) % anim->count;
+            if (current_frame < (anim->count - 1)) {
+                ++current_frame;
+            } else {
+                if (played != (loop_count - 1)) {
+                    ++played;
+                    current_frame = 0;
+                }
 
-            if (once && current_frame == 0) {
-                break;
+                if (once) {
+                    break;
+                }
             }
         }
 
