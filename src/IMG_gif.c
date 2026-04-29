@@ -262,8 +262,10 @@ GetCode(SDL_IOStream *src, int code_size, int flag, State_t * state)
                 RWSetMsg("ran off the end of my bits");
             return -1;
         }
-        state->buf[0] = state->buf[state->last_byte - 2];
-        state->buf[1] = state->buf[state->last_byte - 1];
+        if (state->last_byte > 2) {
+            state->buf[0] = state->buf[state->last_byte - 2];
+            state->buf[1] = state->buf[state->last_byte - 1];
+        }
 
         if ((ret = GetDataBlock(src, &state->buf[2], state)) > 0)
             count = (unsigned char) ret;
