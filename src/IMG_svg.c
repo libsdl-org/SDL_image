@@ -46,6 +46,7 @@
 #undef strncpy
 #define strncpy SDL_strlcpy
 #define strlen  SDL_strlen
+#undef strstr
 #define strstr  SDL_strstr
 #define strtol  SDL_strtol
 #define strtoll SDL_strtoll
