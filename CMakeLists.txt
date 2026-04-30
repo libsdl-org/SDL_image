@@ -56,7 +56,7 @@ endif()
 
 # Assume MSVC projects don't have a package manager and need vendored dependencies (by default).
 # Most other platforms have some kind of package manager.
-if(MSVC)
+if(ANDROID OR MSVC)
     set(vendored_default ON)
 else()
     set(vendored_default OFF)
