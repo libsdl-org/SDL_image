@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		634AC2862FA7F0F200DAC6F0 /* colrconvert.c in Sources */ = {isa = PBXBuildFile; fileRef = 634AC2852FA7F0F200DAC6F0 /* colrconvert.c */; };
 		F313F5A02ADDB009008B58D6 /* exif.c in Sources */ = {isa = PBXBuildFile; fileRef = F313F59F2ADDB009008B58D6 /* exif.c */; };
 		F313F5A22ADDB03F008B58D6 /* reformat_libsharpyuv.c in Sources */ = {isa = PBXBuildFile; fileRef = F313F5A12ADDB03F008B58D6 /* reformat_libsharpyuv.c */; };
 		F314CA602CB4C6A5008F776B /* planar_functions.c in Sources */ = {isa = PBXBuildFile; fileRef = F314CA5B2CB4C6A5008F776B /* planar_functions.c */; };
@@ -516,6 +517,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		634AC2852FA7F0F200DAC6F0 /* colrconvert.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = colrconvert.c; path = ../../external/libavif/src/colrconvert.c; sourceTree = SOURCE_ROOT; };
 		F313F59F2ADDB009008B58D6 /* exif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exif.c; path = ../../external/libavif/src/exif.c; sourceTree = "<group>"; };
 		F313F5A12ADDB03F008B58D6 /* reformat_libsharpyuv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = reformat_libsharpyuv.c; path = ../../external/libavif/src/reformat_libsharpyuv.c; sourceTree = "<group>"; };
 		F314CA5B2CB4C6A5008F776B /* planar_functions.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = planar_functions.c; sourceTree = "<group>"; };
@@ -1435,6 +1437,7 @@
 				F314F1A72B62C7F90006624D /* codec_aom.c */,
 				F35474952829A9E0007E9EDA /* codec_dav1d.c */,
 				F354747A2829A9CB007E9EDA /* colr.c */,
+				634AC2852FA7F0F200DAC6F0 /* colrconvert.c */,
 				F354747B2829A9CB007E9EDA /* diag.c */,
 				F313F59F2ADDB009008B58D6 /* exif.c */,
 				F354747F2829A9CB007E9EDA /* io.c */,
@@ -2116,6 +2119,7 @@
 				F354748C2829A9CB007E9EDA /* reformat.c in Sources */,
 				F354748E2829A9CB007E9EDA /* io.c in Sources */,
 				F35474892829A9CB007E9EDA /* colr.c in Sources */,
+				634AC2862FA7F0F200DAC6F0 /* colrconvert.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
