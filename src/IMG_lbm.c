@@ -400,6 +400,10 @@ SDL_Surface *IMG_LoadLBM_IO(SDL_IOStream *src )
 
         if ( pbm )                 /* File format : 'Packed Bitmap' */
         {
+           if ( width > bytesperline ) {
+               error="LBM image has invalid width";
+               goto done;
+           }
            SDL_memcpy( ptr, MiniBuf, width );
         }
         else        /* We have to un-interlace the bits ! */
