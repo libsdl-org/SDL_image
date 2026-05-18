@@ -376,6 +376,7 @@ enum NSVGgradientUnits {
 };
 
 #define NSVG_MAX_DASHES 8
+#define NSVG_MAX_CLASSES 32
 
 enum NSVGunits {
 	NSVG_UNITS_USER,
@@ -448,6 +449,13 @@ typedef struct NSVGattrib
 	char visible;
 } NSVGattrib;
 
+typedef struct NSVGstyleDeclaration
+{
+	char* className;
+	char* propertiesText;
+	struct NSVGstyleDeclaration* next;
+} NSVGstyleDeclaration;
+
 typedef struct NSVGparser
 {
 	NSVGattrib attr[NSVG_MAX_ATTR];
@@ -457,6 +465,7 @@ typedef struct NSVGparser
 	int cpts;
 	NSVGpath* plist;
 	NSVGimage* image;
+	NSVGstyleDeclaration* styles;
 	NSVGgradientData* gradients;
 	NSVGshape* shapesTail;
 	float viewMinx, viewMiny, viewWidth, viewHeight;
@@ -464,6 +473,7 @@ typedef struct NSVGparser
 	float dpi;
 	char pathFlag;
 	char defsFlag;
+	char styleFlag;
 } NSVGparser;
 
 static void nsvg__xformIdentity(float* t)
@@ -660,6 +670,15 @@ error:
 	}
 	return NULL;
 }
+static void nsvg__deleteStyles(NSVGstyleDeclaration* style) {
+	while (style) {
+		NSVGstyleDeclaration* next = style->next;
+		free(style->className);
+		free(style->propertiesText);
+		free(style);
+		style = next;
+	}
+}
 
 static void nsvg__deletePaths(NSVGpath* path)
 {
@@ -692,6 +711,7 @@ static void nsvg__deleteGradientData(NSVGgradientData* grad)
 static void nsvg__deleteParser(NSVGparser* p)
 {
 	if (p != NULL) {
+		nsvg__deleteStyles(p->styles);
 		nsvg__deletePaths(p->plist);
 		nsvg__deleteGradientData(p->gradients);
 		nsvgDelete(p->image);
@@ -1787,6 +1807,34 @@ static int nsvg__parseStrokeDashArray(NSVGparser* p, const char* str, float* str
 
 static void nsvg__parseStyle(NSVGparser* p, const char* str);
 
+// Apply any matching class styles for a "class" attribute value. We support only simple class
+// selectors. The class attribute may contain multiple space-separated class names.
+static void nsvg__applyClassStyles(NSVGparser* p, const char* value)
+{
+	const char* cur = value;
+	while (*cur) {
+		const char* classStart;
+		size_t classLen;
+		NSVGstyleDeclaration* style;
+
+		while (*cur && nsvg__isspace(*cur))
+			cur++;
+		if (!*cur)
+			break;
+
+		classStart = cur;
+		while (*cur && !nsvg__isspace(*cur))
+			cur++;
+		classLen = (size_t)(cur - classStart);
+
+		for (style = p->styles; style != NULL; style = style->next) {
+			if (strncmp(style->className, classStart, classLen) == 0 && style->className[classLen] == '\0') {
+				nsvg__parseStyle(p, style->propertiesText);
+			}
+		}
+	}
+}
+
 static int nsvg__parseAttr(NSVGparser* p, const char* name, const char* value)
 {
 	float xform[6];
@@ -1854,6 +1902,8 @@ static int nsvg__parseAttr(NSVGparser* p, const char* name, const char* value)
 	} else if (strcmp(name, "id") == 0) {
 		strncpy(attr->id, value, 63);
 		attr->id[63] = '\0';
+	} else if (strcmp(name, "class") == 0) {
+		nsvg__applyClassStyles(p, value);
 	} else {
 		return 0;
 	}
@@ -2764,13 +2814,15 @@ static void nsvg__startElement(void* ud, const char* el, const char** attr)
 	NSVGparser* p = (NSVGparser*)ud;
 
 	if (p->defsFlag) {
-		// Skip everything but gradients in defs
+		// Skip everything but gradients and styles in defs
 		if (strcmp(el, "linearGradient") == 0) {
 			nsvg__parseGradient(p, attr, NSVG_PAINT_LINEAR_GRADIENT);
 		} else if (strcmp(el, "radialGradient") == 0) {
 			nsvg__parseGradient(p, attr, NSVG_PAINT_RADIAL_GRADIENT);
 		} else if (strcmp(el, "stop") == 0) {
 			nsvg__parseGradientStop(p, attr);
+		} else if (strcmp(el, "style") == 0) {
+			p->styleFlag = 1;
 		}
 		return;
 	}
@@ -2818,6 +2870,8 @@ static void nsvg__startElement(void* ud, const char* el, const char** attr)
 		p->defsFlag = 1;
 	} else if (strcmp(el, "svg") == 0) {
 		nsvg__parseSVG(p, attr);
+	} else if (strcmp(el, "style") == 0) {
+		p->styleFlag = 1;
 	}
 }
 
@@ -2831,14 +2885,104 @@ static void nsvg__endElement(void* ud, const char* el)
 		p->pathFlag = 0;
 	} else if (strcmp(el, "defs") == 0) {
 		p->defsFlag = 0;
+	} else if (strcmp(el, "style") == 0) {
+		p->styleFlag = 0;
 	}
+}
+
+static char *nsvg__strndup(const char *s, size_t n)
+{
+	char *result = (char *)malloc(n + 1);
+	if (result == NULL)
+		return NULL;
+
+	memcpy(result, s, n);
+	result[n] = '\0';
+	return result;
 }
 
 static void nsvg__content(void* ud, const char* s)
 {
-	NSVG_NOTUSED(ud);
-	NSVG_NOTUSED(s);
-	// empty
+	NSVGparser* p = (NSVGparser*)ud;
+	if (!p->styleFlag)
+		return;
+
+	// Parse all the styles inside the style block. Each style's content will be later processed using nsvg__parseStyle().
+	// Note: We only support selector lists of simple class selectors (e.g. ".foo, .bar { ... }").
+	while (*s) {
+		NSVGstyleDeclaration* styles[NSVG_MAX_CLASSES];
+		int nstyles = 0;
+		const char* propsStart;
+		const char* propsEnd;
+		int i;
+
+		// 1) Parse the selector list up to '{'. For each simple class selector ('.name'),
+		//    allocate a new NSVGstyleDeclaration into the local staging array. Styles are
+		//    only committed to p->styles in step 3 below, once their propertiesText has
+		//    also been allocated successfully.
+		while (*s && *s != '{') {
+			const char* selStart;
+			const char* selEnd;
+			NSVGstyleDeclaration* style;
+
+			while (*s && (nsvg__isspace(*s) || *s == ','))
+				s++;
+			if (!*s || *s == '{')
+				break;
+
+			selStart = s;
+			while (*s && !nsvg__isspace(*s) && *s != ',' && *s != '{')
+				s++;
+			selEnd = s;
+
+			if (*selStart != '.' || nstyles >= NSVG_MAX_CLASSES)
+				continue; // unsupported selector, or staging array full
+			selStart++; // strip leading '.'
+
+			style = (NSVGstyleDeclaration*)malloc(sizeof(NSVGstyleDeclaration));
+			if (style == NULL)
+				continue;
+			style->className = nsvg__strndup(selStart, (size_t)(selEnd - selStart));
+			if (style->className == NULL) {
+				free(style);
+				continue;
+			}
+			style->propertiesText = NULL;
+			style->next = NULL;
+			styles[nstyles++] = style;
+		}
+		if (!*s) {
+			// No '{' found - discard pending styles and stop.
+			for (i = 0; i < nstyles; i++) {
+				free(styles[i]->className);
+				free(styles[i]);
+			}
+			break;
+		}
+		s++; // advance past '{'
+
+		// 2) Find the end of the properties block (up to '}').
+		propsStart = s;
+		while (*s && *s != '}')
+			s++;
+		propsEnd = s;
+
+		// 3) Allocate propertiesText for each pending style. Commit successful ones to
+		//    p->styles (head-insertion); free any whose allocation fails.
+		for (i = 0; i < nstyles; i++) {
+			styles[i]->propertiesText = nsvg__strndup(propsStart, (size_t)(propsEnd - propsStart));
+			if (styles[i]->propertiesText == NULL) {
+				free(styles[i]->className);
+				free(styles[i]);
+			} else {
+				styles[i]->next = p->styles;
+				p->styles = styles[i];
+			}
+		}
+
+		if (*s)
+			s++; // advance past '}'
+	}
 }
 
 static void nsvg__imageBounds(NSVGparser* p, float* bounds)
