@@ -142,7 +142,8 @@ SDL_Surface *IMG_LoadLBM_IO(SDL_IOStream *src )
 
     nbcolors = 0;
 
-    SDL_memset( &bmhd, 0, sizeof( BMHD ) );
+    SDL_zeroa(colormap);
+    SDL_zero(bmhd);
     flagHAM = 0;
     flagEHB = 0;
 
@@ -303,7 +304,7 @@ SDL_Surface *IMG_LoadLBM_IO(SDL_IOStream *src )
         /* The 32 last colors are the same but divided by 2 */
         /* Some Amiga pictures save 64 colors with 32 last wrong colors, */
         /* they shouldn't !, and here we overwrite these 32 bad colors. */
-        if ( (nbcolors==32 || flagEHB ) && (1<<nbplanes)==64 )
+        if ( (nbplanes == 6) && (flagEHB || nbcolors <= 32) )
         {
             nbcolors = 64;
             ptr = &colormap[0];
