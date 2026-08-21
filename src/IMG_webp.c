@@ -668,7 +668,6 @@ bool IMG_CreateWEBPAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
 
     decoder->ctx->canvas = SDL_CreateSurface(width, height, has_alpha ? SDL_PIXELFORMAT_RGBA32 : SDL_PIXELFORMAT_RGBX32);
     if (!decoder->ctx->canvas) {
-        lib.WebPDemuxDelete(decoder->ctx->demuxer);
         IMG_AnimationDecoderClose_Internal(decoder);
         return false;
     }
