@@ -1086,6 +1086,10 @@ static SDL_Surface *load_xpm(char **xpm, SDL_IOStream *src, bool force_32bit)
             goto done;
 
         p = line + cpp + 1;
+        if (p >= (line + SDL_strlen(line))) {
+            error = "Invalid color specification";
+            goto done;
+        }
 
         /* parse a colour definition */
         for (;;) {
