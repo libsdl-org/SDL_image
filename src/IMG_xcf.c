@@ -605,6 +605,11 @@ static unsigned char *load_xcf_tile_none (SDL_IOStream *src, size_t len, int bpp
 {
     unsigned char *load = NULL;
 
+    if (len < (x * y * bpp)) {
+        SDL_SetError("Gimp image invalid tile offsets");
+        return NULL;
+    }
+
     load = (unsigned char *)SDL_malloc(len);
     if (load != NULL) {
         if (SDL_ReadIO(src, load, len) != len) {
@@ -997,7 +1002,10 @@ SDL_Surface *IMG_LoadXCF_IO(SDL_IOStream *src)
         layer = read_xcf_layer(src, head);
         if (layer != NULL) {
             if (layer->visible) {
-                do_layer_surface(lays, src, head, layer, load_tile);
+                if (do_layer_surface(lays, src, head, layer, load_tile) != 0) {
+                    error = SDL_GetError();
+                    goto done;
+                }
                 rs.x = 0;
                 rs.y = 0;
                 rs.w = layer->width;
