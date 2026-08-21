@@ -605,7 +605,7 @@ static unsigned char *load_xcf_tile_none (SDL_IOStream *src, size_t len, int bpp
 {
     unsigned char *load = NULL;
 
-    if (len < (x * y * bpp)) {
+    if (len < (size_t)(x * y * bpp)) {
         SDL_SetError("Gimp image invalid tile offsets");
         return NULL;
     }
