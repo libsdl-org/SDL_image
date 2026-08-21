@@ -204,7 +204,7 @@ static bool ParseANIHeader(IMG_AnimationParseContext *parse, Uint32 size)
     }
 
     for (Uint32 i = 0; i < ctx->frame_count; ++i) {
-        ctx->frame_sequence[i] = i;
+        ctx->frame_sequence[i] = (i % anih->frames);
         ctx->frame_durations[i] = anih->jifRate;
     }
     return true;
