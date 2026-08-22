@@ -34,6 +34,7 @@
 #ifndef SDL_SIZE_MAX
 #define SDL_SIZE_MAX ((size_t)-1)
 #endif
+#define MAX_XCF_SIZE    20000   /* arbitrary limit to avoid integer overflow. */
 
 #ifdef DEBUG
 static char prop_names [][30] = {
@@ -368,6 +369,13 @@ static xcf_header *read_xcf_header(SDL_IOStream *src)
         free_xcf_header(h);
         return NULL;
     }
+
+    if ((h->width > MAX_XCF_SIZE) || (h->height > MAX_XCF_SIZE)) {
+        SDL_SetError("Gimp image too large (%ux%u)", (unsigned int)h->width, (unsigned int)h->height);
+        free_xcf_header(h);
+        return NULL;
+    }
+
     if (h->sign[9] == 'v' && h->sign[10] >= '0' && h->sign[10] <= '9' && h->sign[11] >= '0' && h->sign[11] <= '9' && h->sign[12] >= '0' && h->sign[12] <= '9')
         h->file_version = (h->sign[10] - '0') * 100 + (h->sign[11] - '0') * 10 + (h->sign[12] - '0');
     else
@@ -446,6 +454,12 @@ static xcf_layer *read_xcf_layer(SDL_IOStream *src, const xcf_header *h)
         return NULL;
     }
 
+    if ((l->width > MAX_XCF_SIZE) || (l->height > MAX_XCF_SIZE)) {
+        SDL_SetError("Gimp layer too large (%ux%u)", (unsigned int)l->width, (unsigned int)l->height);
+        free_xcf_layer(l);
+        return NULL;
+    }
+
     l->name = read_string(src);
 #ifdef DEBUG
     SDL_Log("layer (%d,%d) type=%u '%s'\n", l->width, l->height, l->layer_type, l->name);
@@ -491,6 +505,12 @@ static xcf_channel *read_xcf_channel(SDL_IOStream *src, const xcf_header *h)
     }
     if (!SDL_ReadU32BE(src, &l->width) ||
         !SDL_ReadU32BE(src, &l->height)) {
+        free_xcf_channel(l);
+        return NULL;
+    }
+
+    if ((l->width > MAX_XCF_SIZE) || (l->height > MAX_XCF_SIZE)) {
+        SDL_SetError("Gimp channel too large (%ux%u)", (unsigned int)l->width, (unsigned int)l->height);
         free_xcf_channel(l);
         return NULL;
     }
@@ -555,6 +575,12 @@ static xcf_hierarchy *read_xcf_hierarchy(SDL_IOStream *src, const xcf_header *he
         return NULL;
     }
 
+    if ((h->width > MAX_XCF_SIZE) || (h->height > MAX_XCF_SIZE)) {
+        SDL_SetError("Gimp image too large (%ux%u)", (unsigned int)h->width, (unsigned int)h->height);
+        free_xcf_hierarchy(h);
+        return NULL;
+    }
+
     i = 0;
     do {
         h->level_file_offsets = (Uint64 *)SDL_realloc(h->level_file_offsets, sizeof(*h->level_file_offsets) * (i+1));
@@ -581,15 +607,26 @@ static xcf_level *read_xcf_level(SDL_IOStream *src, const xcf_header *h)
     if (!l) {
         return NULL;
     }
-    if (!SDL_ReadU32BE (src, &l->width) ||
-        !SDL_ReadU32BE (src, &l->height)) {
+    if (!SDL_ReadU32BE(src, &l->width) ||
+        !SDL_ReadU32BE(src, &l->height)) {
+        free_xcf_level(l);
+        return NULL;
+    }
+
+    if ((l->width > MAX_XCF_SIZE) || (l->height > MAX_XCF_SIZE)) {
+        SDL_SetError("Gimp level too large (%ux%u)", (unsigned int)l->width, (unsigned int)l->height);
         free_xcf_level(l);
         return NULL;
     }
 
     i = 0;
     do {
-        l->tile_file_offsets = (Uint64 *)SDL_realloc(l->tile_file_offsets, sizeof(*l->tile_file_offsets) * (i+1));
+        Uint64 *tile_file_offsets = (Uint64 *)SDL_realloc(l->tile_file_offsets, sizeof(*l->tile_file_offsets) * (i+1));
+        if (!tile_file_offsets) {
+            free_xcf_level(l);
+            return NULL;
+        }
+        l->tile_file_offsets = tile_file_offsets;
         l->tile_file_offsets[i] = read_offset(src, h);
     } while (l->tile_file_offsets[i++]);
 
@@ -767,19 +804,19 @@ do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_
         return 1;
     }
 
-    if ((hierarchy->width > 20000) || (hierarchy->height > 20000)) {  /* arbitrary limit to avoid integer overflow. */
-        SDL_SetError("Gimp image too large (%ux%u)", (unsigned int) hierarchy->width, (unsigned int) hierarchy->height);
-        free_xcf_hierarchy(hierarchy);
-        return 1;
-    }
-
     level = NULL;
     for (i = 0; hierarchy->level_file_offsets[i]; i++) {
         if (SDL_SeekIO(src, hierarchy->level_file_offsets[i], SDL_IO_SEEK_SET) < 0)
             break;
+
         if (i > 0) /* skip level except the 1st one, just like GIMP does */
             continue;
+
         level = read_xcf_level(src, head);
+        if (!level) {
+            free_xcf_hierarchy(hierarchy);
+            return 1;
+        }
 
         ty = tx = 0;
         for (j = 0; level->tile_file_offsets[j]; j++) {
