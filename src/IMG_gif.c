@@ -372,6 +372,10 @@ LWZReadByte(SDL_IOStream *src, int flag, int input_code_size, State_t * state)
                 RWSetMsg("invalid LWZ data");
                 return -3;
             }
+            if (state->sp == &state->stack[SDL_arraysize(state->stack)]) {
+                RWSetMsg("invalid LWZ data");
+                return -3;
+            }
             *state->sp++ = state->table[1][code];
             if (code == state->table[0][code]) {
                 RWSetMsg("circular table entry BIG ERROR");
@@ -382,6 +386,10 @@ LWZReadByte(SDL_IOStream *src, int flag, int input_code_size, State_t * state)
 
         /* Guard against buffer overruns */
         if (code < 0 || code >= (1 << MAX_LWZ_BITS)) {
+            RWSetMsg("invalid LWZ data");
+            return -4;
+        }
+        if (state->sp == &state->stack[SDL_arraysize(state->stack)]) {
             RWSetMsg("invalid LWZ data");
             return -4;
         }
