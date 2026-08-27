@@ -140,7 +140,7 @@ IMG_AnimationEncoder *IMG_CreateAnimationEncoderWithProperties(SDL_PropertiesID 
         result = IMG_CreateANIAnimationEncoder(encoder, props);
     } else if (SDL_strcasecmp(type, "apng") == 0 || SDL_strcasecmp(type, "png") == 0) {
         result = IMG_CreateAPNGAnimationEncoder(encoder, props);
-    } else if (SDL_strcasecmp(type, "avifs") == 0) {
+    } else if (SDL_strcasecmp(type, "avifs") == 0 || SDL_strcasecmp(type, "avif") == 0) {
         result = IMG_CreateAVIFAnimationEncoder(encoder, props);
     } else if (SDL_strcasecmp(type, "gif") == 0) {
         result = IMG_CreateGIFAnimationEncoder(encoder, props);
