@@ -82,6 +82,7 @@ if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/SDL3_image-static-targets.cmake")
         list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
 
         include(CMakeFindDependencyMacro)
+        include(PkgConfigHelper)
 
         if(SDLIMAGE_AVIF AND NOT TARGET avif AND NOT SDLIMAGE_AVIF_SHARED)
             find_package(libavif 1.0 QUIET)
