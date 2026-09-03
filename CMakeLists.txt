@@ -18,6 +18,7 @@ project(SDL3_image
 )
 
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/GetGitRevisionDescription.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/cmake/PkgConfigHelper.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/PrivateSdlFunctions.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlcpu.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/sdlplatform.cmake")
@@ -1254,10 +1255,18 @@ if(SDLIMAGE_INSTALL)
         FILES
             "${CMAKE_CURRENT_BINARY_DIR}/SDL3_imageConfig.cmake"
             "${CMAKE_CURRENT_BINARY_DIR}/SDL3_imageConfigVersion.cmake"
-            ${INSTALL_EXTRA_CMAKE_MODULES}
         DESTINATION "${SDLIMAGE_INSTALL_CMAKEDIR}"
         COMPONENT devel
     )
+    if(INSTALL_EXTRA_CMAKE_MODULES)
+        install(
+            FILES
+                cmake/PkgConfigHelper.cmake
+                ${INSTALL_EXTRA_CMAKE_MODULES}
+            DESTINATION "${SDLIMAGE_INSTALL_CMAKEDIR}"
+            COMPONENT devel
+        )
+    endif()
     install(EXPORT SDL3ImageExports
         FILE ${sdl3_image_target_name}-targets.cmake
         NAMESPACE SDL3_image::
