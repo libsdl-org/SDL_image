@@ -348,7 +348,7 @@ IMG_Animation *IMG_DecodeAsAnimation(SDL_IOStream *src, const char *format, int 
     // formats like GIF only supports continuous decoding and doesn't have any data that
     // states the total available frames inside the binary data.
     //
-    // For this reason , we will decode frames until we reach the end of the stream or
+    // For this reason, we will decode frames until we reach the end of the stream or
     // we reach the maximum number of frames specified by the caller.
     IMG_Animation *anim = NULL;
     int actualCount = 0;
