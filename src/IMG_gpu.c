@@ -42,7 +42,8 @@ static SDL_GPUTexture * LoadGPUTexture(SDL_GPUDevice *device, SDL_GPUCopyPass *c
         }
     }
 
-    SDL_GPUTextureCreateInfo texture_create_info = {0};
+    SDL_GPUTextureCreateInfo texture_create_info;
+    SDL_zero(texture_create_info);
     texture_create_info.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
     texture_create_info.type = SDL_GPU_TEXTURETYPE_2D;
     texture_create_info.layer_count_or_depth = 1;
@@ -50,13 +51,14 @@ static SDL_GPUTexture * LoadGPUTexture(SDL_GPUDevice *device, SDL_GPUCopyPass *c
     texture_create_info.usage = SDL_GPU_TEXTUREUSAGE_SAMPLER | SDL_GPU_TEXTUREUSAGE_COMPUTE_STORAGE_READ;
     texture_create_info.width = surface->w;
     texture_create_info.height = surface->h;
-    SDL_GPUTexture  *texture = SDL_CreateGPUTexture(device, &texture_create_info);
+    SDL_GPUTexture *texture = SDL_CreateGPUTexture(device, &texture_create_info);
     if (!texture) {
         SDL_DestroySurface(surface);
         return NULL;
     }
 
-    SDL_GPUTransferBufferCreateInfo transfer_buffer_create_info = {0};
+    SDL_GPUTransferBufferCreateInfo transfer_buffer_create_info;
+    SDL_zero(transfer_buffer_create_info);
     transfer_buffer_create_info.size = surface->w * surface->h * 4;
     transfer_buffer_create_info.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
     SDL_GPUTransferBuffer *transfer_buffer = SDL_CreateGPUTransferBuffer(device, &transfer_buffer_create_info);
@@ -84,8 +86,10 @@ static SDL_GPUTexture * LoadGPUTexture(SDL_GPUDevice *device, SDL_GPUCopyPass *c
     }
     SDL_UnmapGPUTransferBuffer(device, transfer_buffer);
 
-    SDL_GPUTextureTransferInfo texture_transfer_info = {0};
-    SDL_GPUTextureRegion texture_region = {0};
+    SDL_GPUTextureTransferInfo texture_transfer_info;
+    SDL_GPUTextureRegion texture_region;
+    SDL_zero(texture_transfer_info);
+    SDL_zero(texture_region);
     texture_transfer_info.transfer_buffer = transfer_buffer;
     texture_region.texture = texture;
     texture_region.w = surface->w;
