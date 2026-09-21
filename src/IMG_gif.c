@@ -780,7 +780,7 @@ static bool IMG_AnimationDecoderReset_Internal(IMG_AnimationDecoder *decoder)
     ctx->got_header = false;
     ctx->got_eof = false;
     ctx->last_disposal = GIF_DISPOSE_NONE;
-    SDL_Rect r = {0};
+    SDL_Rect r = {0,0,0,0};
     ctx->restore_area = r;
 
     // We don't care about metadata when resetting to re-read.
@@ -1011,7 +1011,7 @@ bool IMG_CreateGIFAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Properties
     ctx->current_delay = 100;
     ctx->current_disposal = GIF_DISPOSE_NA;
     ctx->last_disposal = GIF_DISPOSE_NONE;
-    SDL_Rect r = {0};
+    SDL_Rect r = {0,0,0,0};
     ctx->restore_area = r;
     ctx->single_frame = SDL_GetBooleanProperty(props, IMG_PROP_ANIMATION_DECODER_CREATE_GIF_SINGLE_IMAGE_BOOLEAN, false);
 

@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
     SDL_GPUTexture *swapchain_texture = NULL;
     Uint32 swapchain_width = 0;
     Uint32 swapchain_height = 0;
-    SDL_GPUBlitInfo blit_info = {0};
+    SDL_GPUBlitInfo blit_info;
 
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("SDL_Init(SDL_INIT_VIDEO) failed: %s", SDL_GetError());
@@ -146,6 +146,7 @@ int main(int argc, char *argv[])
         }
 
         if (texture) {
+            SDL_zero(blit_info);
             blit_info.source.texture = texture;
             blit_info.source.w = texture_width;
             blit_info.source.h = texture_height;
