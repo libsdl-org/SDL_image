@@ -2,6 +2,7 @@ projectfullname = SDL_image
 projectshortname = SDL_image
 incsubdir = include/SDL3_image
 wikisubdir = SDL_image
+readmesubdir = docs
 apiprefixregex = (IMG_|SDL_IMAGE_)
 mainincludefname = SDL3_image/SDL_image.h
 versionfname = include/SDL3_image/SDL_image.h
