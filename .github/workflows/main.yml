@@ -16,7 +16,7 @@ jobs:
       matrix:
         platform:
         - { name: 'Windows (MSVC+CMake)',       os: windows-latest, shell: sh, cmake: '-GNinja', msvc: 1, shared: 1, static: 0, vendored: 1 }
-        - { name: 'Windows (mingw32+autotools)',os: windows-latest, shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686, shared: 1, static: 1 }
+        - { name: 'Windows (mingw64+autotools)',os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 1 }
         - { name: 'Windows (mingw64+CMake)',    os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64, shared: 1, static: 0,
             cmake: '-DSDL2IMAGE_BACKEND_STB=OFF -DSDL2IMAGE_BACKEND_WIC=OFF -G "Ninja Multi-Config"' }
         - { name: 'Linux (autotools)',          os: ubuntu-latest,  shell: sh, shared: 1, static: 1}
