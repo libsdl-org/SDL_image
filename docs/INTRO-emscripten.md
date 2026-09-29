@@ -25,7 +25,7 @@ add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 # This assumes the SDL_image source is available in vendored/SDL_image
 add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
 
-# on Web targets, we need CMake to generate a HTML webpage. 
+# on Web targets, we need CMake to generate a HTML webpage.
 if(EMSCRIPTEN)
   set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
 endif()

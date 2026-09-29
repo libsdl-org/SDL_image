@@ -39,7 +39,7 @@ Run:
 ```sh
 cd build/Debug
 ./hello
-``` 
+```
 - On other platforms the executable is in the build directory:
 ```sh
 cd build
