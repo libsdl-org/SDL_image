@@ -480,9 +480,9 @@ static bool LIBPNG_LoadPNG_IO_Internal(SDL_IOStream *src, struct png_load_vars *
         }
 
         for (int i = 0; i < palette->ncolors; i++) {
-            palette->colors[i].r = (i * 255) / palette->ncolors;
-            palette->colors[i].g = (i * 255) / palette->ncolors;
-            palette->colors[i].b = (i * 255) / palette->ncolors;
+            palette->colors[i].r = (i * 255) / (palette->ncolors - 1);
+            palette->colors[i].g = (i * 255) / (palette->ncolors - 1);
+            palette->colors[i].b = (i * 255) / (palette->ncolors - 1);
             palette->colors[i].a = 255;
         }
     }
