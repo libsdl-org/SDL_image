@@ -305,6 +305,70 @@ static const Format formats[] =
         IMG_LoadPNG_IO,
     },
     {
+        "PNG-grey1",
+        "grey1.png",
+        "grey1.bmp",
+        2,
+        1,
+        0, /* lossless */
+#if (USING_IMAGEIO && defined(PNG_USES_IMAGEIO)) || defined(SDL_IMAGE_USE_WIC_BACKEND) || defined(LOAD_PNG)
+        true,
+#else
+        false,
+#endif
+        false,
+        IMG_isPNG,
+        IMG_LoadPNG_IO,
+    },
+    {
+        "PNG-grey2",
+        "grey2.png",
+        "grey2.bmp",
+        4,
+        1,
+        0, /* lossless */
+#if (USING_IMAGEIO && defined(PNG_USES_IMAGEIO)) || defined(SDL_IMAGE_USE_WIC_BACKEND) || defined(LOAD_PNG)
+        true,
+#else
+        false,
+#endif
+        false,
+        IMG_isPNG,
+        IMG_LoadPNG_IO,
+    },
+    {
+        "PNG-grey4",
+        "grey4.png",
+        "grey4.bmp",
+        16,
+        1,
+        0, /* lossless */
+#if (USING_IMAGEIO && defined(PNG_USES_IMAGEIO)) || defined(SDL_IMAGE_USE_WIC_BACKEND) || defined(LOAD_PNG)
+        true,
+#else
+        false,
+#endif
+        false,
+        IMG_isPNG,
+        IMG_LoadPNG_IO,
+    },
+    {
+        "PNG-grey8",
+        "grey8.png",
+        "grey8.bmp",
+        256,
+        1,
+        0, /* lossless */
+#if (USING_IMAGEIO && defined(PNG_USES_IMAGEIO)) || defined(SDL_IMAGE_USE_WIC_BACKEND) || defined(LOAD_PNG)
+        true,
+#else
+        false,
+#endif
+        false,
+        IMG_isPNG,
+        IMG_LoadPNG_IO,
+    },
+    {
         "PNM",
         "sample.pnm",
         "sample.bmp",
