@@ -911,17 +911,15 @@ static int color_to_argb(char *spec, int speclen, Uint32 *argb)
     }
 }
 
-static char *linebuf;
-static size_t buflen;
-static char *error;
-
 /*
  * Read next line from the source.
  * If len > 0, it's assumed to be at least len chars (for efficiency).
  * Return NULL and set error upon EOF or parse error.
  */
-static char *get_next_line(char ***lines, SDL_IOStream *src, size_t len)
+static char *get_next_line(char ***lines, SDL_IOStream *src, size_t len, char **plinebuf, size_t *pbuflen, const char **error)
 {
+    char *linebuf = *plinebuf;
+    size_t buflen = *pbuflen;
     char *linebufnew;
 
     if (lines) {
@@ -931,24 +929,23 @@ static char *get_next_line(char ***lines, SDL_IOStream *src, size_t len)
         size_t n;
         do {
             if (SDL_ReadIO(src, &c, 1) != 1) {
-                error = "Premature end of data";
+                *error = "Premature end of data";
                 return NULL;
             }
         } while (c != '"');
         if (len) {
             len += 3;   /* "\",\n" */
             if (len > buflen){
-                buflen = len;
+                buflen = *pbuflen = len;
                 linebufnew = (char *)SDL_realloc(linebuf, buflen);
                 if (!linebufnew) {
-                    SDL_free(linebuf);
-                    error = "Out of memory";
+                    *error = "Out of memory";
                     return NULL;
                 }
-                linebuf = linebufnew;
+                linebuf = *plinebuf = linebufnew;
             }
             if (SDL_ReadIO(src, linebuf, len) != len) {
-                error = "Premature end of data";
+                *error = "Premature end of data";
                 return NULL;
             }
             n = len - 1;
@@ -959,16 +956,16 @@ static char *get_next_line(char ***lines, SDL_IOStream *src, size_t len)
                     if (buflen == 0)
                         buflen = 16;
                     buflen *= 2;
+                    *pbuflen = buflen;
                     linebufnew = (char *)SDL_realloc(linebuf, buflen);
                     if (!linebufnew) {
-                        SDL_free(linebuf);
-                        error = "Out of memory";
+                        *error = "Out of memory";
                         return NULL;
                     }
-                    linebuf = linebufnew;
+                    linebuf = *plinebuf = linebufnew;
                 }
                 if (SDL_ReadIO(src, linebuf + n, 1) != 1) {
-                    error = "Premature end of data";
+                    *error = "Premature end of data";
                     return NULL;
                 }
             } while (linebuf[n++] != '"');
@@ -1007,10 +1004,9 @@ static SDL_Surface *load_xpm(char **xpm, SDL_IOStream *src, bool force_32bit)
     char *line;
     char ***xpmlines = NULL;
     size_t pixels_len;
-
-    error = NULL;
-    linebuf = NULL;
-    buflen = 0;
+    const char *error = NULL;
+    char *linebuf = NULL;
+    size_t buflen = 0;
 
     if (src)
         start = SDL_TellIO(src);
@@ -1018,7 +1014,7 @@ static SDL_Surface *load_xpm(char **xpm, SDL_IOStream *src, bool force_32bit)
     if (xpm)
         xpmlines = &xpm;
 
-    line = get_next_line(xpmlines, src, 0);
+    line = get_next_line(xpmlines, src, 0, &linebuf, &buflen, &error);
     if (!line)
         goto done;
     /*
@@ -1081,7 +1077,7 @@ static SDL_Surface *load_xpm(char **xpm, SDL_IOStream *src, bool force_32bit)
     }
     for (index = 0; index < ncolors; ++index ) {
         char *p;
-        line = get_next_line(xpmlines, src, 0);
+        line = get_next_line(xpmlines, src, 0, &linebuf, &buflen, &error);
         if (!line)
             goto done;
 
@@ -1137,7 +1133,7 @@ static SDL_Surface *load_xpm(char **xpm, SDL_IOStream *src, bool force_32bit)
     pixels_len = w * cpp;
     dst = (Uint8 *)image->pixels;
     for (y = 0; y < h; y++) {
-        line = get_next_line(xpmlines, src, pixels_len);
+        line = get_next_line(xpmlines, src, pixels_len, &linebuf, &buflen, &error);
         if (!line)
             goto done;
 
