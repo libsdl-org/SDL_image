@@ -325,6 +325,11 @@ static SDL_Surface *GetBMPSurface(SDL_IOStream *src)
                 palette[i] |= 0xFF000000;
             }
         }
+
+        // clear any palette entries we didn't initialize, in case the file uses an index outside of the range it promised.
+        if (biClrUsed < SDL_arraysize(palette)) {
+            SDL_memset(&palette[biClrUsed], '\0', sizeof (palette[0]) * (SDL_arraysize(palette) - biClrUsed));
+        }
     }
 
     /* Read the surface pixels.  Note that the bmp image is upside down */
