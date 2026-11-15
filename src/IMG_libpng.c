@@ -936,6 +936,14 @@ static SDL_Surface *decompress_png_frame_data(DecompressionContext *context, png
         lib.png_set_palette_to_rgb(context->png_ptr);
     }
 
+    if (!(png_color_type & PNG_COLOR_MASK_COLOR)) {
+        lib.png_set_gray_to_rgb(context->png_ptr);
+    }
+
+    if (lib.png_get_valid(context->png_ptr, context->info_ptr, PNG_INFO_tRNS)) {
+        lib.png_set_tRNS_to_alpha(context->png_ptr);
+    }
+
     if (bit_depth == 16) {
         lib.png_set_strip_16(context->png_ptr);
     }
