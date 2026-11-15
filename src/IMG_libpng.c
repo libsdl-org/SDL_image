@@ -1438,19 +1438,8 @@ bool IMG_CreateAPNGAnimationDecoder(IMG_AnimationDecoder *decoder, SDL_Propertie
                 return false;
             }
 
-            Uint32 sequence_number = SDL_Swap32BE(*(Uint32 *)chunk_data);
-
-            // Find matching fcTL by sequence number (fdAT sequence - 1 matches fcTL sequence)
-            int matching_fctl_index = -1;
-            for (int i = 0; i < ctx->fctl_count; ++i) {
-                if (ctx->fctl_frames[i].sequence_number == sequence_number - 1) {
-                    matching_fctl_index = i;
-                    break;
-                }
-            }
-
-            if (matching_fctl_index >= 0) {
-                apng_fcTL_chunk *fctl = &ctx->fctl_frames[matching_fctl_index];
+            if (ctx->fctl_count > 0) {
+                apng_fcTL_chunk *fctl = &ctx->fctl_frames[ctx->fctl_count - 1];
                 png_size_t new_size = fctl->raw_idat_size + (chunk_length - 4);
 
                 if (new_size < fctl->raw_idat_size) {
