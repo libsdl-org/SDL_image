@@ -235,7 +235,7 @@ SDL_Surface *IMG_LoadLBM_RW( SDL_RWops *src )
     /* Sanity check: nbplanes must not exceed 8 for paletted images.
        Higher values cause 1<<nbplanes to exceed the 256-entry palette.
        For HAM, only 6 (HAM6) and 8 (HAM8) are valid. */
-    const bool validHAM = (flagHAM && (nbplanes == 6 || nbplanes == 8));
+    const SDL_bool validHAM = (flagHAM && (nbplanes == 6 || nbplanes == 8));
     if ( !pbm && nbplanes > 8 && nbplanes != 24 && !validHAM ) {
         SDL_SetError("LBM: invalid number of bitplanes (%u)", nbplanes);
         goto done;
