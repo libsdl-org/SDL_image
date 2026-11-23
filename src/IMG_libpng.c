@@ -414,6 +414,12 @@ static bool LIBPNG_LoadPNG_IO_Internal(SDL_IOStream *src, struct png_load_vars *
         lib.png_set_gray_to_rgb(vars->png_ptr);
     }
 
+    /* Grayscale loads as 8-bit, so reduce 16-bit samples to 8. */
+    if (vars->color_type == PNG_COLOR_TYPE_GRAY && vars->bit_depth == 16) {
+        lib.png_set_strip_16(vars->png_ptr);
+        vars->bit_depth = 8;
+    }
+
     if (vars->color_type == PNG_COLOR_TYPE_PALETTE ||
         vars->color_type == PNG_COLOR_TYPE_GRAY) {
         if (vars->bit_depth == 1) {
