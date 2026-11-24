@@ -660,6 +660,7 @@ static unsigned char *load_xcf_tile_none (SDL_IOStream *src, size_t len, int bpp
 static unsigned char *load_xcf_tile_rle(SDL_IOStream *src, size_t len, int bpp, int x, int y)
 {
     unsigned char *load, *t, *data, *d;
+    const unsigned char *load_end;
     int i, size, j, length;
     unsigned char val;
     size_t amount_read;
@@ -678,6 +679,7 @@ static unsigned char *load_xcf_tile_rle(SDL_IOStream *src, size_t len, int bpp, 
         SDL_free(load);
         return NULL;
     }
+    load_end = (load + amount_read);
 
     data = (unsigned char *)SDL_calloc(1, x*y*bpp);
     if (!data) {
@@ -690,17 +692,23 @@ static unsigned char *load_xcf_tile_rle(SDL_IOStream *src, size_t len, int bpp, 
         size = x*y;
 
         while (size > 0) {
+            if (t >= load_end) {
+                break;    /* bogus data */
+            }
             val = *t++;
 
             length = val;
             if (length >= 128) {
                 length = 255 - (length - 1);
                 if (length == 128) {
-                    length = (*t << 8) + t[1];
+                    if ((load_end - t) < 2) {
+                        break;    /* bogus data */
+                    }
+                    length = (t[0] << 8) | t[1];
                     t += 2;
                 }
 
-                if (((size_t)(t - load) + length) >= amount_read) {
+                if (length > (load_end - t)) {
                     break;    /* bogus data */
                 } else if (length > size) {
                     break;    /* bogus data */
@@ -718,11 +726,14 @@ static unsigned char *load_xcf_tile_rle(SDL_IOStream *src, size_t len, int bpp, 
             } else {
                 length += 1;
                 if (length == 128) {
-                    length = (*t << 8) + t[1];
+                    if ((load_end - t) < 2) {
+                        break;    /* bogus data */
+                    }
+                    length = (t[0] << 8) | t[1];
                     t += 2;
                 }
 
-                if (((size_t)(t - load)) >= amount_read) {
+                if (t >= load_end) {
                     break;    /* bogus data */
                 } else if (length > size) {
                     break;    /* bogus data */
