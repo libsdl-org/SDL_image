@@ -790,9 +790,9 @@ static void create_channel_surface(SDL_Surface *surf, xcf_image_type itype, Uint
 static int
 do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_layer *layer, load_tile_type load_tile)
 {
-    xcf_hierarchy  *hierarchy;
-    xcf_level      *level;
-    unsigned char  *tile;
+    xcf_hierarchy  *hierarchy = NULL;
+    xcf_level      *level = NULL;
+    unsigned char  *tile = NULL;
     Uint8          *p8;
     Uint32         *p;
     int            i, j;
@@ -806,13 +806,12 @@ do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_
     hierarchy = read_xcf_hierarchy(src, head);
     if (!hierarchy) {
         SDL_SetError("Failed to read XCF image hierarchy");
-        return 1;
+        goto error;
     }
 
     if (hierarchy->bpp > 4) {  /* unsupported. */
         SDL_SetError("Unknown Gimp image bpp (%u)", (unsigned int) hierarchy->bpp);
-        free_xcf_hierarchy(hierarchy);
-        return 1;
+        goto error;
     }
 
     level = NULL;
@@ -825,8 +824,7 @@ do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_
 
         level = read_xcf_level(src, head);
         if (!level) {
-            free_xcf_hierarchy(hierarchy);
-            return 1;
+            goto error;
         }
 
         ty = tx = 0;
@@ -846,13 +844,7 @@ do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_
                 tile = NULL;
             }
             if (!tile) {
-                if (hierarchy) {
-                    free_xcf_hierarchy(hierarchy);
-                }
-                if (level) {
-                    free_xcf_level(level);
-                }
-                return 1;
+                goto error;
             }
 
             p8 = tile;
@@ -861,10 +853,7 @@ do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_
             /* Bounds check: reject layer if tile data exceeds buffer */
             if ((Uint64)ox * oy * hierarchy->bpp > (Uint64)(hierarchy->width * hierarchy->height * hierarchy->bpp)) {
                 SDL_SetError("Gimp image invalid tile");
-                free_xcf_tile(tile);
-                free_xcf_level(level);
-                free_xcf_hierarchy(hierarchy);
-                return 1;
+                goto error;
             }
 
             for (y = ty; y < ty + oy; y++) {
@@ -915,12 +904,7 @@ do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_
                         break;
                     default:
                         SDL_SetError("Unknown Gimp image type (%" SDL_PRIu32 ")", head->image_type);
-                        if (hierarchy) {
-                            free_xcf_hierarchy(hierarchy);
-                        }
-                        if (level)
-                            free_xcf_level(level);
-                        return 1;
+                        goto error;
                     }
                     break;
                 case 1:
@@ -949,19 +933,14 @@ do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_
                         }
                         break;
                     default:
-                        SDL_SetError("Unknown Gimp image type (%" SDL_PRIu32 ")\n", head->image_type);
-                        if (tile)
-                            free_xcf_tile(tile);
-                        if (level)
-                            free_xcf_level(level);
-                        if (hierarchy)
-                            free_xcf_hierarchy(hierarchy);
-                        return 1;
+                        SDL_SetError("Unknown Gimp image type (%" SDL_PRIu32 ")", head->image_type);
+                        goto error;
                     }
                     break;
                 }
             }
             free_xcf_tile(tile);
+            tile = NULL;
 
             tx += 64;
             if (tx >= level->width) {
@@ -973,11 +952,18 @@ do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_
             }
         }
         free_xcf_level(level);
+        level = NULL;
     }
 
     free_xcf_hierarchy(hierarchy);
 
     return 0;
+
+error:
+    free_xcf_tile(tile);
+    free_xcf_level(level);
+    free_xcf_hierarchy(hierarchy);
+    return 1;
 }
 
 SDL_Surface *IMG_LoadXCF_IO(SDL_IOStream *src)
