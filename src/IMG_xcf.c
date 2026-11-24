@@ -816,11 +816,13 @@ do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_
 
     level = NULL;
     for (i = 0; hierarchy->level_file_offsets[i]; i++) {
-        if (SDL_SeekIO(src, hierarchy->level_file_offsets[i], SDL_IO_SEEK_SET) < 0)
-            break;
-
         if (i > 0) /* skip level except the 1st one, just like GIMP does */
             continue;
+
+        if (SDL_SeekIO(src, hierarchy->level_file_offsets[i], SDL_IO_SEEK_SET) < 0) {
+            SDL_SetError("Gimp image invalid level offset");
+            goto error;
+        }
 
         level = read_xcf_level(src, head);
         if (!level) {
@@ -829,7 +831,10 @@ do_layer_surface(SDL_Surface *surface, SDL_IOStream *src, xcf_header *head, xcf_
 
         ty = tx = 0;
         for (j = 0; level->tile_file_offsets[j]; j++) {
-            SDL_SeekIO(src, level->tile_file_offsets[j], SDL_IO_SEEK_SET);
+            if (SDL_SeekIO(src, level->tile_file_offsets[j], SDL_IO_SEEK_SET) < 0) {
+                SDL_SetError("Gimp image invalid tile offsets");
+                goto error;
+            }
             ox = tx + 64 > level->width ? level->width % 64 : 64;
             oy = ty + 64 > level->height ? level->height % 64 : 64;
             length = ox*oy*6;
@@ -970,9 +975,9 @@ SDL_Surface *IMG_LoadXCF_IO(SDL_IOStream *src)
 {
     Sint64 start;
     const char *error = NULL;
-    SDL_Surface *surface, *lays;
+    SDL_Surface *surface, *lays = NULL;
     xcf_header *head;
-    xcf_layer    *layer;
+    xcf_layer    *layer = NULL;
     xcf_channel **channel = NULL;
     int chnls = 0;
     int i, offsets;
@@ -1031,7 +1036,10 @@ SDL_Surface *IMG_LoadXCF_IO(SDL_IOStream *src)
     /* Blit layers backwards, because Gimp saves them highest first */
     for (i = offsets; i > 0; i--) {
         SDL_Rect rs, rd;
-        SDL_SeekIO(src, head->layer_file_offsets[i-1], SDL_IO_SEEK_SET);
+        if (SDL_SeekIO(src, head->layer_file_offsets[i-1], SDL_IO_SEEK_SET) < 0) {
+            error = "invalid layer offset";
+            goto done;
+        }
 
         layer = read_xcf_layer(src, head);
         if (layer != NULL) {
@@ -1052,9 +1060,11 @@ SDL_Surface *IMG_LoadXCF_IO(SDL_IOStream *src)
                 SDL_BlitSurface(lays, &rs, surface, &rd);
             }
             free_xcf_layer(layer);
+            layer = NULL;
         }
     }
     SDL_DestroySurface(lays);
+    lays = NULL;
 
     SDL_SeekIO(src, fp, SDL_IO_SEEK_SET);
 
@@ -1092,6 +1102,9 @@ SDL_Surface *IMG_LoadXCF_IO(SDL_IOStream *src)
     }
 
 done:
+    free_xcf_layer(layer);
+    SDL_DestroySurface(lays);
+
     for (i = 0; i < chnls; i++) {
         free_xcf_channel(channel[i]);
     }
